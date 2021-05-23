@@ -20,6 +20,10 @@ function fcn_geometry_plotCircle(centers,radii,varargin)
 %
 %      (OPTIONAL INPUTS)
 %
+%      format:
+%        A format string, e.g. 'b-', that dictates the plot style or
+%        A color vector, e.g. [1 0 0.23], that dictates the line color
+%
 %      fig_num: a figure number to plot results.
 %
 % OUTPUTS:
@@ -35,12 +39,13 @@ function fcn_geometry_plotCircle(centers,radii,varargin)
 % See the script: script_test_fcn_geometry_plotCircle
 % for a full test suite.
 %
-% This function was written on 2020_05_22 by S. Brennan
+% This function was written on 2020_10_13 by S. Brennan
 % Questions or comments? sbrennan@psu.edu
 
 % Revision History:
 % 2021-05-22
 % -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
+% -- eliminates repo on fcn_plotCircles
 
 
 %% Debugging and Input checks
@@ -68,7 +73,7 @@ end
 
 if flag_check_inputs    
     % Are there the right number of inputs?    
-    if nargin < 2 || nargin > 3
+    if nargin < 2 || nargin > 4
         error('Incorrect number of input arguments')
     end
     
@@ -77,19 +82,19 @@ if flag_check_inputs
         centers, '2column_of_numbers');
     
     % Use number of radii to calculate the number of centers
-    num_circles = length(centers(:,1));
+    Ncircles = length(centers(:,1));
     
     % Check the radii input
     fcn_geometry_checkInputsToFunctions(...
-        radii, 'column_of_numbers',num_circles);
+        radii, 'column_of_numbers',Ncircles);
     
 end
     
 
 % Does user want to specify the figure?
 flag_new_figure = 0;
-if 3 == nargin
-    fig_num = varargin{1};
+if 4 == nargin
+    fig_num = varargin{end};
     figure(fig_num);
     flag_do_plot = 1;
 else
@@ -125,11 +130,41 @@ else
     axis equal
 end
 
-angles = 0:0.01:2*pi;
-for ith_circle = 1:length(centers(:,1))
-    x_circle = centers(ith_circle,1) + radii(ith_circle) * cos(angles);
-    y_circle = centers(ith_circle,2) + radii(ith_circle) * sin(angles);
-    plot(x_circle,y_circle,'-');
+% Set plotting defaults
+plot_str = 'b-';
+plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
+
+% Check to see if user passed in a string or color style?
+if 3 <= nargin
+    input = varargin{1};
+    if ~isempty(input)
+        plot_str = input;
+        if isnumeric(plot_str)  % Numbers are a color style
+            plot_type = 2;
+        end
+    end
+end
+
+% Set angles for plotting
+angles = (0:0.01:2*pi)';
+Nangles = length(angles(:,1));
+
+% Loop through the circles, prepping data for plotting each
+x_circle = zeros((Nangles+1)*Ncircles,1);
+y_circle = zeros((Nangles+1)*Ncircles,1);
+for ith_circle = 1:Ncircles 
+    xdata = centers(ith_circle,1)+radii(ith_circle)*cos(angles);
+    ydata = centers(ith_circle,2)+radii(ith_circle)*sin(angles);
+    offset = (ith_circle-1)*(Nangles+1);
+    x_circle((1:(Nangles+1))+offset,:) = [xdata; NaN];
+    y_circle((1:(Nangles+1))+offset,:) = [ydata; NaN];    
+end
+
+% Make plots
+if plot_type==1
+    plot(x_circle,y_circle,plot_str);
+elseif plot_type==2
+    plot(x_circle,y_circle,'Color',plot_str);
 end
 
 %% Plot results?
