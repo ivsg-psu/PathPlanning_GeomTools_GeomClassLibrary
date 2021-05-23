@@ -46,6 +46,7 @@ function points_tangent = ...
 % DEPENDENCIES:
 %
 %      fcn_geometry_checkInputsToFunctions
+%      fcn_geometry_plotCircle
 %
 % EXAMPLES:
 %
@@ -63,6 +64,8 @@ function points_tangent = ...
 % -- Revised the comments area, prepped function for geometry class
 % 2021-04-25
 % -- Fixed a bug with calculation of intersection
+% 2021-05-22
+% -- Using external fcn_geometry_plotCircle for plotting
 
 
 
@@ -203,7 +206,7 @@ if flag_do_plot
     hold on;
     axis equal;
     grid on; grid minor;
-    plot_circle(centers,radii);
+    fcn_geometry_plotCircle(centers,radii);
     plot(centers(:,1),centers(:,2),'kx');
     plot(points(:,1),points(:,2),'go');
     plot(points_tangent(:,1),points_tangent(:,2),'gx');
@@ -220,12 +223,4 @@ end
 
 end % Ends function
 
-function plot_circle(centers,radii)    % plot all the circle fits
-    angles = 0:0.01:2*pi;
-    for i_fit = 1:length(centers(:,1))
-        x_circle = centers(i_fit,1) + radii(i_fit) * cos(angles);
-        y_circle = centers(i_fit,2) + radii(i_fit) * sin(angles);
-        plot(x_circle,y_circle,'b-');
-    end
-end
 

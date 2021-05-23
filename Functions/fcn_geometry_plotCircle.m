@@ -116,13 +116,13 @@ figure(fig_num);
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_new_figure    
-    axis square
+if flag_new_figure        
+    hold on;
+    axis equal
     grid minor;
-    hold on;
 else
-    axis square
     hold on;
+    axis equal
 end
 
 angles = 0:0.01:2*pi;

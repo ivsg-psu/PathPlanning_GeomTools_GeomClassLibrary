@@ -197,6 +197,8 @@ if flag_do_plot
     
     % Plot the circles
     fcn_geometry_plotCircle(centers,radii);
+    axis equal;
+    
     plot(centers(:,1),centers(:,2),'kx');
     
     % Plot the start and end points
