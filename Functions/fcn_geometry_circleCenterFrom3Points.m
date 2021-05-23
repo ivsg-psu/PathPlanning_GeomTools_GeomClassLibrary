@@ -1,0 +1,198 @@
+function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,varargin)
+% fcn_geometry_circleCenterFrom3Points calculates the center of a circle from
+% three points given as vectors in x and y
+%
+% FORMAT:
+%
+% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,(fig_num))
+%
+% INPUTS:
+%
+%      points: a Nx2 vector where N is at least 3. If N = 3, a circle will be
+%      fit between these threee points, if N = 4 or more, then one circle
+%      will be fit to the first three points, another cicle to the next
+%      three points, etc.
+%
+%      (OPTIONAL INPUTS)
+%
+%      fig_num: a figure number to plot results.
+%
+% OUTPUTS:
+%
+%      centers: an [(N-2)x1] vector of the centers of the circles, in [x y]
+%
+%      radii: the radius of each the circles, as an [(N-2)x1] vector
+%
+% EXAMPLES:
+%      
+%      % BASIC example
+%      points = [0 0; 1 4; 0.5 -1];
+%      [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,1)
+% 
+%      % ADVANCED example that uses vectors of x and y
+%      points = [0 0; 1 4; 0.5 -1; -1 4];
+%      [xc,yc,radii] = fcn_geometry_circleCenterFrom3Points(points,1)
+%
+%      % ADVANCED example that lets user select N points 
+%      figure(1); clf; grid on; axis equal;
+%      points = ginput; % Get arbitrary N points until user hits return
+%      [xc,yc,radii] = fcn_geometry_circleCenterFrom3Points(points,1)     
+%
+% See the script: script_test_fcn_geometry_circleCenterFrom3Points
+% for a full test suite.
+%
+% This function was written on 2020_03_20 by S. Brennan
+% Questions or comments? sbrennan@psu.edu 
+
+% Revision history:
+% 2020_03_20 - wrote the code
+% 2020_05_22 - added more comments, particularly to explain inputs more
+% clearly
+% 2021_05_23 
+% -- merged previous function into geometry class
+% -- automated input argument checking
+% -- changed from x,y separate inputs into points inputs
+
+%% Debugging and Input checks
+flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+flag_do_plot = 0;      % Set equal to 1 for plotting "extra" figures (not used)
+flag_do_debug = 0;     % Set equal to 1 for debugging
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+end
+
+%% check input arguments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____                   _       
+%  |_   _|                 | |      
+%    | |  _ __  _ __  _   _| |_ ___ 
+%    | | | '_ \| '_ \| | | | __/ __|
+%   _| |_| | | | |_) | |_| | |_\__ \
+%  |_____|_| |_| .__/ \__,_|\__|___/
+%              | |                  
+%              |_| 
+% See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if flag_check_inputs    
+    % Are there the right number of inputs?    
+    if nargin < 1 || nargin > 2
+        error('Incorrect number of input arguments')
+    end
+    
+    % Check the points input
+    fcn_geometry_checkInputsToFunctions(...
+        points, '2column_of_numbers');
+      
+end
+
+% Does user want to show the plots?
+if 2 == nargin
+    fig_num = varargin{end};
+    figure(fig_num);
+    flag_do_plot = 1;
+else
+    if do_debug
+        fig = figure; % create new figure with next default index
+        fig_num = fig.Number;
+        flag_do_plot = 1;
+    end
+end
+
+
+%% Solve for the circle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   __  __       _       
+%  |  \/  |     (_)      
+%  | \  / | __ _ _ _ __  
+%  | |\/| |/ _` | | '_ \ 
+%  | |  | | (_| | | | | |
+%  |_|  |_|\__,_|_|_| |_|
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% The code below is set up to be vectorized if there are more than one
+% solution. Since the code is quite different looking for each, they are
+% separated out. However, it may be that the N-solution case works for N is
+% equal to 1. This was not tested.
+
+% Do some pre-calculations
+num_solutions = length(points(:,1))-2; % This is the number of solutions to expect
+r_squared = sum(points.^2,2); % These are the radii-squared of points from origin
+diff_points = diff(points);
+diff_x = diff_points(:,1);
+diff_y = diff_points(:,2);
+diff_rsquared = diff(r_squared);
+
+if 1 == num_solutions % Expecting just one solution. No need for big A, b matrices    
+    % solve for the center point    
+    A = [diff_x diff_y];
+    b = 1/2*diff_rsquared;
+    
+else % Simultaneous solutions to be calculated - create big A and b matrices    
+    % Construct the A-matrix and b matrix that will create the regressor.
+    % Start by filling A and b matrices up with zeros (see notes for
+    % explanation of iputs)
+    A = zeros(2*num_solutions,2*num_solutions);
+    b = zeros(2*num_solutions,1);
+    
+    % Fill in the non-zero portions of the matrix, which will be 1 per each
+    % of the N solutions
+    for i_solution = 1:num_solutions
+        A(1+2*(i_solution-1):2+2*(i_solution-1),1+2*(i_solution-1)) = ...
+            diff_x(i_solution:i_solution+1);
+        A(1+2*(i_solution-1):2+2*(i_solution-1),2+2*(i_solution-1)) = ...
+            diff_y(i_solution:i_solution+1);        
+        b(1+2*(i_solution-1):2+2*(i_solution-1),1) = ...
+            1/2*diff_rsquared(i_solution:i_solution+1);
+    end
+end
+
+% Solve the center points
+centers = A\b;
+centers = reshape(centers,2,length(centers(:,1))/2);
+centers = centers'; % Make it into a column vector
+
+
+% NOTE: the following line is the slowest in the code. It can be sped
+% up if we do not take the square root
+radii = sum((points(1:num_solutions,:)-centers).^2,2).^0.5;
+
+
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if flag_do_plot
+    
+    %Prep the figure
+    figure(fig_num);
+    hold on % allow multiple plot calls
+    
+    
+    plot(points(:,1),points(:,2),'ro');  % Plot all the input points
+    plot(centers(:,1),centers(:,2),'g+'); % Plot all the circle centers
+
+    axis equal;
+    grid on; grid minor;
+
+    % plot all the circle fits    
+    for i_fit = 1:length(centers(:,1))             
+        fcn_geometry_plotCircle(centers(i_fit,:),radii(i_fit,1));
+    end
+end
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
+end
+
+
