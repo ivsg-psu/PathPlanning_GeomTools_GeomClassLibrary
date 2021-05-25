@@ -23,6 +23,11 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,varargin)
 %
 %      radii: the radius of each the circles, as an [(N-2)x1] vector
 %
+% DEPENDENCIES:
+%
+%      fcn_geometry_checkInputsToFunctions
+%      fcn_geometry_plotCircle
+%
 % EXAMPLES:
 %      
 %      % BASIC example
