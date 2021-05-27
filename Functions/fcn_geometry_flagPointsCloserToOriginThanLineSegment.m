@@ -1,12 +1,27 @@
-
-function [point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points, varargin)
+function [point_flags] = ...
+    fcn_geometry_flagPointsCloserToOriginThanLineSegment(...
+    segment_points, ...
+    test_points, ...
+    varargin)
 % fcn_geometry_flagPointsCloserToOriginThanLineSegment
 % Genrates a column vector that is 1 if associated point is closer to
 % origin (inside) a line segment, 0 otherwise. Points must be strictly
-% inside to count (e.g. cannot be ON the line segment)
+% inside to count (e.g. cannot be ON the line segment).
+%
+% The method used is to fit a line to the line segment to calculate the
+% slope and intercept. It then applies the same slope to the test points,
+% and calculates their intercepts. If the test-point intercepts are closer
+% to the origin than the line segment, then they are "within" the segment.
+% For vertical line segments, a special test is done to see if the x-axis
+% coordinate is closer to the orgin than the line segment.
 % 
-% Format: 
-% [point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points, varargin)
+% FORMAT: 
+%
+% [point_flags] = ...
+%     fcn_geometry_flagPointsCloserToOriginThanLineSegment(...
+%     segment_points, ...
+%     test_points, ...
+%     (fig_num))
 %
 % INPUTS:
 %      segment_points: a 2x2 vector where the first row is the [x y]
@@ -16,29 +31,42 @@ function [point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(se
 %      test_points: a Nx2 vector where N is the number of points that are
 %      being checked (N must be at least 1);
 %
+%      (OPTIONAL INPUTS)
+%
+%      fig_num: a figure number to plot results.
+%
 % OUTPUTS:
 %      point_flags: a vector (Nx1) representing whether associated points
 %      are closer to the origin than the line segment
 %
-% Examples:
+% EXAMPLES:
 %      
 %      % BASIC example
 %      segment_points = [2 3; 4 5];
 %      test_points  = [1 1];
 %      [slope,intercept] = fcn_geometry_find_slope_intercept_from_N_points(points)
 % 
-% See the script: script_test_fcn_geometry_flagPointsCloserToOriginThanLineSegment
+% See the script: script_test_fcn_geometry_flagPointsCloserThanLineSegment
 % for a full test suite.
 %
 % This function was written on 2020_06_25 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2020_06_25 - wrote the code
-%
+% 2020_06_25 
+% -- wrote the code
+% 2021_05_26
+% -- Improved the comments, prepped for geometry class
 
-flag_do_debug = 1; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+%% Debugging and Input checks
+flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+flag_do_plot = 0;      % Set equal to 1 for plotting
+flag_do_debug = 0;     % Set equal to 1 for debugging
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+end
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,38 +80,34 @@ flag_check_inputs = 1; % Flag to perform input checking
 %              |_| 
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Are the input vectors the right shape?
-Npoints = length(test_points(:,1));
 
+% Should we check the inputs?
 if flag_check_inputs == 1
     % Are there the right number of inputs?
     if nargin < 2 || nargin > 3
         error('Incorrect number of input arguments')
     end
     
-    if Npoints<1
-        error('The points vector must have at least 1 row, with each row representing a different (x y) point');
-    end
+    % Check the segment_points input to have at least 2 or more rows
+    fcn_geometry_checkInputsToFunctions(...
+        segment_points, '2column_of_numbers',[2 3]);
     
-    if length(test_points(1,:))~=2
-        error('The test_points vector must have 2 columns, with column 1 representing the x portions of the points, column 2 representing the y portions.');
-    end
-    
-    if ~isequal(size(segment_points),[2 2])
-       error('The segment_points vector must have 2 rows and 2 columns, with column 1 representing the x portions of the points, column 2 representing the y portions. The first row is for the start point, the second is for the end point of the segment.');
-    end 
+    % Check the test_points input to have at least 2 or more rows
+    fcn_geometry_checkInputsToFunctions(...
+        test_points, '2column_of_numbers');
     
 end
 
 % Does user want to show the plots?
 if 3 == nargin
-    fig_num = varargin{1};
+    fig_num = varargin{end};
     figure(fig_num);
-    flag_do_debug = 1;
+    flag_do_plot = 1;
 else
     if flag_do_debug
         fig = figure; 
         fig_num = fig.Number;
+        flag_do_plot = 1;
     end
 end
 
@@ -105,7 +129,7 @@ end
 % segment. We have to consider a special case for when the line is vertial
 
 % Fill in slope and intercept
-[slope,intercept] = fcn_geometry_find_slope_intercept_from_N_points(segment_points);
+[slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(segment_points);
 
 % Check to see if the line is vertical? (different result for each)
 if isinf(slope)  % If line is vertical, just compare x values to the first x-value in the line segment
@@ -127,10 +151,11 @@ end
 %                            __/ |
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_debug
+if flag_do_plot
     figure(fig_num);
     hold on;
     grid on;
+    axis equal;
     
     % START BY PLOTTING THE LINE SEGMENT
     % Create an x vector of 100 points connecting lowest and highest points
@@ -143,36 +168,48 @@ if flag_do_debug
     plot(x,y,'b-');
     
     % NOW PLOT THE POINTS
+    plot(test_points(:,1),test_points(:,2),'k.');
+    
+    % Circle inside points with green
     inside_points = test_points(point_flags>0,:);
-    plot(inside_points(:,1),inside_points(:,2),'g.');
+    plot(inside_points(:,1),inside_points(:,2),'go');
 
+    % Circle outside points with red
     outside_points = test_points(point_flags==0,:);
-    plot(outside_points(:,1),outside_points(:,2),'r.');
+    plot(outside_points(:,1),outside_points(:,2),'ro');
+    
+    legend('Line segment','Test points','Inside','Outside');
 
 end
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
 end
 
-function [slope,intercept] = fcn_geometry_find_slope_intercept_from_N_points(points)
-% fcn_geometry_find_slope_intercept_from_N_points
-% Finds the slope and intercept of a line connecting two points
-% NOTE: this was exerpted from a much more robust stand-alone function of
-% the same name. See that function for details.
+end % Ends function
 
-Npoints = length(points(:,1));
-
-% Fill in X and Y
-X = points(:,1);
-Y = points(:,2);
-
-% Check to see if the result is going to be singular. This happens if all
-% the x values are the same, e.g. the line is vertical
-if all(X == X(1))  % Are all the x values the same?
-    slope = inf;
-    intercept = inf;
-else  % The result will be an ordinary line
-    result = [X ones(Npoints,1)]\Y;    
-    slope = result(1,1);
-    intercept = result(2,1);
-end
-end
+% 
+% function [slope,intercept] = fcn_geometry_find_slope_intercept_from_N_points(points)
+% % fcn_geometry_find_slope_intercept_from_N_points
+% % Finds the slope and intercept of a line connecting two points
+% % NOTE: this was exerpted from a much more robust stand-alone function of
+% % the same name. See that function for details.
+% 
+% Npoints = length(points(:,1));
+% 
+% % Fill in X and Y
+% X = points(:,1);
+% Y = points(:,2);
+% 
+% % Check to see if the result is going to be singular. This happens if all
+% % the x values are the same, e.g. the line is vertical
+% if all(X == X(1))  % Are all the x values the same?
+%     slope = inf;
+%     intercept = inf;
+% else  % The result will be an ordinary line
+%     result = [X ones(Npoints,1)]\Y;    
+%     slope = result(1,1);
+%     intercept = result(2,1);
+% end
+% end
 

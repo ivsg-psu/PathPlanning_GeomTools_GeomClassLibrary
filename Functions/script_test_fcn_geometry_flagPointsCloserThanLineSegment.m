@@ -16,8 +16,24 @@ test_points = [1 1];
 fprintf(1,'Point flags are:\n');
 fprintf(1,'\t%.2f\n',point_flags);
 
+%% Test 2: a basic test
+fig_num = 2;
+segment_points = [2 3; 4 5];
+test_points = 5*rand(10,2);
+[point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
+
+%% Test 2: a basic test
+fig_num = 2;
+segment_points = [1 5; 4 0];
+test_points = 5*rand(10,2);
+[point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
+
 %% Test 2: many points randomly determined
-fig_num = fig_num + 1;
+fig_num = 21;
 
 segment_points = [0 4; 1 1];
 slope = -3;

@@ -13,7 +13,12 @@ function [vector_root, unit_vector] = ...
 % [vector_root, unit_vector] = fcn_geometry_fitVectorToNPoints(points)
 %
 % INPUTS:
+%
 %      points: a Nx2 vector where N is the number of points, length N>=2. 
+%
+%      (OPTIONAL INPUTS)
+%
+%      fig_num: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -47,8 +52,15 @@ function [vector_root, unit_vector] = ...
 % -- modified from fcn_geometry_fitVectorToNPoints
 %
 
-flag_do_debug = 1; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+%% Debugging and Input checks
+flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+flag_do_plot = 0;      % Set equal to 1 for plotting
+flag_do_debug = 0;     % Set equal to 1 for debugging
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+end
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,17 +87,16 @@ if flag_check_inputs == 1
     
 end
 
-Npoints = length(points(:,1));
-
 % Does user want to show the plots?
 if 2 == nargin
     fig_num = varargin{1};
     figure(fig_num);
-    flag_do_debug = 1;
+    flag_do_plot = 1;
 else
     if flag_do_debug
         fig = figure; 
         fig_num = fig.Number;
+        flag_do_plot = 1;
     end
 end
 
@@ -155,7 +166,7 @@ unit_vector = [-sin(phi) cos(phi)]; % This is the perpendicular to the phi
 %                            __/ |
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_debug
+if flag_do_plot
     figure(fig_num);
     hold on;
     grid on;
@@ -184,8 +195,14 @@ if flag_do_debug
     %     end
     %
     %     plot(x,y,'.-');
-    
 end
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
+end
+
+end % Ends function
+
 
 
 %% OLD METHOD (WRONG)
