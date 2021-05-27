@@ -125,7 +125,7 @@ end
 
 % Does user want to show the plots?
 if 6 == nargin
-    fig_num = varargin{1};
+    fig_num = varargin{end};
     figure(fig_num);
     flag_do_plot = 1;
     flag_new_figure = 0;
