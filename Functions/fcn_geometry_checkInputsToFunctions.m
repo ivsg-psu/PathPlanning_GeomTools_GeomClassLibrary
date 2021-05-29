@@ -41,6 +41,15 @@ function fcn_geometry_checkInputsToFunctions(...
 %            B = A, then the vector must be length A, and no shorter or
 %            greater.
 %
+%            '2or3column_of_numbers'  - checks that the input type is N x 2
+%            or N x 3 and is a number. Optional input: an integer forcing
+%            the value of N, giving an error if the input variable does not
+%            have length N. Another optional input is a rwo vector [A B]
+%            where, if B is greater than A, then the vector must be A or
+%            longer. If B is less than A, then the vector must be A or
+%            shorter. If B = A, then the vector must be length A, and no
+%            shorter or greater.
+%
 %
 %      Note that the variable_type_string is not case sensitive: for
 %      example, 'station' and 'Station' or 'STAtion' all give the same
@@ -175,6 +184,44 @@ if strcmpi(variable_type_string,'2column_of_numbers')
     end
 end
 
+%% 2or3column_of_numbers
+if strcmpi(variable_type_string,'2or3column_of_numbers')
+    % Check the station input
+    if ((length(variable(1,:))<2) || (length(variable(1,:))>3)) || ~isnumeric(variable)
+        error('The %s input must be a 2or3column_of_numbers type, namely an N x 2 or N x 3 vector with N>=1',variable_name);
+    end
+    
+    if any(isnan(variable),'all')
+        error('The %s input must be a 2or3column_of_numbers type, namely an N x 2 or N x 3 vector that has no NaN values.',variable_name);
+    end
+    
+    % Is there a specified required length?
+    if nargin == 3
+        required_length = varargin{1};
+        if length(required_length(1,:))==1
+            if length(variable(:,1))~=required_length
+                error('The %s input must be a 2or3column_of_numbers, namely (N x 2) or (N x 3) with N == %.0d',variable_name,required_length);
+            end
+        else
+            if required_length(1,2)>required_length(1,1)
+                min_length = required_length(1,1);
+                if length(variable(:,1))<min_length
+                    error('The %s input must be a 2or3column_of_numbers, namely (N x 2) or (N x 3) with N >= %.0d',variable_name,min_length);
+                end
+            elseif required_length(1,2)<required_length(1,1)
+                max_length = required_length(1,1);
+                if length(variable(:,1))>max_length
+                    error('The %s input must be a 2or3column_of_numbers, namely (N x 2) or (N x 3) with N <= %.0d',variable_name,max_length);
+                end
+            else % It has to be equal
+                required_length = required_length(1,1);
+                if length(variable(:,1))~=required_length
+                    error('The %s input must be a 2or3column_of_numbers, namely (N x 2) or (N x 3) with N = %.0d',variable_name,required_length);
+                end
+            end
+        end
+    end
+end
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
