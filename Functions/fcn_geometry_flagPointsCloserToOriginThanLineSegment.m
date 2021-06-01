@@ -57,6 +57,9 @@ function [point_flags] = ...
 % -- wrote the code
 % 2021_05_26
 % -- Improved the comments, prepped for geometry class
+% 2021_05_31
+% -- Fixed bug where points beyond the origin were also included
+% incorrectly
 
 %% Debugging and Input checks
 flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -122,22 +125,31 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% The code below just calculates the slope and intercept of the line segment:
+% The code below just calculates the slope and intercept of the line
+% segment created by the segment points:
 %     y = m*x + b
-% then calculates the intercept related to the line that passes through each test point.
-% If the intercept is closer to the origin, then it is inside the line
-% segment. We have to consider a special case for when the line is vertial
+% then calculates the intercept related to the line that passes through
+% each test point. If the intercept is closer to the origin, then it is
+% inside the line segment. We have to consider a special case for when the
+% line is vertial
 
-% Fill in slope and intercept
+% Fill in slope and intercept from the segment points
 [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(segment_points);
 
 % Check to see if the line is vertical? (different result for each)
-if isinf(slope)  % If line is vertical, just compare x values to the first x-value in the line segment
-    point_flags = abs(test_points(:,1)) < abs(segment_points(1,1));
-else  % The result will be an ordinary line
+% If line is vertical, just compare x values to the first x-value in the
+% line segment
+if isinf(slope)  
+    point_flags = ...
+        (abs(test_points(:,1)) < abs(segment_points(1,1))) & ...
+        (sign(test_points(:,1))== sign(segment_points(1,1)));
+    
+else  % Not infinite, so the result will be an ordinary line
     % the b value is just b = y - m*x. We take the absolute value so that
     % this approach will work for negative intercepts as well.
-    point_flags = abs(test_points(:,2) - slope*test_points(:,1))    < abs(intercept);
+    point_flags = ...
+        (abs(test_points(:,2) - slope*test_points(:,1)) < abs(intercept)) & ...
+        (sign(test_points(:,2) - slope*test_points(:,1)) == sign(intercept));
 end
 
 %% Plot the results (for debugging)?
@@ -162,10 +174,19 @@ if flag_do_plot
     % in x, and plot the line fit
     x = linspace(min(segment_points(:,1)),max(segment_points(:,1)),100)';
     y = x*slope + intercept;
-    if isinf(slope)  % The result is a vertical line
+    if isinf(slope)  % The result is a vertical line        
         y = linspace(min(segment_points(:,2)),max(segment_points(:,2)),100)';
     end    
     plot(x,y,'b-');
+    
+    % PLOT THE ORIGIN LINE
+    y_origin = x*slope;
+    if isinf(slope)  % The result is a vertical line
+        x = x*0;
+        y_origin = linspace(min(segment_points(:,2)),max(segment_points(:,2)),100)';
+    end    
+    plot(x,y_origin,'g-');
+    
     
     % NOW PLOT THE POINTS
     plot(test_points(:,1),test_points(:,2),'k.');
@@ -178,7 +199,7 @@ if flag_do_plot
     outside_points = test_points(point_flags==0,:);
     plot(outside_points(:,1),outside_points(:,2),'ro');
     
-    legend('Line segment','Test points','Inside','Outside');
+    legend('Line segment','Origin cut-off','Test points','Inside','Outside');
 
 end
 

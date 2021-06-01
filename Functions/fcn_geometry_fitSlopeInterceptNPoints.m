@@ -40,7 +40,7 @@ function [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,vararg
 % -- revised name to fcn_geometry_fitSlopeInterceptNPoints
 %
 
-flag_do_debug = 1; % Flag to plot the results for debugging
+flag_do_debug = 0; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
 
 %% check input arguments
