@@ -14,6 +14,10 @@ function [point_flags] = ...
 % to the origin than the line segment, then they are "within" the segment.
 % For vertical line segments, a special test is done to see if the x-axis
 % coordinate is closer to the orgin than the line segment.
+%
+% Note: the points must be a tolerance beyond the line to be "further", and
+% this tolerance is a factor of the numerical precision of the environment,
+% eps, typically 10*eps where eps = 2.2204e-16.
 % 
 % FORMAT: 
 %
@@ -131,14 +135,14 @@ end
 % line segment
 if isinf(slope)  
     point_flags = ...
-        (abs(test_points(:,1)) > abs(segment_points(1,1))) & ...
+        (abs(test_points(:,1)) > (abs(segment_points(1,1))+10*eps)) & ...
         (sign(test_points(:,1))== sign(segment_points(1,1)));
     
 else  % Not infinite, so the result will be an ordinary line
     % the b value is just b = y - m*x. We take the absolute value so that
     % this approach will work for negative intercepts as well.
     point_flags = ...
-        (abs(test_points(:,2) - slope*test_points(:,1)) > abs(intercept)) & ...
+        (abs(test_points(:,2) - slope*test_points(:,1)) > (abs(intercept)+10*eps)) & ...
         (sign(test_points(:,2) - slope*test_points(:,1)) == sign(intercept));
 end
 
