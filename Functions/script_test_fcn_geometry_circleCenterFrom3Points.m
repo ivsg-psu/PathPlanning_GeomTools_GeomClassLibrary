@@ -11,6 +11,7 @@
 close all;
 
 %% BASIC example 1
+geometry_circleCenterFrom3Points_case1 = matlab.unittest.TestCase.forInteractiveUse;
 fig_num = 1;
 points = [0 0; 1 4; 0.5 -1];
 [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
@@ -19,6 +20,8 @@ fcn_summarize(...
     centers,...
     radii,...
     points);
+assertEqual(geometry_circleCenterFrom3Points_case1, round(centers,4), [3.6667,1.2083])
+assertEqual(geometry_circleCenterFrom3Points_case1, round(radii,4), 3.8606)
 
 %% ADVANCED example that uses vectors of x and y
 fig_num = 100;
