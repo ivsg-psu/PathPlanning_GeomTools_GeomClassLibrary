@@ -12,9 +12,11 @@ clc;
 fig_num = 1;
 
 %% Test 1: a basic test
+geometry_fitSlopeInterceptNPoints_case1 = matlab.unittest.TestCase.forInteractiveUse;
 points = [2 3; 4 5];
 [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
 fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
+assertEqual(geometry_fitSlopeInterceptNPoints_case1,slope,1);
 
 %% Test 2: a vertical line
 fig_num = fig_num + 1;
