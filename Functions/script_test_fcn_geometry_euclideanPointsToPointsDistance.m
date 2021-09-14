@@ -11,11 +11,13 @@
 
 
 %% BASIC example - single points in 2D
+euclideanPointsToPointsDistance_case1 = matlab.unittest.TestCase.forInteractiveUse;
 fig_num = 1;
 
 pt1 = [1 1];  
 pt2 = [2 3];
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+assertEqual(euclideanPointsToPointsDistance_case1, dist, 2.23606797749979);
 
 %% BASIC example - two points in 2D
 fig_num = 2;
