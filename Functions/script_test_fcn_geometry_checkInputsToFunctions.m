@@ -27,6 +27,8 @@ fcn_geometry_checkInputsToFunctions(column_of_numbers_test, 'column_of_numbers')
 column_of_numbers_test = [4; 3; 2];
 fcn_geometry_checkInputsToFunctions(column_of_numbers_test, 'column_of_numbers',3);
 
+assert(true); % pass the test defined by this section if no errors were thrown
+
 %% 2column_of_numbers
 % 
 %   ___           _                               __                       _                   
@@ -62,6 +64,7 @@ fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbe
 Twocolumn_of_numbers_test = [4 1; 3 9; 2 7];
 fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',[3 3]);
 
+assert(true); % pass the test defined by this section if no errors were thrown
 
 %% 2or3column_of_numbers
 % 
@@ -125,6 +128,8 @@ fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3colum
 TwoOrThreeColumn_of_numbers_test = [4 1 3; 3 9 3; 2 7 3];
 fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',[3 3]);
 
+assert(true); % pass the test defined by this section if no errors were thrown
+
 %% Fail conditions
 if 1==0
     %% column_of_numbers
@@ -144,14 +149,20 @@ if 1==0
     column_of_numbers_test = [4 1];
     fcn_geometry_checkInputsToFunctions(column_of_numbers_test, 'column_of_numbers');
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Test the column_of_numbers type (FAILURE because 3 long, not 2)
     column_of_numbers_test = [4; 3; 2];
     fcn_geometry_checkInputsToFunctions(column_of_numbers_test, 'column_of_numbers',2);
-       
+    
+    assert(true); % pass the test defined by this section if no errors were thrown
+   
     %% Test the column_of_numbers type (FAILURE because NaN)
     column_of_numbers_test = [4; nan; 2];
     fcn_geometry_checkInputsToFunctions(column_of_numbers_test, 'column_of_numbers',3);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% 2column_of_numbers
     %
     %   ___           _                               __                       _
@@ -169,27 +180,38 @@ if 1==0
     Twocolumn_of_numbers_test = [4];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers');
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Test the column_of_numbers type (FAILURE because 3 long, not 2)
     Twocolumn_of_numbers_test = [4 1; 3 1; 2 2];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',2);
-       
+    
+    assert(true); % pass the test defined by this section if no errors were thrown
+   
     %% Test the column_of_numbers type (FAILURE because NaN)
     Twocolumn_of_numbers_test = [4 1; nan 1; 2 0];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',3);
-    
-    
+        
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Minimum length is 4 or greater
     Twocolumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',[4 5]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Maximum length is 2 or less
     Twocolumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',[2 1]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Maximum length is 2
     Twocolumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(Twocolumn_of_numbers_test, '2column_of_numbers',[2 2]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% 2or3column_of_numbers
     %
     %   ___           ____            _                               __                       _
@@ -208,29 +230,42 @@ if 1==0
     TwoOrThreeColumn_of_numbers_test = [4];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers');
 
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Test the column_of_numbers type (FAILURE because 1 x 4)
     TwoOrThreeColumn_of_numbers_test = [4 1 1 1];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers');
 
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Test the column_of_numbers type (FAILURE because 3 long, not 2)
     TwoOrThreeColumn_of_numbers_test = [4 1; 3 1; 2 2];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',2);
-       
+    
+    assert(true); % pass the test defined by this section if no errors were thrown
+   
     %% Test the column_of_numbers type (FAILURE because NaN)
     TwoOrThreeColumn_of_numbers_test = [4 1; nan 1; 2 0];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',3);
     
-    
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Minimum length is 4 or greater
     TwoOrThreeColumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',[4 5]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Maximum length is 2 or less
     TwoOrThreeColumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',[2 1]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
     %% Maximum length is 2
     TwoOrThreeColumn_of_numbers_test = [4 1; 3 9; 2 7];
     fcn_geometry_checkInputsToFunctions(TwoOrThreeColumn_of_numbers_test, '2or3column_of_numbers',[2 2]);
     
+    assert(true); % pass the test defined by this section if no errors were thrown
+
 end
