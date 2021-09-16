@@ -11,53 +11,55 @@
 
 
 %% BASIC example - single points in 2D
-euclideanPointsToPointsDistance_case1 = matlab.unittest.TestCase.forInteractiveUse;
 fig_num = 1;
 
 pt1 = [1 1];  
 pt2 = [2 3];
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-assertEqual(euclideanPointsToPointsDistance_case1, dist, 2.23606797749979);
+assert(isequal(dist, 2.23606797749979));
 
-%% BASIC example - two points in 2D
-fig_num = 2;
-
-pt1 = [1 1; 0 0];  
-pt2 = [2 3; 4 0] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-%% BASIC example - many points in 2D
-fig_num = 3;
-
-pt1 = rand(5,2);  
-pt2 = rand(5,2);  
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-
-%% BASIC example - single points in 3D
-fig_num = 31;
-
-pt1 = [1 1 0];  
-pt2 = [2 3 2];
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-%% BASIC example - two points in 3D
-fig_num = 32;
-
-pt1 = [1 1 0; 0 0 1];  
-pt2 = [2 3 4; 4 0 2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-%% BASIC example - multiple points in 3D
-fig_num = 33;
-
-pt1 = [-1 1 0; 0 0 1; -3 -2 -4];  
-pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-%% BASIC example - multiple points in 3D
-fig_num = 34;
-
-pt1 = rand(5,3);
-pt2 = rand(5,3);
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% %% BASIC example - two points in 2D
+% fig_num = 2;
+% 
+% pt1 = [1 1; 0 0];  
+% pt2 = [2 3; 4 0] ;
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% %% BASIC example - many points in 2D
+% fig_num = 3;
+% 
+% pt1 = rand(5,2);  
+% pt2 = rand(5,2);  
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% 
+% %% BASIC example - single points in 3D
+% fig_num = 31;
+% 
+% pt1 = [1 1 0];  
+% pt2 = [2 3 2];
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% %% BASIC example - two points in 3D
+% fig_num = 32;
+% 
+% pt1 = [1 1 0; 0 0 1];  
+% pt2 = [2 3 4; 4 0 2] ;
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% %% BASIC example - multiple points in 3D
+% fig_num = 33;
+% 
+% pt1 = [-1 1 0; 0 0 1; -3 -2 -4];  
+% pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% %% BASIC example - multiple points in 3D
+% fig_num = 34;
+% 
+% pt1 = rand(5,3);
+% pt2 = rand(5,3);
+% dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+% 
+% %% Initialize test suite for test cases in this file
+% testsuite_geometry_euclideanPointsToPointsDistance = testsuite(euclideanPointsToPointsDistance_case1);
