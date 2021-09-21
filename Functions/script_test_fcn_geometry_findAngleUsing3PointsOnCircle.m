@@ -27,6 +27,9 @@ outgoing_destination_points = [0 -2^0.5];
     incoming_source_points,...
     outgoing_destination_points,fig_num) %#ok<*ASGLU,*NOPTS>
 
+assert(isequal(round(angles,4), 1.5708));
+assert(isequal(round(better_angles,4), 3.1416));
+
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 fig_num = 2;
 apex_points = [1 0];
@@ -245,7 +248,7 @@ outgoing_destination_points = [2^0.5 0];
     outgoing_destination_points,fig_num)
 
 
-%% Fill in vectorized cases 
+%% Fill in vectorized cases
 % Initialize variables
 all_apex_points = [];
 all_centers = [];

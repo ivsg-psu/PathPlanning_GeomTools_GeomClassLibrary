@@ -21,6 +21,8 @@ flag_inside_or_outside = 0;
     radii_end,...
     flag_inside_or_outside, [], [], fig_num) %#ok<*NOPTS,*ASGLU>
 
+assert(isequal(round(points_tangent_start,4),[0.2976,0.0375;-0.2976,0.0375;0.2999,0.0075;-0.2999,0.0075]));
+assert(isequal(round(points_tangent_end,4),[-0.1984,3.9750;0.1984,3.9750;0.1999,4.0050;-0.1999,4.005]));
 
 %% BASIC example - find all the points for two circles
 fig_num = 2;

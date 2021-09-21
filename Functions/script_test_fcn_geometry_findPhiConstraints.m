@@ -27,6 +27,8 @@ fprintf('\t %.2f \t %.2f\n', ...
     mod(phi_start,2*pi)*180/pi, ...
     mod(change,2*pi)*180/pi);
 
+assert(isequal(round(phi_start,4),1.5708));
+assert(isequal(round(change,4),-1.5708));
 
 %% Simple test - different cross product direction - should result in 90 to 0
 fig_num = fig_num + 1;
@@ -90,11 +92,11 @@ angles = 0:0.01:2*pi;
 for i_angle = 1:length(angles)
     angle = angles(i_angle);
     R = [cos(angle) -sin(angle); sin(angle) cos(angle)];
-    
+
     p_apex2 = p_apex*R;
     vertex_12   = vertex_1*R;
     vertex_22   = vertex_2*R;
-    
+
     [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex2,vertex_12,vertex_22,fig_num);
     fprintf('\t %.2f \t %.2f\n', ...
         mod(phi_start,2*pi)*180/pi, ...

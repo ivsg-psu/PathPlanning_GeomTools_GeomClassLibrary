@@ -16,6 +16,9 @@ points = [2 1; 3 2];
 [root_point, unit_vector] = fcn_geometry_fitVectorToNPoints(points,fig_num);
 fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 
+assert(isequal(round(root_point,4),[0.5000,-0.5000]));
+assert(isequal(round(unit_vector,4),[0.7071,0.7071]));
+
 %% Test 2: a basic test
 fig_num = 2;
 % -x + y = 0;

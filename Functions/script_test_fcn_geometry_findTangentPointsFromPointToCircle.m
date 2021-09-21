@@ -13,6 +13,8 @@ points = [2 3];
 points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
     centers,radii,points,fig_num); %#ok<*NASGU>
 
+assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
+
 %% ADVANCED example that uses vectors of centers and points
 fig_num = 2;
 centers = [0 0; 1 4];
@@ -40,22 +42,25 @@ points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
 
 
 %% ADVANCED example that lets user select a point among circles, and move it around
-fig_num = 999;
+enable_advanced_example = false; % flag advanced example off for non-interactive execution
+if enable_advanced_example
+    fig_num = 999;
 
-centers = [0 0; 1 4; 4 2];
-radii = [1; 2; 0.5];
-points = [-2*ones(length(radii),1) 4*ones(length(radii),1)];
-points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points,fig_num);
-% Loop until right button is hit
-button = 1;
-while sum(button) <=1   % read ginputs until a mouse right-button occurs
-    % Get a new point and redo plot
-    [xp,yp,button] = ginput(1);
-    points = [xp*ones(length(centers(:,1)),1),...
-        yp*ones(length(centers(:,1)),1)];
+    centers = [0 0; 1 4; 4 2];
+    radii = [1; 2; 0.5];
+    points = [-2*ones(length(radii),1) 4*ones(length(radii),1)];
     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
         centers,radii,points,fig_num);
+    % Loop until right button is hit
+    button = 1;
+    while sum(button) <=1   % read ginputs until a mouse right-button occurs
+        % Get a new point and redo plot
+        [xp,yp,button] = ginput(1);
+        points = [xp*ones(length(centers(:,1)),1),...
+            yp*ones(length(centers(:,1)),1)];
+        points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
+            centers,radii,points,fig_num);
+    end
 end
 
 %% FAIL CONDITIONS
@@ -67,5 +72,5 @@ if 1==0
     points = [1 1; 1 4];
     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
         centers,radii,points,fig_num);
-    
+
 end

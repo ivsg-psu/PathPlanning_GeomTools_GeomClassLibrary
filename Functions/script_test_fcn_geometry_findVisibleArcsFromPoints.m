@@ -3,8 +3,8 @@
 
 % Revision history:
 %      2021_05_22:
-%      -- first write of the code, 
-%      -- copying functionality from 
+%      -- first write of the code,
+%      -- copying functionality from
 %      -- script_test_fcn_geometry_findTangentPointsFromPointToCircle
 
 %% BASIC example for one circle and one point
@@ -13,12 +13,14 @@ centers = [0 0];
 radii = 1;
 points = [2 3];
 visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
-    centers,radii,points,fig_num); 
+    centers,radii,points,fig_num);
 
-fcn_summarize(visible_arc_angles,...     
+fcn_summarize(visible_arc_angles,...
     centers,...
     radii,...
     points);
+
+assert(isequal(round(visible_arc_angles,4),2.5559));
 
 %% ADVANCED example that uses vectors of centers and points
 fig_num = 2;
@@ -26,9 +28,9 @@ centers = [0 0; 1 4];
 radii = [1; 1];
 points = [2 3; 3 4];
 visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
-    centers,radii,points,fig_num); 
+    centers,radii,points,fig_num);
 
-fcn_summarize(visible_arc_angles,...     
+fcn_summarize(visible_arc_angles,...
     centers,...
     radii,...
     points);
@@ -39,9 +41,9 @@ centers = [0 0; 1 4];
 radii = [1; 1];
 points = [0.5 0.5; 3 4];
 visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
-    centers,radii,points,fig_num); 
+    centers,radii,points,fig_num);
 
-fcn_summarize(visible_arc_angles,...     
+fcn_summarize(visible_arc_angles,...
     centers,...
     radii,...
     points);
@@ -52,9 +54,9 @@ centers = [0 0; 1 4];
 radii = [1; 1];
 points = [1 2; 1.5 4];
 visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
-    centers,radii,points,fig_num); 
+    centers,radii,points,fig_num);
 
-fcn_summarize(visible_arc_angles,...     
+fcn_summarize(visible_arc_angles,...
     centers,...
     radii,...
     points);
@@ -62,22 +64,25 @@ fcn_summarize(visible_arc_angles,...
 
 
 %% ADVANCED example that lets user select a point among circles, and move it around
-fig_num = 999;
+enable_advanced_example = false; % flag advanced example off for non-interactive execution
+if enable_advanced_example
+    fig_num = 999;
 
-centers = [0 0; 1 4; 4 2];
-radii = [1; 2; 0.5];
-points = [-2*ones(length(radii),1) 4*ones(length(radii),1)];
-points_tangent = fcn_geometry_findVisibleArcsFromPoints(...
-    centers,radii,points,fig_num);
-% Loop until right button is hit
-button = 1;
-while sum(button) <=1   % read ginputs until a mouse right-button occurs
-    % Get a new point and redo plot
-    [xp,yp,button] = ginput(1);
-    points = [xp*ones(length(centers(:,1)),1),...
-        yp*ones(length(centers(:,1)),1)];
+    centers = [0 0; 1 4; 4 2];
+    radii = [1; 2; 0.5];
+    points = [-2*ones(length(radii),1) 4*ones(length(radii),1)];
     points_tangent = fcn_geometry_findVisibleArcsFromPoints(...
         centers,radii,points,fig_num);
+    % Loop until right button is hit
+    button = 1;
+    while sum(button) <=1   % read ginputs until a mouse right-button occurs
+        % Get a new point and redo plot
+        [xp,yp,button] = ginput(1);
+        points = [xp*ones(length(centers(:,1)),1),...
+            yp*ones(length(centers(:,1)),1)];
+        points_tangent = fcn_geometry_findVisibleArcsFromPoints(...
+            centers,radii,points,fig_num);
+    end
 end
 
 %% FAIL CONDITIONS
@@ -89,12 +94,12 @@ if 1==0
     points = [1 1; 1 4];
     visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
         centers,radii,points,fig_num);
-    
+
     fcn_summarize(visible_arc_angles,...
         centers,...
         radii,...
         points);
-    
+
 end
 
 
@@ -102,7 +107,7 @@ end
 %% Function start here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function fcn_summarize(...
-    visible_arc_angles,...     
+    visible_arc_angles,...
     centers,...
     radii,...
     points)
