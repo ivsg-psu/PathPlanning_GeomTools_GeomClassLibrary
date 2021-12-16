@@ -16,6 +16,8 @@ test_points = [1 -1];
 fprintf(1,'Point flags are:\n');
 fprintf(1,'\t%.2f\n',point_flags);
 
+assert(isequal(point_flags,0));
+
 %% Test 1: a basic test (FAIL - because at origin)
 fig_num = 1;
 segment_points = [2 3; 4 5];

@@ -28,6 +28,9 @@ cross_products_end   = [-1];
     cross_products_end,...
     fig_num) %#ok<*NOPTS,*ASGLU>
 
+assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
+assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
+
 %% BASIC example - find the points for two circle, all inner, opposite cross
 fig_num = 2;
 centers_start = [1 1];
@@ -50,7 +53,7 @@ cross_products_end   = [ 1];
     cross_products_end,...
     fig_num)
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 fig_num = 3;
 centers_start = [1 1];
@@ -73,7 +76,7 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num)
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, equal radii, outer, negative cross
 fig_num = 4;
 centers_start = [1 1];
@@ -97,7 +100,7 @@ cross_products_end   = [-1];
     fig_num);
 
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % vertical orientation
 fig_num = 5;
@@ -122,7 +125,7 @@ cross_products_end   = [1];
     fig_num)
 
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % vertical orientation
 fig_num = 6;
@@ -146,7 +149,7 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num)
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % negative horizontal orientation
 fig_num = 7;
@@ -172,7 +175,7 @@ cross_products_end   = [1];
 
 
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross,
 % start circle larger than end circle
 fig_num = 8;
@@ -196,7 +199,7 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num)
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross
 % start circle smaller than end circle
 fig_num = 9;
@@ -245,7 +248,7 @@ cross_products_end = [1; -1];
     fig_num);
 
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for three circles, two outside, last inside, but where
 % the inside ones are equal radii
 fig_num = 21;
@@ -269,7 +272,7 @@ cross_products_end = [1; -1];
     cross_products_end,...
     fig_num);
 
-%% BASIC example - 
+%% BASIC example -
 % find the points for three circles, two outside, last inside, but where
 % all are equal radii
 fig_num = 22;
@@ -308,7 +311,7 @@ if 1==0
     radii_end     = [0.5];
     cross_products_start = [0];
     cross_products_end   = [1];
-    
+
     [...
         points_tangent_start, ...
         points_tangent_end] ...
@@ -321,7 +324,7 @@ if 1==0
         cross_products_start,...
         cross_products_end,...
         fig_num)
-    
+
     %% FAIL CASE example -
     % find the points for two circles, unequal radii, outer, positive cross
     % start circle within end circle (criteria is that abs(r1 - r2)<= D,
@@ -333,7 +336,7 @@ if 1==0
     radii_end     = [0.5];
     cross_products_start = [1];
     cross_products_end   = [1];
-    
+
     [...
         points_tangent_start, ...
         points_tangent_end] ...
@@ -346,7 +349,7 @@ if 1==0
         cross_products_start,...
         cross_products_end,...
         fig_num)
-    
+
     %% FAIL CASE example -
     % find the points for two circles, unequal radii, inner, circles too
     % close together (criteria is that r1+r2 <= D, where D is distance
@@ -359,7 +362,7 @@ if 1==0
     radii_end     = [1.1];
     cross_products_start = [1];
     cross_products_end   = [-1];
-    
+
     [...
         points_tangent_start, ...
         points_tangent_end] ...

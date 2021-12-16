@@ -1,7 +1,7 @@
 % script_test_fcn_geometry_fitSlopeInterceptNPoints
 % Exercises the function: fcn_geometry_fitSlopeInterceptNPoints
 % Revision history:
-% 2020_06_25 
+% 2020_06_25
 % -- wrote the code
 % 2021_05_24
 % -- revised name to fcn_geometry_fitSlopeInterceptNPoints
@@ -15,6 +15,8 @@ fig_num = 1;
 points = [2 3; 4 5];
 [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
 fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
+assert(isequal(slope,1));
+assert(isequal(intercept,1));
 
 %% Test 2: a vertical line
 fig_num = fig_num + 1;
