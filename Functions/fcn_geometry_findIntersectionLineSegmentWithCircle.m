@@ -83,7 +83,15 @@ end
 % parameter describing the distance along the line segment from point a to
 % point b
 alpha = -((pa(1)-pc(1))*(pb(1)-pa(1)) + (pa(2)-pc(2))*(pb(2)-pa(2)))/((pb(1)-pa(1))^2 + (pb(2)-pa(2))^2);
-pminR = pa + alpha*(pb - pa);
+% If the minimum radius lies on the segment between points a and b,
+% calculate the location of the point of minimum radius
+if alpha < 1 && alpha > 0
+    pminR = pa + alpha*(pb - pa);
+% If the minimum radius is outside of the segment, set the point to
+% infinity so that it is ignored when determining intersections
+else
+    pminR = [inf inf];
+end
 
 % Check for the case where there is a tangency between the line segment and
 % the circle
@@ -178,7 +186,6 @@ elseif (norm(pa-pc) > R && norm(pb-pc) > R) || (norm(pa-pc) < R && norm(pb-pc) <
     % vectors of the intersection angle and point
     intAngle = [];
     intPoint = [];
-    return;
 % Next, check for the case where there are two intersections between the
 % line segment and circle. This occurs if both of the endpoints of the line
 % segment are outside of the circle but the distance to the nearest point
