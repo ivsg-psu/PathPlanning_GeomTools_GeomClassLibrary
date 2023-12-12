@@ -1,12 +1,12 @@
 % Algorithm
 %
-% The algorithm takes the first two points (1st and 2nd point) and fits a
+% The code takes the first two points (1st and 2nd point) and fits a
 % straight line and an arc. Then, it calculates the RMSEs (root mean square
 % error) for the straight line and arc fit and store the values in two
 % different matrices (one is for RMSE of the straight line fit and the
 % other one is for RMSE of the arc fit).
 %
-% Similarly, the algorithm takes the first three points (1st, 2nd and 3rd)
+% Similarly, the code takes the first three points (1st, 2nd and 3rd)
 % and continues the process and store the RMSEs in their respective
 % matrices. The algorithm takes the consecutive points and follows the same
 % process for all the points. And store the RMSEs of all the combinations
@@ -253,6 +253,8 @@ while currentPoint < size(edge1,1)
     % end
 
 end
+
+num_segments = num_lines + num_arcs;
 
 figure(f1)
 plot(fittedEdge(:,1),fittedEdge(:,2),'-r',LineWidth=1.5,DisplayName='Fitted Edge');
