@@ -118,7 +118,6 @@ end
 % angles = startAngle + (endAngle - startAngle)  * rand(size(noisyData,1), 1);
 angles = atan2(noisyData(:,2) - initialGuess(1,2), noisyData(:,1) - initialGuess(1,1));
 
-% options = optimoptions('lsqcurvefit', 'Display','none');
 % Call lsqcurvefit function to fit an arc to the noisy points
 fittedParameters = lsqcurvefit(@fcn_arcFit, initialGuess, angles, noisyData);
 
@@ -147,7 +146,7 @@ if flag_do_plots
     axis equal
 
     title('Random Data Fitted to an Arc');
-    % legend('Noisy Points', 'Fitted Arc', 'Location', 'best');
+    legend('Noisy Points', 'Fitted Arc', 'Location', 'best');
     
     % Plot the noisy points
     scatter(noisyData(:,1), noisyData(:,2), 'b', 'filled');
@@ -156,7 +155,7 @@ if flag_do_plots
     plot(fittedArc(:,1), fittedArc(:,2), 'r', 'LineWidth', 2);
 
     % Mark the center of the fitted arc
-    % plot(fittedParameters(1,1), fittedParameters(1,2), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
+    plot(fittedParameters(1,1), fittedParameters(1,2), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
 
 end
 
