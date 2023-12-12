@@ -149,9 +149,7 @@ if flag_do_debug
     figure(fig_num);
     hold on;
     grid on;
-
-    % Plot the input points
-    plot(points(:,1),points(:,2),'r.','MarkerSize',20);
+    plot(points(:,1),points(:,2),'r.');
     
     % Create an x vector of 100 points connecting lowest and highest points
     % in x, and plot the line fit
@@ -162,16 +160,7 @@ if flag_do_debug
         y = linspace(min(points(:,2)),max(points(:,2)),100)';
     end
     
-    % Plot the results
-    plot(x,y,'b-','MarkerSize',10);
-
-    % Make axis slightly larger
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-
+    plot(x,y,'b.');
     
 end
 
