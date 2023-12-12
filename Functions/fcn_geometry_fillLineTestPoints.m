@@ -10,7 +10,9 @@ function test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, va
 %      seed_points: a Nx2 vector where N is the number of points, but at
 %      least 2.
 %
-%      M: an integer listing the number of test points to generate per unit
+%      M: the number of test points to generate per unit
+
+
 %      distance.
 %
 %      sigma: athe standard deviation in points
@@ -39,6 +41,14 @@ function test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, va
 flag_do_debug = 0; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
 
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+    debug_fig_num = 34838;
+else
+    debug_fig_num = []; %#ok<NASGU>
+end
+
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____                   _       
@@ -66,12 +76,10 @@ end
 if 4 == nargin
     fig_num = varargin{end};
     figure(fig_num);
-    flag_do_debug = 1;
-else
-    if flag_do_debug
-        fig = figure; 
-        fig_num = fig.Number;
-    end
+    flag_do_plots = 1;
+elseif flag_do_debug
+    fig = figure;
+    fig_num = fig.Number;
 end
 
 %% Solve for the circle
@@ -91,7 +99,7 @@ unit_vectors = fcn_INTERNAL_calcUnitVector(seed_points(1:end-1,:),seed_points(2:
 unit_orthogonals = unit_vectors*[0 1; -1 0];
 
 test_points = [];
-for ith_point = 1:length(distances)
+for ith_point = 1:N_segments
     projection_distances = (0:(1/M):distances(ith_point))';
     N_points = length(projection_distances);
     orthogonal_distances = randn(N_points,1)*sigma;
@@ -111,7 +119,7 @@ end
 %                            __/ |
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_debug
+if flag_do_plots
     figure(fig_num);
     hold on;
     grid on;
@@ -150,16 +158,16 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-
-
-
-
-
-
 %% fcn_INTERNAL_calcUnitVector
 function unit_vector = fcn_INTERNAL_calcUnitVector(point_start,point_end)
 vector_to_calculate    = point_end - point_start;
 magnitude_vector_to_calculate = sum(vector_to_calculate.^2,2).^0.5;
 unit_vector = vector_to_calculate./magnitude_vector_to_calculate;
 end % Ends fcn_INTERNAL_calcUnitVector
+
+
+
+
+
+
 
