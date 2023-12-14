@@ -153,7 +153,7 @@ if flag_do_plots
     scatter(noisyData(:,1), noisyData(:,2), 'b', 'filled');
 
     % Plot the fitted arc
-    plot(fittedArc(:,1), fittedArc(:,2), 'r', 'LineWidth', 2);
+    plot(fittedArc(:,1), fittedArc(:,2), 'LineWidth', 2);
 
     % Mark the center of the fitted arc
     % plot(fittedParameters(1,1), fittedParameters(1,2), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
