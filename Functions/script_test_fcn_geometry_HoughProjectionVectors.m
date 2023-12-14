@@ -19,9 +19,9 @@ hold on;
 axis equal
 grid on;
 
-seed_points = [2 3; 4 5; 7 0; 9 5];
+seed_points = [2 3; 4 5; 7 0; 9 5; 1 1; 13 14];
 M = 10;
-sigma = 0.02;
+sigma = 0.2;
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,fig_num);
 
@@ -37,32 +37,14 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 
 lateral_match_threshold = 0.06; % Units are meters
 threshold_max_points = 10;
-
 input_points = test_points;
+fig_points_plot = 12828;
 
+% Main part of function starts here (HoughSegmentation)
 N_points = length(input_points(:,1));
 
 
-% if 1==0
-%     figure(38383);
-%     clf;
-%     hold on;
-%     grid on;
-%     axis equal;
-% 
-%     points_repeated = repelem(input_points,N_points,1);
-%     points_stacked  = repmat(input_points,N_points,1);
-% 
-%     for ith_point = 1:N_points-1
-%         for jth_point = ith_point+1:N_points
-%             projection_vector = input_points(jth_point,:) - input_points(ith_point,:);
-%             unit_projection = fcn_INTERNAL_calcUnitVector(projection_vector);
-%             plot(unit_projection(:,1),unit_projection(:,2),'b.','MarkerSize',20);
-%         end
-%     end
-% end
-
-% Find all possible point-to-point permutations
+% Find all possible 2-point permutations
 combos_paired = nchoosek(1:N_points,2);
 N_combos = length(combos_paired(:,1));
 
@@ -70,22 +52,22 @@ projection_vectors = input_points(combos_paired(:,2),:) - input_points(combos_pa
 unit_projection_vectors = fcn_INTERNAL_calcUnitVector(projection_vectors);
 angles = atan2(unit_projection_vectors(:,2),unit_projection_vectors(:,1));
 
-% Create histogram?
-figure(38383);
-clf
-hold on
-histogram(angles,360)
 
-% Create weighted histogram?
 
+% Plot the input points
+figure(fig_points_plot);
+clf;
+hold on;
+grid on;
+axis equal;
+plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',20);
+
+
+
+% Find the agreements between points and every single line fit
 [agreement_indicies] = fcn_INTERNAL_findAgreementsOfPointsToFits(input_points,unit_projection_vectors, combos_paired, lateral_match_threshold);
 agreements = sum(agreement_indicies,2);
 
-figure(2334);
-clf
-hold on;
-grid on;
-plot(angles,agreements,'k.','MarkerSize',20);
 
 % Find domains based on removing peaks one at a time
 
@@ -95,14 +77,7 @@ plot(angles,agreements,'k.','MarkerSize',20);
 
 remaining_agreements = agreements;
 remaining_points = input_points;
-
-fig_points_plot = 12828;
-figure(fig_points_plot);
-clf;
-hold on;
-grid on;
-axis equal;
-plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',20);
+max_original_agreement = max(agreements);
 
 
 domain_count = 0;
@@ -111,30 +86,47 @@ domains{1} = struct;
 while(max(remaining_agreements)>threshold_max_points)
     domain_count = domain_count+1;
 
+    % Plot the original agreements
+    figure(fig_points_plot+1);
+    if 1==domain_count
+        clf
+        hold on;
+        grid on;
+        tiledlayout('flow')
+
+        % Create histogram of raw angles
+        nexttile;
+        histogram(angles,360)
+
+    end    
+    nexttile;
+    plot(angles,remaining_agreements,'k.','MarkerSize',20);
+    hold on;
+    ylim([0 max_original_agreement*1.1]);
+
+
     % Pull out the maximum agreement
     [max_agreement,index_max_agreement] = max(remaining_agreements);
     indicies_in_agreement = agreement_indicies(index_max_agreement,:);
     indicies_of_points = find(indicies_in_agreement);
     points_in_domain = input_points(indicies_of_points,:);
+
+
     unit_tangent_vector_of_domain = unit_projection_vectors(index_max_agreement,:);
     unit_orthogonal_vector_of_domain = unit_tangent_vector_of_domain*[0 1; -1 0];
     base_point_of_domain = input_points(combos_paired(index_max_agreement,1),:);
 
-
-    % Find domain ranges
+    % Find domain ranges related to point-to-point fit
     projection_vectors_from_base = points_in_domain - base_point_of_domain;
     tangent_distances = sum(projection_vectors_from_base.*unit_tangent_vector_of_domain,2);
     orthogonal_distances = sum(projection_vectors_from_base.*unit_orthogonal_vector_of_domain,2);
+   
+    % Sort the points in direction of point-to-point projection
+    [~,sorted_indicies] = sort(tangent_distances);
+    sorted_points_in_domain = points_in_domain(sorted_indicies,:);
 
-    % Sort the points in direction of projection
-
-
-    % Do regression
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points_in_domain,2343);
-    
-    % Calculalate the domain box
-    min_tangent_distance = min(tangent_distances);
-    max_tangent_distance = max(tangent_distances);
+    min_tangent_distance = min(tangent_distances); % Can speed this up by using indicies above
+    max_tangent_distance = max(tangent_distances); % Can speed this up by using indicies above
     max_orthogonal_distance = max(abs(orthogonal_distances));
     domain_box = ones(5,1)*base_point_of_domain + ...
         [...
@@ -145,23 +137,30 @@ while(max(remaining_agreements)>threshold_max_points)
         min_tangent_distance*unit_tangent_vector_of_domain - max_orthogonal_distance*unit_orthogonal_vector_of_domain;
         ];
 
-    % Show results
+    % Find point-to-point best-fit line
     box_fit_line = ones(2,1)*base_point_of_domain + ...
         [min_tangent_distance*unit_tangent_vector_of_domain; max_tangent_distance*unit_tangent_vector_of_domain];
 
 
+
     % Save domain results
     domains{domain_count}.points_in_domain = points_in_domain; %#ok<SAGROW>
-    %domains{domain_count}
+    domains{domain_count}.sorted_points_in_domain = sorted_points_in_domain; %#ok<SAGROW>
+    domains{domain_count}.point_to_point_fit_base_point_of_domain = base_point_of_domain; %#ok<SAGROW>
+    domains{domain_count}.point_to_point_fit_unit_tangent_vector_of_domain = unit_tangent_vector_of_domain; %#ok<SAGROW>
 
 
+    % Find regression-fit line
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(sorted_points_in_domain,fig_points_plot);
+    
+    % Calculalate the domain box for regression fit
+
+
+    % Plot the results of the point fit
     figure(fig_points_plot);
     h_plot = plot(base_point_of_domain(:,1),base_point_of_domain(:,2),'.','MarkerSize',30);
     current_color = get(h_plot,'Color');
-
-    plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',10,'Color',current_color);
-    
-
+    plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',10,'Color',current_color);   
     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
     plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1);
 
@@ -172,17 +171,25 @@ while(max(remaining_agreements)>threshold_max_points)
     old_remaining_agreements = remaining_agreements;
     remaining_agreements = sum(remaining_agreement_indicies,2);
 
-    figure(2334);
+    % Plot the histogram update
+    figure(fig_points_plot+1);
     plot(angles,old_remaining_agreements-remaining_agreements,'.','Color',current_color,'MarkerSize',15);
-    plot(angles,remaining_agreements,'k.','MarkerSize',20);
+
 
 end
 
 unfitted_points = remaining_points(~isnan(remaining_points(:,1)),:);
 
-figure(fig_points_plot);
+% Plot the unfitted agreements
+figure(fig_points_plot+1);
+nexttile;
+plot(angles,remaining_agreements,'k.','MarkerSize',20);
+ylim([0 max_original_agreement*1.1]);
+
+
 
 % Plot the points that do not fit
+figure(fig_points_plot);
 plot(unfitted_points(:,1),unfitted_points(:,2),'ro','MarkerSize',10);
 
 

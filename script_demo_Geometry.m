@@ -150,6 +150,14 @@ sigma = 0.02;
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
 
+% Corrupt the results
+fig_num = 2;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % See http://patorjk.com/software/taag/#p=display&f=Big&t=Perfect%20Fits
