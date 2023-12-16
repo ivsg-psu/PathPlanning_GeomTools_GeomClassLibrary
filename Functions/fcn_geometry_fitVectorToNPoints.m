@@ -77,10 +77,8 @@ end
 
 if flag_check_inputs == 1
     % Are there the right number of inputs?
-    if nargin < 1 || nargin > 2
-        error('Incorrect number of input arguments')
-    end
-    
+    narginchk(1,2);
+
     % Check the points input to be length greater than or equal to 2
     fcn_geometry_checkInputsToFunctions(...
         points, '2column_of_numbers',[2 3]);
@@ -195,14 +193,26 @@ if flag_do_plot
     %     end
     %
     %     plot(x,y,'.-');
-end
+    
+end % Ends check if plotting
 
 if flag_do_debug
-    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end
 
-end % Ends function
+end % Ends main function
 
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 
 %% OLD METHOD (WRONG)

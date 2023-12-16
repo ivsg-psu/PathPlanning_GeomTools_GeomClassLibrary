@@ -127,15 +127,30 @@ N_points = length(input_points(:,1));
 random_flip = rand(N_points,1);
 indicies_to_become_outliers = find(random_flip<=probability_of_corruption);
 
-y_range = max(input_points(:,2)) - min(input_points(:,2));
-positive_or_negative = (rand(length(indicies_to_become_outliers),1)>0.5)*2.0 - 1;
-try
-    y_change = rand(length(indicies_to_become_outliers),1).*y_range.*magnitude_of_corruption./2 .* positive_or_negative;
-catch
-    disp('stop here')
+% Do not let first index be an outlier - it breaks the vector calculation
+if ~isempty(indicies_to_become_outliers) 
+    if indicies_to_become_outliers(1)==1
+        indicies_to_become_outliers(1)=2;
+    end
+
+    % Calculate vectors in unit orthogonal direction
+    vectors_at_indicies = input_points(indicies_to_become_outliers,:) - input_points(indicies_to_become_outliers-1,:);
+    unit_vectors_at_indicies = fcn_geometry_calcUnitVector(vectors_at_indicies);
+    orthogonal_unit_vectors_at_indicies = unit_vectors_at_indicies*[0 1; -1 0];
+
+    % Add random magnitudes onto orthogonal direction
+    y_range = max(input_points(:,2)) - min(input_points(:,2));
+    positive_or_negative = (rand(length(indicies_to_become_outliers),1)>0.5)*2.0 - 1;
+    try
+        magnitude_of_change = rand(length(indicies_to_become_outliers),1).*y_range.*magnitude_of_corruption./2 .* positive_or_negative;
+    catch
+        disp('stop here')
+    end
+
+    corrupted_points(indicies_to_become_outliers,:) = corrupted_points(indicies_to_become_outliers,2) + magnitude_of_change.*orthogonal_unit_vectors_at_indicies;
+
 end
 
-corrupted_points(indicies_to_become_outliers,2) = corrupted_points(indicies_to_become_outliers,2) + y_change;
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

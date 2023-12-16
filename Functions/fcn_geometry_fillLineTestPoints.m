@@ -73,6 +73,7 @@ if flag_check_inputs == 1
 end
 
 % Does user want to show the plots?
+flag_do_plots = 0;
 if 4 == nargin
     fig_num = varargin{end};
     figure(fig_num);

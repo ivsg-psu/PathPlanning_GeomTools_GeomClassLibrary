@@ -27,7 +27,7 @@ function [intAngle,intPoint] = fcn_geometry_findIntersectionLineSegmentWithCircl
 %
 % EXAMPLES:
 %
-%       See the script: geometry_findIntersectionLineSegmentWithCircle.m
+%       See the script: script_test_fcn_geometry_findIntersectionLineSegmentWithCircle.m
 %       for a full test suite.
 %
 % This function was written by C. Beal
@@ -61,10 +61,8 @@ end
 
 if flag_check_inputs == 1
     % Are there the right number of inputs?
-    if nargin ~= 4
-        error('Incorrect number of input arguments')
-    end
-    
+    narginchk(4,4);
+
     % Check to see that there were three points provided in the proper
     % format
     if any(size(pa) ~= [1 2]) || any(size(pb) ~= [1 2]) || any(size(pc) ~= [1 2])

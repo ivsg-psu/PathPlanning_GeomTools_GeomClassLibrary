@@ -92,10 +92,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_check_inputs    
-    % Are there the right number of inputs?    
-    if nargin < 5 || nargin > 6
-        error('Incorrect number of input arguments')
-    end
+    % Are there the right number of inputs?
+    narginchk(5, 6);
     
     % Check the centers input
     fcn_geometry_checkInputsToFunctions(...

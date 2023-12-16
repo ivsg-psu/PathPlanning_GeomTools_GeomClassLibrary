@@ -87,9 +87,7 @@ end
 % Should we check the inputs?
 if flag_check_inputs == 1
     % Are there the right number of inputs?
-    if nargin < 2 || nargin > 3
-        error('Incorrect number of input arguments')
-    end
+    narginchk(2,3);
     
     % Check the segment_points input to have at least 2 or more rows
     fcn_geometry_checkInputsToFunctions(...

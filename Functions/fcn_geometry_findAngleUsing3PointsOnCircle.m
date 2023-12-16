@@ -112,10 +112,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_check_inputs    
-    % Are there the right number of inputs?    
-    if nargin < 7 || nargin > 8
-        error('Incorrect number of input arguments')
-    end
+    % Are there the right number of inputs?
+    narginchk(7,8);
     
     % Check the apex_points input
     fcn_geometry_checkInputsToFunctions(...

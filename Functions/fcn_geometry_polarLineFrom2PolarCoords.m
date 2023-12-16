@@ -71,9 +71,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_check_inputs    
     % Are there the right number of inputs?
-    if nargin < 1 || nargin > 2
-        error('Incorrect number of input arguments')
-    end
+    narginchk(1,2);
     
     % Check the points input, and force it to be a 2x2 matrix
     fcn_geometry_checkInputsToFunctions(...

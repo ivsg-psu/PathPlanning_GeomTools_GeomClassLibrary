@@ -43,6 +43,16 @@ function [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,vararg
 flag_do_debug = 0; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
 
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+    debug_fig_num = 34838;
+else
+    debug_fig_num = []; %#ok<NASGU>
+end
+
+
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____                   _       
@@ -58,9 +68,7 @@ flag_check_inputs = 1; % Flag to perform input checking
 
 if flag_check_inputs == 1
     % Are there the right number of inputs?
-    if nargin < 1 || nargin > 2
-        error('Incorrect number of input arguments')
-    end
+    narginchk(1,2);
     
     % Check the points input to be length greater than or equal to 2
     fcn_geometry_checkInputsToFunctions(...
@@ -68,19 +76,18 @@ if flag_check_inputs == 1
     
 end
 
-Npoints = length(points(:,1));
 
-% Does user want to show the plots?
-if 2 == nargin
-    fig_num = varargin{1};
-    figure(fig_num);
-    flag_do_debug = 1;
-else
-    if flag_do_debug
-        fig = figure; 
-        fig_num = fig.Number;
+% Does user want to specify fig_num?
+fig_num = []; % Default is to have no figure
+flag_do_plots = 0;
+if 2<= nargin
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num = temp;
+        flag_do_plots = 1;
     end
 end
+
 
 %% Solve for the circle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,6 +117,9 @@ end
 %
 % where result = [m b]
 % 
+
+Npoints = length(points(:,1));
+
 
 % Fill in X and Y
 X = points(:,1);
@@ -145,7 +155,7 @@ end
 %                            __/ |
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_debug
+if flag_do_plots
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
@@ -182,6 +192,24 @@ if flag_do_debug
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
-    
+   
+end % Ends check if plotting
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+
 

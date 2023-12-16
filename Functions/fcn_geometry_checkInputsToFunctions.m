@@ -101,9 +101,7 @@ end
 
 if flag_check_inputs == 1   
     % Are there the right number of inputs?
-    if nargin < 2 || nargin > 3
-        error('Incorrect number of input arguments')
-    end
+    narginchk(2,3);
     
     % Check the string input, make sure it is characters
     if ~ischar(variable_type_string)
