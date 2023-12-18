@@ -112,7 +112,7 @@ if 4<= nargin
 end
 
 
-%% Solve for the circle
+%% Solve for the line fit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _       
 %  |  \/  |     (_)      
@@ -122,7 +122,8 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
+
+
 % Find all possible 2-point permutations
 N_points = length(points(:,1));
 combos_paired = nchoosek(1:N_points,2);
@@ -161,8 +162,8 @@ phis = mod(phis,2*pi);
 % Save the results for output from the function
 fitted_parameters = [phis rhos];
 
-% Find the agreements between points and every single line fit
-[agreement_indicies] = fcn_INTERNAL_findAgreementsOfPointsToFits(points,unit_projection_vectors, combos_paired, transverse_tolerance);
+%% Find the agreements between points and every single line fit
+[agreement_indicies] = fcn_INTERNAL_findAgreementsOfPointsToFits(points,unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance);
 
 
 %% Plot the results (for debugging)?
@@ -280,7 +281,7 @@ end % Ends main function
 
 
 %% fcn_INTERNAL_findAgreementsOfPointsToFits
-function [agreement_indicies] = fcn_INTERNAL_findAgreementsOfPointsToFits(input_points,unit_projection_vectors, combos_paired, threshold)
+function [agreement_indicies] = fcn_INTERNAL_findAgreementsOfPointsToFits(input_points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance)
 
 N_combos = length(unit_projection_vectors(:,1));
 N_points = length(input_points(:,1));
@@ -289,14 +290,92 @@ agreements = zeros(N_combos,1);
 agreement_indicies = zeros(N_combos,N_points);
 
 for ith_vector = 1:N_combos
+    base_point_index = combos_paired(ith_vector,1);
+    next_point_index = combos_paired(ith_vector,2);
+    base_point = input_points(base_point_index,:);
+    next_point = input_points(next_point_index,:);
+
+    % Find the indicies in transverse agreement. This is done by finding
+    % the lateral distances of the points to the fit line, and then keeping
+    % only the points within the lateral distance.
     unit_orthogonal_vector = unit_projection_vectors(ith_vector,:)*[0 1; -1 0];
-    base_projection_vectors = input_points - input_points(combos_paired(ith_vector,1),:);
+    base_projection_vectors = input_points - base_point;
     lateral_distances = sum(unit_orthogonal_vector.*base_projection_vectors,2);
 
-    indicies_in_agreement = (abs(lateral_distances)<threshold)';
-    agreement_indicies(ith_vector,:) = indicies_in_agreement;
+    indicies_in_lateral_agreement = find((abs(lateral_distances)<=transverse_tolerance)');
 
-    agreements(ith_vector) = sum(indicies_in_agreement,2);
+    % Next find the indicies in station agreement. To do this, find the
+    % station coordinates for every point as predicted by their tangent
+    % distances. Then sort the points by this distance, keeping track of
+    % how indicies move when sorted. Then check differences in station
+    % change from point to point, cutting off the fit if and when these
+    % differences are larger than the station tolerance.
+ 
+    % Find station coordinates as tangent distances    
+    tangent_distances_of_points_in_lateral_agreement = sum(base_projection_vectors(indicies_in_lateral_agreement,:).* unit_projection_vectors(ith_vector,:),2);
+
+    % Sort the distances in direction of point-to-point projection
+    [sorted_distances,sort_order_of_indicies] = sort(tangent_distances_of_points_in_lateral_agreement);
+    sorted_indicies = indicies_in_lateral_agreement(sort_order_of_indicies);
+
+
+    % Find the starting point in the sort associated with the base point
+    % index
+    starting_point_sort = find(base_point_index == sorted_indicies); 
+    distances_after_base_point = sorted_distances(starting_point_sort:end);
+    distances_before_base_point = sorted_distances(1:starting_point_sort);
+    diff_tangent_distances_after_base_point = diff(distances_after_base_point);
+    diff_tangent_distances_before_base_point = diff(distances_before_base_point);
+    
+    % Which indicies after the base point are in agreement?
+    stop_point_after_base_point = find(diff_tangent_distances_after_base_point>station_tolerance,1);
+    if ~isempty(stop_point_after_base_point)
+        sorted_indicies_after_base_point = (starting_point_sort:(starting_point_sort+stop_point_after_base_point-1));
+    else
+        sorted_indicies_after_base_point = (starting_point_sort:length(sorted_indicies));
+    end
+
+    % Which indicies before the base point are in agreement?
+    stop_point_before_base_point = find(diff_tangent_distances_before_base_point>station_tolerance,1,'last');
+    if ~isempty(stop_point_before_base_point)
+        sorted_indicies_before_base_point = ((stop_point_before_base_point+1):(starting_point_sort-1));
+    else
+        sorted_indicies_before_base_point = (1:(starting_point_sort-1));
+    end
+
+    % Store before and after indicies together to produce indicies in
+    % station agreement
+    sorted_indicies_to_keep = [sorted_indicies_before_base_point sorted_indicies_after_base_point];
+
+    % Keep only the lateral agreement indicies that meet the station
+    % tolerance. These indicies must therefore meet the lateral and station
+    % tolerances.
+    indicies_in_both_lateral_and_station_agreement = sorted_indicies(sorted_indicies_to_keep);
+
+    % Check the results? (for debugging)
+    if 1==0
+        figure(4747);
+        clf;
+        hold on;
+        grid on;
+        axis equal;
+        
+        plot(base_point(:,1),base_point(:,2),'g.','MarkerSize',40);
+        plot(next_point(:,1),next_point(:,2),'r.','MarkerSize',40);
+        
+        plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',30)
+        plot(input_points(indicies_in_lateral_agreement,1),input_points(indicies_in_lateral_agreement,2),'m.','MarkerSize',30)
+        
+        plot(input_points(sorted_indicies,1),input_points(sorted_indicies,2),'c.','MarkerSize',20)
+        plot(input_points(sorted_indicies,1),input_points(sorted_indicies,2),'c-')
+
+        plot(input_points(indicies_in_both_lateral_and_station_agreement,1),input_points(indicies_in_both_lateral_and_station_agreement,2),'k.','MarkerSize',10)
+    end
+
+
+    agreement_indicies(ith_vector,indicies_in_both_lateral_and_station_agreement) = 1;
+
+    agreements(ith_vector) = sum(indicies_in_lateral_agreement,2);
 
 end
 end % Ends fcn_INTERNAL_findAgreementsOfPointsToFits

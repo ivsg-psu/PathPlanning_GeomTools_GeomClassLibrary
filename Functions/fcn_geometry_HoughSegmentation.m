@@ -138,6 +138,7 @@ if flag_do_debug
     grid on;
 
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+    title('Debugging figure for fcn_geometry_HoughSegmentation','Interpreter','none');
 end
 
 % Calculate the best agreements before starting the while loop
@@ -231,7 +232,7 @@ if flag_do_plots
 
         % Plot the remaining points
         remaining_points = archive_of_remaining_points{ith_domain};
-        plot(points(:,1),points(:,2),'.','MarkerSize',20,'Color',[0.7 0.7 0.7]);
+        plot(points(:,1),points(:,2),'.','MarkerSize',30,'Color',[0.7 0.7 0.7]);
         plot(remaining_points(:,1),remaining_points(:,2),'k.','MarkerSize',20);
 
         % Plot the fitted points
@@ -293,22 +294,48 @@ fit_associated_point_indicies{length(fit_types)} = 0;
 fit_nchoosek_index = zeros(length(fit_types),1);
 fit_source_index_list{length(fit_types)} = 0;
 
-% Search through all the fitting types to find the best fits
+% Search through all the fitting types to find the best fits.
+% Each fit must do several things:
+% 
+% Step 1: Given a minimum model order - how many points are needed for the
+% minimum fit? - finds all possible model fits.
+%
+% Step 2: Given all possible model fits, finds which points are associated
+% with each fit given tolerance fators. These point totals represent the
+% "votes" for that particular fit.
+%
+%
+% The above process is usually repeated among many different types of fits
+% to the points: lines, arcs, spirals, etc.
+%
+% (IN SEPARATE CODE)
+% Step 3: Find the best permutation of a fit, namely the one that has the
+% highest votes. Using these, find the regression fit coefficients
+% and domain of the best fit. 
+% 
+% Step 4: Given the domain, find the points that are members of that
+% best-fit permutation.
+%
+
+% Steps 1 and 2 are done within this for-loop
 for fit_index = 1:length(fit_types)
     fit_type = fit_types{fit_index};
 
     switch fit_type
         case 'line'
-            % Check line fitting
+            % Check line fitting - minimum model order is 2 points
             [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance);
             indicies = nchoosek(1:length(input_points(:,1)),2); % Line fit needs 2 points
 
         case 'circle'
+            % Check circle fitting - minimum model order is 3 points
             % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(input_points, tolerance, fig_num);
             fitted_parameters  = [0 0 0];
             agreement_indicies = 1;
             indicies = nchoosek(1:length(input_points(:,1)),3); % Circle fit needs 3 points
+
         case 'arc'
+            % Check arc fitting - minimum model order is 3 points
             % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughArc(input_points, tolerance, fig_num);
             fitted_parameters  = [0 0 0 0 0];
             agreement_indicies = 1;
@@ -330,7 +357,8 @@ best_fit_type = fit_types{fitting_type_number};
 best_fit_parameters = fit_parameters{fitting_type_number};
 best_fit_source_indicies = fit_source_index_list{fitting_type_number};
 best_fit_associated_indicies = find(fit_associated_point_indicies{fitting_type_number});
-            
+
+% Steps 3 and 4 follow within this switch case
 % Find regression fit using best agreement and domain
 best_fit_domain_box  = nan;
 source_points = input_points(best_fit_source_indicies,:);
@@ -339,6 +367,9 @@ switch best_fit_type
     case 'line'
         % Check line fitting
         [best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+
+        % The following 3 lines might be able to be moved outside the switch case
+        % as they are likely going to be the same for all cases.
         domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
         IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
         best_fit_associated_indicies = find(IndiciesOfPointsInDomain);

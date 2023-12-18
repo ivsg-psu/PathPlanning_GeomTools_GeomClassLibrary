@@ -11,18 +11,25 @@ clc;
 %% Test 1: a basic test
 fig_num = 1;
 transverse_tolerance = 0.2;
+station_tolerance = 2;
 
 [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, fig_num);
 
 
-%% Fill test data - 3 segments
+%% Test 2: a basic test
+fig_num = 2;
+figure(fig_num);
+clf;
+rng(383);
+
+% Fill test data - 3 segments
 seed_points = [2 3; 4 5; 7 0; 9 5]; 
 M = 10;
 sigma = 0.2;
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
 
-%% Add outliers?
+% Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 4;
@@ -30,12 +37,13 @@ magnitude_of_corruption = 4;
 test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption));
 
-%% Test 2: a basic test
-fig_num = 2;
-figure(fig_num);
-clf;
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 
 transverse_tolerance = 0.2;
+station_tolerance = 0.4;
 
 [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance,  fig_num);
 
