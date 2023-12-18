@@ -230,6 +230,8 @@ if flag_do_plots
         hold on;
         grid on;
 
+        title(sprintf('Stage %.0d: Best fit type is %s', ith_domain, domains{ith_domain}.best_fit_type),'Interpreter','none');
+
         % Plot the remaining points
         remaining_points = archive_of_remaining_points{ith_domain};
         plot(points(:,1),points(:,2),'.','MarkerSize',30,'Color',[0.7 0.7 0.7]);
@@ -238,6 +240,22 @@ if flag_do_plots
         % Plot the fitted points
         points_in_domain = domains{ith_domain}.points_in_domain;
         plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',15,'Color',color_ordering(mod(ith_domain,N_colors)+1,:));
+
+        % Plot the fits?
+        if ~any(isnan(domains{ith_domain}.best_fit_parameters))
+            switch domains{ith_domain}.best_fit_type
+                case 'line'
+                    % Plot the best-fit line segment
+                    plot(domains{ith_domain}.best_fit_parameters(:,1),domains{ith_domain}.best_fit_parameters(:,2),'.-','Linewidth',1,'MarkerSize',15,'Color',color_ordering(mod(ith_domain,N_colors)+1,:));
+
+                case 'circle'
+
+                case 'arc'
+
+                otherwise
+                    error('Unknown fit type detected - unable to continue!');
+            end
+        end
 
         % Make axis slightly larger?
         if flag_rescale_axis
