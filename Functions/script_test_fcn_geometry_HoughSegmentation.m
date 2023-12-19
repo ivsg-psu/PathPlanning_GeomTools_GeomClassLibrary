@@ -12,7 +12,7 @@ clc;
 %% Basic example 1: find 5 segments within noisy data
 
 seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
-M = 10; % 10 points per meter
+M = 50; % 10 points per meter
 sigma = 0.02;
 rng(3423)
 

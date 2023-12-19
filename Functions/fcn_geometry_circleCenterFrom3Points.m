@@ -60,7 +60,6 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,varargin)
 
 %% Debugging and Input checks
 flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting "extra" figures (not used)
 flag_do_debug = 0;     % Set equal to 1 for debugging
 
 if flag_do_debug
@@ -92,15 +91,12 @@ if flag_check_inputs
 end
 
 % Does user want to show the plots?
+flag_do_plots = 0;
 if 2 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plot = 1;
-else
-    if do_debug
-        fig = figure; % create new figure with next default index
-        fig_num = fig.Number;
-        flag_do_plot = 1;
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num = temp;
+        flag_do_plots = 1;
     end
 end
 
@@ -175,7 +171,7 @@ radii = sum((points(1:num_solutions,:)-centers).^2,2).^0.5;
 %                            __/ |
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_plot
+if flag_do_plots
     
     %Prep the figure
     figure(fig_num);

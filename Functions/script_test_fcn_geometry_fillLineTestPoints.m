@@ -1,14 +1,14 @@
 % script_test_fcn_geometry_fillLineTestPoints
 % Exercises the function: fcn_geometry_fillLineTestPoints
 % Revision history:
-% 2023_12_05
+% 2023_12_17
 % -- wrote the code
 
 close all;
 clc;
 
 
-%% Test 1: a basic test with just 2 points
+%% Test 1: a basic test with 2 points
 fig_num = 1;
 figure(fig_num);
 clf;

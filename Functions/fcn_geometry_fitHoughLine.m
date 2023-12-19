@@ -123,9 +123,10 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Total number of points
+N_points = length(points(:,1));
 
 % Find all possible 2-point permutations
-N_points = length(points(:,1));
 combos_paired = nchoosek(1:N_points,2);
 
 % Find all projections from the paired combos to each other
@@ -202,8 +203,6 @@ if flag_do_plots
     [~,best_agreement_index] = max(agreements);
     best_fit_point_indicies = find(agreement_indicies(best_agreement_index,:));
     plot(points(best_fit_point_indicies,1),points(best_fit_point_indicies,2),'r.','MarkerSize',15);
-
-    % Plot the best fit
 
 
     % Plot all line fits?

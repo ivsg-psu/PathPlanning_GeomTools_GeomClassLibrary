@@ -1,5 +1,4 @@
-
-function test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, varargin)
+function [test_points, true_base_points, true_projection_vectors, true_distances] = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, varargin)
 % fcn_geometry_fillLineTestPoints
 % given N points, with N>=2, creates a set of M points per unit distance
 % between these points randomly distributed with variance sigma.
@@ -11,14 +10,15 @@ function test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, va
 %      least 2.
 %
 %      M: the number of test points to generate per unit
-
-
 %      distance.
 %
 %      sigma: athe standard deviation in points
 %
 % OUTPUTS:
 %      test_points: a list of test points used to test regression fitting
+%
+%      true_base_points, true_projection_vectors, true_distances: the true
+%      values of the fitting
 %
 % DEPENDENCIES:
 %
@@ -96,7 +96,7 @@ end
 N_segments = length(seed_points(:,1)) -1;
 
 distances = sum((seed_points(2:end,:) - seed_points(1:end-1,:)).^2,2).^0.5;
-unit_vectors = fcn_INTERNAL_calcUnitVector(seed_points(1:end-1,:),seed_points(2:end,:));
+unit_vectors = fcn_geometry_calcUnitVector(seed_points(2:end,:)-seed_points(1:end-1,:));
 unit_orthogonals = unit_vectors*[0 1; -1 0];
 
 test_points = [];
@@ -107,7 +107,9 @@ for ith_point = 1:N_segments
     test_points = [test_points; seed_points(ith_point,:) + projection_distances*unit_vectors(ith_point,:) + orthogonal_distances*unit_orthogonals(ith_point,:)]; %#ok<AGROW>
 end
 
-
+true_base_points = seed_points(1:end-1,:);
+true_projection_vectors = unit_vectors;
+true_distances = distances;
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,13 +160,6 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-
-%% fcn_INTERNAL_calcUnitVector
-function unit_vector = fcn_INTERNAL_calcUnitVector(point_start,point_end)
-vector_to_calculate    = point_end - point_start;
-magnitude_vector_to_calculate = sum(vector_to_calculate.^2,2).^0.5;
-unit_vector = vector_to_calculate./magnitude_vector_to_calculate;
-end % Ends fcn_INTERNAL_calcUnitVector
 
 
 
