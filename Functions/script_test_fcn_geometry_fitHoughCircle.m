@@ -52,7 +52,7 @@ inputPoints = test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 0.1;
 
-[fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num)
+[fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num);
 
 agreements = sum(agreementIndices,2);
 % max(agreements)

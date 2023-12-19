@@ -101,6 +101,9 @@ N_segments = length(seed_points(:,1)) -2;
 % Find circle center and radius for each set of 3 points
 [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points,debug_fig_num);
 
+% Find if the arcs are counterclockwise or clockwise
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
+
 true_circle_centers = circleCenter;
 true_circle_radii   = circleRadius;
 
@@ -114,30 +117,25 @@ for ith_point = 1:N_segments
     unit_project_to_second_point = fcn_geometry_calcUnitVector(projection_to_second_point);
     unit_project_to_third_point = fcn_geometry_calcUnitVector(projection_to_third_point);
 
-    cross_product1_to_2 = cross([unit_project_to_first_point 0], [unit_project_to_second_point 0]);
-    cross_product2_to_3 = cross([unit_project_to_second_point 0], [unit_project_to_third_point 0]);
-
     dot_product1_to_2 = sum(unit_project_to_first_point.*unit_project_to_second_point,2);
     dot_product2_to_3 = sum(unit_project_to_second_point.*unit_project_to_third_point,2);
     
-    cross_angle1_to_2_sign = asin(cross_product1_to_2(3));
-    cross_angle2_to_3_sign = asin(cross_product2_to_3(3));
     dot_angle1_to_2_magnitude = acos(dot_product1_to_2);
     dot_angle2_to_3_magnitude = acos(dot_product2_to_3);
 
 
     if ith_point<N_segments
-        cross_angle = sign(cross_angle1_to_2_sign)*dot_angle1_to_2_magnitude;
+        cross_angle = is_counterClockwise(ith_point)*dot_angle1_to_2_magnitude;
     else
-        cross_angle = sign(cross_angle1_to_2_sign)*dot_angle1_to_2_magnitude + sign(cross_angle2_to_3_sign)*dot_angle2_to_3_magnitude;
+        cross_angle = is_counterClockwise(ith_point)*(dot_angle1_to_2_magnitude + dot_angle2_to_3_magnitude);
     end
 
     angle_start = atan2(unit_project_to_first_point(1,2),unit_project_to_first_point(1,1));
     % angle_end = angle_start + cross_angle;
-    total_distance = abs(cross_angle)*circleRadius(ith_point); % The arc distance
+    total_arc_length = abs(cross_angle)*circleRadius(ith_point); % The arc distance
 
     % Find the number points
-    projection_distances = (0:(1/M):total_distance)';
+    projection_distances = (0:(1/M):total_arc_length)';
     N_points = length(projection_distances);
 
     % Convert to angles, and then to points
@@ -179,6 +177,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
     figure(fig_num);
+    axis equal;
     hold on;
     grid on;
 
@@ -187,6 +186,9 @@ if flag_do_plots
     
     % Plot the results
     plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
+
+    % Plot the circle centers
+    plot(true_circle_centers(:,1), true_circle_centers(:,2), 'r+','MarkerSize',30);
 
     % Make axis slightly larger
     temp = axis;

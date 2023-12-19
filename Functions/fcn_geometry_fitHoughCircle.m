@@ -127,6 +127,18 @@ end
 % Total number of points
 N_points = size(points,1);
 
+% Do debugging plots?
+if flag_do_debug
+    figure(debug_fig_num);
+    clf;
+    hold on;
+    grid on;
+    axis equal
+
+    plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+end
+
+
 % Find all possible 3-point combinations
 combos_paired = nchoosek(1:N_points,3);
 
@@ -163,6 +175,18 @@ for ith_combo = 1:N_permutations
     % indices in agreement found in each iteration are stored in
     % "agreementIndices" matrix
     agreement_indicies(ith_combo,:) = indicies_in_transverse_agreement;
+
+    % Do debugging plots?
+    if flag_do_debug
+        figure(debug_fig_num);
+        clf;
+        hold on;
+        grid on;
+        axis equal
+
+        plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+    end
+
 end
 
 %% Plot the results (for debugging)?
@@ -185,7 +209,9 @@ if flag_do_plots
 
     hold on;
     grid on;
-
+    title('Points and maximum-vote fit, plotted in point-space');
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
 
     agreements = sum(agreement_indicies,2);
     [~,sorted_indicies] = sort(agreements,'ascend');
@@ -234,6 +260,10 @@ if flag_do_plots
     clf;
     hold on;
     grid on;
+    
+    title('Hough space plot of all fits');
+    subtitle('Points are color-weighted wherein higher darkness indicates higher votes')
+
 
     N_steps = 20;    
     indicies = linspace(1,N_permutations,N_steps);

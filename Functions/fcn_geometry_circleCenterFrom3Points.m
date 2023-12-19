@@ -1,4 +1,4 @@
-function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,varargin)
+function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin)
 % fcn_geometry_circleCenterFrom3Points calculates the center of a circle from
 % three points given as vectors in x and y
 %
@@ -6,12 +6,19 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,varargin)
 %
 % [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,(fig_num))
 %
+%  OR
+%
+% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1, points2, points2,(fig_num))
+%
 % INPUTS:
 %
 %      points: a Nx2 vector where N is at least 3. If N = 3, a circle will be
 %      fit between these threee points, if N = 4 or more, then one circle
 %      will be fit to the first three points, another cicle to the next
 %      three points, etc.
+%
+%      OR
+%
 %
 %      (OPTIONAL INPUTS)
 %
@@ -82,17 +89,50 @@ end
 
 if flag_check_inputs    
     % Are there the right number of inputs?
-    narginchk(1,2);
+    narginchk(1,4);
     
     % Check the points input
-    fcn_geometry_checkInputsToFunctions(...
-        points, '2column_of_numbers');
+    fcn_DebugTools_checkInputsToFunctions(...
+        points1, '2column_of_numbers');
       
+end
+
+% Is the user giving separated input point vectors?
+flag_use_separated_point_inputs = 0;
+if nargin>2
+    flag_use_separated_point_inputs = 1;
+    temp = varargin{1};
+    if ~isempty(temp)
+        points2 = temp;
+    else
+        error('Expected 2nd input to be a point type')
+    end
+
+    if nargin>=3
+        temp = varargin{2};
+        if ~isempty(temp)
+            points3 = temp;
+        else
+            error('Expected 3rd input to be a point type')
+        end
+    end
+
+    N_points = length(points1(:,1));
+
+    if flag_check_inputs
+        % Check the points2 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points2, '2column_of_numbers',[N_points N_points]);
+
+        % Check the points3 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points3, '2column_of_numbers',[N_points N_points]);
+    end
 end
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if 2 == nargin
+if 2 == nargin || 4 == nargin
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -112,53 +152,62 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% The code below is set up to be vectorized if there are more than one
-% solution. Since the code is quite different looking for each, they are
-% separated out. However, it may be that the N-solution case works for N is
-% equal to 1. This was not tested.
-
-% Do some pre-calculations
-num_solutions = length(points(:,1))-2; % This is the number of solutions to expect
-r_squared = sum(points.^2,2); % These are the radii-squared of points from origin
-diff_points = diff(points);
-diff_x = diff_points(:,1);
-diff_y = diff_points(:,2);
-diff_rsquared = diff(r_squared);
-
-if 1 == num_solutions % Expecting just one solution. No need for big A, b matrices    
-    % solve for the center point    
-    A = [diff_x diff_y];
-    b = 1/2*diff_rsquared;
-    
-else % Simultaneous solutions to be calculated - create big A and b matrices    
-    % Construct the A-matrix and b matrix that will create the regressor.
-    % Start by filling A and b matrices up with zeros (see notes for
-    % explanation of iputs)
-    A = zeros(2*num_solutions,2*num_solutions);
-    b = zeros(2*num_solutions,1);
-    
-    % Fill in the non-zero portions of the matrix, which will be 1 per each
-    % of the N solutions
-    for i_solution = 1:num_solutions
-        A(1+2*(i_solution-1):2+2*(i_solution-1),1+2*(i_solution-1)) = ...
-            diff_x(i_solution:i_solution+1);
-        A(1+2*(i_solution-1):2+2*(i_solution-1),2+2*(i_solution-1)) = ...
-            diff_y(i_solution:i_solution+1);        
-        b(1+2*(i_solution-1):2+2*(i_solution-1),1) = ...
-            1/2*diff_rsquared(i_solution:i_solution+1);
+if flag_use_separated_point_inputs
+    centers = zeros(N_points,2);
+    radii   = zeros(N_points,1);
+    for ith_row = 1:length(points1(:,1))
+        [center,radius] = fcn_geometry_circleCenterFrom3Points([points1(ith_row,:); points2(ith_row,:); points3(ith_row,:);]);
+        centers(ith_row,:) = center;
+        radii(ith_row)   = radius;
     end
+else
+    % The code below is set up to be vectorized if there are more than one
+    % solution. Since the code is quite different looking for each, they are
+    % separated out. However, it may be that the N-solution case works for N is
+    % equal to 1. This was not tested.
+
+    % Do some pre-calculations
+    num_solutions = length(points1(:,1))-2; % This is the number of solutions to expect
+    r_squared = sum(points1.^2,2); % These are the radii-squared of points from origin
+    diff_points = diff(points1);
+    diff_x = diff_points(:,1);
+    diff_y = diff_points(:,2);
+    diff_rsquared = diff(r_squared);
+
+    if 1 == num_solutions % Expecting just one solution. No need for big A, b matrices
+        % solve for the center point
+        A = [diff_x diff_y];
+        b = 1/2*diff_rsquared;
+
+    else % Simultaneous solutions to be calculated - create big A and b matrices
+        % Construct the A-matrix and b matrix that will create the regressor.
+        % Start by filling A and b matrices up with zeros (see notes for
+        % explanation of iputs)
+        A = zeros(2*num_solutions,2*num_solutions);
+        b = zeros(2*num_solutions,1);
+
+        % Fill in the non-zero portions of the matrix, which will be 1 per each
+        % of the N solutions
+        for i_solution = 1:num_solutions
+            A(1+2*(i_solution-1):2+2*(i_solution-1),1+2*(i_solution-1)) = ...
+                diff_x(i_solution:i_solution+1);
+            A(1+2*(i_solution-1):2+2*(i_solution-1),2+2*(i_solution-1)) = ...
+                diff_y(i_solution:i_solution+1);
+            b(1+2*(i_solution-1):2+2*(i_solution-1),1) = ...
+                1/2*diff_rsquared(i_solution:i_solution+1);
+        end
+    end
+
+    % Solve the center points
+    centers = A\b;
+    centers = reshape(centers,2,length(centers(:,1))/2);
+    centers = centers'; % Make it into a column vector
+
+
+    % NOTE: the following line is the slowest in the code. It can be sped
+    % up if we do not take the square root
+    radii = sum((points1(1:num_solutions,:)-centers).^2,2).^0.5;
 end
-
-% Solve the center points
-centers = A\b;
-centers = reshape(centers,2,length(centers(:,1))/2);
-centers = centers'; % Make it into a column vector
-
-
-% NOTE: the following line is the slowest in the code. It can be sped
-% up if we do not take the square root
-radii = sum((points(1:num_solutions,:)-centers).^2,2).^0.5;
-
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -177,8 +226,13 @@ if flag_do_plots
     figure(fig_num);
     hold on % allow multiple plot calls
     
-    
-    plot(points(:,1),points(:,2),'ro');  % Plot all the input points
+    if flag_use_separated_point_inputs
+        plot(points1(:,1),points1(:,2),'go');  % Plot all the input points
+        plot(points2(:,1),points2(:,2),'bo');  % Plot all the input points
+        plot(points3(:,1),points3(:,2),'ro');  % Plot all the input points
+    else
+        plot(points1(:,1),points1(:,2),'ro');  % Plot all the input points
+    end
     plot(centers(:,1),centers(:,2),'g+'); % Plot all the circle centers
 
     axis equal;
@@ -194,4 +248,17 @@ if flag_do_debug
     fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
 end
 
+end % Ends main function
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 

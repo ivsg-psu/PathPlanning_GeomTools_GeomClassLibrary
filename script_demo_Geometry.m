@@ -150,13 +150,16 @@ sigma = 0.02;
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
 
-% Corrupt the results
+% Corrupt the results with outliers
 fig_num = 2;
 probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+% Shuffle points?
+shuffled_corrupted_test_points = fcn_geometry_shufflePointOrdering(corrupted_test_points);
 
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,6 +176,66 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(seed_points(1:2,:));
 
 
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See http://patorjk.com/software/taag/#p=display&f=Big&t=Hough%20Fits
+ %  _    _                   _       ______ _ _       
+ % | |  | |                 | |     |  ____(_) |      
+ % | |__| | ___  _   _  __ _| |__   | |__   _| |_ ___ 
+ % |  __  |/ _ \| | | |/ _` | '_ \  |  __| | | __/ __|
+ % | |  | | (_) | |_| | (_| | | | | | |    | | |_\__ \
+ % |_|  |_|\___/ \__,_|\__, |_| |_| |_|    |_|\__|___/
+ %                      __/ |                         
+ %                     |___/                          
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Demo Hough line fitting
+fig_num = 1111;
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+
+[fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+
+%% Demo regression from Hough Line votes
+% Show how to do line fitting from Hough votes
+fig_num = 1111;
+
+% Fill a variable input_points to make it clear that we are treating these
+% as inputs to the function:
+input_points = shuffled_corrupted_test_points;
+
+% Count up how many points agree with each fit
+agreements = sum(agreement_indicies,2);
+
+% Find the maximum count
+[~, index_of_best_fit] = max(agreements);
+
+% Find which points were used to create the Hough vote
+indicies = nchoosek(1:length(input_points(:,1)),2); % Line fit needs 2 points
+best_fit_source_indicies = indicies(index_of_best_fit,:);
+
+% Find which points agree with the Hough vote
+best_fit_associated_indicies = find(agreement_indicies(index_of_best_fit,:));
+
+% Extract out points from the indicies
+source_points = input_points(best_fit_source_indicies,:);
+associated_points_in_domain = input_points(best_fit_associated_indicies,:); %#ok<FNDSB>
+
+% Perform the regression fit
+[best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+
+% The following 3 lines show how to convert the domain box into a
+% polyshape, and how to query points using isinterior to identify which
+% points are inside the regression domain box
+domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
+best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+
+%% Demo Hough circle fitting
+fig_num = 1111;
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+
+[fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
 
 %%

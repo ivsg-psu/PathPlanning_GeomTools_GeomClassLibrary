@@ -187,7 +187,9 @@ if flag_do_plots
 
     hold on;
     grid on;
-
+    title('Points and maximum-vote fit, plotted in point-space');
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
 
     agreements = sum(agreement_indicies,2);
     [~,sorted_indicies] = sort(agreements,'ascend');
@@ -240,6 +242,9 @@ if flag_do_plots
     clf;
     hold on;
     grid on;
+
+    title('Hough space plot of all fits');
+    subtitle('Points are color-weighted wherein higher darkness indicates higher votes');
 
     N_steps = 20;    
     indicies = linspace(1,N_permutations,N_steps);

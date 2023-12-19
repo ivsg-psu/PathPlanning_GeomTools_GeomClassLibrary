@@ -1,5 +1,4 @@
 function fcn_geometry_plotCircle(centers,radii,varargin)   
-
 % fcn_geometry_plotCircle -  plots a circle by creating a vector of angles
 % spaced 0.01 radians apart, and plotting this as a line around the
 % perimeter.

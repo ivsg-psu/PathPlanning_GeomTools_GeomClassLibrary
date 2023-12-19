@@ -110,6 +110,13 @@ if enable_advanced_example
     end
 end
 
+%% BASIC example that tests the 3 separate point input styles
+fig_num = 103;
+points1 = [0 0; 5 0];
+points2 = [-2 2; 7 2];
+points3 = [0 4; 5 4];
+fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+
 
 %% Function start here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
