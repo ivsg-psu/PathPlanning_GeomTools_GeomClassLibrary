@@ -102,7 +102,7 @@ N_segments = length(seed_points(:,1)) -2;
 [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points,debug_fig_num);
 
 % Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), debug_fig_num);
 
 true_circle_centers = circleCenter;
 true_circle_radii   = circleRadius;

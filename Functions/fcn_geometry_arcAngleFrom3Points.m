@@ -5,7 +5,7 @@ function [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_cente
 %
 % FORMAT:
 %
-% is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(point1, point2, point3,(fig_num))
+% [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians]  = fcn_geometry_arcAngleFrom3Points(points1, points2, points3,(fig_num))
 %
 % INPUTS:
 %
@@ -38,7 +38,7 @@ function [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_cente
 %
 % EXAMPLES:   
 %
-% See the script: script_test_fcn_geometry_arcDirectionFrom3Points
+% See the script: script_test_fcn_geometry_arcAngleFrom3Points
 % for a full test suite.
 %
 % This function was written on 2023_12_19 by S. Brennan

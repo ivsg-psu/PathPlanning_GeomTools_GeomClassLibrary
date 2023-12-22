@@ -34,7 +34,7 @@ points2 = [-1 4; 4 4];
 points3 = [0 5; 3 5];
 is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
 
-assert(isequal(is_counterClockwise,-1))
+assert(isequal(is_counterClockwise,[-1; 1]))
 
 
 

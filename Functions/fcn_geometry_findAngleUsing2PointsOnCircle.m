@@ -6,7 +6,7 @@ function [...
     radii,...
     start_points_on_circle,...
     end_points_on_circle,...
-    cross_products,...
+    cross_product_direction,...
     varargin)
 
 % fcn_geometry_findAngleUsing2PointsOnCircle -  This function calculates
@@ -38,7 +38,7 @@ function [...
 %      end_points_on_circle: an [N x 2] vector in [x y] of the points
 %      where sectors end
 %
-%      cross_products: an [N x 1] vector denoting the cross product
+%      cross_product_direction: an [N x 1] vector denoting the cross product
 %      direction to follow from input point to output point
 %
 %      (OPTIONAL INPUTS)
@@ -116,7 +116,7 @@ if flag_check_inputs
         
     % Check the cross_products input
     fcn_geometry_checkInputsToFunctions(...
-        cross_products, 'column_of_numbers',num_circles);
+        cross_product_direction, 'column_of_numbers',num_circles);
        
 end
     
@@ -155,19 +155,28 @@ unit_radial_to_outpoints = (end_points_on_circle - centers)./radii;
 
 %% Step 2: calculate the dot product angle from in and out unit vectors
 dot_product = sum(unit_radial_to_inpoints.*unit_radial_to_outpoints,2);
-angles = acos(dot_product);
 
 %% Step 3: calculate the cross products from in to out
 cross_in_to_out = cross(...
     [unit_radial_to_inpoints, zeros(num_circles,1)],...
     [unit_radial_to_outpoints, zeros(num_circles,1)]);
+cross_product = cross_in_to_out(:,3);
+cross_product(cross_product==0) = cross_product_direction(cross_product==0);
+
+% Combine them to get the angle
+angles = acos(dot_product).*sign(asin(cross_product));
 
 %% Step 4: check if the cross product matches
 % If the cross_in_to_out is in opposite direction from
 % given cross products, then we need to take the refelex angle.
-need_reflex_angles = (cross_in_to_out(:,3)...
-    .*cross_products)<0;
-angles(need_reflex_angles)=2*pi - angles(need_reflex_angles);
+need_reflex_angles = (cross_product.*cross_product_direction)<0;
+angles_positive = angles>0;
+angles_negative = ~angles_positive;
+negative_reflex_indicies = find(need_reflex_angles.*angles_negative);
+positive_reflex_indicies = find(need_reflex_angles.*angles_positive);
+
+angles(negative_reflex_indicies)= 2*pi + angles(negative_reflex_indicies);
+angles(positive_reflex_indicies)= angles(positive_reflex_indicies) - 2*pi;
 
 %% Plot results?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,10 +225,10 @@ if flag_do_plot
         
         % Plot the angle value
         location = centers(i,:);
-        if cross_products(i,1)>0
-            text(location(1,1),location(1,2),sprintf(':  %.1f deg counterclockwise',angles(i,1)*180/pi));
+        if cross_product_direction(i,1)>0
+            text(location(1,1),location(1,2),sprintf(':  %.1f deg, counterclockwise',angles(i,1)*180/pi));
         else
-            text(location(1,1),location(1,2),sprintf(':  %.1f deg clockwise',angles(i,1)*180/pi));
+            text(location(1,1),location(1,2),sprintf(':  %.1f deg, clockwise',angles(i,1)*180/pi));
         end
     end
 end

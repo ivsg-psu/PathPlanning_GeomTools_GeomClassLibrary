@@ -32,7 +32,7 @@ fig_num = 23;
 % grid on;
 
 seed_points = [2 3; 4 5; 6 3]; %; 1 1];
-M = 10;
+M = 5;
 sigma = 0.02;
 
 test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);

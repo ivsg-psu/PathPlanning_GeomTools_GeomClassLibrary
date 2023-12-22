@@ -59,7 +59,7 @@ function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(p
 % -- added transverse and station tolerances
 % -- added plotting figure for results as varargin
 
-flag_do_debug = 1; % Flag to plot the results for debugging
+flag_do_debug = 0; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
 
 if flag_do_debug
@@ -140,6 +140,9 @@ end
 
 
 % Find all possible 3-point combinations
+% NOTE: to find the permutations, use perms (for example: perms(1:3)). This
+% will return all the ordering of the columns used in nchoosek that can be
+% tried.
 combos_paired = nchoosek(1:N_points,3);
 
 % How many combinations are there?
@@ -150,10 +153,17 @@ N_permutations = size(combos_paired,1);
 fitted_parameters = zeros(N_permutations,3);
 agreement_indicies = zeros(N_permutations, N_points);
 
-for ith_combo = 1:N_permutations
+for ith_combo = 99:N_permutations
     
+    if 0==mod(ith_combo,100)
+        fprintf(1,'%.0d of %.0d\n',ith_combo,N_permutations);
+    end
+
+    % Extract the source points
+    test_source_points = points(combos_paired(ith_combo,:),:);
+
     % Find circle center and radius
-    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(points(combos_paired(ith_combo,:),:),debug_fig_num);
+    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points,debug_fig_num);
     
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
@@ -164,13 +174,17 @@ for ith_combo = 1:N_permutations
     distance_squared_from_points_to_center = sum((points - circleCenter).^2,2);
 
     % Absolute Error to find the indices in agreement
-    abs_error_squared = distance_squared_from_points_to_center - circleRadius^2; 
+    abs_error_squared = abs(distance_squared_from_points_to_center - circleRadius^2); 
 
     % Indices in transverse agreement
     indicies_in_transverse_agreement = (abs_error_squared <= transverse_tolerance^2)';
     
     % Find the indicies in station agreement
-    % Method: sort the points by arc angle
+    % Method: sort the points by arc angle, keeping only points that are
+    % within the same arc angle as the test segment
+
+    % [~, arc_angle_in_radians_1_to_3, ~, ~, start_angles_in_radians] = ...
+    %     fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
 
     % indices in agreement found in each iteration are stored in
     % "agreementIndices" matrix
@@ -274,12 +288,26 @@ if flag_do_plots
         sorted_indicies_to_plot = sorted_indicies(plot_indicies_start:plot_indicies_end);
         plot_color = (N_steps - ith_plot + 1)/N_steps*[1 1 1];
         marker_size = ceil(ith_plot*20/N_steps);
-        plot(phis(sorted_indicies_to_plot),rhos(sorted_indicies_to_plot),'.','MarkerSize',marker_size,'Color',plot_color);
+
+        subplot(1,2,1);
+        hold on;
+        grid on;
+        fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
+        plot(fitted_parameters(sorted_indicies_to_plot,1),fitted_parameters(sorted_indicies_to_plot,2),'.','MarkerSize',marker_size,'Color',plot_color);
+        xlabel('Circle center - X [meters]');
+        ylabel('Circle center - Y [meters]');
+
+        subplot(1,2,2);
+        hold on;
+        grid on;
+        fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
+        plot(fitted_parameters(sorted_indicies_to_plot,3),fitted_parameters(sorted_indicies_to_plot,2),'.','MarkerSize',marker_size,'Color',plot_color);
+        xlabel('Circle radius [meters]');
+        ylabel('Circle center - Y [meters]');
+
     end
 
 
-    xlabel('Phi [radians]');
-    ylabel('Rho [meters]');
     
 end % Ends check if plotting
 

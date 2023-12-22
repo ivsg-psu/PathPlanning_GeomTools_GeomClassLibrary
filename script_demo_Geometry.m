@@ -124,6 +124,78 @@ end
 % setenv('MATLABFLAG_LOADWZ_ALIGNMATLABLLAPLOTTINGIMAGES_LAT','-0.0000008');
 % setenv('MATLABFLAG_LOADWZ_ALIGNMATLABLLAPLOTTINGIMAGES_LON','0.0000054');
 
+%% Circle-related calculations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See http://patorjk.com/software/taag/#p=display&f=Big&t=Filling%20Test%20Data
+ %   _____ _          _                      _       _           _    _____      _            _       _   _                 
+ %  / ____(_)        | |                    | |     | |         | |  / ____|    | |          | |     | | (_)                
+ % | |     _ _ __ ___| | ___ ______ _ __ ___| | __ _| |_ ___  __| | | |     __ _| | ___ _   _| | __ _| |_ _  ___  _ __  ___ 
+ % | |    | | '__/ __| |/ _ \______| '__/ _ \ |/ _` | __/ _ \/ _` | | |    / _` | |/ __| | | | |/ _` | __| |/ _ \| '_ \/ __|
+ % | |____| | | | (__| |  __/      | | |  __/ | (_| | ||  __/ (_| | | |___| (_| | | (__| |_| | | (_| | |_| | (_) | | | \__ \
+ %  \_____|_|_|  \___|_|\___|      |_|  \___|_|\__,_|\__\___|\__,_|  \_____\__,_|_|\___|\__,_|_|\__,_|\__|_|\___/|_| |_|___/
+ % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Calculating a circle from 3 points
+fig_num = 102;
+points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
+hold on
+figure(1); clf;
+for i=1:length(points(:,1))-2
+    fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),fig_num);
+    plot(points(:,1),points(:,2),'r-');
+end
+
+%% Calculating an arc from 2 points and a direction
+fig_num = 100;
+
+centers = [0 0; 4 4; 8 10; -6 10];
+radii = [1; 2; 4; 3];
+start_angles = [90; 0; -90; 45]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)]+centers;
+end_angles = [45; 135; 180; 0]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)]+centers;
+cross_products = [-1; 1; -1; 1];
+
+true_angle = start_angles - end_angles;
+
+[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
+    centers,...
+    radii,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    cross_products,...
+    fig_num);
+
+assert(isequal(round(angles,4),round([-pi/4; 3*pi/4; -pi/2; 7*pi/4],4)));
+
+%% Calculating an arc direction from 3 points
+fig_num = 102;
+points1 = [0 0];
+points2 = [-1 4];
+points3 = [0 5];
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+
+assert(isequal(is_counterClockwise,-1))
+
+%% Calculating an arc from 3 points
+fig_num = 103;
+Radius = 2;
+points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
+
+points1 = points(1,:);
+points2 = points(3,:);
+points3 = points(2,:);
+
+[arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+assert(isequal(arc_angle_in_radians_1_to_2,-3*pi/2));
+assert(isequal(arc_angle_in_radians_1_to_3,-7*pi/4));
+assert(isequal(circle_centers,[0 0]));
+assert(isequal(radii,2));
+assert(isequal(start_angles_in_radians,0));
+
+
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
