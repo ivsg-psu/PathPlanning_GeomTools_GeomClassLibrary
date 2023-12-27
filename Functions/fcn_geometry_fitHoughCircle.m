@@ -59,7 +59,7 @@ function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(p
 % -- added transverse and station tolerances
 % -- added plotting figure for results as varargin
 
-flag_do_debug = 0; % Flag to plot the results for debugging
+flag_do_debug = 1; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
 
 if flag_do_debug
@@ -124,6 +124,7 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 % Total number of points
 N_points = size(points,1);
 
@@ -136,6 +137,13 @@ if flag_do_debug
     axis equal
 
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+    temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+    axis_range_x = temp(2)-temp(1);
+    axis_range_y = temp(4)-temp(3);
+    percent_larger = 0.3;
+
+    debug_axis_limits = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
+    axis(debug_axis_limits);
 end
 
 
@@ -156,41 +164,22 @@ agreement_indicies = zeros(N_permutations, N_points);
 for ith_combo = 99:N_permutations
     
     if 0==mod(ith_combo,100)
-        fprintf(1,'%.0d of %.0d\n',ith_combo,N_permutations);
+        fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
     end
 
     % Extract the source points
     test_source_points = points(combos_paired(ith_combo,:),:);
 
-    % Find circle center and radius
-    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points,debug_fig_num);
+    % Find fitted curve
+    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points); %,debug_fig_num);
     
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
 
-    % Finding Agreement Indices
-
-    % Distance of all the input points from the center
-    distance_squared_from_points_to_center = sum((points - circleCenter).^2,2);
-
-    % Absolute Error to find the indices in agreement
-    abs_error_squared = abs(distance_squared_from_points_to_center - circleRadius^2); 
-
-    % Indices in transverse agreement
-    indicies_in_transverse_agreement = (abs_error_squared <= transverse_tolerance^2)';
+    % Find points in agreement
+    [agreement_indicies(ith_combo,:), domainPolyShape] =  fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance);
     
-    % Find the indicies in station agreement
-    % Method: sort the points by arc angle, keeping only points that are
-    % within the same arc angle as the test segment
-
-    % [~, arc_angle_in_radians_1_to_3, ~, ~, start_angles_in_radians] = ...
-    %     fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
-
-    % indices in agreement found in each iteration are stored in
-    % "agreementIndices" matrix
-    agreement_indicies(ith_combo,:) = indicies_in_transverse_agreement;
-
-    % Do debugging plots?
+    % Redo debugging plots to see how fit worked?
     if flag_do_debug
         figure(debug_fig_num);
         clf;
@@ -198,7 +187,21 @@ for ith_combo = 99:N_permutations
         grid on;
         axis equal
 
+        % Plot the points in black        
         plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+
+        % Plot the domain
+        plot(domainPolyShape);
+
+        % Plot the points in agreement
+        agreements_to_plot = find(agreement_indicies(ith_combo,:));
+        plot(points(agreements_to_plot,1),points(agreements_to_plot,2),'r.','MarkerSize',20);
+
+        % Plot the test points in blue
+        plot(test_source_points(:,1),test_source_points(:,2),'b.','MarkerSize',20);
+
+        % Use the same axis each time, to make plots stay in 'same' place
+        axis(debug_axis_limits);
     end
 
 end
@@ -215,6 +218,8 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
+
+    % Plot the results in point space
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
@@ -230,7 +235,6 @@ if flag_do_plots
     agreements = sum(agreement_indicies,2);
     [~,sorted_indicies] = sort(agreements,'ascend');
 
-    % Plot the results in point space
 
     % Plot the input points
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
@@ -241,23 +245,6 @@ if flag_do_plots
     best_fit_point_indicies = find(agreement_indicies(best_agreement_index,:));
     plot(points(best_fit_point_indicies,1),points(best_fit_point_indicies,2),'r.','MarkerSize',15);
 
-    % Plot all circle fits?
-    if 1==0
-        start_points = points(combos_paired(:,1),:);
-        start_angles = atan2(start_points(:,2),start_points(:,1));
-        start_radii  = rhos ./ cos(start_angles - phis);
-        start_points_calculated = start_radii.*[cos(start_angles) sin(start_angles)];
-
-        end_points = points(combos_paired(:,2),:);
-        end_angles = atan2(end_points(:,2),end_points(:,1));
-        end_radii  = rhos ./ cos(end_angles - phis);
-        end_points_calculated = end_radii.*[cos(end_angles) sin(end_angles)];
-
-        for best_line = 1:min(1000,length(agreements))
-            ith_line = sorted_indicies(best_line);
-            plot([start_points_calculated(ith_line,1) end_points_calculated(ith_line,1)],[start_points_calculated(ith_line,2) end_points_calculated(ith_line,2)], '-','MarkerSize',10);
-        end
-    end
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -272,11 +259,39 @@ if flag_do_plots
     % Plot the Hough space results, from least to best
     figure(fig_num+1);
     clf;
+
+    subplot(3,1,1);
     hold on;
     grid on;
-    
-    title('Hough space plot of all fits');
-    subtitle('Points are color-weighted wherein higher darkness indicates higher votes')
+    xlabel('Rho [radians]');
+    ylabel('Distance of circle center from origin [meters]');
+    xlim([-pi pi]);
+    ylim([0 20]);
+
+    subplot(3,1,2);
+    hold on;
+    grid on;
+    xlabel('Rho [radians]');
+    ylabel('Curvature [1/meters]');
+    xlim([-pi pi]);
+    ylim([0 1]);
+
+    subplot(3,1,3);
+    hold on;
+    grid on;
+    xlabel('Rho [radians]');
+    ylabel('Distance of circle center from origin [meters]');
+    zlabel('Curvature [1/meters]');
+    xlim([-pi pi]);
+    ylim([0 20]);
+    zlim([0 1]);
+    view(3);
+
+
+    fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
+    rho = atan2(fitted_parameters(:,2),fitted_parameters(:,1));
+    distance_circle_center_from_origin = sum((fitted_parameters(:,1).^2+fitted_parameters(:,2).^2),2).^0.5;
+    curvature = 1./fitted_parameters(:,3);
 
 
     N_steps = 20;    
@@ -289,21 +304,14 @@ if flag_do_plots
         plot_color = (N_steps - ith_plot + 1)/N_steps*[1 1 1];
         marker_size = ceil(ith_plot*20/N_steps);
 
-        subplot(1,2,1);
-        hold on;
-        grid on;
-        fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
-        plot(fitted_parameters(sorted_indicies_to_plot,1),fitted_parameters(sorted_indicies_to_plot,2),'.','MarkerSize',marker_size,'Color',plot_color);
-        xlabel('Circle center - X [meters]');
-        ylabel('Circle center - Y [meters]');
+        subplot(3,1,1);
+        plot(rho(sorted_indicies_to_plot,1),distance_circle_center_from_origin(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
 
-        subplot(1,2,2);
-        hold on;
-        grid on;
-        fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
-        plot(fitted_parameters(sorted_indicies_to_plot,3),fitted_parameters(sorted_indicies_to_plot,2),'.','MarkerSize',marker_size,'Color',plot_color);
-        xlabel('Circle radius [meters]');
-        ylabel('Circle center - Y [meters]');
+        subplot(3,1,2);
+        plot(rho(sorted_indicies_to_plot,1),curvature(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
+
+        subplot(3,1,3);
+        plot3(rho(sorted_indicies_to_plot,1),distance_circle_center_from_origin(sorted_indicies_to_plot,1),curvature(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
 
     end
 
@@ -329,3 +337,47 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
+%% fcn_INTERNAL_findAgreementIndicies
+function [agreement_indicies,domainPolyShape] = fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance)
+
+% Set a flag to use enclosed domains to find points in agreement, rather
+% than inequalities. This method is more general and easier to debug, but
+% probablys slower.
+flag_use_domain_method = 1;
+domainPolyShape = []; %#ok<NASGU>
+
+if flag_use_domain_method
+    % Find agreement domain
+    angles = (0:1:359.9999)'*pi/180;
+    inner_radius = max(0,(circleRadius - transverse_tolerance));
+    outer_radius = circleRadius + transverse_tolerance;
+    lower_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
+    outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
+    best_fit_domain_box = [lower_arc; flipud(outer_arc)];
+
+
+    domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+    agreement_indicies = isinterior(domainPolyShape,points);
+
+else
+    % Distance of all the input points from the center
+    point_radii = sum((points - circleCenter).^2,2).^0.5;
+
+    % Absolute Error to find the indices in agreement
+    absolute_radial_error = abs(point_radii - circleRadius);
+
+    % Indices in transverse agreement
+    indicies_in_transverse_agreement = ((absolute_radial_error <= transverse_tolerance))' ;
+
+    % Find the indicies in station agreement
+    % Method: sort the points by arc angle, keeping only points that are
+    % within the same arc angle as the test segment
+
+    % [~, arc_angle_in_radians_1_to_3, ~, ~, start_angles_in_radians] = ...
+    %     fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
+
+    % indices in agreement found in each iteration are stored in
+    % "agreementIndices" matrix
+    agreement_indicies = indicies_in_transverse_agreement;
+end
+end % Ends fcn_INTERNAL_findAgreementIndicies
