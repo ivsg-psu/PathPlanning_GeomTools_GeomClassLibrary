@@ -21,6 +21,8 @@
 %% Revision History:
 % 2023_11_21 - sbrennan@psu.edu
 % -- started a demo code set
+% 2023_12_27 - sbrennan@psu.edu
+% -- switched to using environment settings for checking input parameters
 
 %% Prep the workspace
 close all
@@ -116,13 +118,10 @@ if ~exist('flag_GeomClass_Folders_Initialized','var')
     flag_GeomClass_Folders_Initialized = 1;
 end
 
-% %% Set environment flags for plotting
-% % These are values to set if we are forcing image alignment via Lat and Lon
-% % shifting, when doing geoplot. This is added because the geoplot images
-% % are very, very slightly off at the test track, which is confusing when
-% % plotting data above them.
-% setenv('MATLABFLAG_LOADWZ_ALIGNMATLABLLAPLOTTINGIMAGES_LAT','-0.0000008');
-% setenv('MATLABFLAG_LOADWZ_ALIGNMATLABLLAPLOTTINGIMAGES_LON','0.0000054');
+%% Set environment flags for input checking
+% These are values to set if we want to check inputs or do debugging
+setenv('MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS','1');
+setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','1');
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

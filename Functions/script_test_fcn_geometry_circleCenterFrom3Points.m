@@ -118,6 +118,25 @@ points3 = [0 4; 5 4];
 fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
 
 
+%% BASIC example that tests flag_max_speed
+fig_num = -1;
+points1 = [0 0; 5 0];
+points2 = [-2 2; 7 2];
+points3 = [0 4; 5 4];
+
+fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+
+%% FAIL CASES
+if 1==0
+    %% fails because flag_max_speed is set to value other than -1
+    fig_num = -2;
+    points1 = [0 0; 5 0];
+    points2 = [-2 2; 7 2];
+    points3 = [0 4; 5 4];
+    flag_max_speed = 0;
+
+    fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+end
 %% Function start here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function fcn_summarize(...

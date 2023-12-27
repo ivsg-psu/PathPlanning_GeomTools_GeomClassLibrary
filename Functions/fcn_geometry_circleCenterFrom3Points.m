@@ -22,7 +22,9 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -64,10 +66,30 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 % -- merged previous function into geometry class
 % -- automated input argument checking
 % -- changed from x,y separate inputs into points inputs
+% 2023_12_27
+% -- added external environment test
+% -- added speed-up wherein if fig_num set to -1, it skips plotting, input
+% checking, debug modes.
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_debug = 0;     % Set equal to 1 for debugging
+
+% Check if flag_max_speed set
+flag_max_speed = 0;
+if (nargin==4 && (varargin{3}==-1)) || (nargin==2 && (varargin{1}==-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -87,14 +109,16 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(1,4);
-    
-    % Check the points input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points1, '2column_of_numbers');
-      
+
+if flag_max_speed==0
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(1,4);
+
+        % Check the points input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points1, '2column_of_numbers');
+    end
 end
 
 % Is the user giving separated input point vectors?
@@ -132,11 +156,13 @@ end
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if 2 == nargin || 4 == nargin
-    temp = varargin{end};
-    if ~isempty(temp)
-        fig_num = temp;
-        flag_do_plots = 1;
+if 0==flag_max_speed
+    if (2 == nargin || 4 == nargin)
+        temp = varargin{end};
+        if ~isempty(temp)
+            fig_num = temp;
+            flag_do_plots = 1;
+        end
     end
 end
 
@@ -156,7 +182,11 @@ if flag_use_separated_point_inputs
     centers = zeros(N_points,2);
     radii   = zeros(N_points,1);
     for ith_row = 1:length(points1(:,1))
-        [center,radius] = fcn_geometry_circleCenterFrom3Points([points1(ith_row,:); points2(ith_row,:); points3(ith_row,:);]);
+        if flag_max_speed ==1
+            [center,radius] = fcn_geometry_circleCenterFrom3Points([points1(ith_row,:); points2(ith_row,:); points3(ith_row,:);],-1);
+        else
+            [center,radius] = fcn_geometry_circleCenterFrom3Points([points1(ith_row,:); points2(ith_row,:); points3(ith_row,:);]);
+        end
         centers(ith_row,:) = center;
         radii(ith_row)   = radius;
     end

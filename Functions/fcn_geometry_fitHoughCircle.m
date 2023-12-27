@@ -58,9 +58,21 @@ function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(p
 % -- moved circle fitting to external call to existing function
 % -- added transverse and station tolerances
 % -- added plotting figure for results as varargin
+% 2023_12_27 - S. Brennan
+% -- changed inequality-based region testing with polygon region tests
 
-flag_do_debug = 1; % Flag to plot the results for debugging
+
+% Check to see if we are externally setting debug mode to be "on"
+flag_do_debug = 0; % Flag to plot the results for debugging
 flag_check_inputs = 1; % Flag to perform input checking
+MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+    flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+    flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+end
+
+
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -170,8 +182,9 @@ for ith_combo = 99:N_permutations
     % Extract the source points
     test_source_points = points(combos_paired(ith_combo,:),:);
 
-    % Find fitted curve
-    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points); %,debug_fig_num);
+    % Find fitted curve - call the function in "fast" mode
+    [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points(1,:),test_source_points(2,:),test_source_points(3,:),-1);
+    % [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points); %,debug_fig_num);
     
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
@@ -346,14 +359,15 @@ function [agreement_indicies,domainPolyShape] = fcn_INTERNAL_findAgreementIndici
 flag_use_domain_method = 1;
 domainPolyShape = []; %#ok<NASGU>
 
+% Find agreement domain
 if flag_use_domain_method
-    % Find agreement domain
+
     angles = (0:1:359.9999)'*pi/180;
     inner_radius = max(0,(circleRadius - transverse_tolerance));
     outer_radius = circleRadius + transverse_tolerance;
-    lower_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
+    inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
     outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
-    best_fit_domain_box = [lower_arc; flipud(outer_arc)];
+    best_fit_domain_box = [inner_arc; flipud(outer_arc)];
 
 
     domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
