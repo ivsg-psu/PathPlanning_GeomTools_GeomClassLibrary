@@ -120,8 +120,11 @@ end
 
 %% Set environment flags for input checking
 % These are values to set if we want to check inputs or do debugging
+% setenv('MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS','1');
+% setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','1');
 setenv('MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS','1');
-setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','1');
+setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
+
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

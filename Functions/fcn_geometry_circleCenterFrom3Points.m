@@ -73,9 +73,11 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
 flag_max_speed = 0;
-if (nargin==4 && (varargin{3}==-1)) || (nargin==2 && (varargin{1}==-1))
+if (nargin==4 && isequal(varargin{3},-1)) || (nargin==2 && isequal(varargin{1},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;

@@ -1,8 +1,8 @@
-% script_test_fcn_geometry_circleHoughFit
-% Exercises the function: fcn_geometry_circleHoughFit
+% script_test_fcn_geometry_findPointsInSequence
+% Exercises the function: fcn_geometry_findPointsInSequence
 
 % Revision history:
-% 2023_12_15
+% 2023_12_29
 % -- wrote the code
 
 %% Set up the workspace
@@ -23,36 +23,14 @@ close all
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-%% Fill test data - 1 segment
-fig_num = 23;
-% figure(fig_num);
-% clf;
-% hold on;
-% axis equal
-% grid on;
-
-seed_points = [2 3; 4 5; 6 3]; %; 1 1];
-M = 5;
-sigma = 0.02;
-
-test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
 %% Example - 1 - BASIC call
 fig_num = 1;
 
-inputPoints = test_points;
-transverse_tolerance = 0.1;
-station_tolerance = 0.1;
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
 
-[fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
 %% Example - 2 - fast implementation mode
 fig_num = 1;
@@ -66,7 +44,7 @@ REPS = 10; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, []);
+    [fittedParameters, agreementIndices] = fcn_geometry_findPointsInSequence(inputPoints, transverse_tolerance, station_tolerance, []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -77,13 +55,13 @@ REPS = 10; minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, -1);
+    [fittedParameters, agreementIndices] = fcn_geometry_findPointsInSequence(inputPoints, transverse_tolerance, station_tolerance, -1);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'Comparison of fast and slow modes of fcn_geometry_fitHoughCircle:\n');
+fprintf(1,'Comparison of fast and slow modes of fcn_geometry_findPointsInSequence:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);

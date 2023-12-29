@@ -119,12 +119,43 @@ fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
 
 
 %% BASIC example that tests flag_max_speed
-fig_num = -1;
+
 points1 = [0 0; 5 0];
 points2 = [-2 2; 7 2];
 points3 = [0 4; 5 4];
 
-fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+
+% Perform the calculation in slow mode
+REPS = 1000; 
+minTimeSlow = Inf; 
+tic;
+for i=1:REPS
+    tstart = tic;
+    fcn_geometry_circleCenterFrom3Points(points1, points2, points3,[]);   
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+minTimeFast = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+    fcn_geometry_circleCenterFrom3Points(points1, points2, points3,-1);
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_circleCenterFrom3Points:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
+
+
 
 %% FAIL CASES
 if 1==0
