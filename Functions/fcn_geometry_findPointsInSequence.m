@@ -169,8 +169,8 @@ end
 
 % Store before and after indicies together to produce indicies in
 % station agreement
-sequence_indicies = [sorted_indicies_before_base_point sorted_indicies_after_base_point];
-
+sequence_sorted_indicies = [sorted_indicies_before_base_point sorted_indicies_after_base_point];
+sequence_indicies = sort_order_of_indicies(sequence_sorted_indicies);
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

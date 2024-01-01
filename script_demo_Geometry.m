@@ -265,37 +265,29 @@ shuffled_corrupted_test_points = fcn_geometry_shufflePointOrdering(corrupted_tes
 %% Demo Hough line fitting
 fig_num = 1111;
 transverse_tolerance = 0.2;
+station_tolerance = [];
+
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+
+%% Demo Hough line segment fitting
+fig_num = 11111;
+transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 
-[fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
 %% Demo regression from Hough Line votes
 % Show how to do line fitting from Hough votes
-fig_num = 1111;
-
-% Fill a variable input_points to make it clear that we are treating these
-% as inputs to the function:
-input_points = shuffled_corrupted_test_points;
-
-% Count up how many points agree with each fit
-agreements = sum(agreement_indicies,2);
-
-% Find the maximum count
-[~, index_of_best_fit] = max(agreements);
-
-% Find which points were used to create the Hough vote
-indicies = nchoosek(1:length(input_points(:,1)),2); % Line fit needs 2 points
-best_fit_source_indicies = indicies(index_of_best_fit,:);
-
-% Find which points agree with the Hough vote
-best_fit_associated_indicies = find(agreement_indicies(index_of_best_fit,:));
+fig_num = 11111; % Reuse the previous figure number, as it puts the results atop that plot
 
 % Extract out points from the indicies
-source_points = input_points(best_fit_source_indicies,:);
-associated_points_in_domain = input_points(best_fit_associated_indicies,:); %#ok<FNDSB>
+source_points = shuffled_corrupted_test_points(best_fit_source_indicies,:);
+associated_points_in_domain = shuffled_corrupted_test_points(best_agreement_indicies,:); 
 
 % Perform the regression fit
-[best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+[best_fit_parameters, best_fit_domain_box] = ...
+    fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
 
 % The following 3 lines show how to convert the domain box into a
 % polyshape, and how to query points using isinterior to identify which

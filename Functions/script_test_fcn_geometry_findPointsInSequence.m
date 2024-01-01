@@ -21,7 +21,7 @@ close all
 %                            | |
 %                            |_|
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Examples
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Example - 1 - BASIC call
 fig_num = 1;
@@ -40,7 +40,7 @@ transverse_tolerance = 0.1;
 station_tolerance = 0.1;
 
 % Perform the calculation in slow mode
-REPS = 10; minTimeSlow = Inf; 
+REPS = 10; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
@@ -67,3 +67,42 @@ fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
 fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+
+
+%% Example 3
+input_distances = [
+    0
+    1.1069
+    0.3847
+    1.5977
+    4.6230
+    0.6998
+    2.3057
+    0.1035
+    5.1142
+    2.1066
+    0.9996
+    2.7229
+    0.8983
+    4.8260
+    1.8245
+    0.8054
+    2.2122
+    1.3189
+    0.2847
+    0.4960
+    -0.0956
+    0.2146
+    -0.3027
+    1.4045
+    1.6931
+    3.9222
+    -0.1815
+    -0.5896];
+
+fig_num = 3;
+
+base_point_index = 1;
+station_tolerance = 0.4;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
