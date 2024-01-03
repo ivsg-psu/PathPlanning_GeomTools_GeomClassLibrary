@@ -13,7 +13,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % sequencies automatically.
 %
 % Format: 
-% domains = fcn_geometry_HoughSegmentation(input_points, transverse_tolerance, station_tolerance, (fig_num))
+% domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num))
 %
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -48,18 +48,37 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 %      
 % See the script: script_test_fcn_geometry_HoughSegmentation
 % for a full test suite.
-
+%
 % This function was written on 2023_12_15 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
 % 2023_12_14 
 % -- wrote the code
+% 2024_01_01 
+% -- modified to use updated versions of fitHoughLine code set
 
+%% Debugging and Input checks
 
-flag_do_debug = 1; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
-
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==5 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -83,30 +102,31 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(4,5);
-    
-    % Check the points input to be length greater than or equal to 2
-    fcn_DebugTools_checkInputsToFunctions(...
-        points, '2column_of_numbers',[2 3]);
-    
-    % Check the threshold_max_points input is a positive single number
-    fcn_DebugTools_checkInputsToFunctions(threshold_max_points, 'positive_1column_of_numbers',1);
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(4,5);
 
-    % Check the threshold_max_points input is a positive single number
-    fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
+        % Check the points input to be length greater than or equal to 2
+        fcn_DebugTools_checkInputsToFunctions(...
+            points, '2column_of_numbers',[2 3]);
 
-    % Check the threshold_max_points input is a positive single number
-    fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+        % Check the threshold_max_points input is a positive single number
+        fcn_DebugTools_checkInputsToFunctions(threshold_max_points, 'positive_1column_of_numbers',1);
 
+        % Check the threshold_max_points input is a positive single number
+        fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
+
+        % Check the threshold_max_points input is a positive single number
+        fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+
+    end
 end
-
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 5<= nargin
+if (5<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -183,10 +203,24 @@ while best_agreement_count>threshold_max_points
     non_zero_indicies = find(remaining_indicies);
     remaining_points = points(non_zero_indicies,:);
 
+    if flag_do_debug
+        figure(fig_debug);
+        hold on;
+        plot(points(:,1),points(:,2),'.','Color', [0.5 0.5 0.5], 'MarkerSize',20);
+        plot(remaining_points(:,1),remaining_points(:,2),'.','Color', [0 0 0], 'MarkerSize',20);
+        plot(points_in_domain(:,1),points_in_domain(:,2),'c.', 'MarkerSize',20);
+        
+    end
+
+
+
+  
+
     % Recalculate the fit with remaining points
     [best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies, best_fit_domain_box] = ...
         fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fig_debug);
 
+    
 end
 
 % The last domain is unfitted points
@@ -218,7 +252,12 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    color_ordering = orderedcolors('gem12');
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
+    
     N_colors = length(color_ordering(:,1));
 
     tiledlayout('flow')
@@ -297,19 +336,23 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_findBestFit
-function [best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies, best_fit_domain_box] = ...
+function [best_agreement_count,...
+    best_fit_type, ...
+    best_fit_parameters, ...
+    best_fit_source_indicies, ...
+    best_fit_associated_indicies, ...
+    best_fit_domain_box] = ...
     fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fig_num)
 
 % Calculate the best agreements between different fit types, returning the
 % best fitting type.
 
-fit_types = {'line','circle','arc'};
+fit_types = {'line'}; %,'circle','arc'};
 best_agreement_counts = zeros(length(fit_types),1);
 
 % Initialize variables
 fit_parameters{length(fit_types)} = 0;
 fit_associated_point_indicies{length(fit_types)} = 0;
-fit_nchoosek_index = zeros(length(fit_types),1);
 fit_source_index_list{length(fit_types)} = 0;
 
 % Search through all the fitting types to find the best fits.
@@ -342,39 +385,39 @@ for fit_index = 1:length(fit_types)
     switch fit_type
         case 'line'
             % Check line fitting - minimum model order is 2 points
-            [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance);
-            indicies = nchoosek(1:length(input_points(:,1)),2); % Line fit needs 2 points
+            [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+                fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, fig_num);
 
         case 'circle'
             % Check circle fitting - minimum model order is 3 points
             % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(input_points, tolerance, fig_num);
             fitted_parameters  = [0 0 0];
-            agreement_indicies = 1;
-            indicies = nchoosek(1:length(input_points(:,1)),3); % Circle fit needs 3 points
+            best_fit_source_indicies = 1;
+            best_agreement_indicies = 1;
 
         case 'arc'
             % Check arc fitting - minimum model order is 3 points
             % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughArc(input_points, tolerance, fig_num);
-            fitted_parameters  = [0 0 0 0 0];
-            agreement_indicies = 1;
-            indicies = nchoosek(1:length(input_points(:,1)),3); % Arc fit needs 3 points
+            fitted_parameters  = [0 0 0];
+            best_fit_source_indicies = 1;
+            best_agreement_indicies = 1;
         otherwise
             error('Unknown fit type detected - unable to continue!');
     end
-    agreements = sum(agreement_indicies,2);
-    [best_agreement_counts(fit_index), index_of_best_fit] = max(agreements);
-    fit_parameters{fit_index}     = fitted_parameters(index_of_best_fit,:);
-    fit_associated_point_indicies{fit_index} = agreement_indicies(index_of_best_fit,:);
-    fit_nchoosek_index(fit_index) = index_of_best_fit;
-    fit_source_index_list{fit_index} = indicies(index_of_best_fit,:);
+
+    % Save results to an array for each fit type
+    best_agreement_counts(fit_index) = length(best_agreement_indicies);
+    fit_parameters{fit_index}     = fitted_parameters;
+    fit_associated_point_indicies{fit_index} = best_agreement_indicies;
+    fit_source_index_list{fit_index} = best_fit_source_indicies;
 end
 
-% Save the best fit among all the types
+% Save the best fit among all the fitting types
 [best_agreement_count, fitting_type_number] = max(best_agreement_counts);
 best_fit_type = fit_types{fitting_type_number};
 best_fit_parameters = fit_parameters{fitting_type_number};
 best_fit_source_indicies = fit_source_index_list{fitting_type_number};
-best_fit_associated_indicies = find(fit_associated_point_indicies{fitting_type_number});
+best_fit_associated_indicies = fit_associated_point_indicies{fitting_type_number};
 
 % Steps 3 and 4 follow within this switch case
 % Find regression fit using best agreement and domain
@@ -384,13 +427,14 @@ associated_points_in_domain = input_points(best_fit_associated_indicies,:);
 switch best_fit_type
     case 'line'
         % Check line fitting
-        [best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+        [best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, fig_num);
 
         % The following 3 lines might be able to be moved outside the switch case
         % as they are likely going to be the same for all cases.
         domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
         IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
         best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+
     case 'circle'
         % Fill this in
     case 'arc'

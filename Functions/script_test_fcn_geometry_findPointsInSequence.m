@@ -106,3 +106,53 @@ base_point_index = 1;
 station_tolerance = 0.4;
 
 sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+
+%% DEBUG example
+input_distances = [
+    0
+    0.1000
+    0.2000
+    0.4000
+    0.6000
+    0.8000
+    1.2000
+    1.4000
+    1.5000
+    1.6000
+    1.7000
+    1.8000
+    1.9000
+    2.0000
+    2.1000
+    2.2000
+    2.3000
+    2.4000
+    2.5000
+    2.6000
+    2.7000
+    2.8000
+    2.9000
+    3.0000
+    3.4000
+    3.5000
+    3.6000
+    3.7000
+    3.8000
+    3.9000
+    4.0000
+    4.3000
+    4.4000
+    4.5000
+    4.8000
+    4.9000
+    5.2000
+    5.5000
+    5.7000
+    ];
+
+fig_num = 4444;
+
+base_point_index = 1;
+station_tolerance = 0.4;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);

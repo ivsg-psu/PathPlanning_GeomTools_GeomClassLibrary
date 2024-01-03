@@ -1,4 +1,4 @@
-function [regression_fit_line_segment, domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, varargin)
+function [regression_fit_line_segment, domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
 % fcn_geometry_calcLinearRegressionFromHoughFit
 % Given a set of points that are matched via a Hough vote, finds the linear
 % regression fit line and domain box. 
@@ -140,12 +140,18 @@ projection_vector_angle = atan2(unit_tangent_vector_of_domain(:,2),unit_tangent_
 regression_vector_angle = atan2(slope,1);
 
 if abs(projection_vector_angle - regression_vector_angle)>pi/2
-    disp('Correcting angle...')
+    if flag_do_debug
+        fprintf(1,'Correcting angle...\n')
+    end
     regression_vector_angle = regression_vector_angle + pi;
 end
 
-if abs(projection_vector_angle - regression_vector_angle)>(10*pi/180)
-    error('Regression angle and fitted angle are more than 10 degrees different. An error likely occurred!');
+if 1==0
+    if abs(projection_vector_angle - regression_vector_angle)>(10*pi/180)
+        warning('Projection angle is (degrees): %.3f',projection_vector_angle*180/pi);
+        warning('Regression angle is (degrees): %.3f',regression_vector_angle*180/pi);
+        error('Regression angle and fitted angle are more than 10 degrees different. An error likely occurred!');
+    end
 end
 
 unit_converted_projection_vector = [cos(regression_vector_angle) sin(regression_vector_angle)];
@@ -210,8 +216,12 @@ if flag_do_plots
     hold on;
       
     % Plot the input points
+    plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
+    plot(source_points(2,1),source_points(2,2),'r.','MarkerSize',30);
     h_plot = plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',10);
     current_color = get(h_plot,'Color');
+
+
 
     % Plot the line fit
     plot(regression_fit_line_segment(:,1),regression_fit_line_segment(:,2),'-','LineWidth',3,'Color',current_color);

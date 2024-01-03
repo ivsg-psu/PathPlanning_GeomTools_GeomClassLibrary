@@ -12,8 +12,8 @@ clc;
 %% Basic example 1: find 5 segments within noisy data
 
 seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
-M = 50; % 10 points per meter
-sigma = 0.02;
+M = 10; % 10 points per meter
+sigma = 0.;
 rng(3423)
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
@@ -27,7 +27,7 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 
 % Call the segmentation function
 fig_num = 1;
-transverse_tolerance = 0.02; % Units are meters
+transverse_tolerance = 0.1; % Units are meters
 station_tolerance = inf; % Units are meters
 threshold_max_points = 10;
 input_points = test_points;

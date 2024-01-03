@@ -195,16 +195,14 @@ phis = mod(phis,2*pi);
 fitted_parameters = [phis rhos];
 
 % Find the agreements between points and every single line fit
-[agreements, best_agreement_indicies_binary_form] = fcn_INTERNAL_findAgreementsOfPointsToFits(...
+[best_agreement_index, best_agreement_indicies, agreements] = ...
+    fcn_INTERNAL_findAgreementsOfPointsToFits(...
     points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance);
 
-% Find best fits
-[~,best_agreement_index] = max(agreements);
 
 % Save results to outputs
 best_fitted_parameters = fitted_parameters(best_agreement_index,:);
 best_fit_source_indicies = combos_paired(best_agreement_index,:);
-best_agreement_indicies = find(best_agreement_indicies_binary_form==1);
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,7 +240,7 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the best-fit points
-    plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15); %#ok<FNDSB>
+    plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15); 
 
 
     % Plot all line fits NOTE: this can be confusing as these are the INPUT
@@ -334,22 +332,23 @@ end % Ends main function
 
 
 %% fcn_INTERNAL_findAgreementsOfPointsToFits
-function [agreements, best_agreement_indicies] = ...
+function [best_agreement_index, best_agreement_indicies, agreements] = ...
     fcn_INTERNAL_findAgreementsOfPointsToFits(...
     input_points, ...
     unit_projection_vectors, ...
     combos_paired, ...
     transverse_tolerance, station_tolerance)
 
+flag_do_debug = 0;
+
 N_combos = length(unit_projection_vectors(:,1));
 N_points = length(input_points(:,1));
 
 % Initialize output vectors
-agreements = zeros(N_combos,1);
-best_agreement_indicies = zeros(1,N_points);
-
-% Initialize best agreement
+best_agreement_indicies_binary_form = zeros(1,N_points);
 best_agreement_count = -inf;
+best_agreement_index = [];
+agreements = zeros(N_combos,1);
 
 % Loop through all the combos, trying to find best agreement
 for ith_vector = 1:N_combos
@@ -366,6 +365,7 @@ for ith_vector = 1:N_combos
     lateral_distances = sum(unit_orthogonal_vector.*base_projection_vectors,2);
 
     indicies_in_lateral_agreement = find((abs(lateral_distances)<=transverse_tolerance)');
+    base_point_index_in_lateral_agreement = find(indicies_in_lateral_agreement == base_point_index);
 
     % Next find the indicies in station agreement. To do this, find the
     % station coordinates for every point as predicted by their tangent
@@ -384,7 +384,7 @@ for ith_vector = 1:N_combos
         indicies_in_station_agreement = ...
             fcn_geometry_findPointsInSequence(...
             tangent_distances_of_points_in_lateral_agreement, ...
-            base_point_index, ...
+            base_point_index_in_lateral_agreement, ...
             station_tolerance, -1);
 
         % Find indicies in both lateral and station agreement
@@ -394,7 +394,7 @@ for ith_vector = 1:N_combos
     end
 
     % Check the results? (for debugging)    
-    if 1==0
+    if flag_do_debug
         figure(4747);
         clf;
         hold on;
@@ -410,19 +410,23 @@ for ith_vector = 1:N_combos
         plot(input_points(indicies_in_both_lateral_and_station_agreement,1),input_points(indicies_in_both_lateral_and_station_agreement,2),'c.-','MarkerSize',20,'LineWidth',3)
     end
 
-    agreement_count = sum(indicies_in_lateral_agreement,2);
+    agreement_count = length(indicies_in_both_lateral_and_station_agreement);
     agreements(ith_vector) = agreement_count;
 
     if agreement_count>best_agreement_count
+        best_agreement_index = ith_vector;
+
         % Save new "best" agreement total count
         best_agreement_count = agreement_count;
 
         % Save new "best" indicies
-        best_agreement_indicies = zeros(1,N_points);
-        best_agreement_indicies(1,indicies_in_both_lateral_and_station_agreement) = 1;
+        best_agreement_indicies_binary_form = zeros(1,N_points);
+        best_agreement_indicies_binary_form(1,indicies_in_both_lateral_and_station_agreement) = 1;
     end
 
 end
+
+best_agreement_indicies = find(best_agreement_indicies_binary_form==1);
 end % Ends fcn_INTERNAL_findAgreementsOfPointsToFits
 
 
