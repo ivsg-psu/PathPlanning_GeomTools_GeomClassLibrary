@@ -4,6 +4,8 @@
 % Revision history:
 % 2023_12_15
 % -- wrote the code
+% 2024_01_04
+% -- fixed the argument inputs
 
 %% Set up the workspace
 
@@ -52,7 +54,8 @@ inputPoints = test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 0.1;
 
-[fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num);
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num);
 
 %% Example - 2 - fast implementation mode
 fig_num = 2222;
@@ -62,11 +65,12 @@ transverse_tolerance = 0.1;
 station_tolerance = 0.1;
 
 % Perform the calculation in slow mode
-REPS = 10; minTimeSlow = Inf; 
+REPS = 3; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, []);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -77,7 +81,8 @@ REPS = 10; minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, -1);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
