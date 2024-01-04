@@ -1,4 +1,5 @@
-function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(points, transverse_tolerance, station_tolerance, varargin)
+function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(points, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_fitHoughCircle
 %
 % This function takes the input points and tolerance as the input and
@@ -31,13 +32,16 @@ function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(p
 %      standard ordering (see function nchoosek). For each K value, this
 %      returns:
 %
-%      fitted_parameters: the fitted circle in format of [x_center,
-%      y_center, radius] for every 3-point combination of the point
-%      permutation. This is returned as a [K x 3] matrix
+%      best_fitted_parameters: the best-fitted circle or arc in format of
+%      [x_center, y_center, radius] for the best 3-point combination of the
+%      point permutation. This is returned as a [1 x 3] matrix
 %
-%      agreement_indicies: a row of 1 or 0 for all points, with 1
-%      indicating that a given point is "within" the line projection, 0 if
-%      not. This is returned as a [K x N] matrix.
+%      best_fit_source_indicies: the three indicies, in [1x3] vector format,
+%      of the points that produced the best fit.
+% 
+%      best_agreement_indicies: the indicies of the points that are within
+%      agreement of the best-fit parameters, given the transverse and
+%      station tolerance settings.
 %
 % DEPENDENCIES:
 %
@@ -64,6 +68,8 @@ function [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(p
 % -- changed inequality-based region testing with polygon region tests
 % 2023_12_28 - S. Brennan
 % -- added fast mode by allowing fig_num set to -1
+% 2024_01_03 - S. Brennan
+% -- output only the best fits, keeping same format as fitHoughLine code
 
 
 %% Debugging and Input checks
@@ -185,7 +191,12 @@ N_permutations = size(combos_paired,1);
 % Pre-allocation of fittedParameters and agreementIndices for saving
 % computation time
 fitted_parameters = zeros(N_permutations,3);
-agreement_indicies = zeros(N_permutations, N_points);
+
+% Initialize output vectors
+best_agreement_indicies_binary_form = zeros(1,N_points);
+best_agreement_count = -inf;
+best_agreement_index = [];
+agreements = zeros(N_permutations,1);
 
 for ith_combo = 1:N_permutations
 
@@ -206,8 +217,27 @@ for ith_combo = 1:N_permutations
     fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
 
     % Find points in agreement
-    [agreement_indicies(ith_combo,:), domainPolyShape] =  fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance, flag_max_speed);
+    [agreement_indicies, domainPolyShape] = ...
+        fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, transverse_tolerance, flag_max_speed);
     
+    % Save the count of points in agreement
+    agreement_count = length(agreement_indicies);
+    agreements(ith_combo) = agreement_count;
+
+    % Check if this is the best agreement so far
+    if agreement_count>best_agreement_count
+        best_agreement_index = ith_combo;
+
+        % Save new "best" agreement total count
+        best_agreement_count = agreement_count;
+
+        % Save new "best" indicies
+        best_agreement_indicies_binary_form = zeros(1,N_points);
+        best_agreement_indicies_binary_form(1,agreement_indicies) = 1;
+    end
+
+
+
     % Redo debugging plots to see how fit worked?
     if flag_do_debug
         figure(debug_fig_num);
@@ -223,8 +253,7 @@ for ith_combo = 1:N_permutations
         plot(domainPolyShape);
 
         % Plot the points in agreement
-        agreements_to_plot = find(agreement_indicies(ith_combo,:));
-        plot(points(agreements_to_plot,1),points(agreements_to_plot,2),'r.','MarkerSize',20);
+        plot(points(agreement_indicies,1),points(agreement_indicies,2),'r.','MarkerSize',20);
 
         % Plot the test points in blue
         plot(test_source_points(:,1),test_source_points(:,2),'b.','MarkerSize',20);
@@ -234,6 +263,13 @@ for ith_combo = 1:N_permutations
     end
 
 end
+
+
+% Save results to outputs
+best_fitted_parameters = fitted_parameters(best_agreement_index,:);
+best_fit_source_indicies = combos_paired(best_agreement_index,:);
+best_agreement_indicies = find(best_agreement_indicies_binary_form==1);
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,7 +297,6 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    agreements = sum(agreement_indicies,2);
     [~,sorted_indicies] = sort(agreements,'ascend');
 
 
@@ -269,11 +304,10 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the best-fit points
-    agreements = sum(agreement_indicies,2);
-    [~,best_agreement_index] = max(agreements);
-    best_fit_point_indicies = find(agreement_indicies(best_agreement_index,:));
-    plot(points(best_fit_point_indicies,1),points(best_fit_point_indicies,2),'r.','MarkerSize',15);
+    plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
 
+    % Plot the source points
+    plot(points(best_fit_source_indicies,1),points(best_fit_source_indicies,2),'b.','MarkerSize',15);
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -322,7 +356,7 @@ if flag_do_plots
     distance_circle_center_from_origin = sum((fitted_parameters(:,1).^2+fitted_parameters(:,2).^2),2).^0.5;
     curvature = 1./fitted_parameters(:,3);
 
-
+    % Plot the results in increasing order of better fit
     N_steps = 20;    
     indicies = linspace(1,N_permutations,N_steps);
     for ith_plot = 1:N_steps-1
@@ -344,6 +378,19 @@ if flag_do_plots
 
     end
 
+    % Plot the best fits
+    best_rho = atan2(best_fitted_parameters(:,2),best_fitted_parameters(:,1));
+    best_distance_circle_center_from_origin = sum((best_fitted_parameters(:,1).^2+best_fitted_parameters(:,2).^2),2).^0.5;
+    best_curvature = 1./best_fitted_parameters(:,3);
+
+    subplot(3,1,1);
+    plot(best_rho(1,1),best_distance_circle_center_from_origin(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+
+    subplot(3,1,2);
+    plot(best_rho(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+
+    subplot(3,1,3);
+    plot3(best_rho(1,1),best_distance_circle_center_from_origin(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
 
     
 end % Ends check if plotting
@@ -367,7 +414,7 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_findAgreementIndicies
-function [agreement_indicies,domainPolyShape] = fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance, flag_max_speed)
+function [agreement_indicies, domainPolyShape] = fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance, flag_max_speed)
 
 % Set a flag to use enclosed domains to find points in agreement, rather
 % than inequalities. This method is more general and easier to debug, but
@@ -392,7 +439,7 @@ if flag_use_domain_method
 
 
     domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-    agreement_indicies = isinterior(domainPolyShape,points);
+    agreement_indicies_binary_form = isinterior(domainPolyShape,points);
 
 else
     % Distance of all the input points from the center
@@ -413,6 +460,8 @@ else
 
     % indices in agreement found in each iteration are stored in
     % "agreementIndices" matrix
-    agreement_indicies = indicies_in_transverse_agreement;
+    agreement_indicies_binary_form = indicies_in_transverse_agreement;
 end
+
+agreement_indicies = find(agreement_indicies_binary_form==1);
 end % Ends fcn_INTERNAL_findAgreementIndicies

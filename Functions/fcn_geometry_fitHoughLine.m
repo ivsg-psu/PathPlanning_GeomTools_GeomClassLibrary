@@ -1,4 +1,5 @@
-function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(points, transverse_tolerance, station_tolerance, varargin)
+function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughLine(points, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_fitHoughLine
 % Checks all permutations between points to fit a line (N choose 2), then
 % calculates the line fit in polar form (rho and phi), and determines which
@@ -41,9 +42,9 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      best_fit_source_indicies: the two indicies, in [1x2] vector format,
 %      of the points that produced the best fit.
 % 
-%      best_agreement_indicies: a row of 1 or 0 for all points, with 1
-%      indicating that a given point is "within" the line projection, 0 if
-%      not. This is returned as a [1 x N] matrix.
+%      best_agreement_indicies: the indicies of the points that are within
+%      agreement of the best-fit parameters, given the transverse and
+%      station tolerance settings.
 %
 % DEPENDENCIES:
 %      nchoosek

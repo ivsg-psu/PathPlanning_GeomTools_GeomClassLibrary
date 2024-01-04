@@ -154,6 +154,8 @@ fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
 fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
 
 

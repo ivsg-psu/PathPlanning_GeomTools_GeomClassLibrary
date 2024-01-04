@@ -267,7 +267,8 @@ fig_num = 1111;
 transverse_tolerance = 0.2;
 station_tolerance = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
 %% Demo Hough line segment fitting
 fig_num = 11111;
@@ -277,7 +278,7 @@ station_tolerance = 0.4;
 [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
     fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
-%% Demo regression from Hough Line votes
+%% Demo linear pseudo-regression from Hough Line votes
 % Show how to do line fitting from Hough votes
 fig_num = 11111; % Reuse the previous figure number, as it puts the results atop that plot
 

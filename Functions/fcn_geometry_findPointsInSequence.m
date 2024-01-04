@@ -49,6 +49,10 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 % Revision history:
 % 2023_12_29 - S. Brennan
 % -- wrote the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
+% -- added check on base point index
 
 %% Debugging and Input checks
 
@@ -56,7 +60,7 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{1},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -75,7 +79,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 23434;
+    debug_fig_num = 23434; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -135,6 +139,13 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Check the base_point_index
+if base_point_index<1 || (base_point_index>length(input_distances))
+    fprintf(1,'Base point index: %.0d\n', base_point_index);
+    fprintf(1,'Range of indicies allowed by length of the input_distances: 1 to %.0d\n',length(input_distances));
+    error('The base_point_index is out of the allowable range according to the length of input_distances. See the printed values above that specify the allowed range.')
+end
 
 % Sort the distances in direction of point-to-point projection
 [sorted_distances,sort_order_of_indicies] = sort(input_distances);

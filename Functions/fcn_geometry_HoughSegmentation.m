@@ -57,6 +57,12 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % -- wrote the code
 % 2024_01_01 
 % -- modified to use updated versions of fitHoughLine code set
+% 2024_01_02 
+% -- line segment versions now working
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
+
 
 %% Debugging and Input checks
 
@@ -85,7 +91,7 @@ if flag_do_debug
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
     debug_fig_num = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 
@@ -212,10 +218,6 @@ while best_agreement_count>threshold_max_points
         
     end
 
-
-
-  
-
     % Recalculate the fit with remaining points
     [best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies, best_fit_domain_box] = ...
         fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fig_debug);
@@ -246,7 +248,7 @@ archive_of_remaining_points{domain_count}=unfitted_points;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num+1);
+    temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -386,7 +388,7 @@ for fit_index = 1:length(fit_types)
         case 'line'
             % Check line fitting - minimum model order is 2 points
             [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-                fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, fig_num);
+                fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, -1);
 
         case 'circle'
             % Check circle fitting - minimum model order is 3 points
@@ -427,14 +429,8 @@ associated_points_in_domain = input_points(best_fit_associated_indicies,:);
 switch best_fit_type
     case 'line'
         % Check line fitting
-        [best_fit_parameters, best_fit_domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, fig_num);
-
-        % The following 3 lines might be able to be moved outside the switch case
-        % as they are likely going to be the same for all cases.
-        domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-        IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
-        best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
-
+        [best_fit_parameters, best_fit_domain_box] = ...
+            fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
     case 'circle'
         % Fill this in
     case 'arc'
@@ -442,6 +438,11 @@ switch best_fit_type
     otherwise
         error('Unknown fit type detected - unable to continue!');
 end
+
+% Find the points within the domain box and update the associated indicies
+domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
+best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
 
 
 end % Ends fcn_INTERNAL_findBestFit

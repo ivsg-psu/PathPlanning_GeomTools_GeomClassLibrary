@@ -28,7 +28,7 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 %
 % DEPENDENCIES:
 %
-%      none
+%      fcn_geometry_calcUnitVector
 %
 % EXAMPLES:
 %      
@@ -41,9 +41,31 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 % Revision history:
 % 2023_12_12 
 % -- wrote the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
 
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+%% Debugging and Input checks
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -66,16 +88,17 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(1,4);
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(1,4);
 
-    % Check the points input to be length greater than or equal to 2
-    fcn_geometry_checkInputsToFunctions(...
-        input_points, '2column_of_numbers',[2 3]);
+        % Check the points input to be length greater than or equal to 2
+        fcn_geometry_checkInputsToFunctions(...
+            input_points, '2column_of_numbers',[2 3]);
 
+    end
 end
-
 
 % Does user want to specify probability_of_corruption?
 probability_of_corruption = 0.02; % Default
@@ -101,7 +124,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 4<= nargin
+if (4<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -135,7 +158,7 @@ if ~isempty(indicies_to_become_outliers)
 
     % Calculate vectors in unit orthogonal direction
     vectors_at_indicies = input_points(indicies_to_become_outliers,:) - input_points(indicies_to_become_outliers-1,:);
-    unit_vectors_at_indicies = fcn_geometry_calcUnitVector(vectors_at_indicies);
+    unit_vectors_at_indicies = fcn_geometry_calcUnitVector(vectors_at_indicies,-1);
     orthogonal_unit_vectors_at_indicies = unit_vectors_at_indicies*[0 1; -1 0];
 
     % Add random magnitudes onto orthogonal direction

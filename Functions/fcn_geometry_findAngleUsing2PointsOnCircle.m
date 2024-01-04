@@ -66,12 +66,31 @@ function [...
 % Revision History:
 % 2021-05-22
 % -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
-
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting
-flag_do_debug = 0;     % Set equal to 1 for debugging
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==6 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -91,48 +110,56 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(5, 6);
-    
-    % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
-        centers, '2column_of_numbers');
-    
-    % Use number of radii to calculate the number of centers
-    num_circles = length(centers(:,1));
-    
-    % Check the radii input
-    fcn_geometry_checkInputsToFunctions(...
-        radii, 'column_of_numbers',num_circles);
-    
-    % Check the start_points_on_circle input
-    fcn_geometry_checkInputsToFunctions(...
-        start_points_on_circle, '2column_of_numbers',num_circles);
-    
-    % Check the end_points_on_circle input
-    fcn_geometry_checkInputsToFunctions(...
-        end_points_on_circle, '2column_of_numbers',num_circles);
-        
-    % Check the cross_products input
-    fcn_geometry_checkInputsToFunctions(...
-        cross_product_direction, 'column_of_numbers',num_circles);
-       
+if 0==flag_max_speed
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(5, 6);
+
+        % Check the centers input
+        fcn_geometry_checkInputsToFunctions(...
+            centers, '2column_of_numbers');
+
+        % Use number of radii to calculate the number of centers
+        num_circles = length(centers(:,1));
+
+        % Check the radii input
+        fcn_geometry_checkInputsToFunctions(...
+            radii, 'column_of_numbers',num_circles);
+
+        % Check the start_points_on_circle input
+        fcn_geometry_checkInputsToFunctions(...
+            start_points_on_circle, '2column_of_numbers',num_circles);
+
+        % Check the end_points_on_circle input
+        fcn_geometry_checkInputsToFunctions(...
+            end_points_on_circle, '2column_of_numbers',num_circles);
+
+        % Check the cross_products input
+        fcn_geometry_checkInputsToFunctions(...
+            cross_product_direction, 'column_of_numbers',num_circles);
+
+    end
 end
-    
+
 
 % Does user want to show the plots?
-if 6 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plot = 1;
-    flag_new_figure = 0;
-else
-    if flag_do_debug
-        fig = figure;
-        fig_num = fig.Number;
-        flag_do_plot = 1;
-        flag_new_figure = 1;
+flag_do_plot = 0;
+if 0 == flag_max_speed
+    if 6 == nargin
+        temp = varargin{end};
+        if ~isempty(temp)
+            fig_num = temp;
+            figure(fig_num);
+            flag_do_plot = 1;
+            flag_new_figure = 0;
+        end
+    else
+        if flag_do_debug
+            fig = figure;
+            fig_num = fig.Number;
+            flag_do_plot = 1;
+            flag_new_figure = 1;
+        end
     end
 end
 
@@ -157,6 +184,8 @@ unit_radial_to_outpoints = (end_points_on_circle - centers)./radii;
 dot_product = sum(unit_radial_to_inpoints.*unit_radial_to_outpoints,2);
 
 %% Step 3: calculate the cross products from in to out
+num_circles = length(centers(:,1));
+
 cross_in_to_out = cross(...
     [unit_radial_to_inpoints, zeros(num_circles,1)],...
     [unit_radial_to_outpoints, zeros(num_circles,1)]);
@@ -180,14 +209,14 @@ angles(positive_reflex_indicies)= angles(positive_reflex_indicies) - 2*pi;
 
 %% Plot results?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
+%   _____       _
+%  |  __ \     | |
+%  | |  | | ___| |__  _   _  __ _
 %  | |  | |/ _ \ '_ \| | | |/ _` |
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
 %                            __/ |
-%                           |___/ 
+%                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plot
@@ -200,29 +229,29 @@ if flag_do_plot
     hold on;
     axis equal;
     grid on; grid minor;
-    
-    
+
+
     % Plot the circles
     fcn_geometry_plotCircle(centers,radii);
     axis equal;
-    
+
     plot(centers(:,1),centers(:,2),'kx');
-    
+
     % Plot the start and end points
     plot(start_points_on_circle(:,1),start_points_on_circle(:,2),'go');
     text(start_points_on_circle(:,1),start_points_on_circle(:,2),'Start');
-    
+
     plot(end_points_on_circle(:,1),end_points_on_circle(:,2),'rx');
     text(end_points_on_circle(:,1),end_points_on_circle(:,2),'End');
-    
+
     for i=1:num_circles
         % Plot unit vectors
         plot([centers(i,1); centers(i,1)+radii(i).*unit_radial_to_inpoints(i,1)],...
             [centers(i,2); centers(i,2)+radii(i).*unit_radial_to_inpoints(i,2)],'g');
-        
+
         plot([centers(i,1); centers(i,1)+radii(i).*unit_radial_to_outpoints(i,1)],...
             [centers(i,2); centers(i,2)+radii(i).*unit_radial_to_outpoints(i,2)],'r');
-        
+
         % Plot the angle value
         location = centers(i,:);
         if cross_product_direction(i,1)>0
@@ -234,7 +263,7 @@ if flag_do_plot
 end
 
 if flag_do_debug
-    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end
 
 

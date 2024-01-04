@@ -107,6 +107,41 @@ assert(isequal(circle_centers,[0 0]));
 assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,0));
 
+%% Test of fast mode
+
+% Perform the calculation in slow mode
+REPS = 10; minTimeSlow = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
+        fcn_geometry_arcAngleFrom3Points(points1, points2, points3, []);
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+minTimeFast = Inf; nsum = 10;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
+        fcn_geometry_arcAngleFrom3Points(points1, points2, points3, -1);
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_arcAngleFrom3Points:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
 %% Fail conditions
 if 1==0
     %% FAIL 1: points not long enough

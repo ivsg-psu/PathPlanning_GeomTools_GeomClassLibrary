@@ -55,7 +55,7 @@ station_tolerance = 0.1;
 [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, fig_num);
 
 %% Example - 2 - fast implementation mode
-fig_num = 1;
+fig_num = 2222;
 
 inputPoints = test_points;
 transverse_tolerance = 0.1;
@@ -89,3 +89,6 @@ fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
 fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+

@@ -22,7 +22,8 @@ function [test_points, true_base_points, true_projection_vectors, true_distances
 %
 % DEPENDENCIES:
 %
-%      none
+%      fcn_geometry_checkInputsToFunctions
+%      fcn_geometry_calcUnitVector
 %
 % EXAMPLES:
 %      
@@ -37,9 +38,31 @@ function [test_points, true_base_points, true_projection_vectors, true_distances
 % Revision history:
 % 2023_12_05 
 % -- wrote the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
 
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+%% Debugging and Input checks
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -62,25 +85,32 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(3,4);
+if (0==flag_max_speed)
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(3,4);
 
-    % Check the points input to be length greater than or equal to 2
-    fcn_geometry_checkInputsToFunctions(...
-        seed_points, '2column_of_numbers',[2 3]);
+        % Check the points input to be length greater than or equal to 2
+        fcn_geometry_checkInputsToFunctions(...
+            seed_points, '2column_of_numbers',[2 3]);
 
+    end
 end
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if 4 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plots = 1;
-elseif flag_do_debug
-    fig = figure;
-    fig_num = fig.Number;
+if (0==flag_max_speed)
+    if (4 == nargin)
+        temp = varargin{end};
+        if ~isempty(temp)
+            fig_num = temp;
+            figure(fig_num);
+            flag_do_plots = 1;
+        end
+    elseif flag_do_debug
+        fig = figure;
+        fig_num = fig.Number;
+    end
 end
 
 %% Solve for the circle
@@ -96,7 +126,7 @@ end
 N_segments = length(seed_points(:,1)) -1;
 
 distances = sum((seed_points(2:end,:) - seed_points(1:end-1,:)).^2,2).^0.5;
-unit_vectors = fcn_geometry_calcUnitVector(seed_points(2:end,:)-seed_points(1:end-1,:));
+unit_vectors = fcn_geometry_calcUnitVector(seed_points(2:end,:)-seed_points(1:end-1,:),-1);
 unit_orthogonals = unit_vectors*[0 1; -1 0];
 
 test_points = [];

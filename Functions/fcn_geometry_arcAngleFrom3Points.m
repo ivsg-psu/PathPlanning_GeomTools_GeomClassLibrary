@@ -33,8 +33,9 @@ function [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_cente
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
-%      cross
-%      sign
+%      fcn_geometry_circleCenterFrom3Points
+%      fcn_geometry_arcDirectionFrom3Points
+%      fcn_geometry_findAngleUsing2PointsOnCircle
 %
 % EXAMPLES:   
 %
@@ -47,11 +48,31 @@ function [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_cente
 % Revision history:
 % 2023_12_19 - sbrennan@psu.edu
 % -- original write of the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_debug = 0;     % Set equal to 1 for debugging
 
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
@@ -70,30 +91,30 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(3,4);
-    
-    % Check the points1 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points1, '2column_of_numbers');
+if 0==flag_max_speed
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(3,4);
 
-    N_points = length(points1(:,1));
+        % Check the points1 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points1, '2column_of_numbers');
 
-    % Check the points2 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points2, '2column_of_numbers',[N_points N_points]);
+        N_points = length(points1(:,1));
 
-    % Check the points3 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points3, '2column_of_numbers',[N_points N_points]);
-else
-    N_points = length(points1(:,1));
+        % Check the points2 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points2, '2column_of_numbers',[N_points N_points]);
+
+        % Check the points3 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points3, '2column_of_numbers',[N_points N_points]);
+    end
 end
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if 4 == nargin
+if (4 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -113,10 +134,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Find circle center and radius for each set of 3 points
-[circle_centers, radii] = fcn_geometry_circleCenterFrom3Points(points1, points2, points3);
+[circle_centers, radii] = fcn_geometry_circleCenterFrom3Points(points1, points2, points3,-1);
 
 % Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, -1);
 
 % Find the projection vectors from the centers of the circles to each point
 % set
@@ -125,14 +146,14 @@ arc_angle_in_radians_1_to_2 = fcn_geometry_findAngleUsing2PointsOnCircle(...
     radii,...
     points1,...
     points2,...
-    is_counterClockwise);
+    is_counterClockwise, -1);
 
 arc_angle_in_radians_1_to_3 = fcn_geometry_findAngleUsing2PointsOnCircle(...
     circle_centers,...
     radii,...
     points1,...
     points3,...
-    is_counterClockwise);
+    is_counterClockwise, -1);
 
 % Calculate the start angles
 % Find the projection vectors from the centers of the circles to the start

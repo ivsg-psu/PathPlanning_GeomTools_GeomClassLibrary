@@ -24,25 +24,46 @@ function unit_vectors = fcn_geometry_calcUnitVector(input_vectors, varargin)
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fitHoughLine
+% See the script: script_test_fcn_geometry_calcUnitVector
 % for a full test suite.
 
 % This function was written on 2023_12_15 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2023_12_15 
+% 2023_12_15 - S. Brennan
 % -- wrote the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
+% -- Fixed typo in comments on script call
 
+%% Debugging and Input checks
 
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
-
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==2 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -61,21 +82,22 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(1,2);
-    
-    % Check the projection_vector input to be length greater than or equal to 1
-    fcn_DebugTools_checkInputsToFunctions(...
-        input_vectors, '2column_of_numbers');   
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(1,2);
 
+        % Check the projection_vector input to be length greater than or equal to 1
+        fcn_DebugTools_checkInputsToFunctions(...
+            input_vectors, '2column_of_numbers');
+
+    end
 end
-
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 2<= nargin
+if (2<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -129,6 +151,17 @@ if flag_do_plots
         quiver(0,0,unit_vectors(ith_vector,1),unit_vectors(ith_vector,2),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
         
     end
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
     
 end % Ends check if plotting
 

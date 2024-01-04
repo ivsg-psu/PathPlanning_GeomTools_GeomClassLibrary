@@ -44,10 +44,31 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 % Revision history:
 % 2023_12_19 - sbrennan@psu.edu
 % -- original write of the code
+% 2024_01_03 - S. Brennan
+% -- added fast mode option
+% -- added environmental variable options
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_debug = 0;     % Set equal to 1 for debugging
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -62,35 +83,37 @@ end
 %    | | | '_ \| '_ \| | | | __/ __|
 %   _| |_| | | | |_) | |_| | |_\__ \
 %  |_____|_| |_| .__/ \__,_|\__|___/
-%              | |                  
-%              |_| 
+%              | |
+%              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(3,4);
-    
-    % Check the points1 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points1, '2column_of_numbers');
+if (0==flag_max_speed)
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(3,4);
 
-    N_points = length(points1(:,1));
+        % Check the points1 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points1, '2column_of_numbers');
 
-    % Check the points2 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points2, '2column_of_numbers',[N_points N_points]);
+        N_points = length(points1(:,1));
 
-    % Check the points2 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points2, '2column_of_numbers',[N_points N_points]);
-else
-    N_points = length(points1(:,1));
+        % Check the points2 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points2, '2column_of_numbers',[N_points N_points]);
+
+        % Check the points2 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points2, '2column_of_numbers',[N_points N_points]);
+    end
 end
+
+N_points = length(points1(:,1));
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if 4 == nargin
+if (4 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
