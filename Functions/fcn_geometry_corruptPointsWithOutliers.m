@@ -1,7 +1,7 @@
 function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points, varargin)
 % fcn_geometry_corruptPointsWithOutliers
-% given N points, with N>=2, creates a set of M points per unit distance
-% between these points randomly distributed with variance sigma.
+% given a set of [Nx2] points, randomly adds outliers in the orthogonal
+% direction using a random-normal magnitude.
 %
 % corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 % (probability_of_corruption), (magnitude_of_corruption), (fig_num));
@@ -17,8 +17,8 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 %      outlier, from 0 to 1 (default is 0.02)
 %
 %      magnitude_of_corruption: the magnitude of corruption wherein the
-%      outlier is sampled from a uniform distribution, as factor of the
-%      y-axis range. The default is twice the y-range (2)
+%      outlier multiplied by a random-normal distribution. The default is
+%      2.
 %
 %      fig_num: the figure number to use for plotting
 %
@@ -44,6 +44,9 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 % 2024_01_03 - S. Brennan
 % -- added fast mode option
 % -- added environmental variable options
+% 2024_01_05 - S. Brennan
+% -- switched to random-normal distributions
+% -- fixed bug where only y values were being corrupted
 
 %% Debugging and Input checks
 
@@ -70,7 +73,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -162,15 +165,12 @@ if ~isempty(indicies_to_become_outliers)
     orthogonal_unit_vectors_at_indicies = unit_vectors_at_indicies*[0 1; -1 0];
 
     % Add random magnitudes onto orthogonal direction
-    y_range = max(input_points(:,2)) - min(input_points(:,2));
-    positive_or_negative = (rand(length(indicies_to_become_outliers),1)>0.5)*2.0 - 1;
-    try
-        magnitude_of_change = rand(length(indicies_to_become_outliers),1).*y_range.*magnitude_of_corruption./2 .* positive_or_negative;
-    catch
-        disp('stop here')
-    end
+    % y_range = max(input_points(:,2)) - min(input_points(:,2));
+    % positive_or_negative = (rand(length(indicies_to_become_outliers),1)>0.5)*2.0 - 1;
+    % magnitude_of_change = rand(length(indicies_to_become_outliers),1).*y_range.*magnitude_of_corruption./2 .* positive_or_negative;
+    magnitude_of_change = randn(length(indicies_to_become_outliers),1).*magnitude_of_corruption;
 
-    corrupted_points(indicies_to_become_outliers,:) = corrupted_points(indicies_to_become_outliers,2) + magnitude_of_change.*orthogonal_unit_vectors_at_indicies;
+    corrupted_points(indicies_to_become_outliers,:) = corrupted_points(indicies_to_become_outliers,:) + magnitude_of_change.*orthogonal_unit_vectors_at_indicies;
 
 end
 
@@ -187,23 +187,33 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    figure(fig_num);
+    % Plot the results in point space
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end    
+
     hold on;
     grid on;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
 
     % Plot the input points
-    plot(input_points(:,1),input_points(:,2),'g.','MarkerSize',20);
+    plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',20);
     
     % Plot the corrupted points
     plot(corrupted_points(:,1),corrupted_points(:,2),'m.','MarkerSize',15);
 
-    % Make axis slightly larger
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
     
 end % Ends check if plotting
 

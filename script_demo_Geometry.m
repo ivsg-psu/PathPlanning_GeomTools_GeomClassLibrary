@@ -298,7 +298,24 @@ IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
 best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
 
 %% Demo Hough circle fitting
-fig_num = 1111;
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+fig_num = 22222;
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 

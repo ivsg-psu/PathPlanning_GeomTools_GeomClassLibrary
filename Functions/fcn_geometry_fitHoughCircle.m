@@ -23,6 +23,20 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %
 %      (OPTIONAL INPUTS)
 % 
+%      expected_radii_range: a vector in form of [r_min r_max] indicating
+%      expected radius. Any radii outside this range will not be assessed. 
+% 
+%      flag_use_permutations: specify permutation type. Can be set to:
+%
+%          0:search for permutations via ordering 1-2-3, then 2-3-4, etc.
+%          This assumes best-fit circle will be formed by points in direct
+%          sequence, and the points are in order (VERY fast)
+%
+%          1:search for permutations via nchoosek, which assumes best-fit
+%          circle will not be formed by points not in direct sequence, but
+%          the points are in order. (somewhat slow, especially in number of
+%          points is greater than 100).  
+% 
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -70,6 +84,10 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 % -- added fast mode by allowing fig_num set to -1
 % 2024_01_03 - S. Brennan
 % -- output only the best fits, keeping same format as fitHoughLine code
+% 2024_01_05 - S. Brennan
+% -- allow user to specify circle radii to search over
+% -- allow user to specify search sequence
+% -- added station tolerance to enable arc-fits
 
 
 %% Debugging and Input checks
@@ -78,7 +96,7 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{1},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -119,7 +137,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(3,6);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -134,10 +152,28 @@ if 0==flag_max_speed
     end
 end
 
+% Does user want to specify expected_radii_range?
+expected_radii_range = [-inf inf];
+if (4<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        expected_radii_range = temp;
+    end
+end
+
+% Does user want to specify flag_use_permutations?
+flag_use_permutations = 1;
+if (5<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        flag_use_permutations = temp;
+    end
+end
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (4<=nargin) && (0==flag_max_speed)
+if (6<=nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -183,7 +219,36 @@ end
 % NOTE: to find the permutations, use perms (for example: perms(1:3)). This
 % will return all the ordering of the columns used in nchoosek that can be
 % tried.
-combos_paired = nchoosek(1:N_points,3);
+switch flag_use_permutations
+    case 0
+        combos_paired = [(1:N_points-2)' (2:N_points-1)' (3:N_points)'];
+    case 1
+        combos_paired = nchoosek(1:N_points,3);
+    otherwise
+        if isinf(flag_use_permutations)
+            error('Cannot set flag_use_permutations to infinity.');
+        elseif flag_use_permutations>0
+            combos_paired = [(1:N_points-2)' (2:N_points-1)' (3:N_points)'];
+            random_combos = rand(N_points-2,1);
+
+            % Throw a random number
+            if flag_use_permutations<1
+                % check if random number for each combo is less than the
+                % value given by user - if so, keep it!
+                keeps = random_combos<=flag_use_permutations;
+                combos_paired = combos_paired(keeps,:);
+            else
+
+                % sort the random numbers, keeping only top N of them
+                N_keeps = ceil(flag_use_permutations);
+                N_keeps = min([N_keeps length(combos_paired(:,1))]);
+                [~,indicies_sorted] = sort(random_combos);
+                combos_paired = combos_paired(indicies_sorted(1:N_keeps),:);
+            end
+        else
+            error('Invalid setting for flag_use_permutations')
+        end
+end
 
 % How many combinations are there?
 N_permutations = size(combos_paired,1);
@@ -211,14 +276,26 @@ for ith_combo = 1:N_permutations
 
     % Find fitted curve - call the function in "fast" mode
     [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points(1,:),test_source_points(2,:),test_source_points(3,:),-1);
-    % [circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(test_source_points); %,debug_fig_num);
     
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
 
-    % Find points in agreement
-    [agreement_indicies, domainPolyShape] = ...
-        fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, transverse_tolerance, flag_max_speed);
+    if (circleRadius>=expected_radii_range(1)) && (circleRadius<=expected_radii_range(2))
+        % Find points in agreement?
+        if flag_do_debug
+            % Do region-based testing (this is very slow)
+            [agreement_indicies, domainPolyShape] = ...
+                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_points, transverse_tolerance, station_tolerance, 0);
+        else
+            % Do inequality-based testing (fast)
+            [agreement_indicies, domainPolyShape] = ...
+                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_points, transverse_tolerance, station_tolerance, 1);
+        end
+    else
+        agreement_indicies = [];
+        domainPolyShape = [];
+    end
+
     
     % Save the count of points in agreement
     agreement_count = length(agreement_indicies);
@@ -307,7 +384,7 @@ if flag_do_plots
     plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
 
     % Plot the source points
-    plot(points(best_fit_source_indicies,1),points(best_fit_source_indicies,2),'b.','MarkerSize',15);
+    plot(points(best_fit_source_indicies,1),points(best_fit_source_indicies,2),'bo','MarkerSize',15);
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -414,7 +491,7 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_findAgreementIndicies
-function [agreement_indicies, domainPolyShape] = fcn_INTERNAL_findAgreementIndicies(points,circleCenter,circleRadius, transverse_tolerance, flag_max_speed)
+function [agreement_indicies, domainPolyShape] = fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_points, transverse_tolerance, station_tolerance, flag_max_speed)
 
 % Set a flag to use enclosed domains to find points in agreement, rather
 % than inequalities. This method is more general and easier to debug, but
@@ -430,6 +507,8 @@ domainPolyShape = [];
 % Find agreement domain
 if flag_use_domain_method
 
+    % Create a domain by doing a large range of angles across an inner and
+    % outer arc that spans the test area
     angles = (0:1:359.9999)'*pi/180;
     inner_radius = max(0,(circleRadius - transverse_tolerance));
     outer_radius = circleRadius + transverse_tolerance;
@@ -437,7 +516,7 @@ if flag_use_domain_method
     outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
     best_fit_domain_box = [inner_arc; flipud(outer_arc)];
 
-
+    % Find the points within the domain using isinterior
     domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
     agreement_indicies_binary_form = isinterior(domainPolyShape,points);
 
@@ -454,13 +533,55 @@ else
     % Find the indicies in station agreement
     % Method: sort the points by arc angle, keeping only points that are
     % within the same arc angle as the test segment
+    
+    if ~isempty(station_tolerance)
+        % Find arc of test segment
+        [~, arc_angle_in_radians_1_to_3, ~, ~, start_angle_in_radians] = ...
+            fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
+        start_angle_in_radians = mod(start_angle_in_radians,2*pi);        
+        end_angle_in_radians = start_angle_in_radians + arc_angle_in_radians_1_to_3;
 
-    % [~, arc_angle_in_radians_1_to_3, ~, ~, start_angles_in_radians] = ...
-    %     fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
+        flag_crosses_over_2pi = 0;
+        if end_angle_in_radians>2*pi
+            flag_crosses_over_2pi = 1;
+        elseif end_angle_in_radians<0
+            flag_crosses_over_2pi = -1;
+        end
+        
+        % Find angles of the points, relative to this center
+        shifted_points = (points - circleCenter);
+        point_angles = atan2(shifted_points(:,2),shifted_points(:,1));
+        point_angles = mod(point_angles,2*pi);
 
-    % indices in agreement found in each iteration are stored in
-    % "agreementIndices" matrix
-    agreement_indicies_binary_form = indicies_in_transverse_agreement;
+        % Perform test
+        URHERE
+        if flag_crosses_over_2pi==1
+            % This happens if the direction is positive
+            points_greater_than_start = find(point_angles>=start_angle_in_radians);
+            points_less_than_end      = find(point_angles<=end_angle_in_radians);
+            points_within_angle       = intersect(points_greater_than_start,points_less_than_end);
+        elseif flag_crosses_over_2pi==-1
+            % This happens if the direction is positive
+            points_less_than_start    = find(point_angles<=start_angle_in_radians);
+            points_greater_than_end   = find(point_angles>=end_angle_in_radians);
+            points_within_angle       = intersect(points_less_than_start,points_greater_than_end);
+        else
+            if arc_angle_in_radians_1_to_3>=0
+                points_greater_than_start = find(point_angles>=start_angle_in_radians);
+                points_less_than_end      = find(point_angles<=end_angle_in_radians);
+                points_within_angle       = intersect(points_greater_than_start,points_less_than_end);
+            else
+                points_less_than_start    = find(point_angles<=start_angle_in_radians);
+                points_greater_than_end   = find(point_angles>=end_angle_in_radians);
+                points_within_angle       = intersect(points_less_than_start,points_greater_than_end);
+            end
+        end
+
+        agreement_indicies_binary_form = indicies_in_transverse_agreement;
+    else
+        agreement_indicies_binary_form = indicies_in_transverse_agreement;
+    end
+
 end
 
 agreement_indicies = find(agreement_indicies_binary_form==1);
