@@ -86,6 +86,8 @@ function [...
 % 2021-04-22
 % -- Added input checking
 % -- Added cross-product to see if innner/outer connected
+% 2024_01_08 - S. Brennan
+% -- fixed bug with cross function call to force it to cross column-wise
 
 
 %% Debugging and Input checks
@@ -267,9 +269,9 @@ end
 % vectors
 
 cross1 = cross([unit_radial_to_inpoints, zeros(num_circles,1)],...
-    [unit_vector_in, zeros(num_circles,1)]);
+    [unit_vector_in, zeros(num_circles,1)],2);
 cross_radius_out_to_out = cross([unit_radial_to_outpoints, zeros(num_circles,1)],...
-    [unit_vector_out, zeros(num_circles,1)]);
+    [unit_vector_out, zeros(num_circles,1)],2);
 
 % If the cross products have different signs, then they are bad
 bad_cross_product_indices = (cross1(:,3).*cross_radius_out_to_out(:,3))< 0;
@@ -280,10 +282,10 @@ angles(bad_cross_product_indices) = NaN;
 % checking the directions of the cross products
 cross_in_to_radius_in = cross(...
     [unit_vector_in, zeros(num_circles,1)],...
-    [unit_radial_to_inpoints, zeros(num_circles,1)]);
+    [unit_radial_to_inpoints, zeros(num_circles,1)],2);
 cross_in_to_out = cross(...
     [unit_vector_in, zeros(num_circles,1)],...
-    [unit_vector_out, zeros(num_circles,1)]);
+    [unit_vector_out, zeros(num_circles,1)],2);
 
 
 % If the cross_in_to_radius_in is in opposite direction from

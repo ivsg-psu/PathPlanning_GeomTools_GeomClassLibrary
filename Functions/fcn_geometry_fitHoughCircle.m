@@ -1,5 +1,5 @@
-function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(points, transverse_tolerance, station_tolerance, varargin)
+function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+    fcn_geometry_fitHoughCircle(points, transverse_tolerance, varargin)
 % fcn_geometry_fitHoughCircle
 %
 % This function takes the input points and tolerance as the input and
@@ -15,13 +15,14 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      fit (if distance is less than or equal to the tolerance), or is
 %      "outside" the fit (if distance is greater than the tolerance).
 %
+%      (OPTIONAL INPUTS)
+%
 %      station_tolerance: the projection distance between the points in a
 %      curve fit, along the direction of the line, that indicate whether a
 %      point "belongs" to the linear fit (if distance is less than or equal
 %      to the tolerance), or is "outside" the fit (if distance is greater
-%      than the tolerance).
-%
-%      (OPTIONAL INPUTS)
+%      than the tolerance). If left empty, then a circle fit is performed
+%      using only the transverse_tolerance.
 % 
 %      expected_radii_range: a vector in form of [r_min r_max] indicating
 %      expected radius. Any radii outside this range will not be assessed. 
@@ -47,8 +48,9 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      returns:
 %
 %      best_fitted_parameters: the best-fitted circle or arc in format of
-%      [x_center, y_center, radius] for the best 3-point combination of the
-%      point permutation. This is returned as a [1 x 3] matrix
+%      [x_center, y_center, radius, start_angle_in_radians,
+%      end_angle_in_radians] for the best 3-point combination of the point
+%      permutation. This is returned as a [1 x 5] matrix
 %
 %      best_fit_source_indicies: the three indicies, in [1x3] vector format,
 %      of the points that produced the best fit.
@@ -56,6 +58,10 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      best_agreement_indicies: the indicies of the points that are within
 %      agreement of the best-fit parameters, given the transverse and
 %      station tolerance settings.
+%
+%      flag_is_a_circle: returns 1 if the best fit is a circle, 0 if the
+%      best fit was an arc. Note: it will only perform circle-fitting if
+%      the station_tolerance is left blank.
 %
 % DEPENDENCIES:
 %
@@ -137,7 +143,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,6);
+        narginchk(2,6);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -146,16 +152,23 @@ if 0==flag_max_speed
         % Check the transverse_tolerance input is a positive single number
         fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
 
-        % Check the station_tolerance input is a positive single number
-        fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+    end
+end
 
+
+% Does user want to specify station_tolerance?
+station_tolerance = [];
+if (4<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        station_tolerance = temp;
     end
 end
 
 % Does user want to specify expected_radii_range?
 expected_radii_range = [-inf inf];
 if (4<=nargin)
-    temp = varargin{1};
+    temp = varargin{2};
     if ~isempty(temp)
         expected_radii_range = temp;
     end
@@ -164,7 +177,7 @@ end
 % Does user want to specify flag_use_permutations?
 flag_use_permutations = 1;
 if (5<=nargin)
-    temp = varargin{2};
+    temp = varargin{3};
     if ~isempty(temp)
         flag_use_permutations = temp;
     end
@@ -286,12 +299,12 @@ for ith_combo = 1:N_permutations
         % Find points in agreement?
         if flag_do_debug
             % Do region-based testing (this is very slow)
-            [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians] = ...
-                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, combos_paired(ith_combo,:), transverse_tolerance, station_tolerance, 0);
+            [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians, flag_is_a_circle] = ...
+                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, combos_paired(ith_combo,:), transverse_tolerance, station_tolerance, best_agreement_count, 0);
         else
             % Do inequality-based testing (fast)
-            [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians] = ...
-                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, combos_paired(ith_combo,:), transverse_tolerance, station_tolerance, 1);
+            [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians, flag_is_a_circle] = ...
+                fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, combos_paired(ith_combo,:), transverse_tolerance, station_tolerance, best_agreement_count, 1);
         end
     else
         agreement_indicies = [];
@@ -351,7 +364,7 @@ end
 
 
 % Save results to outputs
-best_fitted_parameters = fitted_parameters(best_agreement_index,:);
+best_fitted_parameters = [fitted_parameters(best_agreement_index,:) best_start_angle_in_radians best_end_angle_in_radians];
 best_fit_source_indicies = combos_paired(best_agreement_index,:);
 best_agreement_indicies = find(best_agreement_indicies_binary_form==1);
 
@@ -389,6 +402,12 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the circle fit
+    if flag_is_a_circle==1
+        title('Circle fit');
+    else
+        title('Arc fit');
+    end
+
     fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3), 'b-',fig_num)
     fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3)-transverse_tolerance, 'r-',fig_num) 
     fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3)+transverse_tolerance, 'r-',fig_num) 
@@ -509,9 +528,10 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_findAgreementIndicies
-function [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians] = fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_point_indicies, transverse_tolerance, station_tolerance, flag_max_speed)
+function [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians, flag_is_a_circle] = ...
+    fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_point_indicies, transverse_tolerance, station_tolerance, best_agreement_count, flag_max_speed)
 
-test_source_points = points(test_source_point_indicies,:);
+
 flag_do_debug = 0;
 
 % Set a flag to use enclosed domains to find points in agreement, rather
@@ -535,6 +555,7 @@ if flag_do_debug
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the source points
+    test_source_points = points(test_source_point_indicies,:);
     plot(test_source_points(:,1),test_source_points(:,2),'bo','MarkerSize',15);
     plot(test_source_points(1,1),test_source_points(1,2),'b.','MarkerSize',30);
 
@@ -593,31 +614,38 @@ if flag_do_debug
     plot(points(indicies_in_transverse_agreement,1),points(indicies_in_transverse_agreement,2),'r.','MarkerSize',15);
 end
 
-% Find the indicies in station agreement?
-if ~isempty(station_tolerance)
-    % Grab only the points in radial agreement
-    points_in_radial_agreement = points(indicies_in_transverse_agreement,:);
+% Find the indicies in station agreement? Only do this if the transverse
+% count is larger than current best count (this needs to be debugged)
+if 1==1 %length(indicies_in_transverse_agreement)<best_agreement_count 
+    if ~isempty(station_tolerance)
+        % Grab only the points in radial agreement
+        points_in_radial_agreement = points(indicies_in_transverse_agreement,:);
 
-    % Find index of the source point
-    index_source_point = find(indicies_in_transverse_agreement == test_source_point_indicies(1),1);
+        % Find index of the source point
+        index_source_point = find(indicies_in_transverse_agreement == test_source_point_indicies(1),1);
 
-    % Call a function to find which points are in station agreement
-    % also
-    [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = fcn_INTERNAL_findArcAgreementIndicies(points_in_radial_agreement, circleCenter, circleRadius, index_source_point, station_tolerance);
+        % Call a function to find which points are in station agreement
+        % also
+        [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = fcn_INTERNAL_findArcAgreementIndicies(points_in_radial_agreement, circleCenter, circleRadius, index_source_point, station_tolerance);
 
-    if flag_is_a_circle
-        fprintf(1,'This is a circle.');
-    end
-
-    % Calculate agreement with both vectors
-    % agreement_indicies_binary_form = indicies_in_transverse_agreement.*points_within_angle;
-    try
-        agreement_indicies = indicies_in_transverse_agreement(indicies_in_station_agreement);
-    catch
-        disp('stop here');
+        % Calculate agreement with both vectors
+        % agreement_indicies_binary_form = indicies_in_transverse_agreement.*points_within_angle;
+        try
+            agreement_indicies = indicies_in_transverse_agreement(indicies_in_station_agreement);
+        catch
+            disp('stop here');
+        end
+    else
+        agreement_indicies = indicies_in_transverse_agreement;
+        flag_is_a_circle = 1;
+        start_angle_in_radians = 0;
+        end_angle_in_radians = 2*pi;
     end
 else
     agreement_indicies = indicies_in_transverse_agreement;
+    flag_is_a_circle = [];
+    start_angle_in_radians = [];
+    end_angle_in_radians = [];
 end
 
 if flag_do_debug

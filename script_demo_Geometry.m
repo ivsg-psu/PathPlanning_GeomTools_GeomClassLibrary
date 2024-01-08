@@ -217,6 +217,7 @@ assert(isequal(start_angles_in_radians,0));
 %                       |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Filling test data for lines and line segments
 fig_num = 1;
 figure(fig_num);
 clf;
@@ -225,7 +226,7 @@ seed_points = [2 3; 4 5; 7 0; 9 5];
 M = 10;
 sigma = 0.02;
 
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
 
 % Corrupt the results with outliers
@@ -233,11 +234,50 @@ fig_num = 2;
 probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
 % Shuffle points?
-shuffled_corrupted_test_points = fcn_geometry_shufflePointOrdering(corrupted_test_points);
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+%% Filling test data for circles
+fig_num = 4444;
+figure(fig_num);
+clf;
+
+
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+axis equal;
+
+%% Filling test data for arcs
+circle_seed_points = [2 3; 4 5; 6 3];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+arc_test_points = fcn_geometry_fillArcTestPoints(circle_seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_arc_test_points = fcn_geometry_corruptPointsWithOutliers(arc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,7 +291,13 @@ shuffled_corrupted_test_points = fcn_geometry_shufflePointOrdering(corrupted_tes
 % |_|   \___|_|  |_| \___|\___|\__| |_|    |_|\__|___/
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Perfect line fit
 [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(seed_points(1:2,:));
+
+%% Perfect circle fit
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
 
 
 %% 
@@ -272,7 +318,7 @@ transverse_tolerance = 0.2;
 station_tolerance = [];
 
 [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+    fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
 %% Demo Hough line segment fitting
 fig_num = 11111;
@@ -280,15 +326,15 @@ transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 
 [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughLine(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+    fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance,  fig_num);
 
 %% Demo linear pseudo-regression from Hough Line votes
 % Show how to do line fitting from Hough votes
 fig_num = 11111; % Reuse the previous figure number, as it puts the results atop that plot
 
 % Extract out points from the indicies
-source_points = shuffled_corrupted_test_points(best_fit_source_indicies,:);
-associated_points_in_domain = shuffled_corrupted_test_points(best_agreement_indicies,:); 
+source_points = shuffled_corrupted_line_test_points(best_fit_source_indicies,:);
+associated_points_in_domain = shuffled_corrupted_line_test_points(best_agreement_indicies,:); 
 
 % Perform the regression fit
 [best_fit_parameters, best_fit_domain_box] = ...
@@ -301,7 +347,16 @@ domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'S
 IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
 best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
 
-%% Demo Hough circle fitting
+%% Demo Hough arc and circle fitting
+% Change the station tolerance to generate different fits
+
+fig_num = 23;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
 trueParameters = [true_circleCenter true_circleRadius];
@@ -309,21 +364,47 @@ trueParameters = [true_circleCenter true_circleRadius];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
 
 % Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
-test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption));
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
-fig_num = 22222;
-transverse_tolerance = 0.2;
-station_tolerance = 0.4;
+% Fill test data - 2 arcs
+corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
 
-[fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(shuffled_corrupted_test_points, transverse_tolerance, station_tolerance,  fig_num);
+% Peform the fits
+inputPoints = corrupted_twoarc_test_points;
+transverse_tolerance = 0.1;
+expected_radii_range = [1 3];
+flag_use_permutations = [];
+
+% Use station tolerance low to find only largest arc
+station_tolerance = 0.3;
+fig_num = 7777;
+figure(fig_num); clf;
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+% Make station tolerance larger so it finds entire arc, connecting together
+% one side to another but not back around thus finding a large arc and not a circle
+station_tolerance = 3;
+fig_num = 7788;
+figure(fig_num); clf;
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+% Force fit to a circle by shutting station tolerance off
+station_tolerance = [];
+fig_num = 7799;
+figure(fig_num); clf;
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
 
 
 %%

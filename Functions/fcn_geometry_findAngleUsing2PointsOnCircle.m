@@ -69,6 +69,8 @@ function [...
 % 2024_01_03 - S. Brennan
 % -- added fast mode option
 % -- added environmental variable options
+% 2024_01_08 - S. Brennan
+% -- fixed bug with cross function call to force it to cross column-wise
 
 %% Debugging and Input checks
 
@@ -188,7 +190,7 @@ num_circles = length(centers(:,1));
 
 cross_in_to_out = cross(...
     [unit_radial_to_inpoints, zeros(num_circles,1)],...
-    [unit_radial_to_outpoints, zeros(num_circles,1)]);
+    [unit_radial_to_outpoints, zeros(num_circles,1)],2);
 cross_product = cross_in_to_out(:,3);
 cross_product(cross_product==0) = cross_product_direction(cross_product==0);
 

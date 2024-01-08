@@ -66,6 +66,8 @@ function single_points_tangent = ...
 % 2021-04-24
 % -- Used the results from fcn_geometry_findTangentPointsFromPointToCircle
 % to simplify the code (and force error-checking into that part).
+% 2024_01_08 - S. Brennan
+% -- fixed bug with cross function call to force it to cross column-wise
 
 
 
@@ -160,7 +162,7 @@ vectors_points_to_tangents_1 = points_tangent(1:Ncircles,:) - points;
 % Do the cross products
 cross_product_tangents_to_circleCenters = cross(...
     [vectors_points_to_tangents_1 zeros(Ncircles,1)],...
-    [vectors_tangent_to_circleCenters_1 zeros(Ncircles,1)]);
+    [vectors_tangent_to_circleCenters_1 zeros(Ncircles,1)],2);
 
 % Check the signs
 signs = (cross_product_tangents_to_circleCenters(:,3).*cross_product_goal)>0;

@@ -58,6 +58,8 @@ function [cross_products, err] ...
 % Revision History:
 % 2021-04-25
 % -- First write of the code
+% 2024_01_08 - S. Brennan
+% -- fixed bug with cross function call to force it to cross column-wise
 
 %% Debugging and Input checks
 flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -126,7 +128,7 @@ first_vectors = diff(path(1:end-1,:));
 second_vectors = diff(path(2:end,:));
 
 % Calculate the cross product
-cross_result = cross([first_vectors zero_col],[second_vectors zero_col]);
+cross_result = cross([first_vectors zero_col],[second_vectors zero_col],2);
 cross_products = cross_result(:,3);
 
 % Check for errors?

@@ -92,7 +92,6 @@ end
 flag_new_figure = 0;
 if 4 == nargin
     fig_num = varargin{end};
-    figure(fig_num);
     flag_do_plot = 1;
 else
     if flag_do_debug
@@ -106,7 +105,6 @@ else
     end
 end
 
-figure(fig_num);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _
@@ -117,6 +115,8 @@ figure(fig_num);
 %  |_|  |_|\__,_|_|_| |_|
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure(fig_num);
 
 if flag_new_figure        
     hold on;

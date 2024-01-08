@@ -47,6 +47,9 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 % 2024_01_03 - S. Brennan
 % -- added fast mode option
 % -- added environmental variable options
+% 2024_01_08 - S. Brennan
+% -- changed plotting to plot each case separately
+% -- fixed bug with cross function call to force it to cross column-wise
 
 %% Debugging and Input checks
 
@@ -138,7 +141,8 @@ end
 projection_points1_to_points2 = points2 - points1;
 projection_points1_to_points3 = points3 - points1;
 
-cross_product = cross([projection_points1_to_points2 zeros(N_points,1)], [projection_points1_to_points3 zeros(N_points,1)]);
+% Do the cross product from segment 1-2 to segment 1-3
+cross_product = cross([projection_points1_to_points2 zeros(N_points,1)],[projection_points1_to_points3 zeros(N_points,1)],2);
 
 is_counterClockwise = sign(cross_product(:,3));
 
@@ -162,18 +166,15 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    hold on % allow multiple plot calls
-    grid on;
-    grid minor;
-    axis equal;
-    
-    % Plot the inputs
-    plot(points1(:,1),points1(:,2),'g.','MarkerSize',30);  % Plot all the points1
-    plot(points2(:,1),points2(:,2),'b.','MarkerSize',20);  % Plot all the points2
-    plot(points3(:,1),points3(:,2),'r.','MarkerSize',10);  % Plot all the points3
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
 
-    axis equal;
-    grid on; grid minor;
+    N_colors = length(color_ordering(:,1));
+
+    tiledlayout('flow')
 
     % Calculate the location for text
     half_point = (points1+points3)/2;
@@ -183,27 +184,51 @@ if flag_do_plots
 
     % plot all the results    
     for i_fit = 1:N_points    
+
+        nexttile;
+
+        hold on;
+        grid on;
+        grid minor;
+        axis equal;
+
+        if is_counterClockwise(i_fit)==1
+            label_clockwise_or_counterclockwise = 'Counter-clockwise';
+        else
+            label_clockwise_or_counterclockwise = 'Clockwise';
+        end
+
+        title(sprintf('Point set %.0d: %s', i_fit, label_clockwise_or_counterclockwise),'Interpreter','none');
+
+
+        % Plot the inputs
+        plot(points1(i_fit,1),points1(i_fit,2),'g.','MarkerSize',30);  % Plot points1
+        plot(points2(i_fit,1),points2(i_fit,2),'b.','MarkerSize',20);  % Plot points2
+        plot(points3(i_fit,1),points3(i_fit,2),'r.','MarkerSize',10);  % Plot points3
+
+
         % Plot the connecting lines
-        plot([points1(i_fit,1) points3(i_fit,1)],[points1(i_fit,2) points3(i_fit,2)],'b-','LineWidth',3);
+        plot([points1(i_fit,1) points3(i_fit,1)],[points1(i_fit,2) points3(i_fit,2)],'-','LineWidth',3,'Color',color_ordering(mod(i_fit,N_colors)+1,:));
 
         % Plot the midpoint lines
-        plot([half_point(i_fit,1) points2(i_fit,1)],[half_point(i_fit,2) points2(i_fit,2)],'b-','LineWidth',3);
+        plot([half_point(i_fit,1) points2(i_fit,1)],[half_point(i_fit,2) points2(i_fit,2)],'-','LineWidth',3,'Color',color_ordering(mod(i_fit,N_colors)+1,:));
 
         % Label the result
-
         nudge = 0.1*difference(i_fit);
         text(text_locations(i_fit,1)+nudge,text_locations(i_fit,2)+nudge,sprintf('%.0d',is_counterClockwise(i_fit)));
+
+        % Make axis slightly larger?
+        if flag_rescale_axis
+            temp = axis;
+            %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+            axis_range_x = temp(2)-temp(1);
+            axis_range_y = temp(4)-temp(3);
+            percent_larger = 0.3;
+            axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+        end
     end
 
-    % Make axis slightly larger?
-    if flag_rescale_axis
-        temp = axis;
-        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-    end
+
 end
 
 if flag_do_debug

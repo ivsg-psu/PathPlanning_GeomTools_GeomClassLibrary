@@ -9,6 +9,7 @@ close all;
 
 %% BASIC example 1 - positive
 fig_num = 1;
+figure(fig_num);clf;
 
 points1 = [0 0];
 points2 = [1 4];
@@ -19,6 +20,7 @@ assert(isequal(is_counterClockwise,1))
 
 %% BASIC example 2 - negative
 fig_num = 2;
+figure(fig_num);clf;
 
 points1 = [0 0];
 points2 = [-1 4];
@@ -26,8 +28,10 @@ points3 = [0 5];
 is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
 
 assert(isequal(is_counterClockwise,-1))
-%% BASIC example 2 - stacked
+
+%% BASIC example 3 - stacked
 fig_num = 3;
+figure(fig_num);clf;
 
 points1 = [0 0; 3 3;];
 points2 = [-1 4; 4 4];
@@ -68,6 +72,16 @@ fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+%% Debugging case
+fig_num = 1232;
+figure(fig_num);clf;
+
+seed_points = [2 3; 4 5; 6 3; 1 1; -2 -1];
+
+% Find if the arcs are counterclockwise or clockwise
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
+assert(isequal(is_counterClockwise,[-1; -1; 1]))
 
 
 %% Fail cases follow
