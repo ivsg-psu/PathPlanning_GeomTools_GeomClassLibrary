@@ -27,11 +27,11 @@ close all
 
 %% Fill test data - 1 segment
 fig_num = 23;
-% figure(fig_num);
-% clf;
-% hold on;
-% axis equal
-% grid on;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
@@ -114,13 +114,43 @@ fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
+%% Test using station_tolerance
+fig_num = 7777;
+figure(fig_num); clf;
+
+inputPoints = [test_points(1:30,:); test_points(50:60,:)];
+transverse_tolerance = 0.1;
+station_tolerance = 0.5;
+expected_radii_range = [1 3];
+flag_use_permutations = [];
+
+% Use station tolerance to find only largest arc
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+% Make station tolerance larger so it finds entire arc, connecting together
+fig_num = 7788;
+figure(fig_num); clf;
+station_tolerance = 3;
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+% Fit a circle by shutting station tolerance off
+fig_num = 7799;
+figure(fig_num); clf;
+station_tolerance = [];
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+
+
 %% Test using flag_use_permutations to search in sequence
 fig_num = 44;
 figure(fig_num); clf;
 
 inputPoints = test_points;
 transverse_tolerance = 0.1;
-station_tolerance = 0.1;
+station_tolerance = 0.5;
 expected_radii_range = [1 3];
 flag_use_permutations = 0;
 

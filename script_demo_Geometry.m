@@ -144,9 +144,13 @@ points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
 hold on
 figure(1); clf;
 for i=1:length(points(:,1))-2
-    fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),fig_num);
+    [centers, radii] = fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),fig_num);
     plot(points(:,1),points(:,2),'r-');
 end
+
+%% Plotting a circle
+fig_num = 107;
+fcn_geometry_plotCircle(centers,radii,'b-',fig_num) 
 
 %% Calculating an arc from 2 points and a direction
 fig_num = 100;
