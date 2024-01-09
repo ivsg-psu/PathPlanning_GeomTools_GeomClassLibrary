@@ -1,11 +1,11 @@
-function [regression_fit_circle_center_and_radius, domain_box, radial_errors, standard_deviation]  =  ...
-    fcn_geometry_fitCircleRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
-% fcn_geometry_fitCircleRegressionFromHoughFit
-% Given a set of points that are matched to a circle via a Hough vote,
-% finds the circular regression fit circle and domain box. 
+function [regression_fit_arc_center_and_radius_and_angles, domain_box, radial_errors, standard_deviation]  =  ...
+    fcn_geometry_fitArcRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
+% fcn_geometry_fitArcRegressionFromHoughFit
+% Given a set of points that are matched to an arc via a Hough vote,
+% finds the arc regression fit and domain box. 
 % 
 % Format: 
-% [regression_fit_circle_center_and_radius, domain_box] = fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+% [regression_fit_arc_center_and_radius_and_angles, domain_box] = fcn_geometry_fitArcRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
 %
 % INPUTS:
 %      source_points: a 3x2 matrix of the points used to create the Hough circle fit (used to find direction): 
@@ -25,9 +25,9 @@ function [regression_fit_circle_center_and_radius, domain_box, radial_errors, st
 %
 % OUTPUTS:
 %
-%      regression_fit_circle_center_and_radius: a 3x1 matrix of the format:
+%      regression_fit_arc_center_and_radius_and_angles: a 5x1 matrix of the format:
 %
-%      [circleCenter_x  circleCenter_y; circleRadius]
+%      [circleCenter_x  circleCenter_y circleRadius arc_start_angle_in_radians arc_end_angle_in_radians]
 %
 %      domain_box: the box that encloses the 2-standard-deviation interval
 %      around the regression circle fit.
@@ -39,13 +39,11 @@ function [regression_fit_circle_center_and_radius, domain_box, radial_errors, st
 %
 % DEPENDENCIES:
 %
-%      fcn_DebugTools_checkInputsToFunctions
-%      fcn_geometry_calcUnitVector
-%      fcn_geometry_fitSlopeInterceptNPoints 
+%      fcn_geometry_fitCircleRegressionFromHoughFit
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fitCircleRegressionFromHoughFit
+% See the script: script_test_fcn_geometry_fitArcRegressionFromHoughFit
 % for a full test suite.
 %
 % This function was written on 2024_01_09 by S. Brennan
@@ -138,77 +136,12 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% The solution approach is based on the formula for a circle:
-% 
-% (x - x0)^2 + (y - y0)^2 = r0^2
-% 
-% where x0, y0 denotes the circle's center, and r0 is the radius. The goal
-% is to find x0, y0, and r0 given data in the form of x,y.
-%
-% To solve this, we multiply out the squared terms for x,y, and rarrange
-%
-% (x^2 + y^2) - 2x*x0 - 2y*y0 + (x0^2+y0^2) = r0^2
-%
-% this is true for each x,y combination. Namely:
-% 
-% (x^2 + y^2)_1 - 2x_1*x0 - 2y_1*y0 + (x0^2+y0^2) = r0^2
-%
-% (x^2 + y^2)_2 - 2x_2*x0 - 2y_2*y0 + (x0^2+y0^2) = r0^2
-%
-% etc. where _1 and _2 (etc) represent the first point, the second point,
-% etc.
-% 
-% If we take the difference between sequences of of the lines above, e.g.
-% the data for (2-1), then:
-%
-% (x^2 + y^2)_2 - (x^2 + y^2)_1 - (2x_2 - 2x_1)*x0 - (2y_2 - 2y_1)*y0 = 0
-% (x^2 + y^2)_3 - (x^2 + y^2)_2 - (2x_3 - 2x_2)*x0 - (2y_3 - 2y_2)*y0 = 0
-%
-% Rearranging, 
-%
-% (2x_2 - 2x_1)*x0 + (2y_2 - 2y_1)*y0 = ((x^2 + y^2)_2 - (x^2 + y^2)_1)
-% (2x_3 - 2x_2)*x0 + (2y_3 - 2y_2)*y0 = ((x^2 + y^2)_3 - (x^2 + y^2)_2)
-%
-% which can be rewritten in linear regressor form as:
-%
-% A * X0 = b
-%
-% with:
-%
-% A = [
-% (x_2 - x_1)  (y_2 - y_1);
-% (x_3 - x_2)  (y_3 - y_2);
-% (x_4 - x_3)  (y_4 - y_3);
-% (etc)
-% ];
-%
-% b = 1/2 * [
-% ((x^2 + y^2)_2 - (x^2 + y^2)_1)
-% ((x^2 + y^2)_3 - (x^2 + y^2)_2)
-% ((x^2 + y^2)_4 - (x^2 + y^2)_3)
-% (etc)
-% ]
-%
-% and X0 = [x0; y0], or the circle center.
-%
-% The solution to this is given by the following steps:
-%
-%  AT*A * X0 = AT*b
-%
-%  X0 = inv(AT*A)*AT*b
-%
-%  or can be solved more efficiently by the pseudo inverse:
-%
-%  X0 = (AT*A)\AT*b
-%   
-% Once the center of the circle is known, the radius can be found by
-% summing over all points the respective radial differences:
-%
-%  sum((x - x0)^2 + (y - y0)^2) = sum(r0^2)
-%
-% which gives:
-%
-% r0^2 = 1/N*sum((x - x0)^2 + (y - y0)^2)
+% The solution approach is simple: fit with a circle and then find the start/end angles
+[regression_fit_circle] = ...
+    fcn_geometry_fitCircleRegressionFromHoughFit(...
+    [associated_points_in_domain(1,:); associated_points_in_domain(2,:); associated_points_in_domain(end,:)], ...
+    associated_points_in_domain);
+
 
 
 % Do some pre-calculations to fill in the A and b matricies
@@ -237,7 +170,7 @@ circleRadius = mean(radial_distances);
 radial_errors = radial_distances - circleRadius;
 standard_deviation = std(radial_errors);
 
-regression_fit_circle_center_and_radius = [circleCenter circleRadius];
+regression_fit_arc_center_and_radius_and_angles = [circleCenter circleRadius];
 
 % OLD STUFF STARTS HERE
 % 

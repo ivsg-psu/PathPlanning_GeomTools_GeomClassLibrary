@@ -1,5 +1,5 @@
-% script_test_fcn_geometry_fitCircleRegressionFromHoughFit
-% Exercises the function: fcn_geometry_fitCircleRegressionFromHoughFit
+% script_test_fcn_geometry_fitArcRegressionFromHoughFit
+% Exercises the function: fcn_geometry_fitArcRegressionFromHoughFit
 
 % Revision history:
 % 2024_01_09 - S. Brennan
@@ -40,7 +40,7 @@ figure(fig_num);
 clf;
 hold on;
 
-[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitArcRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
 
 fprintf(1,'\n\nResults of circle regression fitting:\n')
 fprintf(1,'Actual circle center [X Y] (meters): %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
@@ -57,7 +57,7 @@ figure(fig_num);
 clf;
 hold on;
 
-[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, fig_num);
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitArcRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, fig_num);
 
 fprintf(1,'\n\nResults of circle regression fitting:\n')
 fprintf(1,'Actual circle center [X Y] (meters): %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
@@ -76,7 +76,7 @@ REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, []);
+    [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitArcRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -87,13 +87,13 @@ minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, -1);
+    [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitArcRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, -1);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'Comparison of fast and slow modes of fcn_geometry_fitCircleRegressionFromHoughFit:\n');
+fprintf(1,'Comparison of fast and slow modes of fcn_geometry_fitArcRegressionFromHoughFit:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);

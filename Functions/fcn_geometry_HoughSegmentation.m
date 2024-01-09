@@ -62,6 +62,8 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % 2024_01_03 - S. Brennan
 % -- added fast mode option
 % -- added environmental variable options
+% 2024_01_09- S. Brennan
+% -- added circle fitting
 
 
 %% Debugging and Input checks

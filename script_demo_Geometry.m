@@ -73,43 +73,11 @@ library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_Deb
 % library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_MapTools_ParseXODR/archive/refs/tags/ParseXODR_v2023_10_23.zip';
 
 
-
-
-%% Clear paths and folders, if needed
-if 1==0
-    clear flag_GeomTools_Folders_Initialized;
-    fcn_INTERNAL_clearUtilitiesFromPathAndFolders;
-
-    % Clean up data files
-    traces_mat_filename = fullfile(cd,'Data','AllTracesData.mat'); %%%% not loading centerline data
-    if exist(traces_mat_filename,'file')
-        delete(traces_mat_filename);
-    end
-    marker_clusters_mat_filename = fullfile(cd,'Data','AllMarkerClusterData.mat'); %%%% not loading centerline data
-    if exist(marker_clusters_mat_filename,'file')
-
-        delete(marker_clusters_mat_filename);
-    end
-
-end
-
-
-%% Do we need to set up the work space?
-if ~exist('flag_GeomTools_Folders_Initialized','var')
-    this_project_folders = {'Functions','Data'};
-    fcn_INTERNAL_initializeUtilities(library_name,library_folders,library_url,this_project_folders);
-    flag_GeomTools_Folders_Initialized = 1;
-end
-
-
-
-
 %% Clear paths and folders, if needed
 if 1==0
     clear flag_GeomClass_Folders_Initialized;
     fcn_INTERNAL_clearUtilitiesFromPathAndFolders;
 end
-
 
 %% Do we need to set up the work space?
 if ~exist('flag_GeomClass_Folders_Initialized','var')
@@ -337,7 +305,7 @@ source_points = shuffled_corrupted_line_test_points(best_fit_source_indicies,:);
 associated_points_in_domain = shuffled_corrupted_line_test_points(best_agreement_indicies,:); 
 
 % Perform the regression fit
-[best_fit_parameters, best_fit_domain_box] = ...
+[best_fit_regression_parameters, best_fit_domain_box] = ...
     fcn_geometry_fitLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
 
 % The following 3 lines show how to convert the domain box into a
@@ -347,7 +315,7 @@ domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'S
 IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
 best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
 
-%% Demo Hough arc and circle fitting
+%% Demo Hough circle versus arc fitting
 % Change the station tolerance to generate different fits
 
 fig_num = 23;
@@ -368,8 +336,8 @@ onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, f
 
 % Add outliers?
 % Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
+probability_of_corruption = 0.3; % 30% of data is bad
+magnitude_of_corruption = 3;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
@@ -387,7 +355,7 @@ flag_use_permutations = [];
 station_tolerance = 0.3;
 fig_num = 7777;
 figure(fig_num); clf;
-[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+[best_fitted_Hough_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
     fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
 
 % Make station tolerance larger so it finds entire arc, connecting together
@@ -395,16 +363,139 @@ figure(fig_num); clf;
 station_tolerance = 3;
 fig_num = 7788;
 figure(fig_num); clf;
-[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+[best_fitted_Hough_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
     fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
 
 % Force fit to a circle by shutting station tolerance off
 station_tolerance = [];
 fig_num = 7799;
 figure(fig_num); clf;
-[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+[best_fitted_Hough_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
     fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
 
+%% Demo circle pseudo-regression from Hough Line votes
+% Show how to do circle fitting from Hough votes
+fig_num = 222222; 
+figure(fig_num); clf;
+
+% Grab some data
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+probability_of_corruption = 0.3; % 30 percent of data is bad
+magnitude_of_corruption = 3;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+inputPoints = corrupted_circle_test_points;
+
+% Generate Hough votes -  Force fit to a circle by shutting station tolerance off
+station_tolerance = [];
+flag_use_permutations = [];
+transverse_tolerance = [0.1];
+
+[best_fitted_Hough_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+
+% Extract out points from the indicies
+source_points = inputPoints(best_fit_source_indicies,:);
+associated_points_in_domain = inputPoints(best_agreement_indicies,:); 
+
+% Perform the regression fit
+[best_fit_regression_parameters, best_fit_domain_box, radial_errors, standard_deviation]  = ...
+    fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+
+% Check the errors
+% figure(38383);
+% histogram(radial_errors,10)
+
+% The following 3 lines show how to convert the domain box into a
+% polyshape, and how to query points using isinterior to identify which
+% points are inside the regression domain box
+domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
+best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+
+fprintf(1,'\n\nResults of circle regression fitting:\n')
+fprintf(1,'Actual circle center [X Y] (meters):            %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
+fprintf(1,'Hough fitted circle center [X Y] (meters):      %.4f %.4f\n',best_fitted_Hough_parameters(1,1),best_fitted_Hough_parameters(1,2));
+fprintf(1,'Regression fitted circle center [X Y] (meters): %.4f %.4f\n',best_fit_regression_parameters(1,1),best_fit_regression_parameters(1,2));
+fprintf(1,'Predicted theoretical minimum distance error between actual and fitted center (meters): %.4f\n',sigma/(length(corrupted_circle_test_points(:,1))^0.5));
+fprintf(1,'Measured Hough-fit distance error between actual and fitted center (meters):            %.4f\n',sum((circle_center - best_fitted_Hough_parameters(1:2)).^2,2).^0.5);
+fprintf(1,'Measured regression-fit distance error between actual and fitted center (meters):       %.4f\n',sum((circle_center - best_fit_regression_parameters(1:2)).^2,2).^0.5);
+fprintf(1,'Actual circle radius (meters):            %.4f \n',circle_radius);
+fprintf(1,'Fitted Hough circle radius (meters):      %.4f \n',best_fitted_Hough_parameters(1,3));
+fprintf(1,'Fitted regression circle radius (meters): %.4f \n',best_fit_regression_parameters(1,3));
+fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(circle_radius - best_fit_regression_parameters(1,3)));
+
+%% Demo arc pseudo-regression from Hough Line votes
+% Show how to do arc fitting from Hough votes
+fig_num = 333333; 
+figure(fig_num); clf;
+
+% Grab some data
+circle_seed_points = [2 3; 4 5; 6 3];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+arc_test_points = fcn_geometry_fillArcTestPoints(circle_seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_arc_test_points = fcn_geometry_corruptPointsWithOutliers(arc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+inputPoints = arc_test_points;
+
+% Generate Hough votes -  Force fit to a arc by using station tolerance
+station_tolerance = 0.5;
+flag_use_permutations = [];
+transverse_tolerance = 0.1;
+
+[best_fitted_Hough_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+
+
+% Extract out points from the indicies
+source_points = inputPoints(best_fit_source_indicies,:);
+associated_points_in_domain = inputPoints(best_agreement_indicies,:); 
+
+% Perform the regression fit
+[best_fit_regression_parameters, best_fit_domain_box, radial_errors, standard_deviation]  = ...
+    fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+
+% Check the errors
+% figure(38383);
+% histogram(radial_errors,10)
+
+% The following 3 lines show how to convert the domain box into a
+% polyshape, and how to query points using isinterior to identify which
+% points are inside the regression domain box
+domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
+best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+
+fprintf(1,'\n\nResults of circle regression fitting:\n')
+fprintf(1,'Actual circle center [X Y] (meters):            %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
+fprintf(1,'Hough fitted circle center [X Y] (meters):      %.4f %.4f\n',best_fitted_Hough_parameters(1,1),best_fitted_Hough_parameters(1,2));
+fprintf(1,'Regression fitted circle center [X Y] (meters): %.4f %.4f\n',best_fit_regression_parameters(1,1),best_fit_regression_parameters(1,2));
+fprintf(1,'Predicted theoretical minimum distance error between actual and fitted center (meters): %.4f\n',sigma/(length(corrupted_circle_test_points(:,1))^0.5));
+fprintf(1,'Measured Hough-fit distance error between actual and fitted center (meters):            %.4f\n',sum((circle_center - best_fitted_Hough_parameters(1:2)).^2,2).^0.5);
+fprintf(1,'Measured regression-fit distance error between actual and fitted center (meters):       %.4f\n',sum((circle_center - best_fit_regression_parameters(1:2)).^2,2).^0.5);
+fprintf(1,'Actual circle radius (meters):            %.4f \n',circle_radius);
+fprintf(1,'Fitted Hough circle radius (meters):      %.4f \n',best_fitted_Hough_parameters(1,3));
+fprintf(1,'Fitted regression circle radius (meters): %.4f \n',best_fit_regression_parameters(1,3));
+fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(circle_radius - best_fit_regression_parameters(1,3)));
 
 
 %%
