@@ -430,7 +430,7 @@ switch best_fit_type
     case 'line'
         % Check line fitting
         [best_fit_parameters, best_fit_domain_box] = ...
-            fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+            fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
     case 'circle'
         % Fill this in
     case 'arc'

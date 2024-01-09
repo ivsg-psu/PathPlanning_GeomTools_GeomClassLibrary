@@ -338,7 +338,7 @@ associated_points_in_domain = shuffled_corrupted_line_test_points(best_agreement
 
 % Perform the regression fit
 [best_fit_parameters, best_fit_domain_box] = ...
-    fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
+    fcn_geometry_fitLinearRegressionFromHoughFit(source_points,associated_points_in_domain, fig_num);
 
 % The following 3 lines show how to convert the domain box into a
 % polyshape, and how to query points using isinterior to identify which

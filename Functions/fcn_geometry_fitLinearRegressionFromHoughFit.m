@@ -1,10 +1,10 @@
-function [regression_fit_line_segment, domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
-% fcn_geometry_calcLinearRegressionFromHoughFit
+function [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
+% fcn_geometry_fitLinearRegressionFromHoughFit
 % Given a set of points that are matched via a Hough vote, finds the linear
 % regression fit line and domain box. 
 % 
 % Format: 
-% [regression_fit_line_segment, domain_box] = fcn_geometry_calcLinearRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+% [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
 %
 % INPUTS:
 %      source_points: a 2x2 matrix in the format: 
@@ -44,7 +44,7 @@ function [regression_fit_line_segment, domain_box] = fcn_geometry_calcLinearRegr
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_calcLinearRegressionFromHoughFit
+% See the script: script_test_fcn_geometry_fitLinearRegressionFromHoughFit
 % for a full test suite.
 %
 % This function was written on 2023_12_15 by S. Brennan

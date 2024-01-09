@@ -81,7 +81,7 @@ for i=1:REPS
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'Comparison of fast and slow modes of fcn_geometry_calcLinearRegressionFromHoughFit:\n');
+fprintf(1,'Comparison of fast and slow modes of fcn_geometry_fitSlopeInterceptNPoints:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
