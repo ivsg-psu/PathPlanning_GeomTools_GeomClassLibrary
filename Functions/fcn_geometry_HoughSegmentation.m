@@ -64,7 +64,8 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % -- added environmental variable options
 % 2024_01_09- S. Brennan
 % -- added circle fitting
-
+% 2024_01_10- S. Brennan
+% -- added arc fitting
 
 %% Debugging and Input checks
 
@@ -170,9 +171,13 @@ if flag_do_debug
 end
 
 % Calculate the best agreements before starting the while loop
-[best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies, best_fit_domain_box] = ...
-    fcn_INTERNAL_findBestFit(points, transverse_tolerance, station_tolerance, fig_debug);
+[best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+    fcn_INTERNAL_findBestFit(points, transverse_tolerance, station_tolerance);
 
+if best_agreement_count> threshold_max_points
+    % Perform regression fit on previous values
+    [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(points, best_fit_type, best_fit_source_indicies, best_fit_associated_indicies);
+end
 
 % best_original_agreement = best_agreement_count; % For plotting
 original_indicies = (1:length(points(:,1)))';
@@ -186,6 +191,7 @@ domains{1} = struct;
 
 while best_agreement_count>threshold_max_points
     domain_count = domain_count+1;
+
 
     % Find the points that are inside the last domain that was found
 
@@ -221,10 +227,12 @@ while best_agreement_count>threshold_max_points
     end
 
     % Recalculate the fit with remaining points
-    [best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies, best_fit_domain_box] = ...
-        fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fig_debug);
+    [best_agreement_count, best_fit_type, best_fit_Hough_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+        fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance); %#ok<ASGLU>
 
-    
+    % Perform regression fit on previous values
+    [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(remaining_points, best_fit_type, best_fit_source_indicies, best_fit_associated_indicies);
+
 end
 
 % The last domain is unfitted points
@@ -272,6 +280,7 @@ if flag_do_plots
 
         hold on;
         grid on;
+        axis equal;
 
         title(sprintf('Stage %.0d: Best fit type is %s', ith_domain, domains{ith_domain}.best_fit_type),'Interpreter','none');
 
@@ -344,14 +353,13 @@ function [best_agreement_count,...
     best_fit_type, ...
     best_fit_parameters, ...
     best_fit_source_indicies, ...
-    best_fit_associated_indicies, ...
-    best_fit_domain_box] = ...
-    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fig_num)
+    best_fit_associated_indicies] = ...
+    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance)
 
 % Calculate the best agreements between different fit types, returning the
 % best fitting type.
 
-fit_types = {'line'}; %,'circle','arc'};
+fit_types = {'line','circle'}; %,'circle','arc'};
 best_agreement_counts = zeros(length(fit_types),1);
 
 % Initialize variables
@@ -393,11 +401,12 @@ for fit_index = 1:length(fit_types)
                 fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, -1);
 
         case 'circle'
+            station_tolerance = [];
+            expected_radii_range = [2 8];
+            flag_use_permutations = [];
             % Check circle fitting - minimum model order is 3 points
-            % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughCircle(input_points, tolerance, fig_num);
-            fitted_parameters  = [0 0 0];
-            best_fit_source_indicies = 1;
-            best_agreement_indicies = 1;
+            [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+                fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, -1);
 
         case 'arc'
             % Check arc fitting - minimum model order is 3 points
@@ -423,6 +432,9 @@ best_fit_parameters = fit_parameters{fitting_type_number};
 best_fit_source_indicies = fit_source_index_list{fitting_type_number};
 best_fit_associated_indicies = fit_associated_point_indicies{fitting_type_number};
 
+end % Ends fcn_INTERNAL_findBestFit
+
+function [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(input_points, best_fit_type, best_fit_source_indicies, best_fit_associated_indicies)
 % Steps 3 and 4 follow within this switch case
 % Find regression fit using best agreement and domain
 best_fit_domain_box  = nan;
@@ -434,7 +446,10 @@ switch best_fit_type
         [best_fit_parameters, best_fit_domain_box] = ...
             fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
     case 'circle'
-        % Fill this in
+        % Check circle fitting
+        [best_fit_parameters, best_fit_domain_box]  = ...
+            fcn_geometry_fitCircleRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+
     case 'arc'
         % Fill this in
     otherwise
@@ -445,9 +460,9 @@ end
 domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 IndiciesOfPointsInDomain = isinterior(domainPolyShape,input_points);
 best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+end % Ends fcn_INTERNAL_regressionFitByType
 
 
-end % Ends fcn_INTERNAL_findBestFit
 
 
 
