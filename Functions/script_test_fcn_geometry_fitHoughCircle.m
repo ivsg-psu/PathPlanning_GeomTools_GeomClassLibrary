@@ -1,5 +1,5 @@
-% script_test_fcn_geometry_circleHoughFit
-% Exercises the function: fcn_geometry_circleHoughFit
+% script_test_fcn_geometry_fitHoughCircle
+% Exercises the function: fcn_geometry_fitHoughCircle
 
 % Revision history:
 % 2023_12_15

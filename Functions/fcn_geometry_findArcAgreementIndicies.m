@@ -100,9 +100,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 234343;
+    debug_fig_num = 234343; %#ok<NASGU>
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 
@@ -256,6 +256,10 @@ indicies_in_station_agreement = unique(indicies_in_input_form,'stable');
 flag_is_a_circle = 0;
 if length(indicies_in_input_form) ~= length(indicies_in_station_agreement)
     flag_is_a_circle = 1;
+    indicies_in_station_agreement = sorted_index;
+    start_angle_in_radians = sorted_angles(1);
+    end_angle_in_radians   = sorted_angles(end);
+
 end
 
 
@@ -285,9 +289,6 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    [~,sorted_indicies] = sort(agreements,'ascend');
-
-
     % Plot the input points
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
@@ -301,15 +302,13 @@ if flag_do_plots
     fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num)
     plot(points(index_source_point,1),points(index_source_point,2),'bo','MarkerSize',15);
 
-    % Plot the best-fit points
-    plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
+    % Plot the results
+    % [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians]
+    plot(points(indicies_in_station_agreement,1),points(indicies_in_station_agreement,2),'r.','MarkerSize',15);
 
     % Label the points
-    text(points(best_agreement_indicies(end),1),points(best_agreement_indicies(end),2),sprintf('Start angle: %.3f deg', best_start_angle_in_radians*180/pi));
-    text(points(best_agreement_indicies(1),1),points(best_agreement_indicies(1),2),sprintf('End angle: %.3f deg', best_end_angle_in_radians*180/pi));
-
-    % Plot the source points
-    plot(points(best_fit_source_indicies,1),points(best_fit_source_indicies,2),'bo','MarkerSize',15);
+    text(points(indicies_in_station_agreement(1),1),    points(indicies_in_station_agreement(1),2),    sprintf('Start angle: %.3f deg', start_angle_in_radians*180/pi));
+    text(points(indicies_in_station_agreement(end),1),  points(indicies_in_station_agreement(end),2),  sprintf('End angle: %.3f deg', end_angle_in_radians*180/pi));
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -320,79 +319,6 @@ if flag_do_plots
         percent_larger = 0.3;
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
-
-    % Plot the Hough space results, from least to best
-    figure(fig_num+1);
-    clf;
-
-    subplot(3,1,1);
-    hold on;
-    grid on;
-    xlabel('Rho [radians]');
-    ylabel('Distance of circle center from origin [meters]');
-    xlim([-pi pi]);
-    ylim([0 20]);
-
-    subplot(3,1,2);
-    hold on;
-    grid on;
-    xlabel('Rho [radians]');
-    ylabel('Curvature [1/meters]');
-    xlim([-pi pi]);
-    ylim([0 1]);
-
-    subplot(3,1,3);
-    hold on;
-    grid on;
-    xlabel('Rho [radians]');
-    ylabel('Distance of circle center from origin [meters]');
-    zlabel('Curvature [1/meters]');
-    xlim([-pi pi]);
-    ylim([0 20]);
-    zlim([0 1]);
-    view(3);
-
-
-    fitted_parameters(ith_combo,:) = [circleCenter, circleRadius];
-    rho = atan2(fitted_parameters(:,2),fitted_parameters(:,1));
-    distance_circle_center_from_origin = sum((fitted_parameters(:,1).^2+fitted_parameters(:,2).^2),2).^0.5;
-    curvature = 1./fitted_parameters(:,3);
-
-    % Plot the results in increasing order of better fit
-    N_steps = 20;    
-    indicies = linspace(1,N_permutations,N_steps);
-    for ith_plot = 1:N_steps-1
-        plot_indicies_start = ceil(indicies(ith_plot));
-        plot_indicies_end = floor(indicies(ith_plot+1));
-
-        sorted_indicies_to_plot = sorted_indicies(plot_indicies_start:plot_indicies_end);
-        plot_color = (N_steps - ith_plot + 1)/N_steps*[1 1 1];
-        marker_size = ceil(ith_plot*20/N_steps);
-
-        subplot(3,1,1);
-        plot(rho(sorted_indicies_to_plot,1),distance_circle_center_from_origin(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
-
-        subplot(3,1,2);
-        plot(rho(sorted_indicies_to_plot,1),curvature(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
-
-        subplot(3,1,3);
-        plot3(rho(sorted_indicies_to_plot,1),distance_circle_center_from_origin(sorted_indicies_to_plot,1),curvature(sorted_indicies_to_plot,1),'.','MarkerSize',marker_size,'Color',plot_color);
-
-    end
-
-    % Plot the best fits
-    best_rho = atan2(best_fitted_parameters(:,2),best_fitted_parameters(:,1));
-    best_distance_circle_center_from_origin = sum((best_fitted_parameters(:,1).^2+best_fitted_parameters(:,2).^2),2).^0.5;
-    best_curvature = 1./best_fitted_parameters(:,3);
-
-    subplot(3,1,1);
-    plot(best_rho(1,1),best_distance_circle_center_from_origin(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
-
-    subplot(3,1,2);
-    plot(best_rho(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
-
-    subplot(3,1,3);
-    plot3(best_rho(1,1),best_distance_circle_center_from_origin(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
 
     
 end % Ends check if plotting

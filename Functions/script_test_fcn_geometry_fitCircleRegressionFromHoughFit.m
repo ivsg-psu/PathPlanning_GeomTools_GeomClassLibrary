@@ -18,9 +18,9 @@ axis equal
 grid on;
 
 % circle
-circle_center = [4 3];
+circle_center = [3 4];
 circle_radius = 2;
-M = 5; % 5 points per meter
+M = 50; % points per meter
 sigma = 0.02;
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
@@ -34,7 +34,7 @@ corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_tes
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
 
-%% Basic call with clean data
+% Basic call with clean data
 fig_num = 1;
 figure(fig_num);
 clf;

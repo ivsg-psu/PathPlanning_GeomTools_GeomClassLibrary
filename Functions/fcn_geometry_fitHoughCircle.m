@@ -1,11 +1,12 @@
-function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, best_fit_is_a_circle] = ...
     fcn_geometry_fitHoughCircle(points, transverse_tolerance, varargin)
 % fcn_geometry_fitHoughCircle
 %
 % This function takes the input points and tolerance as the input and
 % outputs the fitted parameters and agreement indices. 
 % 
-% [fittedParameters, agreementIndices] = fcn_geometry_fitHoughCircle(points, transverse_tolerance, station_tolerance, (fig_num))
+% [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, best_fit_is_a_circle]  = fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
+%         (station_tolerance), (expected_radii_range), (flag_use_permutations), (fig_num))
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -59,14 +60,16 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      agreement of the best-fit parameters, given the transverse and
 %      station tolerance settings.
 %
-%      flag_is_a_circle: returns 1 if the best fit is a circle, 0 if the
-%      best fit was an arc. Note: it will only perform circle-fitting if
-%      the station_tolerance is left blank.
+%      best_fit_is_a_circle: returns 1 if the best fit is a circle, 0 if
+%      the best fit was an arc. Note: it will only perform circle-fitting
+%      if the station_tolerance is left blank.
 %
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_circleCenterFrom3Points
+%      fcn_geometry_plotCircle 
+%      fcn_geometry_findArcAgreementIndicies
 %
 % EXAMPLES:
 %      
@@ -276,6 +279,8 @@ best_agreement_count = -inf;
 best_agreement_index = [];
 best_start_angle_in_radians = 0;
 best_end_angle_in_radians = 0;
+best_fit_is_a_circle = 0;
+
 agreements = zeros(N_permutations,1);
 
 for ith_combo = 1:N_permutations
@@ -311,6 +316,7 @@ for ith_combo = 1:N_permutations
         domainPolyShape = [];
         start_angle_in_radians = [];
         end_angle_in_radians = [];
+        flag_is_a_circle = 0;
     end
 
     
@@ -332,6 +338,9 @@ for ith_combo = 1:N_permutations
         % Save new "best" indicies
         best_agreement_indicies_binary_form = zeros(1,N_points);
         best_agreement_indicies_binary_form(1,agreement_indicies) = 1;
+
+        % Save if it is a circle
+        best_fit_is_a_circle = flag_is_a_circle;
     end
 
 
@@ -402,7 +411,7 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the circle fit
-    if flag_is_a_circle==1
+    if best_fit_is_a_circle==1
         title('Circle fit');
     else
         title('Arc fit');
@@ -529,7 +538,7 @@ end % Ends main function
 
 %% fcn_INTERNAL_findAgreementIndicies
 function [agreement_indicies, domainPolyShape, start_angle_in_radians, end_angle_in_radians, flag_is_a_circle] = ...
-    fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_point_indicies, transverse_tolerance, station_tolerance, best_agreement_count, flag_max_speed)
+    fcn_INTERNAL_findAgreementIndicies(points, circleCenter, circleRadius, test_source_point_indicies, transverse_tolerance, station_tolerance, best_agreement_count, flag_max_speed) %#ok<INUSD>
 
 
 flag_do_debug = 0;
@@ -626,7 +635,8 @@ if 1==1 %length(indicies_in_transverse_agreement)<best_agreement_count
 
         % Call a function to find which points are in station agreement
         % also
-        [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = fcn_INTERNAL_findArcAgreementIndicies(points_in_radial_agreement, circleCenter, circleRadius, index_source_point, station_tolerance);
+        [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
+            fcn_geometry_findArcAgreementIndicies(points_in_radial_agreement, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
 
         % Calculate agreement with both vectors
         % agreement_indicies_binary_form = indicies_in_transverse_agreement.*points_within_angle;
@@ -656,99 +666,3 @@ if flag_do_debug
 end
 
 end % Ends fcn_INTERNAL_findAgreementIndicies
-
-%% fcn_INTERNAL_findArcAgreementIndicies
-function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = fcn_INTERNAL_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance);
-% Method used here is to get the angles of all the points, and the
-% angle of the "source" point, e.g. the point that starts the fit
-% (the first point of the fitted source points). These angles are
-% padded on front/back, as the arc may connect all the around to a
-% circle either before the "source" point or after. The angles are
-% then used to find a change in angle (e.g. arc length), which is
-% used to find distance along the circle subtended by each change
-% in angle. These distances are then converted into a distance
-% vector which represents the station points around the
-% circumference. These station points are then checked for
-% continuity (similar to the line-fitting code) to find
-% contiguous arcs.
-
-% % Find arc of test segment
-% [~, arc_angle_in_radians_1_to_3, ~, ~, start_angle_in_radians] = ...
-%     fcn_geometry_arcAngleFrom3Points(test_source_points(1,:), test_source_points(2,:), test_source_points(3,:));
-% start_angle_in_radians = mod(start_angle_in_radians,2*pi);
-% end_angle_in_radians = start_angle_in_radians + arc_angle_in_radians_1_to_3;
-
-% Find angles of the points, relative to center
-shifted_points = (points - circleCenter);
-point_angles = atan2(shifted_points(:,2),shifted_points(:,1));
-
-% Make sure all the angles are positive
-point_angles = mod(point_angles,2*pi);
-
-% Sort the angles in ascending order
-[sorted_angles, sorted_index] = sort(point_angles);
-
-% Find where the source point index moved after sorting. This is
-% used to determine where points need to be padded
-sorted_source_index = find(sorted_index == index_source_point);
-
-% Pad the indicies and the point angles to allow wrap-around. This is so
-% that the arc, if it continues before or after the index_source_point,
-% will still be found. In effect, it makes the index_source_point be the
-% first angle, one of the angles in the middle, and the last angle. This
-% way, any arc will be found that contains this index_source_point.
-padded_sorted_indicies = sorted_index;
-padded_sorted_angles = sorted_angles;
-
-% Pad the front end
-if sorted_source_index~=length(sorted_index)
-    padded_sorted_angles = [sorted_angles(sorted_source_index+1:end)-2*pi; padded_sorted_angles];
-    padded_sorted_indicies = [sorted_index(sorted_source_index+1:end); padded_sorted_indicies];
-end
-
-% Pad the back end
-if sorted_source_index~=1
-    padded_sorted_angles = [padded_sorted_angles; sorted_angles(1:sorted_source_index)+2*pi];
-    padded_sorted_indicies = [padded_sorted_indicies; sorted_index(1:sorted_source_index)];
-end
-% padded_sorted_angles   = sorted_angles(padded_sorted_indicies);
-padded_sorted_source_index = find(padded_sorted_indicies(1:end-1) == index_source_point);
-
-if isempty(padded_sorted_source_index) || length(padded_sorted_source_index)>1 
-    error('Unexpected index found.');
-end
-
-% Find the angle differences
-diff_angles = diff(padded_sorted_angles);
-
-if any(diff_angles<0)
-    error('negative angles detected - this should not happen!');
-end
-
-% Find station distance increments
-diff_distances = diff_angles*circleRadius;
-
-% Find stations
-station_distances_of_points_in_radial_agreement = [0; cumsum(diff_distances)];
-
-% Sort the station distances and find those in agreement with station
-% tolerance
-indicies_in_station_agreement_sorted = ...
-    fcn_geometry_findPointsInSequence(...
-    station_distances_of_points_in_radial_agreement, ...
-    padded_sorted_source_index, ...
-    station_tolerance, -1);
-
-indicies_in_input_form = padded_sorted_indicies(indicies_in_station_agreement_sorted);
-start_angle_in_radians = padded_sorted_angles(indicies_in_station_agreement_sorted(1));
-end_angle_in_radians   = padded_sorted_angles(indicies_in_station_agreement_sorted(end));
-
-indicies_in_station_agreement = unique(indicies_in_input_form,'stable');
-
-% Check if any repeated - if so, it is a circle!
-flag_is_a_circle = 0;
-if length(indicies_in_input_form) ~= length(indicies_in_station_agreement)
-    flag_is_a_circle = 1;
-end
-
-end % Ends fcn_INTERNAL_findArcAgreementIndicies
