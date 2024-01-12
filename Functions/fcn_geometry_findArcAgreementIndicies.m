@@ -64,7 +64,7 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fitHoughCircle
+% See the script: script_test_fcn_geometry_findArcAgreementIndicies
 % for a full test suite.
 %
 % This function was written on 2024_01_09 - S. Brennan
@@ -73,6 +73,8 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % Revision history:
 % 2024_01_09 - S. Brennan
 % -- first write of the code
+% 2024_01_12 - S. Brennan
+% -- fixed typo in test script name
 
 
 %% Debugging and Input checks

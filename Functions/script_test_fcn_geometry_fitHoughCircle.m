@@ -36,7 +36,7 @@ grid on;
 % circle
 circle_center = [4 3];
 circle_radius = 2;
-M = 5; % 5 points per meter
+M = 3; % 5 points per meter
 sigma = 0.02;
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
@@ -68,7 +68,6 @@ sigma = 0.02;
 
 onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
 
-% Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
@@ -76,34 +75,196 @@ magnitude_of_corruption = 1;
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
-% Fill test data - 2 arcs
-corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+% Fill test data for 2 arcs
+first_fraction = [0 0.5]; % data from 0 to 50 percent
+second_fraction = [0.80 1]; % data from 80 percent to end
+N_points = length(onearc_test_points(:,1));
 
-%% Example - 1 - BASIC call with arc data, fitting it with a circle
+first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
+first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+
+second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
+second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+
+twoarc_test_points = ...
+    [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+corrupted_twoarc_test_points = ...
+    [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+
+% For debugging
+figure(33838);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
+%% BASIC call with arc data, fitting it with a circle by not specifying station tolerance
 fig_num = 111;
 figure(fig_num); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = [];
+flag_force_circle_fit = [];
 expected_radii_range = [];
 flag_use_permutations = [];
 
-[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
 
-%% Example - 1 - BASIC call with circle data, fitting it with a circle
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
 fig_num = 222;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_use_permutations = [];
+
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with arc data, fitting it with a circle by specifying large station tolerance
+fig_num = 333;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 10;
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_use_permutations = [];
+
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with arc data, forcing circle fit (poor one) using flag_force_circle_fit
+fig_num = 444;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = 1;
+expected_radii_range = [];
+flag_use_permutations = [];
+
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, flag_is_a_circle] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with circle data, fitting it with a circle by not specifying station tolerance
+fig_num = 1111;
 figure(fig_num); clf;
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = [];
+flag_force_circle_fit = [];
 expected_radii_range = [];
 flag_use_permutations = [];
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with circle data, fitting it with a circle by specifying station tolerance that winds all the way around
+% NOTE: notice how this is much slower than the previous call, as it takes
+% siginificant computation to check arcs, which is required when
+% station_tolerance is given
+fig_num = 2222;
+figure(fig_num); clf;
+
+inputPoints = corrupted_circle_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_use_permutations = [];
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with circle data, fitting it with an arc by specifying station tolerance is too small
+fig_num = 3333;
+figure(fig_num); clf;
+
+inputPoints = corrupted_circle_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 0.1;
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_use_permutations = [];
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with circle AND arc data, fitting it with an arc because this has the most points
+fig_num = 4444;
+figure(fig_num); clf;
+
+inputPoints = [corrupted_circle_test_points; corrupted_outlieronearc_test_points];
+% inputPoints = [circle_test_points; outlieronearc_test_points];
+% inputPoints = [outlieronearc_test_points];
+
+
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_use_permutations = [];
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% BASIC call with circle AND arc data, fitting it with a circle because of flag setting
+fig_num = 5555;
+figure(fig_num); clf;
+
+inputPoints = [corrupted_circle_test_points; corrupted_outlieronearc_test_points];
+% inputPoints = [circle_test_points; outlieronearc_test_points];
+% inputPoints = [outlieronearc_test_points];
+
+
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = 1;
+expected_radii_range = [];
+flag_use_permutations = [];
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
 
 
 %% Test using expected radii range
@@ -113,11 +274,27 @@ figure(fig_num); clf;
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = [];
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = [];
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+%% Test using expected radii range that is bad
+fig_num = 2;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = [];
+flag_force_circle_fit = [];
+expected_radii_range = [10 30];
+flag_use_permutations = [];
+
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
 
 %% Speed test effect of adding radii range to show this speeds up calculations
 % Note, there is more speed-up the more corrupted and larger the data is
@@ -125,26 +302,30 @@ flag_use_permutations = [];
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 0.1;
-expected_radii_range = [1 3];
+flag_force_circle_fit = [];
 flag_use_permutations = [];
 
 % Perform the calculation in slow mode
-REPS = 3; minTimeSlow = Inf; 
+expected_radii_range = [];
+fig_num = -1;
+REPS = 1; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, [], flag_use_permutations, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
+expected_radii_range = [1 3];
+fig_num = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -163,6 +344,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 
 inputPoints = corrupted_twoarc_test_points;
 transverse_tolerance = 0.1;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = [];
 
@@ -171,7 +353,7 @@ station_tolerance = 0.3;
 fig_num = 7777;
 figure(fig_num); clf;
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 
 % Make station tolerance larger so it finds entire arc, connecting together
 % but not finding a circle
@@ -179,14 +361,22 @@ station_tolerance = 3;
 fig_num = 7788;
 figure(fig_num); clf;
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 
 % Fit a circle by shutting station tolerance off
 station_tolerance = [];
 fig_num = 7799;
 figure(fig_num); clf;
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+
+% Force a circle that forces station tolerance to be met by using flag
+station_tolerance = 3;
+flag_force_circle_fit = 1;
+fig_num = 7766;
+figure(fig_num); clf;
+[best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 
 
 
@@ -202,11 +392,12 @@ figure(fig_num); clf;
 inputPoints = onearc_test_points;
 transverse_tolerance = 0.3;
 station_tolerance = 0.5;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = 0;
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 
 %% Test using flag_use_permutations for fractional setting (e.g. only 50%)
 % This assumes that the points are over-fitted, e.g. that there are way
@@ -219,11 +410,12 @@ figure(fig_num); clf;
 inputPoints = onearc_test_points;
 transverse_tolerance = 0.3;
 station_tolerance = 1;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = 0.5;
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters(1),trueParameters(2),trueParameters(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
 fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',best_fitted_parameters(1),best_fitted_parameters(2),best_fitted_parameters(3));
@@ -239,11 +431,12 @@ figure(fig_num); clf;
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 1;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = 30;
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters(1),trueParameters(2),trueParameters(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
 fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',best_fitted_parameters(1),best_fitted_parameters(2),best_fitted_parameters(3));
@@ -255,11 +448,12 @@ figure(fig_num); clf;
 inputPoints = onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 1;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 flag_use_permutations = 30;
 
 [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, fig_num);
+    fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters(1),trueParameters(2),trueParameters(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
 fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',best_fitted_parameters(1),best_fitted_parameters(2),best_fitted_parameters(3));
@@ -289,16 +483,18 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(corrupted_
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 0.1;
+flag_force_circle_fit = [];
 expected_radii_range = [1 3];
 slow_flag_use_permutations = 1;
 fast_flag_use_permutations = 0;
 
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 3; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, slow_flag_use_permutations, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -306,11 +502,12 @@ slowParameters = best_fitted_parameters;
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-REPS = 3; minTimeFast = Inf;
+fig_num = -1;
+minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, fast_flag_use_permutations, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -333,25 +530,28 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
 station_tolerance = 0.1;
+flag_force_circle_fit = [];
 
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 3; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
     [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range,  flag_use_permutations, []);
+        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-REPS = 3; minTimeFast = Inf; nsum = 10;
+fig_num = -1;
+minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, -1);
+    [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

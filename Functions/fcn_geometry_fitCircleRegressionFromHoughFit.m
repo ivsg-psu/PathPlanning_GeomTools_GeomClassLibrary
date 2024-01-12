@@ -237,7 +237,7 @@ end
 % standard_deviation = std(radial_errors);
 
 
-% Tryng method from:
+% Below uses method from:
 % https://dtcenter.org/sites/default/files/community-code/met/docs/write-ups/circle_fit.pdf
 
 mean_point = mean(associated_points_in_domain,1);

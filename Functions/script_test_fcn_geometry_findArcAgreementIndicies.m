@@ -4,6 +4,8 @@
 % Revision history:
 % 2024_01_09
 % -- wrote the code
+% 2024_01_12
+% -- fixed typo in one of the printouts to use correct function name.
 
 
 %% Set up the workspace
@@ -167,7 +169,7 @@ for i=1:REPS
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitHoughCircle:\n');
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_findArcAgreementIndicies:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
