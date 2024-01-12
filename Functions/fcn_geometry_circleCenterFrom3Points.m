@@ -70,6 +70,9 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 % -- added external environment test
 % -- added speed-up wherein if fig_num set to -1, it skips plotting, input
 % checking, debug modes.
+% 2024_01_11
+% -- added conditioning test for the matrix inversion, to avoid errors for
+% colinear points
 
 %% Debugging and Input checks
 
@@ -179,7 +182,8 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
+
+
 if flag_use_separated_point_inputs
     centers = zeros(N_points,2);
     radii   = zeros(N_points,1);
@@ -230,10 +234,16 @@ else
         end
     end
 
-    % Solve the center points
-    centers = A\b;
-    centers = reshape(centers,2,length(centers(:,1))/2);
-    centers = centers'; % Make it into a column vector
+    % Check the conditioning of the matrix
+    warning('on','backtrace');
+    if abs(det(A))>1E-8
+        % Solve the center points
+        centers = A\b;
+        centers = reshape(centers,2,length(centers(:,1))/2);
+        centers = centers'; % Make it into a column vector
+    else
+        centers = [inf inf];
+    end
 
 
     % NOTE: the following line is the slowest in the code. It can be sped

@@ -216,7 +216,7 @@ clf;
 
 circle_center = [3 5];
 circle_radius = 2;
-M = 5; % 5 points per meter
+M = 10; % 5 points per meter
 sigma = 0.02;
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
@@ -240,7 +240,6 @@ sigma = 0.02;
 
 onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
 
-% Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
@@ -248,15 +247,30 @@ magnitude_of_corruption = 1;
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
-% Fill test data - 2 arcs
-twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
-corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+% Fill test data for 2 arcs
+first_fraction = [0 0.5]; % data from 0 to 50 percent
+second_fraction = [0.80 1]; % data from 80 percent to end
+N_points = length(onearc_test_points(:,1));
 
-fig_num = 1;
-figure(fig_num);
-clf;
-hold on;
+first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
+first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
 
+second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
+second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+
+twoarc_test_points = ...
+    [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+corrupted_twoarc_test_points = ...
+    [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+% % For debugging
+% figure(33838);
+% plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
 
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -376,7 +390,7 @@ figure(fig_num); clf;
 % Grab some data
 circle_center = [3 5];
 circle_radius = 2;
-M = 5; % 5 points per meter
+M = 10; % 5 points per meter
 sigma = 0.02;
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
@@ -468,7 +482,7 @@ magnitude_of_corruption = 1;
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption),-1);
 
-inputPoints = onearc_test_points;
+inputPoints = corrupted_onearc_test_points;
 
 % Generate Hough votes -  Force fit to a arc by using station tolerance
 station_tolerance = 0.5;

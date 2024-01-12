@@ -281,10 +281,12 @@ best_start_angle_in_radians = 0;
 best_end_angle_in_radians = 0;
 best_fit_is_a_circle = 0;
 
+
 agreements = zeros(N_permutations,1);
 
 for ith_combo = 1:N_permutations
 
+    % fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
     if 0==flag_max_speed
         if 0==mod(ith_combo,100)
             fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
@@ -545,10 +547,12 @@ flag_do_debug = 0;
 
 % Set a flag to use enclosed domains to find points in agreement, rather
 % than inequalities. This method is more general and easier to debug, but
-% probablys slower.
+% probably is slower.
 if 0==flag_max_speed
+    % Slow method
     flag_use_domain_method = 1;
 else
+    % Fast method
     flag_use_domain_method = 0;
 end
 domainPolyShape = []; 
@@ -640,11 +644,8 @@ if 1==1 %length(indicies_in_transverse_agreement)<best_agreement_count
 
         % Calculate agreement with both vectors
         % agreement_indicies_binary_form = indicies_in_transverse_agreement.*points_within_angle;
-        try
-            agreement_indicies = indicies_in_transverse_agreement(indicies_in_station_agreement);
-        catch
-            disp('stop here');
-        end
+        agreement_indicies = indicies_in_transverse_agreement(indicies_in_station_agreement);
+
     else
         agreement_indicies = indicies_in_transverse_agreement;
         flag_is_a_circle = 1;

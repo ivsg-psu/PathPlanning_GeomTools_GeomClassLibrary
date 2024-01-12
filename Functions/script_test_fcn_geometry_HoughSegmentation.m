@@ -8,6 +8,7 @@
 close all;
 clc;
 
+%% Fill in test points
 % Single segment
 seed_points = [5 0; 7 2];
 M = 5; % 10 points per meter
@@ -51,12 +52,64 @@ magnitude_of_corruption = 3;
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
     (probability_of_corruption), (magnitude_of_corruption),-1);
 
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+% Fill test data for 2 arcs
+first_fraction = [0 0.5]; % data from 0 to 50 percent
+second_fraction = [0.80 1]; % data from 80 percent to end
+N_points = length(onearc_test_points(:,1));
+
+first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
+first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+
+second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
+second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+
+twoarc_test_points = ...
+    [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+corrupted_twoarc_test_points = ...
+    [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+    corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+
+
+% % For debugging
+% figure(33838);
+% plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
+
+%% Basic example: find one line segment
+
+fig_num = 10; 
+figure(fig_num); clf;
+
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 10;
+input_points = corrupted_single_segment_test_points;
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
 %% Basic example 1: find 5 lines within noisy data
 fig_num = 1;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = inf; % Units are meters
-threshold_max_points = 10;
+threshold_max_points = 20;
 input_points = corrupted_multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
@@ -67,11 +120,11 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 fig_num = 2;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
-threshold_max_points = 10;
+threshold_max_points = 20;
 input_points = corrupted_multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-%% Basic example 3: find line segments within circle data?
+%% Basic example 3: find circle data
 
 
 fig_num = 3;
@@ -81,7 +134,16 @@ threshold_max_points = 10;
 input_points = corrupted_circle_test_points;
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-%% Basic example 4: find line segments and circles
+%% Basic example 3: find arc data
+
+fig_num = 4;
+transverse_tolerance = 0.1; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 10;
+input_points = corrupted_onearc_test_points;
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+%% Advanced example: find line segments and circles in same data set
 
 fig_num = 4; 
 figure(fig_num); clf;
@@ -92,7 +154,19 @@ threshold_max_points = 10;
 input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points];
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-%% Basic example 3: find segments within a chevron
+
+%% Advanced example: find line segments and circles in same data set
+fig_num = 4; 
+figure(fig_num); clf;
+
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 10;
+input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points];
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+
+%% Advanced example 3: find segments within a chevron
 M = 10; % 40 points per meter
 
 rng(234)

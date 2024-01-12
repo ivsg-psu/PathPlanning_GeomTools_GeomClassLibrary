@@ -56,6 +56,8 @@ function [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegre
 % 2024_01_03 - S. Brennan
 % -- added fast mode option
 % -- added environmental variable options
+% 2024_01_12 - S. Brennan
+% -- fixed output angles to 0 to 2*pi range
 
 %% Debugging and Input checks
 
@@ -82,7 +84,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -161,11 +163,19 @@ sorted_points_in_domain = associated_points_in_domain(sorted_indicies,:);
 projection_vector_angle = atan2(unit_tangent_vector_of_domain(:,2),unit_tangent_vector_of_domain(:,1));
 regression_vector_angle = atan2(slope,1);
 
+% Fix both angles to 0 to 2pi range
+projection_vector_angle = mod(projection_vector_angle,2*pi);
+regression_vector_angle = mod(regression_vector_angle,2*pi);
+
+
+% Check if regression slope angle was calculated in wrong direction. If so,
+% add pi onto it and fix
 if abs(projection_vector_angle - regression_vector_angle)>pi/2
     if flag_do_debug
         fprintf(1,'Correcting angle...\n')
     end
     regression_vector_angle = regression_vector_angle + pi;
+    regression_vector_angle = mod(regression_vector_angle,2*pi);
 end
 
 if 1==1

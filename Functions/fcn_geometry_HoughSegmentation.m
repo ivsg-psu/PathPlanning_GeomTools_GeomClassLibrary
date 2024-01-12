@@ -170,15 +170,6 @@ if flag_do_debug
     title('Debugging figure for fcn_geometry_HoughSegmentation','Interpreter','none');
 end
 
-% Calculate the best agreements before starting the while loop
-[best_agreement_count, best_fit_type, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
-    fcn_INTERNAL_findBestFit(points, transverse_tolerance, station_tolerance);
-
-if best_agreement_count> threshold_max_points
-    % Perform regression fit on previous values
-    [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(points, best_fit_type, best_fit_source_indicies, best_fit_associated_indicies);
-end
-
 % best_original_agreement = best_agreement_count; % For plotting
 original_indicies = (1:length(points(:,1)))';
 non_zero_indicies = find(original_indicies);
@@ -189,51 +180,112 @@ remaining_indicies = ones(length(original_indicies),1);
 domain_count = 0;
 domains{1} = struct;
 
-while best_agreement_count>threshold_max_points
-    domain_count = domain_count+1;
+
+% Define the fit types to search
+fit_types = {'line','circle'}; %,'arc'};
 
 
-    % Find the points that are inside the last domain that was found
+% Search through all the fitting types to find the best fits. The fits are
+% ordered from simplest (and fastest) first, then to more complex. This is
+% necessary not only for speed, but also because of degeneracy in the
+% fitting process itself.
+%
+% For example, all lines are circles with infinite radius, all circles are
+% arcs that extend up to 2*pi, all arcs are spirals with a radial slope
+% equal to zero, etc. In other words, to allow fits of more advanced and
+% complex geometric representations before trying simpler ones first, the
+% simpler forms would not be used.%
+%
+% Each fit must do several things:
+% 
+% Step 1: Given a minimum model order - how many points are needed for the
+% minimum fit? Given these points, find all possible index permutations
+% that can form a complete model. For example, a line fit requires 2 points
+% minimum. If there are N points, then there are N choose 2 permutations
+% possible assuming the line is not ordered.
+%
+% Step 2: Given all possible model fits, find the fit and find also which
+% points are associated with each fit given tolerance fators. These point
+% totals represent the "votes" for that particular fit.
+%
+% Step 3: Find the best permutation of a fit, namely the one that has the
+% highest votes among all the fits of that type - the best line fit among
+% all line fits, for example. Using these, find the regression fit
+% coefficients and domain of the best fit.
+% 
+% Step 4: Given the domain, find the points that are members of that
+% best-fit permutation.
+%
+% The above process is repeated until no more fits are possible for a given
+% fit type, starting with the simplest fit type first (lines). After all
+% lines are fitted, this proceeds further among many different types of
+% fits to the points: lines, arcs, spirals, etc.
 
+for fit_index = 1:length(fit_types)
+    fit_type_to_search = fit_types{fit_index};
 
-    % Pull out the maximum agreement points and save them
-    % Note: the points used for fitting keep changing (reduced each time by
-    % the prior fit). So we have to keep track of the non-zero indicies
-    % that are numbered relative to the ORIGINAL points, as the functions
-    % return the indicies numbered relative to the input (reduced number)
-    % points. 
-    original_indicies_in_domain = non_zero_indicies(best_fit_associated_indicies);
-    points_in_domain = points(original_indicies_in_domain,:);
-    domains{domain_count}.points_in_domain = points_in_domain; %#ok<*AGROW>
-    domains{domain_count}.best_fit_type = best_fit_type; 
-    domains{domain_count}.best_fit_parameters = best_fit_parameters; 
-    domains{domain_count}.best_fit_source_indicies = non_zero_indicies(best_fit_source_indicies); 
-    domains{domain_count}.best_fit_domain_box = best_fit_domain_box;
-    archive_of_remaining_points{domain_count}=remaining_points;% Used for plotting
+    % Calculate the best agreements of this type before starting the while loop
+    if length(remaining_points(:,1))>threshold_max_points
+        [best_agreement_count, best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+            fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fit_type_to_search);
 
-    % Prune out the points in agreements up to this point, to leave only
-    % ones NOT in agreement
-    remaining_indicies(original_indicies_in_domain) = 0;
-    non_zero_indicies = find(remaining_indicies);
-    remaining_points = points(non_zero_indicies,:);
-
-    if flag_do_debug
-        figure(fig_debug);
-        hold on;
-        plot(points(:,1),points(:,2),'.','Color', [0.5 0.5 0.5], 'MarkerSize',20);
-        plot(remaining_points(:,1),remaining_points(:,2),'.','Color', [0 0 0], 'MarkerSize',20);
-        plot(points_in_domain(:,1),points_in_domain(:,2),'c.', 'MarkerSize',20);
-        
+        if best_agreement_count> threshold_max_points
+            % Perform regression fit on previous values
+            [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(remaining_points, ...
+                fit_type_to_search, best_fit_source_indicies, best_fit_associated_indicies);
+        end
     end
 
-    % Recalculate the fit with remaining points
-    [best_agreement_count, best_fit_type, best_fit_Hough_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
-        fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance); %#ok<ASGLU>
+    while (best_agreement_count>threshold_max_points) && (length(remaining_points(:,1))>threshold_max_points)
+        domain_count = domain_count+1;
 
-    % Perform regression fit on previous values
-    [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(remaining_points, best_fit_type, best_fit_source_indicies, best_fit_associated_indicies);
+        % Pull out the maximum agreement points and save them
+        % Note: the points used for fitting keep changing (reduced each time by
+        % the prior fit). So we have to keep track of the non-zero indicies
+        % that are numbered relative to the ORIGINAL points, as the functions
+        % return the indicies numbered relative to the input (reduced number)
+        % points.
+        original_indicies_in_domain = non_zero_indicies(best_fit_associated_indicies);
+        points_in_domain = points(original_indicies_in_domain,:);
+        domains{domain_count}.points_in_domain = points_in_domain; %#ok<*AGROW>
+        domains{domain_count}.best_fit_type = fit_type_to_search;
+        domains{domain_count}.best_fit_parameters = best_fit_parameters;
+        domains{domain_count}.best_fit_source_indicies = non_zero_indicies(best_fit_source_indicies);
+        domains{domain_count}.best_fit_domain_box = best_fit_domain_box;
+        archive_of_remaining_points{domain_count}=remaining_points;% Used for plotting
 
-end
+        % Prune out the points in agreements up to this point, to leave only
+        % ones NOT in agreement
+        remaining_indicies(original_indicies_in_domain) = 0;
+        non_zero_indicies = find(remaining_indicies);
+        remaining_points = points(non_zero_indicies,:);
+
+        if flag_do_debug
+            figure(fig_debug);
+            hold on;
+            plot(points(:,1),points(:,2),'.','Color', [0.5 0.5 0.5], 'MarkerSize',20);
+            plot(remaining_points(:,1),remaining_points(:,2),'.','Color', [0 0 0], 'MarkerSize',20);
+            plot(points_in_domain(:,1),points_in_domain(:,2),'c.', 'MarkerSize',20);
+
+        end
+
+        % Are there enough points left to find another fit? If so, try to
+        % get another fit
+        if length(remaining_points(:,1))>threshold_max_points
+            % Recalculate the fit with remaining points (Steps 1 to 3 are
+            % in this function)
+            [best_agreement_count, best_fit_Hough_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+                fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fit_type_to_search); %#ok<ASGLU>
+
+            % Perform regression fit on previous values (Step 4 is in this
+            % function)
+            [best_fit_parameters, best_fit_domain_box, best_fit_associated_indicies] = fcn_INTERNAL_regressionFitByType(remaining_points, fit_type_to_search, best_fit_source_indicies, best_fit_associated_indicies);
+
+        end
+
+    end % Ends while loop
+
+end % Ends looping through fitting types
 
 % The last domain is unfitted points
 domain_count  = domain_count+1;
@@ -274,7 +326,29 @@ if flag_do_plots
 
     tiledlayout('flow')
 
+    % Plot the starting points in the first plot, save the axis
+    nexttile;
 
+    hold on;
+    grid on;
+    axis equal;
+
+    title(sprintf('Starting points'),'Interpreter','none');
+    plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+
+    % Make axis slightly larger? And since this is the first one, save the
+    % axis limits.
+    if flag_rescale_axis
+        temp = axis;
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
+        axis(new_axis);
+    end
+
+
+    % Plot the fits
     for ith_domain = 1:length(domains)
         nexttile;
 
@@ -290,8 +364,9 @@ if flag_do_plots
         plot(remaining_points(:,1),remaining_points(:,2),'k.','MarkerSize',20);
 
         % Plot the fitted points
+        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
         points_in_domain = domains{ith_domain}.points_in_domain;
-        plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',15,'Color',color_ordering(mod(ith_domain,N_colors)+1,:));
+        plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',15,'Color',current_color);
 
         % Plot the fits?
         if ~any(isnan(domains{ith_domain}.best_fit_parameters))
@@ -299,6 +374,11 @@ if flag_do_plots
                 case 'line'
                     % Plot the best-fit line segment
                     plot(domains{ith_domain}.best_fit_parameters(:,1),domains{ith_domain}.best_fit_parameters(:,2),'.-','Linewidth',1,'MarkerSize',15,'Color',color_ordering(mod(ith_domain,N_colors)+1,:));
+
+                    % Plot the domain box
+                    domain_box = domains{ith_domain}.best_fit_domain_box;
+                    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+                    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
                 case 'circle'
 
@@ -311,13 +391,6 @@ if flag_do_plots
 
         % Make axis slightly larger?
         if flag_rescale_axis
-            if ith_domain==1
-                temp = axis;
-                axis_range_x = temp(2)-temp(1);
-                axis_range_y = temp(4)-temp(3);
-                percent_larger = 0.3;
-                new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
-            end
             axis(new_axis);
         end
 
@@ -350,87 +423,91 @@ end % Ends main function
 
 %% fcn_INTERNAL_findBestFit
 function [best_agreement_count,...
-    best_fit_type, ...
     best_fit_parameters, ...
     best_fit_source_indicies, ...
     best_fit_associated_indicies] = ...
-    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance)
+    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fit_type_to_search)
 
 % Calculate the best agreements between different fit types, returning the
 % best fitting type.
 
-fit_types = {'line','circle'}; %,'circle','arc'};
-best_agreement_counts = zeros(length(fit_types),1);
-
-% Initialize variables
-fit_parameters{length(fit_types)} = 0;
-fit_associated_point_indicies{length(fit_types)} = 0;
-fit_source_index_list{length(fit_types)} = 0;
-
-% Search through all the fitting types to find the best fits.
-% Each fit must do several things:
+% %% Start of changes moving fit type out of this function
+% fit_types = {'line','circle'}; %,'circle','arc'};
+% best_agreement_counts = zeros(length(fit_types),1);
 % 
-% Step 1: Given a minimum model order - how many points are needed for the
-% minimum fit? - finds all possible model fits.
-%
-% Step 2: Given all possible model fits, finds which points are associated
-% with each fit given tolerance fators. These point totals represent the
-% "votes" for that particular fit.
-%
-%
-% The above process is usually repeated among many different types of fits
-% to the points: lines, arcs, spirals, etc.
-%
-% (IN SEPARATE CODE)
-% Step 3: Find the best permutation of a fit, namely the one that has the
-% highest votes. Using these, find the regression fit coefficients
-% and domain of the best fit. 
+% % Initialize variables
+% fit_parameters{length(fit_types)} = 0;
+% fit_associated_point_indicies{length(fit_types)} = 0;
+% fit_source_index_list{length(fit_types)} = 0;
 % 
-% Step 4: Given the domain, find the points that are members of that
-% best-fit permutation.
-%
+% % Search through all the fitting types to find the best fits.
+% % Each fit must do several things:
+% % 
+% % Step 1: Given a minimum model order - how many points are needed for the
+% % minimum fit? - finds all possible model fits.
+% %
+% % Step 2: Given all possible model fits, finds which points are associated
+% % with each fit given tolerance fators. These point totals represent the
+% % "votes" for that particular fit.
+% %
+% %
+% % The above process is usually repeated among many different types of fits
+% % to the points: lines, arcs, spirals, etc.
+% %
+% % (IN SEPARATE CODE)
+% % Step 3: Find the best permutation of a fit, namely the one that has the
+% % highest votes. Using these, find the regression fit coefficients
+% % and domain of the best fit. 
+% % 
+% % Step 4: Given the domain, find the points that are members of that
+% % best-fit permutation.
+% %
+% 
+% % Steps 1 and 2 are done within this for-loop
+% for fit_index = 1:length(fit_types)
+%     fit_type = fit_types{fit_index};
+% % End of changes moving fit type out of this function
 
-% Steps 1 and 2 are done within this for-loop
-for fit_index = 1:length(fit_types)
-    fit_type = fit_types{fit_index};
+switch fit_type_to_search
+    case 'line'
+        % Check line fitting - minimum model order is 2 points
+        [best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+            fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, -1);
 
-    switch fit_type
-        case 'line'
-            % Check line fitting - minimum model order is 2 points
-            [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-                fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, -1);
+    case 'circle'
+        station_tolerance = [];
+        expected_radii_range = [2 8];
+        flag_use_permutations = [];
+        % Check circle fitting - minimum model order is 3 points
+        [best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
+            fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, -1);
 
-        case 'circle'
-            station_tolerance = [];
-            expected_radii_range = [2 8];
-            flag_use_permutations = [];
-            % Check circle fitting - minimum model order is 3 points
-            [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-                fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, station_tolerance, expected_radii_range, flag_use_permutations, -1);
-
-        case 'arc'
-            % Check arc fitting - minimum model order is 3 points
-            % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughArc(input_points, tolerance, fig_num);
-            fitted_parameters  = [0 0 0];
-            best_fit_source_indicies = 1;
-            best_agreement_indicies = 1;
-        otherwise
-            error('Unknown fit type detected - unable to continue!');
-    end
-
-    % Save results to an array for each fit type
-    best_agreement_counts(fit_index) = length(best_agreement_indicies);
-    fit_parameters{fit_index}     = fitted_parameters;
-    fit_associated_point_indicies{fit_index} = best_agreement_indicies;
-    fit_source_index_list{fit_index} = best_fit_source_indicies;
+    case 'arc'
+        % Check arc fitting - minimum model order is 3 points
+        % [fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughArc(input_points, tolerance, fig_num);
+        best_fit_parameters  = [0 0 0];
+        best_fit_source_indicies = 1;
+        best_fit_associated_indicies = 1;
+    otherwise
+        error('Unknown fit type detected - unable to continue!');
 end
 
-% Save the best fit among all the fitting types
-[best_agreement_count, fitting_type_number] = max(best_agreement_counts);
-best_fit_type = fit_types{fitting_type_number};
-best_fit_parameters = fit_parameters{fitting_type_number};
-best_fit_source_indicies = fit_source_index_list{fitting_type_number};
-best_fit_associated_indicies = fit_associated_point_indicies{fitting_type_number};
+% Count how many points agreed with the fit
+best_agreement_count = length(best_fit_associated_indicies);
+
+% COMMENTED OUT WHEN MOVED RESULTS TO OUTER LOOP
+% % Save results to an array for each fit type
+% best_agreement_counts(fit_index) = length(best_agreement_indicies);
+% fit_parameters{fit_index}     = fitted_parameters;
+% fit_associated_point_indicies{fit_index} = best_agreement_indicies;
+% fit_source_index_list{fit_index} = best_fit_source_indicies;
+% 
+% % Save the best fit among all the fitting types
+% [best_agreement_count, fitting_type_number] = max(best_agreement_counts);
+% best_fit_type = fit_types{fitting_type_number};
+% best_fit_parameters = fit_parameters{fitting_type_number};
+% best_fit_source_indicies = fit_source_index_list{fitting_type_number};
+% best_fit_associated_indicies = fit_associated_point_indicies{fitting_type_number};
 
 end % Ends fcn_INTERNAL_findBestFit
 
@@ -443,8 +520,12 @@ associated_points_in_domain = input_points(best_fit_associated_indicies,:);
 switch best_fit_type
     case 'line'
         % Check line fitting
-        [best_fit_parameters, best_fit_domain_box] = ...
-            fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+        try
+            [best_fit_parameters, best_fit_domain_box] = ...
+                fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+        catch
+            disp('debug here');
+        end
     case 'circle'
         % Check circle fitting
         [best_fit_parameters, best_fit_domain_box]  = ...
