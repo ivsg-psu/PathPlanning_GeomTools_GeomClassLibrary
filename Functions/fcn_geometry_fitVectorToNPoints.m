@@ -3,7 +3,9 @@ function [vector_root, unit_vector] = ...
 % fcn_geometry_fitVectorToNPoints
 % Finds the vector fitting through a set of N points where N>=2. The
 % solution performs a polar-form regression of the points, and thus works
-% for point clusters in any orientation. For more details, see:
+% for point clusters in any orientation. It is based on the concept of
+% averaging arc-tangent angles within the line segment after de-meaning the
+% data. For more details, see:
 %
 %  "Feature Extraction and Scene Interpretation for Map-Based Navigation
 %  and Map Building" by Kai Oliver Arras, Roland Y. Siegwart
@@ -17,13 +19,16 @@ function [vector_root, unit_vector] = ...
 %      points: a Nx2 vector where N is the number of points, length N>=2. 
 %
 %      (OPTIONAL INPUTS)
-%
-%      fig_num: a figure number to plot results.
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
 %      vector_root: the [2 x 1] matrix of the (x,y) point representing the
-%      root of the vector
+%      root of the vector, wherein the root is the point on the vector
+%      closest to the origin.
 %
 %      unit_vector: the [2 x 1] matrix of the (deltax,deltay) length of the
 %      unit vector attached to the root.
@@ -31,7 +36,6 @@ function [vector_root, unit_vector] = ...
 % DEPENDENCIES:
 %
 %      fcn_geometry_checkInputsToFunctions
-%      fcn_geometry_plotCircle
 %
 % EXAMPLES:
 %      
@@ -50,12 +54,32 @@ function [vector_root, unit_vector] = ...
 % 2020_06_25 
 % -- wrote the code
 % -- modified from fcn_geometry_fitVectorToNPoints
-%
+% 2024_01_13 - S. Brennan
+% -- improved comments a bit
+% -- added max speed options
+% -- fixed bug wherein it crashes if empty figure given
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting
-flag_do_debug = 0;     % Set equal to 1 for debugging
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==2 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -74,22 +98,27 @@ end
 %              |_| 
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(1,2);
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(1,2);
+        % Check the points input to be length greater than or equal to 2
+        fcn_geometry_checkInputsToFunctions(...
+            points, '2column_of_numbers',[2 3]);
 
-    % Check the points input to be length greater than or equal to 2
-    fcn_geometry_checkInputsToFunctions(...
-        points, '2column_of_numbers',[2 3]);
-    
+    end
 end
 
 % Does user want to show the plots?
-if 2 == nargin
-    fig_num = varargin{1};
-    figure(fig_num);
-    flag_do_plot = 1;
+flag_do_plot = 0;
+if (2 == nargin) && (0==flag_max_speed)
+    temp = varargin{1};
+    if ~isempty(temp)
+        fig_num = temp;
+        figure(fig_num);
+        flag_do_plot = 1;
+    end
 else
     if flag_do_debug
         fig = figure; 
@@ -109,8 +138,10 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% The code below uses the polar form of the line
+% The code below uses the polar form of the line, namely:
+%
 %     r_j = x cos(phi_j) + y sin(phi_j)
+% 
 % where the orthogonal distance of point (xi,yi) to this line is:
 %     d_ortho(xi,yi) = r_j - xi*cos(phi_j) - yi*sin(phi_j)
 %

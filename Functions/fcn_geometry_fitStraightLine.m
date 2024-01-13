@@ -38,7 +38,7 @@ function [fittedLine, fittedParameters] = fcn_geometry_fitStraightLine(noisyData
 % 
 % EXAMPLES:
 %
-%     See the script: script_test_fcn_Transform_ENUToSensorCoord
+%     See the script: script_test_fcn_geometry_fitStraightLine
 %     for a full test suite.
 
 % REVISION HISTORY

@@ -11,7 +11,8 @@ clc;
 %% Fill in some test data
 % This takes a while - it's generated from the test script for Hough
 % Segmentation
-clear example_domains
+
+% clear example_domains
 
 if ~exist('example_domains','var')
     % Advanced example 3: find segments within a chevron
@@ -30,36 +31,35 @@ if ~exist('example_domains','var')
     subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
     multi_segment_test_points = [multi_segment_test_points; subtest_points];
 
-    disp('Something is weird here - if the following is commented out, it fits well! Need to investigate')
     seed_points = [2 0; 3 1.5];
     subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
     multi_segment_test_points = [multi_segment_test_points; subtest_points];
 
-    % seed_points = [4 0; 5 2.5];
-    % subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-    % multi_segment_test_points = [multi_segment_test_points; subtest_points];
+    seed_points = [4 0; 5 2.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
 
-    % seed_points = [6 0; 7 3.5];
-    % subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-    % multi_segment_test_points = [multi_segment_test_points; subtest_points];
+    seed_points = [6 0; 7 3.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
 
-    % seed_points = [8 0; 9 4.5];
-    % subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-    % multi_segment_test_points = [multi_segment_test_points; subtest_points];
+    seed_points = [8 0; 9 4.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
 
     seed_points = [10 0; 10 5];
     subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
     multi_segment_test_points = [multi_segment_test_points; subtest_points];
-    % 
-    % % Add outliers to corrupt the results
-    % outliers = [10*randn(100,1) 5*randn(100,1)];
-    % multi_segment_test_points = [multi_segment_test_points; outliers];
+     
+    % Add outliers to corrupt the results
+    outliers = [10*randn(100,1) 5*randn(100,1)];
+    multi_segment_test_points = [multi_segment_test_points; outliers];
 
 
     % Call the segmentation function
     fig_num = 3;
-    transverse_tolerance = 0.02; % Units are meters
-    station_tolerance = 0.6; % Units are meters
+    transverse_tolerance = 0.1; % Units are meters
+    station_tolerance = 0.2; % Units are meters
     threshold_max_points = 10;
     input_points = multi_segment_test_points;
 

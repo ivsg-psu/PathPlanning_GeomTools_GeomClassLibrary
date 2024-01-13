@@ -34,7 +34,9 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot the results.
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -42,7 +44,14 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 %      that hast he most points included, to the domain that has the least.
 %
 % DEPENDENCIES:
-%      nchoosek
+%      fcn_DebugTools_checkInputsToFunctions
+%      fcn_geometry_fitLinearRegressionFromHoughFit 
+%      fcn_geometry_fitCircleRegressionFromHoughFit
+%      fcn_geometry_fitCircleRegressionFromHoughFit
+%      fcn_geometry_plotCircle
+%      fcn_geometry_plotArc
+%      fcn_geometry_fitHoughLine
+%      fcn_geometry_fitHoughCircle
 %
 % EXAMPLES:
 %      
@@ -572,12 +581,9 @@ associated_points_in_domain = input_points(best_fit_associated_indicies,:);
 switch best_fit_type
     case 'line'
         % Check line fitting
-        try
-            [best_fit_parameters, best_fit_domain_box] = ...
-                fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
-        catch
-            disp('debug here');
-        end
+        [best_fit_parameters, best_fit_domain_box] = ...
+            fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+
     case 'circle'
         % Check circle fitting
         [best_fit_parameters, best_fit_domain_box]  = ...

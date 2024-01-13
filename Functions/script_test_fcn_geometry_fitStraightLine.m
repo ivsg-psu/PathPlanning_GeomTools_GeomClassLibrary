@@ -94,3 +94,20 @@ noisyData = [x, y];
 disp(fittedLine);
 disp(fittedParameters);
 legend('Noisy Points', 'Fitted Line', 'Location', 'best');
+
+%% Vertical Line - Case 4 (FAILS)
+% This is the line x = 4;
+
+% Generate random x-values 
+y = 2 * rand(100, 1);
+
+% Create corresponding y-values with some noise
+noise = 0.02 * randn(100, 1); 
+x = 4 + noise;
+
+noisyData = [x, y];
+
+[fittedLine, fittedParameters] = fcn_geometry_fitStraightLine(noisyData,1234);
+disp(fittedLine);
+disp(fittedParameters);
+legend('Noisy Points', 'Fitted Line', 'Location', 'best');

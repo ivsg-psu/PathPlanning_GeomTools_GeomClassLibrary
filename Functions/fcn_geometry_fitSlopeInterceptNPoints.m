@@ -1,4 +1,3 @@
-
 function [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,varargin)
 % fcn_geometry_fitSlopeInterceptNPoints
 % Finds the slope and intercept of a line connecting two points
@@ -7,6 +6,12 @@ function [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,vararg
 %
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2. 
+% 
+%      (OPTIONAL INPUTS)
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %      slope: a scalar (1x1) representing the slope connecting the two
