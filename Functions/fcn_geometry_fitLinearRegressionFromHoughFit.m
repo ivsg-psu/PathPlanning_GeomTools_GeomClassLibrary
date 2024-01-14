@@ -46,6 +46,7 @@ function [regression_fit_line_segment, domain_box, std_dev_transverse_distance] 
 %
 %      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_calcUnitVector
+%      fcn_geometry_fitVectorToNPoints
 %      fcn_geometry_fitSlopeInterceptNPoints 
 %
 % EXAMPLES:
