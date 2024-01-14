@@ -12,7 +12,7 @@ clc;
 % This takes a while - it's generated from the test script for Hough
 % Segmentation
 
-% clear example_domains
+clear example_domains
 
 if ~exist('example_domains','var')
     % Advanced example 3: find segments within a chevron

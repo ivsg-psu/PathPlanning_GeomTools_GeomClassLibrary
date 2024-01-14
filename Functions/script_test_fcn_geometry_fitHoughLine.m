@@ -7,103 +7,97 @@
 close all;
 clc;
 
+%% Fill in some test data
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 
 %% Test 1: a basic test of line segment fitting
 fig_num = 1;
 transverse_tolerance = 0.2;
 station_tolerance = 2;
+points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, fig_num);
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 
 %% Test 2: a basic test of line segment fitting, noisy points
 fig_num = 2;
 figure(fig_num);
 clf;
-rng(383);
-
-% Fill test data - 3 segments
-seed_points = [2 3; 4 5; 7 0; 9 5]; 
-M = 10;
-sigma = 0.2;
-
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 4;
-
-test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption));
-
-
-% Shuffle points?
-test_points = fcn_geometry_shufflePointOrdering(test_points);
-
 
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
+points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance,  fig_num);
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
-%% Test 3: a basic test of line fitting, noisy points
+%% Test 3: a basic test of LINE fitting, noisy points, showing effect of station_tolerance setting
 fig_num = 3;
 figure(fig_num);
 clf;
-rng(3453);
-
-% Fill test data - 3 segments
-seed_points = [2 3; 4 5; 7 0; 9 5]; 
-M = 10;
-sigma = 0.2;
-
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 4;
-
-test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption));
-
-
-% Shuffle points?
-test_points = fcn_geometry_shufflePointOrdering(test_points);
-
 
 transverse_tolerance = 0.2;
 station_tolerance = [];
+points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance,  fig_num);
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
+
+%% Test 4: a basic test of line segment fitting, noisy points
+fig_num = 4;
+figure(fig_num);
+clf;
+
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+points_required_for_agreement = 20;
+
+[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 %% Test of fast mode
-% Set tolerances
+% Set values for testing
 transverse_tolerance = 0.2;
 station_tolerance = 1;
-
+points_required_for_agreement = [];
 
 
 % Perform the calculation in slow mode
-REPS = 10; minTimeSlow = Inf;
+REPS = 10; 
+minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
     [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-        fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance,  []);
+        fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-minTimeFast = Inf; nsum = 10;
+minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-        fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, -1);
+    [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

@@ -202,6 +202,43 @@ threshold_max_points = 10;
 input_points = multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+%% Advanced example 3: find segments within a hashtag
+M = 10; % 40 points per meter
+
+rng(234)
+sigma = 0.02;
+
+multi_segment_test_points = [];
+
+seed_points = [2 0; 2 6];
+subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+multi_segment_test_points = [multi_segment_test_points; subtest_points]; %#ok<*NASGU>
+
+seed_points = [4 0; 4 6];
+subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+seed_points = [0 2; 6 2];
+subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+seed_points = [0 4; 6 4];
+subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+% Add outliers to corrupt the results
+N_outliers = 30;
+outliers = [6*rand(N_outliers,1) 6*rand(N_outliers,1)];
+multi_segment_test_points = [multi_segment_test_points; outliers];
+
+
+% Call the segmentation function
+fig_num = 4;
+transverse_tolerance = 0.02; % Units are meters
+station_tolerance = 0.6; % Units are meters
+threshold_max_points = 10;
+input_points = multi_segment_test_points;
+domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
 %% Test of fast mode
 % Perform the calculation in slow mode

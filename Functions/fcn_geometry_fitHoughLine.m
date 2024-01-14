@@ -1,4 +1,4 @@
-function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+function [best_fitted_parameters_phi_rho_form, best_fit_source_indicies, best_agreement_indicies, best_fitted_parameters_unitvector_basepoint_distance_form] = ...
     fcn_geometry_fitHoughLine(points, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_fitHoughLine
 % Checks all permutations between points to fit a line (N choose 2), then
@@ -7,11 +7,11 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 % calculated for all possible 2-point permutations, ordered in N-choose-2
 % format. The best-fit parameters are returned
 %
-% Format: 
+% Format:
 % [best_fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(points,varargin)
 %
 % INPUTS:
-%      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
+%      points: a Nx2 vector where N is the number of points, but at least 2 rows.
 %
 %      transverse_tolerance: the orthogonal distance between the points and
 %      the linear curve fit that indicate whether a point "belongs" to the
@@ -27,36 +27,55 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 %      line fits.
 %
 %      (OPTIONAL INPUTS)
-% 
+%
+%      points_required_for_agreement: the number of points required for an
+%      agreement to be valid, with minimum value of 3. If left empty, then
+%      the best agreement will always be returned. If a value is given,
+%      line fitting will continue by clustering data until there are no
+%      fits greater than or equal to points_required_for_agreement. The
+%      results of the line fit will be saved in a cell array.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
 % OUTPUTS:
 %
-%      best_fitted_parameters: the angle, phi, and radius, rho, for the
+%      best_fitted_parameters_phi_rho_form: the Hough space results are
+%      shown in polar coordinates as this is the minimum parameter form,
+%      requiring only 2 parameters. This is described by the angle, phi, of
+%      the segment relative to the x-axis and radius, rho, of the nearest
+%      approach of the line projection to the origin, calculated for the
 %      line or line segment of the best point-to-point permutation. This is
 %      returned as a [1 x 2] matrix ordered as [phi rho]. The line fit is
 %      of the form: r = rho / [cos(theta - phi)]
 %
 %      best_fit_source_indicies: the two indicies, in [1x2] vector format,
 %      of the points that produced the best fit.
-% 
+%
 %      best_agreement_indicies: the indicies of the points that are within
 %      agreement of the best-fit parameters, given the transverse and
 %      station tolerance settings.
+%
+%      best_fitted_parameters_unitvector_basepoint_distance_form: the Hough
+%      voting of the fits are conducted in a form that uses a unit vector,
+%      projected from a base point, for a distance range that can be both
+%      positive and negative. This result, for the best fits, is returned
+%      as a [1 x 6] vector composed as follows:
+%      [unitvector_x unitvector_y basepoint_x basepoint_y distance_min
+%      distance_max]
 %
 % DEPENDENCIES:
 %      nchoosek
 %      fcn_geometry_findPointsInSequence
 %
 % EXAMPLES:
-%      
+%
 % See the script: script_test_fcn_geometry_fitHoughLine
 % for a full test suite.
 
 % This function was written on 2023_12_14 by S. Brennan
-% Questions or comments? sbrennan@psu.edu 
+% Questions or comments? sbrennan@psu.edu
 
 % Revision history:
 % 2023_12_14 - S. Brennan
@@ -68,6 +87,12 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 % -- externalized station checks to fcn_geometry_findPointsInSequence
 % -- now allows both line and line segment fitting
 % -- modified to only ouput the best fit
+% 2024_01_14 - S. Brennan
+% -- added points_required_for_agreement option
+% -- fixed minor bug where fastmode looking at varargin{1}, not
+% varargin{end}
+% -- added best_fitted_parameters_unitvector_basepoint_distance_form output
+% -- added multi-line fitting option, much faster than doing one-at-a-time
 
 %% Debugging and Input checks
 
@@ -75,7 +100,7 @@ function [best_fitted_parameters, best_fit_source_indicies, best_agreement_indic
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{1},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -102,21 +127,21 @@ end
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____                   _       
-%  |_   _|                 | |      
-%    | |  _ __  _ __  _   _| |_ ___ 
+%   _____                   _
+%  |_   _|                 | |
+%    | |  _ __  _ __  _   _| |_ ___
 %    | | | '_ \| '_ \| | | | __/ __|
 %   _| |_| | | | |_) | |_| | |_\__ \
 %  |_____|_| |_| .__/ \__,_|\__|___/
-%              | |                  
-%              |_| 
+%              | |
+%              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(3,5);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -132,10 +157,24 @@ if 0==flag_max_speed
     end
 end
 
+% Does user specify points_required_for_agreement?
+flag_find_only_best_agreement = 1;
+if 4<= nargin
+    temp = varargin{1};
+    if ~isempty(temp)
+        points_required_for_agreement = temp;
+        flag_find_only_best_agreement = 0;
+        if points_required_for_agreement<3
+            error('The input points_required_for_agreement must be greater than or equal to 3.')
+        end
+    end
+end
+
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 4<= nargin && 0==flag_max_speed
+if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -146,13 +185,13 @@ end
 
 %% Solve for the line fit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   __  __       _       
-%  |  \/  |     (_)      
-%  | \  / | __ _ _ _ __  
-%  | |\/| |/ _` | | '_ \ 
+%   __  __       _
+%  |  \/  |     (_)
+%  | \  / | __ _ _ _ __
+%  | |\/| |/ _` | | '_ \
 %  | |  | | (_| | | | | |
 %  |_|  |_|\__,_|_|_| |_|
-% 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Total number of points
@@ -196,32 +235,89 @@ phis = mod(phis,2*pi);
 fitted_parameters = [phis rhos];
 
 % Find the agreements between points and every single line fit
-[best_agreement_index, best_agreement_indicies, agreements] = ...
+agreements = ...
     fcn_INTERNAL_findAgreementsOfPointsToFits(...
     points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance);
 
+% Find best agreement
+if flag_find_only_best_agreement ==1
+    [~, best_agreement_index] = max(agreements);
+    base_point_index = combos_paired(best_agreement_index,1);
 
-% Save results to outputs
-best_fitted_parameters = fitted_parameters(best_agreement_index,:);
-best_fit_source_indicies = combos_paired(best_agreement_index,:);
+    % Find the indicies in transverse agreement and station agreement.
+    % For debugging:  figure(2345); clf;
+    best_agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
+
+    % Save results to outputs
+    best_fitted_parameters_phi_rho_form = fitted_parameters(best_agreement_index,:);
+    best_fit_source_indicies = combos_paired(best_agreement_index,:);
+
+    URHERE
+    best_fitted_parameters_unitvector_basepoint_distance_form = [];
+
+else
+    % Initialize outputs as a cell array
+    best_fitted_parameters_phi_rho_form    = {};
+    best_fit_source_indicies  = {};    
+    best_agreement_indicies   = {};
+    N_fits = 0;
+
+    remaining_agreements = agreements;
+
+    [best_agreement_count, best_agreement_index] = max(remaining_agreements);
+
+    while best_agreement_count >= points_required_for_agreement
+
+        base_point_index = combos_paired(best_agreement_index,1);
+
+        % Find the indicies in transverse agreement and station agreement.
+        % For debugging:  figure(2345); clf;
+        current_agreement_indicies = ...
+            fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
+
+        % Save results to outputs
+        N_fits = N_fits+1;
+        best_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
+        best_fitted_parameters_phi_rho_form{N_fits} = fitted_parameters(best_agreement_index,:); %#ok<AGROW>
+        best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
+
+        % Remove all combos_paired sums that include this agreement
+        for ith_agreement = 1:length(current_agreement_indicies)
+            % Grab current agreement
+            agreement_to_remove = current_agreement_indicies(ith_agreement);
+
+            % Find which combos contain this agreement
+            combos_with_either_index_matching = any(combos_paired==agreement_to_remove,2);
+
+            % Set these combo sums to zero
+            remaining_agreements(combos_with_either_index_matching) = 0;
+        end
+
+        % Recalculate best fit
+        [best_agreement_count, best_agreement_index] = max(remaining_agreements);
+
+    end
+
+end
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
+%   _____       _
+%  |  __ \     | |
+%  | |  | | ___| |__  _   _  __ _
 %  | |  | |/ _ \ '_ \| | | |/ _` |
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
 %                            __/ |
-%                           |___/ 
+%                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end        
+    end
 
     hold on;
     grid on;
@@ -241,8 +337,14 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the best-fit points
-    plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15); 
-
+    if flag_find_only_best_agreement ==1
+        plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
+    else
+        for ith_agreement = 1:length(best_agreement_indicies)
+            fitted_agreement_indicies = best_agreement_indicies{ith_agreement};
+            plot(points(fitted_agreement_indicies,1),points(fitted_agreement_indicies,2),'o','MarkerSize',(15+5*ith_agreement));
+        end
+    end
 
     % Plot all line fits NOTE: this can be confusing as these are the INPUT
     % line segments, not the actual line segments at the end of the fit.
@@ -256,7 +358,7 @@ if flag_do_plots
         end_angles = atan2(end_points(:,2),end_points(:,1));
         end_radii  = rhos ./ cos(end_angles - phis);
         end_points_calculated = end_radii.*[cos(end_angles) sin(end_angles)];
- 
+
         N_steps = 10;
         for ith_best_line = min(N_steps,length(agreements)):-1:1
             ith_line = sorted_indicies(end-ith_best_line+1);
@@ -292,7 +394,7 @@ if flag_do_plots
 
     % Plot the Hough fits in batches, making the points bigger and darker
     % in each batch to emphasize which points were the best fits.
-    N_steps = 20;    
+    N_steps = 20;
     indicies = linspace(1,N_permutations,N_steps);
     for ith_plot = 1:N_steps-1
         plot_indicies_start = ceil(indicies(ith_plot));
@@ -305,11 +407,19 @@ if flag_do_plots
     end
 
     % Plot the best-fit phis and rhos with a red dot
-    plot(best_fitted_parameters(1,1),best_fitted_parameters(1,2),'r.','MarkerSize',30);
+    if flag_find_only_best_agreement ==1
+            plot(best_fitted_parameters_phi_rho_form(1,1),best_fitted_parameters_phi_rho_form(1,2),'r.','MarkerSize',30);
+    else
+        for ith_agreement = 1:length(best_agreement_indicies)
+            fitted_parameters = best_fitted_parameters_phi_rho_form{ith_agreement};
+            plot(fitted_parameters(1,1),fitted_parameters(1,2),'.','MarkerSize',30);
+        end
+    end
+
 
     xlabel('Phi [radians]');
     ylabel('Rho [meters]');
-    
+
 end % Ends check if plotting
 
 if flag_do_debug
@@ -333,101 +443,30 @@ end % Ends main function
 
 
 %% fcn_INTERNAL_findAgreementsOfPointsToFits
-function [best_agreement_index, best_agreement_indicies, agreements] = ...
+function agreement_counts = ...
     fcn_INTERNAL_findAgreementsOfPointsToFits(...
     input_points, ...
     unit_projection_vectors, ...
     combos_paired, ...
     transverse_tolerance, station_tolerance)
 
-flag_do_debug = 0;
-
 N_combos = length(unit_projection_vectors(:,1));
-N_points = length(input_points(:,1));
 
-% Initialize output vectors
-best_agreement_indicies_binary_form = zeros(1,N_points);
-best_agreement_count = -inf;
-best_agreement_index = [];
-agreements = zeros(N_combos,1);
+% Initialize output vector
+agreement_counts = zeros(N_combos,1);
 
-% Loop through all the combos, trying to find best agreement
+% Loop through all the combos, recording agreement with each combo
 for ith_vector = 1:N_combos
     base_point_index = combos_paired(ith_vector,1);
-    next_point_index = combos_paired(ith_vector,2);
-    base_point = input_points(base_point_index,:);
-    next_point = input_points(next_point_index,:);
 
-    % Find the indicies in transverse agreement. This is done by finding
-    % the lateral distances of the points to the fit line, and then keeping
-    % only the points within the lateral distance.
-    unit_orthogonal_vector = unit_projection_vectors(ith_vector,:)*[0 1; -1 0];
-    base_projection_vectors = input_points - base_point;
-    lateral_distances = sum(unit_orthogonal_vector.*base_projection_vectors,2);
-
-    indicies_in_lateral_agreement = find((abs(lateral_distances)<=transverse_tolerance)');
-    base_point_index_in_lateral_agreement = find(indicies_in_lateral_agreement == base_point_index);
-
-    % Next find the indicies in station agreement. To do this, find the
-    % station coordinates for every point as predicted by their tangent
-    % distances. Then sort the points by this distance, keeping track of
-    % how indicies move when sorted. Then check differences in station
-    % change from point to point, cutting off the fit if and when these
-    % differences are larger than the station tolerance.
- 
-    % Find station distances as projections of tangent vectors    
-    station_distances_of_points_in_lateral_agreement = ...
-        sum(base_projection_vectors(indicies_in_lateral_agreement,:).* unit_projection_vectors(ith_vector,:),2);
-
-    if ~isempty(station_tolerance)
-        % Sort the station distances and find those in agreement with station
-        % tolerance
-        indicies_in_station_agreement = ...
-            fcn_geometry_findPointsInSequence(...
-            station_distances_of_points_in_lateral_agreement, ...
-            base_point_index_in_lateral_agreement, ...
-            station_tolerance, -1);
-
-        % Find indicies in both lateral and station agreement
-        indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement(indicies_in_station_agreement);
-    else
-        indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement;
-    end
-
-    % Check the results? (for debugging)    
-    if flag_do_debug
-        figure(4747);
-        clf;
-        hold on;
-        grid on;
-        axis equal;
-        
-        plot(base_point(:,1),base_point(:,2),'g.','MarkerSize',40);
-        plot(next_point(:,1),next_point(:,2),'r.','MarkerSize',40);
-        
-        plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',30)
-        plot(input_points(indicies_in_lateral_agreement,1),input_points(indicies_in_lateral_agreement,2),'m.','MarkerSize',30)
-        
-        plot(input_points(indicies_in_both_lateral_and_station_agreement,1),input_points(indicies_in_both_lateral_and_station_agreement,2),'c.-','MarkerSize',20,'LineWidth',3)
-    end
+    % Find the indicies in transverse agreement and station agreement.
+    % For debugging:  figure(2345); clf;
+    indicies_in_both_lateral_and_station_agreement = fcn_geometry_findAgreementsOfPointsToLineVector( input_points, unit_projection_vectors(ith_vector,:), base_point_index, transverse_tolerance, station_tolerance, -1);
 
     agreement_count = length(indicies_in_both_lateral_and_station_agreement);
-    agreements(ith_vector) = agreement_count;
-
-    if agreement_count>best_agreement_count
-        best_agreement_index = ith_vector;
-
-        % Save new "best" agreement total count
-        best_agreement_count = agreement_count;
-
-        % Save new "best" indicies
-        best_agreement_indicies_binary_form = zeros(1,N_points);
-        best_agreement_indicies_binary_form(1,indicies_in_both_lateral_and_station_agreement) = 1;
-    end
-
+    agreement_counts(ith_vector) = agreement_count;
 end
 
-best_agreement_indicies = find(best_agreement_indicies_binary_form==1);
 end % Ends fcn_INTERNAL_findAgreementsOfPointsToFits
 
 

@@ -226,7 +226,7 @@ else
     indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement;
 end
 
-agreement_indicies = find(indicies_in_both_lateral_and_station_agreement);
+agreement_indicies = indicies_in_both_lateral_and_station_agreement;
 
 
 
