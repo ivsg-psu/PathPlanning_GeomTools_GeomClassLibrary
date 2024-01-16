@@ -635,8 +635,9 @@ for ith_domain = 1:N_domains
     % indicies of the fit are in the original points. Once the points are
     % saved that only belong to this domain, the indicies change. So we
     % need to find what they change to.
-    domain_specific_indicies = 0*fit_source_indicies{ith_domain}; % Initialization
-    for ith_index = 1:length(fit_source_indicies{ith_domain})
+    fit_source_index_list = fit_source_indicies{ith_domain};
+    domain_specific_indicies = 0*fit_source_index_list; % Initialization
+    for ith_index = 1:length(fit_source_index_list(1,:))
         external_index = fit_source_indicies{ith_domain}(ith_index);
         domain_index = find(best_fit_agreement_indicies{ith_domain}==external_index,1);
         domain_specific_indicies(ith_index) = domain_index;

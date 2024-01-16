@@ -9,46 +9,60 @@ close all;
 clc;
 
 
-%% Fill test data - 1 segment
-fig_num = 23;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
+%% Fill test data 
+fig_num = 9999;
 
-seed_points = [2 3; 4 5];
-M = 20; % M is points per meter
-sigma = 0.1;
+% Fill in points
+seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
+M = 10;
+sigma = 0.02;
 
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
-% Add outliers to corrupt the results
-probability_of_corruption = 0.05;
-magnitude_of_corruption = 1;
 
-test_points_with_outliers = fcn_geometry_corruptPointsWithOutliers(test_points,...
+% Corrupt the results with outliers
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
-%% Basic call 
+% Shuffle points?
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+% Demo Hough line fitting
+
+transverse_tolerance = 0.1;
+station_tolerance = [];
+points_required_for_agreement = 20;
+
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+
+
+% Demo Hough line segment fitting
+
+transverse_tolerance = 0.1;
+station_tolerance = 0.4;
+points_required_for_agreement = 20;
+
+domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+
+%% Basic call - line fitting
 fig_num = 1;
 figure(fig_num);
 clf;
 hold on;
 
-% Create dummy data
-test_domain = fcn_geometry_fillEmptyDomainStructure;
-test_domain.best_fit_type = 'Hough line';
-test_domain.points_in_domain = test_points_with_outliers;
-test_domain.best_fit_parameters = [seed_points(1,:) seed_points(2,:)];
-
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, fig_num);
 
 %% Show no figure is generated
 
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1});
 
+%% Now plot the results?
 fig_num = 11;
 figure(fig_num);
 clf;
@@ -58,21 +72,41 @@ fcn_geometry_plotFitDomains(regression_domain, fig_num);
 
 %% Vertical line fit
 fig_num = 111;
+figure(fig_num); clf;
 
-seed_points = [2 3; 2 5];
-M = 20; % M is points per meter
-sigma = 0.02;
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{3}, fig_num);
 
-vertical_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+fprintf(1,'\n\nFitting results: \n');
+fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
+fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
 
-% Create dummy data
-test_domain = fcn_geometry_fillEmptyDomainStructure;
-test_domain.best_fit_type = 'Hough line';
-test_domain.points_in_domain = vertical_test_points;
-test_domain.best_fit_parameters = [seed_points(1,:) seed_points(2,:)];
+%% Basic call - segment fitting
+fig_num = 1;
+figure(fig_num);
+clf;
+hold on;
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, fig_num);
+
+%% Show no figure is generated
 
 
-[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1});
+
+%% Now plot the results?
+fig_num = 11;
+figure(fig_num);
+clf;
+hold on;
+
+fcn_geometry_plotFitDomains(regression_domain, fig_num);
+
+%% Vertical line fit
+fig_num = 111;
+figure(fig_num); clf;
+
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
+
 fprintf(1,'\n\nFitting results: \n');
 fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
 fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
@@ -86,7 +120,7 @@ REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -98,7 +132,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

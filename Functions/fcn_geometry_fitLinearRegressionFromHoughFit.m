@@ -123,7 +123,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (2<= nargin) && (0==flag_max_speed)
+if (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -167,11 +167,8 @@ associated_points_in_domain = points_in_domain;
 
 %% First, sort all the points in the original direction
 % Find the unit vector (in fast mode) connecting base to end point.
-base_point_of_domain = best_fit_parameters(1,1:2);
-end_point_of_domain  = best_fit_parameters(1,3:4);
-unit_tangent_vector_of_domain = fcn_geometry_calcUnitVector(end_point_of_domain - base_point_of_domain, -1);
-% unit_orthogonal_vector_of_domain = unit_tangent_vector_of_domain*[0 1; -1 0];
-
+unit_tangent_vector_of_domain = best_fit_parameters(1,1:2);
+base_point_of_domain          = best_fit_parameters(1,3:4);
 
 % Find domain ranges related to point-to-point fit
 projection_vectors_from_base = associated_points_in_domain - base_point_of_domain;
@@ -336,13 +333,12 @@ if flag_do_plots
 
     % Plot the fits    
     ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); %#ok<NASGU>
       
-    % Plot the input points
+    % Plot the base point and vector
     plot(base_point_of_domain(1,1),base_point_of_domain(1,2),'g.','MarkerSize',30);
-    plot(end_point_of_domain(1,1), end_point_of_domain(1,2),'r.','MarkerSize',30);
-    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
-
+    quiver(base_point_of_domain(:,1),base_point_of_domain(:,2),unit_tangent_vector_of_domain(:,1),unit_tangent_vector_of_domain(:,2),0,'g','Linewidth',5);
+        
     % Plot the domain
     fcn_geometry_plotFitDomains(regression_domain, fig_num);
 

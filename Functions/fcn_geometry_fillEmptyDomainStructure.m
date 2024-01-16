@@ -56,9 +56,23 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %
 %            'unfitted' - points left over after a fit is done, so [nan]
 %            
-%            'Hough line' - [start_x end_x start_y end_y] of the line fit
+%            'Hough line' - 
+%
+%             [unit_projection_vector_x,
+%              unit_projection_vector_y,
+%              base_point_x, 
+%              base_point_y, 
+%             ]
 %            
-%            'Hough segment' - [start_x end_x start_y end_y] of the line fit
+%            'Hough segment' - 
+%
+%             [unit_projection_vector_x,
+%              unit_projection_vector_y,
+%              base_point_x, 
+%              base_point_y, 
+%              station_distance_min,
+%              station_distance_max,
+%             ]
 %
 %            'Hough circle' - [circleCenter_x circleCenter_y radius] of the
 %            circle fit
@@ -80,12 +94,17 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              unit_projection_vector_y,
 %              base_point_x, 
 %              base_point_y, 
+%             ]
+%
+%            'Vector regression segment fit' -
+
+%             [unit_projection_vector_x,
+%              unit_projection_vector_y,
+%              base_point_x, 
+%              base_point_y, 
 %              station_distance_min,
 %              station_distance_max,
 %             ]
-%
-%            'Vector regression segment fit' - same as 'Vector regression
-%            line fit'.
 %            
 %      emptyDomain.best_fit_domain_box = [];
 %

@@ -34,6 +34,8 @@ function fcn_geometry_plotFitDomains(domains, varargin)
 % Revision history:
 % 2024_01_12 - S. Brennan
 % -- wrote the code
+% 2024_01_16
+% -- fixed bug with line/segment plotting
 
 
 %% Debugging and Input checks
@@ -152,7 +154,7 @@ if flag_do_plots
     grid on;
     axis equal;
 
-    % Plot the fits
+    %% Plot all the points and domains
     for ith_domain = 1:length(domains)
         % Get current color
         current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
@@ -166,22 +168,73 @@ if flag_do_plots
 
         if ~any(isnan(domain_to_plot.best_fit_parameters))
             % Plot the points
-            domainPoints = domain_to_plot.points_in_domain;           
+            domainPoints = domain_to_plot.points_in_domain;
             plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',20, 'Color',current_color);
 
             % Plot the domain shape
-            domainShape = domain_to_plot.best_fit_domain_box;           
+            domainShape = domain_to_plot.best_fit_domain_box;
             plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+
+        else % These are 'unfitted' models, typically
+
+            % Plot the unfitted points in grey
+            domainPoints = domain_to_plot.points_in_domain;
+            plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',20, 'Color',[0.5 0.5 0.5]);
+        end
+    end
+
+    % Make axis slightly larger? And since this is the first one, save the
+    % axis limits.
+    if flag_rescale_axis
+        temp = axis;
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
+        axis(new_axis);
+    end
+
+    % Get the maximum plotting distance - we'll need this on some of the
+    % fits (lines)
+    current_axis = axis;
+    axis_range_x = current_axis(2)-current_axis(1);
+    axis_range_y = current_axis(4)-current_axis(3);
+    max_distance = sum([axis_range_x axis_range_y].^2,2).^0.5;
+
+    % Plot the fits
+    for ith_domain = 1:length(domains)
+        % Get current color
+        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+
+        % Convert domain to one structure, to make things easy
+        if iscell(domains)
+            domain_to_plot = domains{ith_domain};
+        else
+            domain_to_plot = domains;
+        end
+
+        if ~any(isnan(domain_to_plot.best_fit_parameters))
 
             % Plot the model fit
             model_fit  = domain_to_plot.best_fit_parameters;
             switch domain_to_plot.best_fit_type
-                case {'Hough line','Hough segment'}
-                    % Plot the best-fit line segment
-                    line_segment = [model_fit(1,1:2); model_fit(1,3:4)];
+
+                case {'Hough line','Vector regression line fit'}
+                    % Plot the best-fit line 
+                    %             [unit_projection_vector_x,
+                    %              unit_projection_vector_y,
+                    %              base_point_x,
+                    %              base_point_y,
+                    %             ]
+                    unit_projection_vector = model_fit(1,1:2);
+                    base_point = model_fit(1,3:4);
+                    low_station  = -max_distance;
+                    high_station = max_distance;
+                    line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
-                case {'Vector regression line fit','Vector regression segment fit'}
+                case {'Hough segment','Vector regression segment fit'}
+                    % Plot the best-fit segment                    
                     %             [unit_projection_vector_x,
                     %              unit_projection_vector_y,
                     %              base_point_x,
@@ -228,6 +281,9 @@ if flag_do_plots
             end
         end
 
+        % Force axis back to what it was before
+        axis(current_axis);
+
         if strcmp(domain_to_plot.best_fit_type,'unfitted')
             % Plot the points in grey
             domainPoints = domain_to_plot.points_in_domain;
@@ -235,16 +291,7 @@ if flag_do_plots
         end
     end
 
-    % Make axis slightly larger? And since this is the first one, save the
-    % axis limits.
-    if flag_rescale_axis
-        temp = axis;
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
-        axis(new_axis);
-    end
+
 
 
 end % Ends check if plotting

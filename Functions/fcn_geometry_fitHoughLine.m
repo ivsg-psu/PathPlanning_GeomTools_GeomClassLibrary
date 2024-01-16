@@ -205,47 +205,50 @@ agreements = ...
 
 
 % Initialize outputs as cell arrays
-best_fit_parameters_phi_rho_form    = {};
-% best_fit_parameters_unitvector_basepoint_distance_form = {};
-best_fit_source_indicies  = {};
+% best_fit_parameters_phi_rho_form    = {};
+best_fit_parameters_unitvector_basepoint_distance_form = {};
+% best_fit_source_indicies  = {};
 best_fit_agreement_indicies   = {};
-
+max_agreement_indicies = {}; % For plotting
 
 % Find best agreement
 if flag_find_only_best_agreement ==1
-    [~, best_agreement_index] = max(agreements);
-    base_point_index = combos_paired(best_agreement_index,1);
+    [~, max_agreement_index] = max(agreements);
+    base_point_index = combos_paired(max_agreement_index,1);
 
     % Find the indicies corresponding to the best transverse agreement and station agreement.
     % For debugging:  figure(2345); clf;
-    best_fit_agreement_indicies{1} = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
+    [best_fit_agreement_indicies{1}, station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(max_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
 
     % Save results to outputs
     % best_fit_parameters_phi_rho_form{1} = fitted_parameters(best_agreement_index,:);
-    best_fit_source_indicies{1} = combos_paired(best_agreement_index,:);   
-    % best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) station_distances];
+    % best_fit_source_indicies{1} = combos_paired(max_agreement_index,:);   
+    best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) station_distances];
 
+    max_agreement_indicies{1} = max_agreement_index;
 else % Find many agreements, up to the number of specified votes
     N_fits = 0;
     remaining_agreements = agreements;
 
-    [best_agreement_count, best_agreement_index] = max(remaining_agreements);
+    [best_agreement_count, max_agreement_index] = max(remaining_agreements);
+
 
     while best_agreement_count >= points_required_for_agreement
 
         % Which point index is the base point?
-        base_point_index = combos_paired(best_agreement_index,1);
+        base_point_index = combos_paired(max_agreement_index,1);
 
         % Find the indicies in transverse agreement and station agreement.
-        current_agreement_indicies = ...
-            fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
+        [current_agreement_indicies, current_station_distances] = ...
+            fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(max_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
 
         % Save results from prior best fit to outputs
         N_fits = N_fits+1;
+        max_agreement_indicies{N_fits} = max_agreement_index; %#ok<AGROW>
         best_fit_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
-        best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
+        % best_fit_source_indicies{N_fits} = combos_paired(max_agreement_index,:); %#ok<AGROW>
         % best_fit_parameters_phi_rho_form{N_fits} = fitted_parameters(best_agreement_index,:); %#ok<AGROW>
-        % best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) current_station_distances]; %#ok<AGROW>
+        best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) current_station_distances]; %#ok<AGROW>
         % best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
 
         % Remove all combos_paired sums that include this agreement
@@ -261,7 +264,7 @@ else % Find many agreements, up to the number of specified votes
         end
 
         % Recalculate best fit
-        [best_agreement_count, best_agreement_index] = max(remaining_agreements);
+        [best_agreement_count, max_agreement_index] = max(remaining_agreements);
 
     end
     
@@ -269,7 +272,7 @@ end
 
 
 % Convert outputs to domain type
-domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, best_fit_source_indicies, transverse_tolerance, station_tolerance);
+domains = fcn_INTERNAL_filldomains(points, best_fit_parameters_unitvector_basepoint_distance_form, best_fit_agreement_indicies, transverse_tolerance, station_tolerance);
 
 
 %% Plot the results (for debugging)?
@@ -374,7 +377,8 @@ if flag_do_plots
 
     % Plot the best-fit phis and rhos with a red dot
     if flag_find_only_best_agreement ==1
-        fitted_parameters = best_fit_parameters_phi_rho_form{1};
+        index_to_plot = max_agreement_indicies{1};
+        fitted_parameters = [phis(index_to_plot), rhos(index_to_plot)];
         plot(fitted_parameters(1,1),fitted_parameters(1,2),'r.','MarkerSize',30);
     else
         % Get the color ordering?
@@ -386,12 +390,14 @@ if flag_do_plots
 
         N_colors = length(color_ordering(:,1));
 
-        for ith_agreement = 1:length(best_fit_agreement_indicies)
+        for ith_agreement = 1:length(domains)-1
             % Get current color
             current_color = color_ordering(mod(ith_agreement,N_colors)+1,:);
 
             % Get points to plot
-            fitted_parameters = best_fit_parameters_phi_rho_form{ith_agreement};
+            index_to_plot = max_agreement_indicies{ith_agreement};
+            fitted_parameters = [phis(index_to_plot), rhos(index_to_plot)];
+
 
             % Update plot
             plot(fitted_parameters(1,1),fitted_parameters(1,2),'.','MarkerSize',50,'Color',current_color);
@@ -451,7 +457,7 @@ phis = mod(phis,2*pi);
 end % Ends fcn_INTERNAL_findPhisRhos
 
 %% fcn_INTERNAL_filldomains
-function domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, fit_source_indicies, transverse_tolerance, station_tolerance)
+function domains = fcn_INTERNAL_filldomains(points, best_fit_parameters_unitvector_basepoint_distance_form, best_fit_agreement_indicies, transverse_tolerance, station_tolerance)
 
 % How many domains are there?
 N_domains = length(best_fit_agreement_indicies);
@@ -464,49 +470,62 @@ unfitted_indicies = ones(length(points(:,1)),1);
 % Loop through domains
 for ith_domain = 1:N_domains
 
-    points_in_domain = points(best_fit_agreement_indicies{ith_domain},:);
-    domain_specific_start_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(1),1);
-    domain_specific_end_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(2),1);
-    best_fit_source_indicies = [domain_specific_start_index domain_specific_end_index];
+    % Is this a line or line segment?
+    flag_this_is_a_line = 0;
+    if isempty(station_tolerance)
+        flag_this_is_a_line = 1;
+    end
 
+    % Grab the points in the domain
+    points_in_domain = points(best_fit_agreement_indicies{ith_domain},:);
 
     % Calculate the best-fit domain box
-    % Find the points that start and end the domain Hough fit
-    domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
-    domain_specific_end_point = points_in_domain(domain_specific_end_index,:);
-    unit_projection_vector = fcn_geometry_calcUnitVector(domain_specific_end_point-domain_specific_start_point);
-    unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
+    % FORMAT:     best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) station_distances];
 
+    % Find the points that start and end the domain Hough fit
+    fit_parameters              = best_fit_parameters_unitvector_basepoint_distance_form{ith_domain};
+    unit_projection_vector      = fit_parameters(1,1:2);
+    domain_specific_start_point = fit_parameters(1,3:4);
+
+    % Calculate a box that goes all around the points in the domain
     base_projection_vectors = points_in_domain - domain_specific_start_point;
 
+    % Find the max and min stations among the points
     station_distances_of_points_in_domain = ...
         sum(base_projection_vectors.* unit_projection_vector,2);
     max_station = max(station_distances_of_points_in_domain);
     min_station = min(station_distances_of_points_in_domain);
+    
     Hough_fit_start_point = domain_specific_start_point + unit_projection_vector*min_station;
     Hough_fit_end_point   = domain_specific_start_point + unit_projection_vector*max_station;
 
-    best_fit_parameters = [Hough_fit_start_point Hough_fit_end_point];
-
+    unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
     boundary_left  = [Hough_fit_start_point; Hough_fit_end_point] + ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
     boundary_right = [Hough_fit_start_point; Hough_fit_end_point] - ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
 
     domain_box = [boundary_left; flipud(boundary_right)];
     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 
-    % Which points remain unfitted?
+    % Determine the best_fit_parameters
+    if flag_this_is_a_line
+        best_fit_parameters = fit_parameters(1,1:4);
+    else
+        best_fit_parameters = fit_parameters(1,1:6);
+    end
+
+
+    % Update which points remain unfitted
     unfitted_indicies(best_fit_agreement_indicies{ith_domain})=0;
 
     % Save results into the domain structure
     domains{ith_domain} = fcn_geometry_fillEmptyDomainStructure;
 
-    if isempty(station_tolerance)
+    if flag_this_is_a_line
         domains{ith_domain}.best_fit_type = 'Hough line';
     else
         domains{ith_domain}.best_fit_type = 'Hough segment';
     end
     domains{ith_domain}.points_in_domain         = points_in_domain;
-    domains{ith_domain}.best_fit_source_indicies = best_fit_source_indicies;
     domains{ith_domain}.best_fit_domain_box      = domainShape;
     domains{ith_domain}.best_fit_parameters      = best_fit_parameters;
 end

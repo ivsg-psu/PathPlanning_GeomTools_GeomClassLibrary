@@ -13,8 +13,9 @@
 % sbrennan@psu.edu 
 % 
 % Additional contributers include:
-% 2016 - Seth Tau (now with Army)
-% 2023 - Aneesh Batchu
+% 2016-2018 - Seth Tau 
+% 2023-2024 - Aneesh Batchu
+% 2024 - Xinyu Cao
 
 
 
@@ -311,7 +312,9 @@ fig_num = 38383;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Demo Hough line fitting
 fig_num = 1111;
-transverse_tolerance = 0.2;
+figure(fig_num); clf;
+
+transverse_tolerance = 0.1;
 station_tolerance = [];
 points_required_for_agreement = 20;
 
@@ -321,7 +324,9 @@ domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transve
 
 %% Demo Hough line segment fitting
 fig_num = 11111;
-transverse_tolerance = 0.2;
+figure(fig_num); clf;
+
+transverse_tolerance = 0.1;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
@@ -330,7 +335,8 @@ domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transve
 
 %% Demo linear pseudo-regression from Hough Line votes
 % Show how to do line fitting from Hough votes
-fig_num = 11111; % Reuse the previous figure number, as it puts the results atop that plot
+fig_num = 111111; % Reuse the previous figure number if you want to overlay
+figure(fig_num);clf;
 
 [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains{1}, fig_num);
 fprintf(1,'\n\nFitting results: \n');
