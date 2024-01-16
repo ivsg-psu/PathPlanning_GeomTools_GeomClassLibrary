@@ -36,8 +36,25 @@ figure(fig_num);
 clf;
 hold on;
 
-plot(test_points_with_outliers(:,1),test_points_with_outliers(:,2),'k.','MarkerSize',20);
-[regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit([test_points(1,:); test_points(end,:)],test_points, fig_num);
+% Create dummy data
+test_domain = fcn_geometry_fillEmptyDomainStructure;
+test_domain.best_fit_type = 'Hough line';
+test_domain.points_in_domain = test_points_with_outliers;
+test_domain.best_fit_parameters = [seed_points(1,:) seed_points(2,:)];
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+
+%% Show no figure is generated
+
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain);
+
+fig_num = 11;
+figure(fig_num);
+clf;
+hold on;
+
+fcn_geometry_plotFitDomains(regression_domain, fig_num);
 
 %% Vertical line fit
 fig_num = 111;
@@ -46,18 +63,16 @@ seed_points = [2 3; 2 5];
 M = 20; % M is points per meter
 sigma = 0.02;
 
-vertical_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,fig_num);
+vertical_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Create dummy data
+test_domain = fcn_geometry_fillEmptyDomainStructure;
+test_domain.best_fit_type = 'Hough line';
+test_domain.points_in_domain = vertical_test_points;
+test_domain.best_fit_parameters = [seed_points(1,:) seed_points(2,:)];
 
 
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-grid minor;
-
-plot(vertical_test_points(:,1),vertical_test_points(:,2),'k.','MarkerSize',20);
-[regression_fit_line_segment, domain_box, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit([vertical_test_points(1,:); vertical_test_points(end,:)],vertical_test_points, fig_num);
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
 fprintf(1,'\n\nFitting results: \n');
 fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
 fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
@@ -66,22 +81,24 @@ fprintf(1,'Measured standard deviation in fit, transverse direction (total least
 
 %% Test of fast mode
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit([test_points(1,:); test_points(end,:)],test_points, []);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-minTimeFast = Inf; nsum = 10;
+fig_num = -1;
+minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit([test_points(1,:); test_points(end,:)],test_points, -1);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -139,15 +156,14 @@ points = [
     ];
 
 
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-grid minor;
+% Create dummy data
+test_domain = fcn_geometry_fillEmptyDomainStructure;
+test_domain.best_fit_type = 'Hough line';
+test_domain.points_in_domain = points;
+test_domain.best_fit_parameters = [10 0 10 5];
 
-plot(points(:,1),points(:,2),'k.','MarkerSize',20);
-[regression_fit_line_segment, domain_box, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit([points(1,:); points(end,:)],points, fig_num);
+
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
 fprintf(1,'\n\nFitting results: \n');
 fprintf(1,'Standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
 

@@ -157,50 +157,82 @@ if flag_do_plots
         % Get current color
         current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
 
-        % Plot the fits?
-        if ~any(isnan(domains{ith_domain}.best_fit_parameters))
-            switch domains{ith_domain}.best_fit_type
-                case 'line'
-                    % Plot the best-fit line segment
-                    plot(domains{ith_domain}.best_fit_parameters(:,1),domains{ith_domain}.best_fit_parameters(:,2),'.-','Linewidth',1,'MarkerSize',15,'Color',current_color);
+        % Convert domain to one structure, to make things easy
+        if iscell(domains)
+            domain_to_plot = domains{ith_domain};
+        else
+            domain_to_plot = domains;
+        end
 
-                    % Plot the domain box
-                    domain_box = domains{ith_domain}.best_fit_domain_box;
-                    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-                    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+        if ~any(isnan(domain_to_plot.best_fit_parameters))
+            % Plot the points
+            domainPoints = domain_to_plot.points_in_domain;           
+            plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',20, 'Color',current_color);
+
+            % Plot the domain shape
+            domainShape = domain_to_plot.best_fit_domain_box;           
+            plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+
+            % Plot the model fit
+            model_fit  = domain_to_plot.best_fit_parameters;
+            switch domain_to_plot.best_fit_type
+                case {'Hough line','Hough segment'}
+                    % Plot the best-fit line segment
+                    line_segment = [model_fit(1,1:2); model_fit(1,3:4)];
+                    plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
+
+                case {'Vector regression line fit','Vector regression segment fit'}
+                    %             [unit_projection_vector_x,
+                    %              unit_projection_vector_y,
+                    %              base_point_x,
+                    %              base_point_y,
+                    %              station_distance_min,
+                    %              station_distance_max,
+                    %             ]
+                    unit_projection_vector = model_fit(1,1:2);
+                    base_point = model_fit(1,3:4);
+                    low_station  = model_fit(1,5);
+                    high_station = model_fit(1,6);
+                    line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
+                    plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
                 case 'circle'
                     % Plot the best-fit circle
-                    circleCenter = domains{ith_domain}.best_fit_parameters(1,1:2);
-                    circleRadius = domains{ith_domain}.best_fit_parameters(1,3);
+                    circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
+                    circleRadius = domain_to_plot.best_fit_parameters(1,3);
                     fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
                     % Plot the domain box
-                    domain_box = domains{ith_domain}.best_fit_domain_box;
+                    domain_box = domain_to_plot.best_fit_domain_box;
                     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
                     plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
                 case 'arc'
                     % Plot the best-fit arc
-                    circleCenter = domains{ith_domain}.best_fit_parameters(1,1:2);
-                    circleRadius = domains{ith_domain}.best_fit_parameters(1,3);
-                    start_angle_in_radians = domains{ith_domain}.best_fit_parameters(1,4);
-                    end_angle_in_radians = domains{ith_domain}.best_fit_parameters(1,5);
+                    circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
+                    circleRadius = domain_to_plot.best_fit_parameters(1,3);
+                    start_angle_in_radians = domain_to_plot.best_fit_parameters(1,4);
+                    end_angle_in_radians = domain_to_plot.best_fit_parameters(1,5);
                     fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, current_color,fig_num)  
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
                     % Plot the domain box
-                    domain_box = domains{ith_domain}.best_fit_domain_box;
+                    domain_box = domain_to_plot.best_fit_domain_box;
                     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
                     plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
                 otherwise
-                    error('Unknown fit type detected - unable to continue!');
+                    error('Unknown fit type detected: %s - unable to continue!', domain_to_plot.best_fit_type);
             end
         end
 
+        if strcmp(domain_to_plot.best_fit_type,'unfitted')
+            % Plot the points in grey
+            domainPoints = domain_to_plot.points_in_domain;
+            plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',20, 'Color',[0.5 0.5 0.5]);
+        end
     end
 
     % Make axis slightly larger? And since this is the first one, save the

@@ -36,7 +36,7 @@ transverse_tolerance = 0.2;
 station_tolerance = 2;
 points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 
 %% Test 2: a basic test of line segment fitting, noisy points
@@ -48,7 +48,7 @@ transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 %% Test 3: a basic test of LINE fitting, noisy points, showing effect of station_tolerance setting
 fig_num = 3;
@@ -59,7 +59,7 @@ transverse_tolerance = 0.2;
 station_tolerance = [];
 points_required_for_agreement = [];
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
 
 %% Test 4: a basic test of line segment fitting, noisy points
 fig_num = 4;
@@ -70,7 +70,30 @@ transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+%% Test 5: confirming that it does not plot if figure is off
+fig_num = 5;
+
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+points_required_for_agreement = 20;
+
+domains = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
+
+fcn_geometry_plotFitDomains(domains, fig_num);
+
+%% Test 6: show get empty domain if points for agreement is too high
+fig_num = 6;
+figure(fig_num);
+clf;
+
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+points_required_for_agreement = length(test_points(:,1))+1;
+
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
 
 %% Test of fast mode
 % Set values for testing
@@ -85,7 +108,7 @@ minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
+    domains= ...
         fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -97,7 +120,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
+    domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

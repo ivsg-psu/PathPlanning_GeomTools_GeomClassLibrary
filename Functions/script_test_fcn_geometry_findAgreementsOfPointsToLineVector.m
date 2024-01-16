@@ -41,7 +41,7 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point,-1);
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+[agreement_indicies,station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
 
 %% Test 2: a basic test of line segment fitting, specifying point-type base_point_index
 fig_num = 2;

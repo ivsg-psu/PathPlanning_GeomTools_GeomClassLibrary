@@ -1,5 +1,4 @@
-function [best_fitted_parameters_phi_rho_form, best_fit_source_indicies, best_agreement_indicies, best_fitted_parameters_unitvector_basepoint_distance_form] = ...
-    fcn_geometry_fitHoughLine(points, transverse_tolerance, station_tolerance, varargin)
+function domains = fcn_geometry_fitHoughLine(points, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_fitHoughLine
 % Checks all permutations between points to fit a line (N choose 2), then
 % calculates the line fit in polar form (rho and phi), and determines which
@@ -41,33 +40,15 @@ function [best_fitted_parameters_phi_rho_form, best_fit_source_indicies, best_ag
 %
 % OUTPUTS:
 %
-%      best_fitted_parameters_phi_rho_form: the Hough space results are
-%      shown in polar coordinates as this is the minimum parameter form,
-%      requiring only 2 parameters. This is described by the angle, phi, of
-%      the segment relative to the x-axis and radius, rho, of the nearest
-%      approach of the line projection to the origin, calculated for the
-%      line or line segment of the best point-to-point permutation. This is
-%      returned as a [1 x 2] matrix ordered as [phi rho]. The line fit is
-%      of the form: r = rho / [cos(theta - phi)]
-%
-%      best_fit_source_indicies: the two indicies, in [1x2] vector format,
-%      of the points that produced the best fit.
-%
-%      best_agreement_indicies: the indicies of the points that are within
-%      agreement of the best-fit parameters, given the transverse and
-%      station tolerance settings.
-%
-%      best_fitted_parameters_unitvector_basepoint_distance_form: the Hough
-%      voting of the fits are conducted in a form that uses a unit vector,
-%      projected from a base point, for a distance range that can be both
-%      positive and negative. This result, for the best fits, is returned
-%      as a [1 x 6] vector composed as follows:
-%      [unitvector_x unitvector_y basepoint_x basepoint_y distance_min
-%      distance_max]
+%      domains: a structure that records details of the domain of fitting.
+%      See fcn_geometry_fillEmptyDomainStructure for details.
 %
 % DEPENDENCIES:
-%      nchoosek
-%      fcn_geometry_findPointsInSequence
+%      fcn_DebugTools_checkInputsToFunctions
+%      fcn_geometry_calcUnitVector
+%      fcn_geometry_findAgreementsOfPointsToLineVector    
+%      fcn_geometry_fillEmptyDomainStructure
+%      fcn_geometry_plotFitDomains
 %
 % EXAMPLES:
 %
@@ -93,6 +74,10 @@ function [best_fitted_parameters_phi_rho_form, best_fit_source_indicies, best_ag
 % varargin{end}
 % -- added best_fitted_parameters_unitvector_basepoint_distance_form output
 % -- added multi-line fitting option, much faster than doing one-at-a-time
+% 2024_01_15 - S. Brennan
+% -- functionalized fcn_INTERNAL_findPhisRhos
+% -- changed outputs to domain types
+% -- added fcn_geometry_plotFitDomains for plotting
 
 %% Debugging and Input checks
 
@@ -206,80 +191,62 @@ projection_vectors = points(combos_paired(:,2),:) - points(combos_paired(:,1),:)
 % Convert the projection vectors into unit vectors in projection and
 % orthgonal directions
 unit_projection_vectors = fcn_geometry_calcUnitVector(projection_vectors);
-unit_orthogonal_vectors = unit_projection_vectors*[0 1; -1 0];
 
-% Calculate the angles of the unit projection vectors
-angles_relative_to_x_axis = atan2(unit_projection_vectors(:,2),unit_projection_vectors(:,1));
-
-% For polar line definitions, the phis are the angle of the vector's
-% orthogonal, and so a vector pointed straight up will have an phi angle of
-% zero. We can convert by subtracting 90 degrees from the vector angle to
-% calculate the phi angles.
-phis = angles_relative_to_x_axis - pi/2;
-
-% The radius of the line relative to the origin is just the projection
-% distance from the origin to the points on the line, dot producted with
-% the negative of the orthogonal vectors
-mixed_rhos = -1*sum(points(combos_paired(:,1),:).*unit_orthogonal_vectors,2);
-
-% Sometimes the line has "negative" radius, and if so, we need to flip the
-% angle measured and as well make these radii positive
-rhos = mixed_rhos;
-rhos(mixed_rhos<0) = rhos(mixed_rhos<0)*-1;
-phis(mixed_rhos<0) = phis(mixed_rhos<0) + pi;
-
-% Make sure phis wrap around correctly
-phis = mod(phis,2*pi);
+% Find phi and rho parameters corresponding to each combo and vector
+[phis, rhos] = fcn_INTERNAL_findPhisRhos(points, unit_projection_vectors, combos_paired);
 
 % Save the results for output from the function and for plotting
-fitted_parameters = [phis rhos];
+% fitted_parameters = [phis rhos];
 
 % Find the agreements between points and every single line fit
 agreements = ...
     fcn_INTERNAL_findAgreementsOfPointsToFits(...
     points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance);
 
+
+% Initialize outputs as cell arrays
+best_fit_parameters_phi_rho_form    = {};
+% best_fit_parameters_unitvector_basepoint_distance_form = {};
+best_fit_source_indicies  = {};
+best_fit_agreement_indicies   = {};
+
+
 % Find best agreement
 if flag_find_only_best_agreement ==1
     [~, best_agreement_index] = max(agreements);
     base_point_index = combos_paired(best_agreement_index,1);
 
-    % Find the indicies in transverse agreement and station agreement.
+    % Find the indicies corresponding to the best transverse agreement and station agreement.
     % For debugging:  figure(2345); clf;
-    best_agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
+    best_fit_agreement_indicies{1} = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
 
     % Save results to outputs
-    best_fitted_parameters_phi_rho_form = fitted_parameters(best_agreement_index,:);
-    best_fit_source_indicies = combos_paired(best_agreement_index,:);
+    % best_fit_parameters_phi_rho_form{1} = fitted_parameters(best_agreement_index,:);
+    best_fit_source_indicies{1} = combos_paired(best_agreement_index,:);   
+    % best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) station_distances];
 
-    URHERE
-    best_fitted_parameters_unitvector_basepoint_distance_form = [];
-
-else
-    % Initialize outputs as a cell array
-    best_fitted_parameters_phi_rho_form    = {};
-    best_fit_source_indicies  = {};    
-    best_agreement_indicies   = {};
+else % Find many agreements, up to the number of specified votes
     N_fits = 0;
-
     remaining_agreements = agreements;
 
     [best_agreement_count, best_agreement_index] = max(remaining_agreements);
 
     while best_agreement_count >= points_required_for_agreement
 
+        % Which point index is the base point?
         base_point_index = combos_paired(best_agreement_index,1);
 
         % Find the indicies in transverse agreement and station agreement.
-        % For debugging:  figure(2345); clf;
         current_agreement_indicies = ...
             fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
 
-        % Save results to outputs
+        % Save results from prior best fit to outputs
         N_fits = N_fits+1;
-        best_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
-        best_fitted_parameters_phi_rho_form{N_fits} = fitted_parameters(best_agreement_index,:); %#ok<AGROW>
+        best_fit_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
         best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
+        % best_fit_parameters_phi_rho_form{N_fits} = fitted_parameters(best_agreement_index,:); %#ok<AGROW>
+        % best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) current_station_distances]; %#ok<AGROW>
+        % best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
 
         % Remove all combos_paired sums that include this agreement
         for ith_agreement = 1:length(current_agreement_indicies)
@@ -297,8 +264,12 @@ else
         [best_agreement_count, best_agreement_index] = max(remaining_agreements);
 
     end
-
+    
 end
+
+
+% Convert outputs to domain type
+domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, best_fit_source_indicies, transverse_tolerance, station_tolerance);
 
 
 %% Plot the results (for debugging)?
@@ -319,35 +290,30 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end
 
-    hold on;
-    grid on;
-    title('Points and maximum-vote fit, plotted in point-space');
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
-
     % Produce the sorted list, to create the Hough plot
     [~,sorted_indicies] = sort(agreements,'ascend');
 
     % Save the number of permutations
     N_permutations = length(combos_paired(:,1));
 
-    % Plot the results in point space
+    %% Plot the results in point space
+    hold on;
+    grid on;
+    axis equal;
+    title('Points and maximum-vote fit, plotted in point-space');
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
 
     % Plot the input points
-    plot(points(:,1),points(:,2),'k.','MarkerSize',20);
+    plot(points(:,1),points(:,2),'k.','MarkerSize',40);
 
-    % Plot the best-fit points
-    if flag_find_only_best_agreement ==1
-        plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
-    else
-        for ith_agreement = 1:length(best_agreement_indicies)
-            fitted_agreement_indicies = best_agreement_indicies{ith_agreement};
-            plot(points(fitted_agreement_indicies,1),points(fitted_agreement_indicies,2),'o','MarkerSize',(15+5*ith_agreement));
-        end
-    end
+    % Plot the domains
+    fcn_geometry_plotFitDomains(domains, fig_num);
 
-    % Plot all line fits NOTE: this can be confusing as these are the INPUT
-    % line segments, not the actual line segments at the end of the fit.
+    % Plot all line fits? NOTE: this can be confusing as these are the
+    % INPUT line segments, not the actual line segments at the end of the
+    % fit. NOTE 2: this code was NOT updated and needs to be edited for
+    % cell array changes that occurred after it was written.
     if 1==0
         start_points = points(combos_paired(:,1),:);
         start_angles = atan2(start_points(:,2),start_points(:,1));
@@ -383,7 +349,7 @@ if flag_do_plots
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
-    % Plot the Hough space results, from least to best
+    %% Plot the Hough space results, from least to best
     figure(fig_num+1);
     clf;
     hold on;
@@ -408,11 +374,27 @@ if flag_do_plots
 
     % Plot the best-fit phis and rhos with a red dot
     if flag_find_only_best_agreement ==1
-            plot(best_fitted_parameters_phi_rho_form(1,1),best_fitted_parameters_phi_rho_form(1,2),'r.','MarkerSize',30);
+        fitted_parameters = best_fit_parameters_phi_rho_form{1};
+        plot(fitted_parameters(1,1),fitted_parameters(1,2),'r.','MarkerSize',30);
     else
-        for ith_agreement = 1:length(best_agreement_indicies)
-            fitted_parameters = best_fitted_parameters_phi_rho_form{ith_agreement};
-            plot(fitted_parameters(1,1),fitted_parameters(1,2),'.','MarkerSize',30);
+        % Get the color ordering?
+        try
+            color_ordering = orderedcolors('gem12');
+        catch
+            color_ordering = colororder;
+        end
+
+        N_colors = length(color_ordering(:,1));
+
+        for ith_agreement = 1:length(best_fit_agreement_indicies)
+            % Get current color
+            current_color = color_ordering(mod(ith_agreement,N_colors)+1,:);
+
+            % Get points to plot
+            fitted_parameters = best_fit_parameters_phi_rho_form{ith_agreement};
+
+            % Update plot
+            plot(fitted_parameters(1,1),fitted_parameters(1,2),'.','MarkerSize',50,'Color',current_color);
         end
     end
 
@@ -440,7 +422,102 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
+%% fcn_INTERNAL_findPhisRhos
+function [phis, rhos] = fcn_INTERNAL_findPhisRhos(points, unit_projection_vectors, combos_paired)
+unit_orthogonal_vectors = unit_projection_vectors*[0 1; -1 0];
 
+% Calculate the angles of the unit projection vectors
+angles_relative_to_x_axis = atan2(unit_projection_vectors(:,2),unit_projection_vectors(:,1));
+
+% For polar line definitions, the phis are the angle of the vector's
+% orthogonal, and so a vector pointed straight up will have an phi angle of
+% zero. We can convert by subtracting 90 degrees from the vector angle to
+% calculate the phi angles.
+phis = angles_relative_to_x_axis - pi/2;
+
+% The radius of the line relative to the origin is just the projection
+% distance from the origin to the points on the line, dot producted with
+% the negative of the orthogonal vectors
+mixed_rhos = -1*sum(points(combos_paired(:,1),:).*unit_orthogonal_vectors,2);
+
+% Sometimes the line has "negative" radius, and if so, we need to flip the
+% angle measured and as well make these radii positive
+rhos = mixed_rhos;
+rhos(mixed_rhos<0) = rhos(mixed_rhos<0)*-1;
+phis(mixed_rhos<0) = phis(mixed_rhos<0) + pi;
+
+% Make sure phis wrap around correctly
+phis = mod(phis,2*pi);
+end % Ends fcn_INTERNAL_findPhisRhos
+
+%% fcn_INTERNAL_filldomains
+function domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, fit_source_indicies, transverse_tolerance, station_tolerance)
+
+% How many domains are there?
+N_domains = length(best_fit_agreement_indicies);
+
+% Preallocate the domain structure, to include the unfitted points
+domains{N_domains+1} = struct;
+
+unfitted_indicies = ones(length(points(:,1)),1);
+
+% Loop through domains
+for ith_domain = 1:N_domains
+
+    points_in_domain = points(best_fit_agreement_indicies{ith_domain},:);
+    domain_specific_start_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(1),1);
+    domain_specific_end_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(2),1);
+    best_fit_source_indicies = [domain_specific_start_index domain_specific_end_index];
+
+
+    % Calculate the best-fit domain box
+    % Find the points that start and end the domain Hough fit
+    domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
+    domain_specific_end_point = points_in_domain(domain_specific_end_index,:);
+    unit_projection_vector = fcn_geometry_calcUnitVector(domain_specific_end_point-domain_specific_start_point);
+    unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
+
+    base_projection_vectors = points_in_domain - domain_specific_start_point;
+
+    station_distances_of_points_in_domain = ...
+        sum(base_projection_vectors.* unit_projection_vector,2);
+    max_station = max(station_distances_of_points_in_domain);
+    min_station = min(station_distances_of_points_in_domain);
+    Hough_fit_start_point = domain_specific_start_point + unit_projection_vector*min_station;
+    Hough_fit_end_point   = domain_specific_start_point + unit_projection_vector*max_station;
+
+    best_fit_parameters = [Hough_fit_start_point Hough_fit_end_point];
+
+    boundary_left  = [Hough_fit_start_point; Hough_fit_end_point] + ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
+    boundary_right = [Hough_fit_start_point; Hough_fit_end_point] - ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
+
+    domain_box = [boundary_left; flipud(boundary_right)];
+    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+
+    % Which points remain unfitted?
+    unfitted_indicies(best_fit_agreement_indicies{ith_domain})=0;
+
+    % Save results into the domain structure
+    domains{ith_domain} = fcn_geometry_fillEmptyDomainStructure;
+
+    if isempty(station_tolerance)
+        domains{ith_domain}.best_fit_type = 'Hough line';
+    else
+        domains{ith_domain}.best_fit_type = 'Hough segment';
+    end
+    domains{ith_domain}.points_in_domain         = points_in_domain;
+    domains{ith_domain}.best_fit_source_indicies = best_fit_source_indicies;
+    domains{ith_domain}.best_fit_domain_box      = domainShape;
+    domains{ith_domain}.best_fit_parameters      = best_fit_parameters;
+end
+
+
+% Save unfitted points into last structure
+domains{end} = fcn_geometry_fillEmptyDomainStructure;
+domains{end}.best_fit_type = 'unfitted';
+domains{end}.points_in_domain = points(unfitted_indicies==1,:);
+
+end % Ends fcn_INTERNAL_filldomains
 
 %% fcn_INTERNAL_findAgreementsOfPointsToFits
 function agreement_counts = ...

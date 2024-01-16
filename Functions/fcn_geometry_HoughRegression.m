@@ -1,7 +1,7 @@
 function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_HoughSegmentation
 % Given a set of points, attempts to segment the points into line segments,
-% circles, arcs, etc. by using a Hough transform methodology. 
+% circles, arcs, etc. by using a Hough Transform methodology. 
 % 
 % Step 1: Points are checked against each type of fit using N choose K
 % combinations of point indicies associated with the number of points
@@ -182,6 +182,10 @@ if flag_do_debug
 end
 
 
+
+
+
+
 % Search through all the fitting types to find the best fits. The fits are
 % ordered from simplest (and fastest) first, then to more complex. This is
 % necessary not only for speed, but also because of degeneracy in the
@@ -245,10 +249,24 @@ for fit_index = 1:length(fit_types)
         N_Hough_domains = length(Hough_domains)-1;
         fprintf(1,'Found: %.0d \n',length(Hough_domains)-1);
         
+        if N_Hough_domains > 0
+
+            % Perform regression fit on best-fit Hough values
+            regression_domains = cell(N_Hough_domains,1);
+            for ith_domain = 1:N_Hough_domains
+                 regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domains{ith_domain}, fit_type_to_search); 
+                 regression_domains{ith_domain} = regression_domain;
+            end
+        end
+
         % Save the results
         for ith_domain = 1:N_Hough_domains
             domain_count = domain_count+1;
             domains{domain_count} = Hough_domains{ith_domain};            %#ok<AGROW>
+        end
+        for ith_domain = 1:N_Hough_domains
+            domain_count = domain_count+1;
+            domains{domain_count} = regression_domains{ith_domain}; %#ok<AGROW>
         end
 
         % Update the unfitted points
@@ -334,6 +352,57 @@ if flag_do_plots
 
         fcn_geometry_plotFitDomains(domains{ith_domain}, fig_num);
 
+
+        % plot(remaining_points(:,1),remaining_points(:,2),'k.','MarkerSize',20);
+        % 
+        % % Plot the fitted points
+        % current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+        % points_in_domain = domains{ith_domain}.points_in_domain;
+        % plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',15,'Color',current_color);
+        % 
+        % % Plot the fits?
+        % if ~any(isnan(domains{ith_domain}.best_fit_parameters))
+        %     switch domains{ith_domain}.best_fit_type
+        %         case 'line'
+        %             % Plot the best-fit line segment
+        %             plot(domains{ith_domain}.best_fit_parameters(:,1),domains{ith_domain}.best_fit_parameters(:,2),'.-','Linewidth',1,'MarkerSize',15,'Color',current_color);
+        % 
+        %             % Plot the domain box
+        %             domain_box = domains{ith_domain}.best_fit_domain_box;
+        %             domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+        %             plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+        % 
+        %         case 'circle'
+        %             % Plot the best-fit circle  
+        %             circleCenter = domains{ith_domain}.best_fit_parameters(1,1:2);
+        %             circleRadius = domains{ith_domain}.best_fit_parameters(1,3);
+        %             fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
+        %             plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
+        % 
+        %             % Plot the domain box
+        %             domain_box = domains{ith_domain}.best_fit_domain_box;
+        %             domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+        %             plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+        % 
+        %         case 'arc'
+        %             % Plot the best-fit arc  
+        %             circleCenter = domains{ith_domain}.best_fit_parameters(1,1:2);
+        %             circleRadius = domains{ith_domain}.best_fit_parameters(1,3);
+        %             start_angle_in_radians = domains{ith_domain}.best_fit_parameters(1,4);
+        %             end_angle_in_radians = domains{ith_domain}.best_fit_parameters(1,5);
+        %             fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, current_color);
+        %             plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
+        % 
+        %             % Plot the domain box
+        %             domain_box = domains{ith_domain}.best_fit_domain_box;
+        %             domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+        %             plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+        % 
+        %         otherwise
+        %             error('Unknown fit type detected - unable to continue!');
+        %     end
+        % end
+
         % Make axis slightly larger?
         if flag_rescale_axis
             axis(new_axis);
@@ -373,6 +442,43 @@ function Hough_domains = ...
 % Calculate the best agreements between different fit types, returning the
 % best fitting type.
 
+% %% Start of changes moving fit type out of this function
+% fit_types = {'line','circle'}; %,'circle','arc'};
+% best_agreement_counts = zeros(length(fit_types),1);
+% 
+% % Initialize variables
+% fit_parameters{length(fit_types)} = 0;
+% fit_associated_point_indicies{length(fit_types)} = 0;
+% fit_source_index_list{length(fit_types)} = 0;
+% 
+% % Search through all the fitting types to find the best fits.
+% % Each fit must do several things:
+% % 
+% % Step 1: Given a minimum model order - how many points are needed for the
+% % minimum fit? - finds all possible model fits.
+% %
+% % Step 2: Given all possible model fits, finds which points are associated
+% % with each fit given tolerance fators. These point totals represent the
+% % "votes" for that particular fit.
+% %
+% %
+% % The above process is usually repeated among many different types of fits
+% % to the points: lines, arcs, spirals, etc.
+% %
+% % (IN SEPARATE CODE)
+% % Step 3: Find the best permutation of a fit, namely the one that has the
+% % highest votes. Using these, find the regression fit coefficients
+% % and domain of the best fit. 
+% % 
+% % Step 4: Given the domain, find the points that are members of that
+% % best-fit permutation.
+% %
+% 
+% % Steps 1 and 2 are done within this for-loop
+% for fit_index = 1:length(fit_types)
+%     fit_type = fit_types{fit_index};
+% % End of changes moving fit type out of this function
+
 switch fit_type_to_search
     case 'line'
         % Check line fitting - minimum model order is 2 points
@@ -385,7 +491,7 @@ switch fit_type_to_search
         flag_use_permutations = [];
 
         % Check circle fitting - minimum model order is 3 points
-        Hough_domains =  ...
+        [best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
             fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (-1));
 
     case 'arc'
@@ -408,8 +514,55 @@ switch fit_type_to_search
     otherwise
         error('Unknown fit type detected - unable to continue!');
 end
+% [best_agreement_count,...
+%     best_fit_parameters, ...
+%     best_fit_source_indicies, ...
+%     best_fit_associated_indicies] 
+% 
+% % Count how many points agreed with the fit
+% best_agreement_count = length(best_fit_associated_indicies);
+
+% COMMENTED OUT WHEN MOVED RESULTS TO OUTER LOOP
+% % Save results to an array for each fit type
+% best_agreement_counts(fit_index) = length(best_agreement_indicies);
+% fit_parameters{fit_index}     = fitted_parameters;
+% fit_associated_point_indicies{fit_index} = best_agreement_indicies;
+% fit_source_index_list{fit_index} = best_fit_source_indicies;
+% 
+% % Save the best fit among all the fitting types
+% [best_agreement_count, fitting_type_number] = max(best_agreement_counts);
+% best_fit_type = fit_types{fitting_type_number};
+% best_fit_parameters = fit_parameters{fitting_type_number};
+% best_fit_source_indicies = fit_source_index_list{fitting_type_number};
+% best_fit_associated_indicies = fit_associated_point_indicies{fitting_type_number};
 
 end % Ends fcn_INTERNAL_findBestFit
+
+function regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domain, best_fit_type)
+
+% Find regression fit using best agreement and domain
+switch best_fit_type
+    case 'line'
+        % Check line fitting
+        regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, -1);
+
+    case 'circle'
+        % Check circle fitting
+        [best_fit_parameters, best_fit_domain_box]  = ...
+            fcn_geometry_fitCircleRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+
+    case 'arc'
+        % Check arc fitting
+        [best_fit_parameters, best_fit_domain_box]  = ...
+            fcn_geometry_fitArcRegressionFromHoughFit(source_points, associated_points_in_domain, -1);
+
+    otherwise
+        error('Unknown fit type detected - unable to continue!');
+end
+
+end % Ends fcn_INTERNAL_regressionFitByType
+
+
 
 
 

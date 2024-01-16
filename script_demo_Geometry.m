@@ -313,36 +313,29 @@ fig_num = 38383;
 fig_num = 1111;
 transverse_tolerance = 0.2;
 station_tolerance = [];
+points_required_for_agreement = 20;
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance,  fig_num);
+domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+
 
 %% Demo Hough line segment fitting
 fig_num = 11111;
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
+points_required_for_agreement = 20;
 
-[fitted_parameters, best_fit_source_indicies, best_agreement_indicies] = ...
-    fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance,  fig_num);
+domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
 
 %% Demo linear pseudo-regression from Hough Line votes
 % Show how to do line fitting from Hough votes
 fig_num = 11111; % Reuse the previous figure number, as it puts the results atop that plot
 
-% Extract out points from the indicies
-source_points = shuffled_corrupted_line_test_points(best_fit_source_indicies,:);
-associated_points_in_domain = shuffled_corrupted_line_test_points(best_agreement_indicies,:); 
-
-% Perform the regression fit
-[best_fit_regression_parameters, best_fit_domain_box] = ...
-    fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, fig_num);
-
-% The following 3 lines show how to convert the domain box into a
-% polyshape, and how to query points using isinterior to identify which
-% points are inside the regression domain box
-domainPolyShape = polyshape(best_fit_domain_box(:,1),best_fit_domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-IndiciesOfPointsInDomain = isinterior(domainPolyShape, associated_points_in_domain);
-best_fit_associated_indicies = find(IndiciesOfPointsInDomain);
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains{1}, fig_num);
+fprintf(1,'\n\nFitting results: \n');
+fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
+fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
 
 %% Demo Hough circle versus arc fitting
 % Change the station tolerance to generate different fits
@@ -530,7 +523,102 @@ fprintf(1,'Fitted end angle (degrees):   %.4f \n',regression_fit_arc_center_and_
  %                                      |___/                    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% fcn_geometry_fillEmptyDomainStructure fills an empty domain
+emptyDomain = fcn_geometry_fillEmptyDomainStructure;
 
+%% The function fcn_geometry_findAgreementsOfPointsToLineVector checks which points are "hit" by a vector within transverse and station tolerance
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
+
+% A basic test of line segment fitting, specifying index-type base_point_index
+fig_num = 1;
+figure(fig_num); clf;
+
+base_point_index = 1;
+base_point = test_points(base_point_index,:);
+end_point = [4 5];
+unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point,-1);
+transverse_tolerance = 0.2;
+station_tolerance = 2;
+
+[agreement_indicies,station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+
+%% fcn_geometry_findArcAgreementIndicies finds which indicies agree with an arc in only station form
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+
+
+fig_num = 234343;
+figure(fig_num); clf;
+
+points = inputPoints;
+circleCenter = true_circleCenter;
+circleRadius = true_circleRadius;
+index_source_point = 10;
+station_tolerance = 0.5;
+
+[indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num);
+
+
+%% fcn_geometry_findAgreementsOfPointsToArc finds the indicies that agree with an arc in both radial and station form
+fig_num = 233;
+figure(fig_num); clf;
+
+inputPoints = corrupted_twoarc_test_points;
+base_point_index = 1;
+circleCenter = true_circleCenter;
+circleRadius = true_circleRadius;
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+flag_force_circle_fit = [];
+threshold_to_check_arc = 1;
+
+[agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+
+
+%% fcn_geometry_plotFitDomains plots the domains of fit
+fig_num = 2343;
+domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
+fcn_geometry_plotFitDomains(domains, fig_num);
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

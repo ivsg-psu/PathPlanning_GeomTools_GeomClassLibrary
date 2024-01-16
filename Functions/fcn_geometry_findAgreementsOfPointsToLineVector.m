@@ -1,4 +1,4 @@
-function agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, varargin)
+function [agreement_indicies, station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, varargin)
 % fcn_geometry_findAgreementsOfPointsToLineVector
 % Given a set of XY points, a unit projection vector and a base point that the vector is
 % attached to, find the indicies of the points that are within a
@@ -42,10 +42,14 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( p
 %
 %      agreement_indicies: the indicies of the points that are within
 %      agreement of the best-fit parameters, given the transverse and
-%      station tolerance settings.
+%      station tolerance settings. If a station_tolerance is specified, the
+%      indicies are sorted in station-increasing order.
+% 
+%      station_distances: the station distances, relative to the base
+%      point, that are in agreement
 %
 % DEPENDENCIES:
-%      nchoosek
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_findPointsInSequence
 %
 % EXAMPLES:
@@ -59,6 +63,8 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( p
 % Revision history:
 % 2023_01_14 - S. Brennan
 % -- wrote the code
+% 2023_01_15 - S. Brennan
+% -- added station distances output
 
 %% Debugging and Input checks
 
@@ -66,7 +72,7 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( p
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{1},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -222,8 +228,14 @@ if ~isempty(station_tolerance)
     end
 
     indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement(indicies_in_station_agreement);
+
+    station_distances_of_points_in_lateral_and_station_agreement = ...
+        sum(base_projection_vectors(indicies_in_both_lateral_and_station_agreement,:).* unit_projection_vector,2);
+
+    station_distances = [min(station_distances_of_points_in_lateral_and_station_agreement) max(station_distances_of_points_in_lateral_and_station_agreement)];
 else
     indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement;
+    station_distances = [-inf inf];
 end
 
 agreement_indicies = indicies_in_both_lateral_and_station_agreement;
@@ -261,10 +273,23 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',30)
 
     % Plot the unit vector
-    quiver(base_point(:,1),base_point(:,2),unit_projection_vector(:,1),unit_projection_vector(:,2),0,'g','Linewidth',3);
+    quiver(base_point(:,1),base_point(:,2),unit_projection_vector(:,1),unit_projection_vector(:,2),0,'g','Linewidth',6);
+
+    % Plot the fit
+    if ~any(isinf(station_distances))
+        fit_points = [unit_projection_vector*station_distances(1); unit_projection_vector*station_distances(2)] + ones(2,1)*base_point;
+        plot(fit_points(:,1),fit_points(:,2),'-','Linewidth',3,'Color',[0 0.5 0]);
+    else
+        distances_base_point = sum((points - base_point).^2,2).^0.5;
+        longest_distance = max(distances_base_point);
+        fit_points = [-unit_projection_vector*longest_distance; unit_projection_vector*longest_distance]+ ones(2,1)*base_point;
+        plot(fit_points(:,1),fit_points(:,2),'-','Linewidth',3,'Color',[0 0.5 0]);
+
+    end
 
     % Plot the boundaries
-    % Find station distances as projections of tangent vectors
+    base_projection_vectors = points - base_point;
+
     station_distances_of_points_in_lateral_agreement = ...
         sum(base_projection_vectors(indicies_in_lateral_agreement,:).* unit_projection_vector,2);
     max_station = max(station_distances_of_points_in_lateral_agreement);

@@ -1,22 +1,20 @@
-function [regression_fit_line_segment, domain_box, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
-% fcn_geometry_fitLinearRegressionFromHoughFit
-% Given a set of points that are matched via a Hough vote, finds the linear
-% regression fit line and domain box. 
+function [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, varargin)
+% fcn_geometry_fitLinearRegressionFromHoughFit Given a set of points that
+% are matched via a Hough vote, finds the regression fit vector and domain
+% box. Note: the vector fit is not the same as a least-squares regression,
+% which minimizes sum-of-squares of the vertical errors between a line fit
+% and the respective points. but is similar to total-least-squares. Namely,
+% the vector is found that approximately minimizes the sum-of-squares
+% distance between the vector and the orthogonal projection to each point.
+% Thus, unlike linear regression, this method works for data aligned
+% vertically.
 % 
 % Format: 
-% [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+% [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, (fig_num))
 %
 % INPUTS:
-%      source_points: a 2x2 matrix in the format: 
-% 
-%      [start_point_x  start_point_y; end_point_x end_point_y]
-%
-%      of the points used to "aim" the Hough voting vector. These points
-%      are used to determine the direction of the resulting segment fit.
-%
-%      associated_points_in_domain: an Nx2 list of points that should be
-%      fit with regression, identified as within the domain according to
-%      Hough voting.
+%      Hough_domain: a structure that records details of the domain of
+%      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
 %      (OPTIONAL INPUTS)
 % 
@@ -26,17 +24,8 @@ function [regression_fit_line_segment, domain_box, std_dev_transverse_distance] 
 %
 % OUTPUTS:
 %
-%      regression_fit_line_segment: a 2x2 matrix of the format:
-%
-%       [start_point_x  start_point_y; end_point_x end_point_y]
-%
-%      these points are the start and end of the segment that is on the
-%      best-fit line fit of the associated_points_in_domain. The start
-%      point is aligned to be perfectly orthogonal to the "lowest" point in
-%      the associated points in domain
-%
-%      domain_box: the box that encloses the 2-standard-deviation interval
-%      around the line segment.
+%      regression_domain: a structure that records details of the domain of
+%      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
 %      std_dev_transverse_distance: the standard deviation in the point
 %      fit, as measured in the transverse direction (orthogonal to the line
@@ -69,6 +58,8 @@ function [regression_fit_line_segment, domain_box, std_dev_transverse_distance] 
 % -- replaced linear least-squares-y regression with vector regression
 % -- added std_dev_transverse_distance as an output
 % -- fixed bug doe to wrap-around errors when doing angle alignment check
+% 2024_01_15 - S. Brennan
+% -- switched inputs and outputs to domain types
 
 %% Debugging and Input checks
 
@@ -76,7 +67,7 @@ function [regression_fit_line_segment, domain_box, std_dev_transverse_distance] 
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==2 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -117,22 +108,22 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,3);
+        narginchk(1,2);
 
-        % Check the source_points input to be length exactly equal to 2
-        fcn_DebugTools_checkInputsToFunctions(...
-            source_points, '2column_of_numbers',[2 2]);
-
-        % Check the associated_points_in_domain input to be length greater than or equal to 2
-        fcn_DebugTools_checkInputsToFunctions(...
-            associated_points_in_domain, '2column_of_numbers',[2 3]);
+        % % Check the source_points input to be length exactly equal to 2
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     source_points, '2column_of_numbers',[2 2]);
+        % 
+        % % Check the associated_points_in_domain input to be length greater than or equal to 2
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     associated_points_in_domain, '2column_of_numbers',[2 3]);
     end
 end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (3<= nargin) && (0==flag_max_speed)
+if (2<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -151,9 +142,33 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- % Find the unit vector (in fast mode) connecting base to end point. 
-base_point_of_domain = source_points(1,:);
-end_point_of_domain  = source_points(2,:);
+
+regression_domain = fcn_geometry_fillEmptyDomainStructure;
+
+% Pull out key variables
+best_fit_type            = Hough_domain.best_fit_type;
+points_in_domain         = Hough_domain.points_in_domain;
+best_fit_parameters      = Hough_domain.best_fit_parameters;
+
+% Check to make sure we have a Hough fit input
+switch best_fit_type
+    case {'Hough line'}
+        regression_domain.best_fit_type = 'Vector regression line fit';
+    case {'Hough segment'}
+        regression_domain.best_fit_type = 'Vector regression segment fit';
+    otherwise
+        error('A domain was tested for fitting that was not a Hough fit');
+end
+regression_domain.points_in_domain = points_in_domain;
+
+
+% Pull out parameters from the Hough domain fit
+associated_points_in_domain = points_in_domain;
+
+%% First, sort all the points in the original direction
+% Find the unit vector (in fast mode) connecting base to end point.
+base_point_of_domain = best_fit_parameters(1,1:2);
+end_point_of_domain  = best_fit_parameters(1,3:4);
 unit_tangent_vector_of_domain = fcn_geometry_calcUnitVector(end_point_of_domain - base_point_of_domain, -1);
 % unit_orthogonal_vector_of_domain = unit_tangent_vector_of_domain*[0 1; -1 0];
 
@@ -170,7 +185,10 @@ sorted_points_in_domain = associated_points_in_domain(sorted_indicies,:);
 % What angle is the projection vector at?
 projection_vector_angle = atan2(unit_tangent_vector_of_domain(:,2),unit_tangent_vector_of_domain(:,1));
 
-% Find best-fit line
+%% Next, find best-fit line
+% In the early form of this function, linear regression was used. The code
+% for this is kept below in case we need to use it again sometime later.
+
 flag_use_vector_regression = 1;
 if flag_use_vector_regression
     [root_point, unit_vector] = fcn_geometry_fitVectorToNPoints(sorted_points_in_domain,-1);
@@ -206,21 +224,19 @@ if abs(projection_vector_angle - regression_vector_angle)>pi/2
 end
 
 % Check if angles are in alignment?
-if 1==1
-    % Convert angles into positions on unit circle, so that we do not worry
-    % about wrap-around errors
-    projection_angle_position = [cos(projection_vector_angle) sin(projection_vector_angle)];
-    regression_angle_position = [cos(regression_vector_angle) sin(regression_vector_angle)];
-    distance_squared_in_unit_circle = sum((projection_angle_position - regression_angle_position).^2,2);
-    
-    threshold_angle_squared = (20*pi/180)^2;
-    if distance_squared_in_unit_circle>threshold_angle_squared
-        warning('on','backtrace');
-        warning('Regression angle and fitted angle are signficantly different. ');
-        warning('Projection angle is (degrees): %.3f',projection_vector_angle*180/pi);
-        warning('Regression angle is (degrees): %.3f',regression_vector_angle*180/pi);
-        error('Regression angle and fitted angle are so different that an error likely occurred!');
-    end
+% Convert angles into positions on unit circle, so that we do not worry
+% about wrap-around errors
+projection_angle_position = [cos(projection_vector_angle) sin(projection_vector_angle)];
+regression_angle_position = [cos(regression_vector_angle) sin(regression_vector_angle)];
+distance_squared_in_unit_circle = sum((projection_angle_position - regression_angle_position).^2,2);
+
+threshold_angle_squared = (20*pi/180)^2;
+if distance_squared_in_unit_circle>threshold_angle_squared
+    warning('on','backtrace');
+    warning('Regression angle and fitted angle are signficantly different. ');
+    warning('Projection angle is (degrees): %.3f',projection_vector_angle*180/pi);
+    warning('Regression angle is (degrees): %.3f',regression_vector_angle*180/pi);
+    error('Regression angle and fitted angle are so different that an error likely occurred!');
 end
 
 unit_converted_projection_vector = [cos(regression_vector_angle) sin(regression_vector_angle)];
@@ -243,26 +259,48 @@ max_regression_point = base_point_on_line + transverse_distance_to_highest_point
 % transverse distances
 projections = sorted_points_in_domain - base_point_on_line;
 orthogonal_distances = sum(projections.*unit_converted_orthogonal_vector,2);
-std_dev_transverse_distance = std(orthogonal_distances);
 
 % Save point-to-point best-fit line segment
-regression_fit_line_segment = [min_regression_point; max_regression_point];
+% regression_fit_line_segment = [min_regression_point; max_regression_point];
+% [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) current_station_distances];
+% regression_domain.best_fit_parameters = [min_regression_point max_regression_point];
+regression_domain.best_fit_parameters = [unit_converted_projection_vector base_point_on_line transverse_distance_to_lowest_point transverse_distance_to_highest_point];
 
-% Calculate the domain box
+% Calculate the domain boxes
+std_dev_transverse_distance = std(orthogonal_distances);
+sigma_orthogonal_distance = std_dev_transverse_distance; % max(abs(orthogonal_distances));
 
-% min_tangent_distance = min(tangent_distances); % Can speed this up by using indicies above
-% max_tangent_distance = max(tangent_distances); % Can speed this up by using indicies above
-
-max_orthogonal_distance = 5*std_dev_transverse_distance; % max(abs(orthogonal_distances));
-
-domain_box = ...
+N_sigmas = 1;
+domain_box_1_sigma = ...
     [...
-    min_regression_point - max_orthogonal_distance*unit_converted_orthogonal_vector;
-    max_regression_point - max_orthogonal_distance*unit_converted_orthogonal_vector;
-    max_regression_point + max_orthogonal_distance*unit_converted_orthogonal_vector;
-    min_regression_point + max_orthogonal_distance*unit_converted_orthogonal_vector;
-    min_regression_point - max_orthogonal_distance*unit_converted_orthogonal_vector;
+    min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
     ];
+
+N_sigmas = 2;
+domain_box_2_sigma = ...
+    [...
+    min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    ];
+
+N_sigmas = 3;
+domain_box_3_sigma = ...
+    [...
+    min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
+    ];
+
+regression_domain.best_fit_1_sigma_box = polyshape(domain_box_1_sigma(:,1),domain_box_1_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
+regression_domain.best_fit_2_sigma_box = polyshape(domain_box_2_sigma(:,1),domain_box_2_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
+regression_domain.best_fit_3_sigma_box = polyshape(domain_box_3_sigma(:,1),domain_box_3_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
+regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
 
 
 %% Plot the results (for debugging)?
@@ -277,24 +315,47 @@ domain_box = ...
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    % Plot the results of the point fit
-    figure(fig_num);
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end
+
+    % Get the color ordering?
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
+
+    N_colors = length(color_ordering(:,1));
+
     hold on;
+    grid on;
+    axis equal;
+
+    % Plot the fits    
+    ith_domain = 1;
+    current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
       
     % Plot the input points
-    plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
-    plot(source_points(2,1),source_points(2,2),'r.','MarkerSize',30);
-    h_plot = plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',10);
-    current_color = get(h_plot,'Color');
-
-
-
-    % Plot the line fit
-    plot(regression_fit_line_segment(:,1),regression_fit_line_segment(:,2),'-','LineWidth',3,'Color',current_color);
+    plot(base_point_of_domain(1,1),base_point_of_domain(1,2),'g.','MarkerSize',30);
+    plot(end_point_of_domain(1,1), end_point_of_domain(1,2),'r.','MarkerSize',30);
+    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
 
     % Plot the domain
-    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+    fcn_geometry_plotFitDomains(regression_domain, fig_num);
+
+    % Make axis slightly larger? And since this is the first one, save the
+    % axis limits.
+    if flag_rescale_axis
+        temp = axis;
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
+        axis(new_axis);
+    end
 
 end % Ends check if plotting
 

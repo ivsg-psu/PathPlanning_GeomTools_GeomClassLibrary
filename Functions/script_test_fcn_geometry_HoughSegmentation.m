@@ -108,7 +108,7 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 fig_num = 2;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
-threshold_max_points = 20;
+threshold_max_points = 10;
 input_points = corrupted_multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
