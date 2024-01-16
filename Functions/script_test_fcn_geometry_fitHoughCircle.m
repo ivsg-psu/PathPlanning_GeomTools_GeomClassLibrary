@@ -117,6 +117,14 @@ sigma = 0.02;
 outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
 
 % Corrupt the results
+% For debugging
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 

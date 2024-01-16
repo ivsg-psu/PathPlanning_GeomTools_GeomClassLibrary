@@ -30,6 +30,10 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %            'Hough line' - A Hough fit of line type
 %            
 %            'Hough segment' - A Hough fit of line segment type
+%            
+%            'Hough circle' - A Hough fit of a circle type
+%            
+%            'Hough arc' - A Hough fit of arc type
 %
 %            'Vector regression line fit' - a vector fit of line data,
 %            using regression
@@ -46,7 +50,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %      emptyDomain.best_fit_parameters = nan;
 % 
 %            These are the parameters of the fit. They are defined
-%            generally as:
+%            in each fit type in the following manner:
 %
 %            'empty' - no fit yet done, so [nan]
 %
@@ -56,7 +60,22 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %            
 %            'Hough segment' - [start_x end_x start_y end_y] of the line fit
 %
+%            'Hough circle' - [circleCenter_x circleCenter_y radius] of the
+%            circle fit
+%            
+%            'Hough arc' - 
+%
+%                    [circleCenter_x.
+%                     circleCenter_y,
+%                     radius,
+%                     start_angle_in_radians, 
+%                     end_angle_in_radians] 
+%
+%            of the arc fit
+%
+%
 %            'Vector regression line fit' - 
+%
 %             [unit_projection_vector_x,
 %              unit_projection_vector_y,
 %              base_point_x, 
@@ -65,8 +84,8 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              station_distance_max,
 %             ]
 %
-%            'Vector regression segment fit' - a vector fit of a line
-%            segment, using regression
+%            'Vector regression segment fit' - same as 'Vector regression
+%            line fit'.
 %            
 %      emptyDomain.best_fit_domain_box = [];
 %

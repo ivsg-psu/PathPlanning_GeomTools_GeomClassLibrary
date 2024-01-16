@@ -223,7 +223,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (8<=nargin) && (0==flag_max_speed)
+if (0==flag_max_speed) && (8<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -366,10 +366,14 @@ for ith_combo = 1:N_permutations
 end
 
 
-%% Step 2: take the top agreements
+%% Step 2: take the top agreements, accumulate them in prep for domains
+
 % Initialize outputs as cell arrays
-best_fit_source_indicies  = {};
-best_fit_agreement_indicies   = {};
+best_fit_source_indicies          = {};
+best_fit_agreement_indicies       = {};
+best_fit_flag_is_a_circle         = {};
+best_fit_start_angle_in_radians   = {};
+best_fit_end_angle_in_radians     = {};
 
 
 % Find best agreements
@@ -405,15 +409,16 @@ else % Find many agreements, up to the number of specified votes
         circleCenter  = fitted_parameters(best_agreement_index,1:2);
         circleRadius  = fitted_parameters(best_agreement_index,3);
 
-        URHERE - accumulate these results in best_ forms, and pass into domain calculations
         [current_agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
             fcn_geometry_findAgreementsOfPointsToArc(points, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(points_required_for_agreement), (-1));
 
-        % Save results from prior best fit to outputs
+        % Accumulate results from best fits to prep for domain formation
         N_fits = N_fits+1;
-        best_fit_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
-        best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
-        
+        best_fit_agreement_indicies{N_fits}     = current_agreement_indicies; %#ok<AGROW>
+        best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:); %#ok<AGROW>
+        best_fit_flag_is_a_circle{N_fits}       = flag_is_a_circle; %#ok<AGROW>
+        best_fit_start_angle_in_radians{N_fits} = start_angle_in_radians;  %#ok<AGROW>
+        best_fit_end_angle_in_radians{N_fits}   = end_angle_in_radians;  %#ok<AGROW>
 
         % Remove all combos_paired sums that include this agreement
         for ith_agreement = 1:length(current_agreement_indicies)
@@ -434,9 +439,10 @@ else % Find many agreements, up to the number of specified votes
 
 end
 
+%% Step 3: form the domains
 
 % Convert outputs to domain type
-domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, best_fit_source_indicies, transverse_tolerance, station_tolerance);
+domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, best_fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance);
 
 
 %% Plot the results (for debugging)?
@@ -604,9 +610,8 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 %% fcn_INTERNAL_filldomains
-function domains = fcn_INTERNAL_filldomains(points, best_fit_agreement_indicies, fit_source_indicies, transverse_tolerance, station_tolerance)
+function domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance);
 
-URHERE - redo this function
 % How many domains are there?
 N_domains = length(best_fit_agreement_indicies);
 
@@ -617,47 +622,66 @@ unfitted_indicies = ones(length(points(:,1)),1);
 
 % Loop through domains
 for ith_domain = 1:N_domains
+    
+    flag_this_is_a_circle = 0;
+    if isempty(station_tolerance) || best_fit_flag_is_a_circle{ith_domain}==1
+        flag_this_is_a_circle = 1;
+    end
 
+    % Find the points in the domain
     points_in_domain = points(best_fit_agreement_indicies{ith_domain},:);
-    domain_specific_start_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(1),1);
-    domain_specific_end_index = find(best_fit_agreement_indicies{ith_domain}==fit_source_indicies{ith_domain}(2),1);
-    best_fit_source_indicies = [domain_specific_start_index domain_specific_end_index];
+
+    % Find the indicies of these points, in the domain. Note that the
+    % indicies of the fit are in the original points. Once the points are
+    % saved that only belong to this domain, the indicies change. So we
+    % need to find what they change to.
+    domain_specific_indicies = 0*fit_source_indicies{ith_domain}; % Initialization
+    for ith_index = 1:length(fit_source_indicies{ith_domain})
+        external_index = fit_source_indicies{ith_domain}(ith_index);
+        domain_index = find(best_fit_agreement_indicies{ith_domain}==external_index,1);
+        domain_specific_indicies(ith_index) = domain_index;
+    end
+    best_fit_source_indicies    = domain_specific_indicies;
 
 
     % Calculate the best-fit domain box
-    % Find the points that start and end the domain Hough fit
-    domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
-    domain_specific_end_point = points_in_domain(domain_specific_end_index,:);
-    unit_projection_vector = fcn_geometry_calcUnitVector(domain_specific_end_point-domain_specific_start_point);
-    unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
+    if flag_this_is_a_circle
+        % Find the points that start and end the domain Hough fit
+        domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
+        domain_specific_end_point = points_in_domain(domain_specific_end_index,:);
+        unit_projection_vector = fcn_geometry_calcUnitVector(domain_specific_end_point-domain_specific_start_point);
+        unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
 
-    base_projection_vectors = points_in_domain - domain_specific_start_point;
+        base_projection_vectors = points_in_domain - domain_specific_start_point;
 
-    station_distances_of_points_in_domain = ...
-        sum(base_projection_vectors.* unit_projection_vector,2);
-    max_station = max(station_distances_of_points_in_domain);
-    min_station = min(station_distances_of_points_in_domain);
-    Hough_fit_start_point = domain_specific_start_point + unit_projection_vector*min_station;
-    Hough_fit_end_point   = domain_specific_start_point + unit_projection_vector*max_station;
+        station_distances_of_points_in_domain = ...
+            sum(base_projection_vectors.* unit_projection_vector,2);
+        max_station = max(station_distances_of_points_in_domain);
+        min_station = min(station_distances_of_points_in_domain);
+        Hough_fit_start_point = domain_specific_start_point + unit_projection_vector*min_station;
+        Hough_fit_end_point   = domain_specific_start_point + unit_projection_vector*max_station;
 
-    best_fit_parameters = [Hough_fit_start_point Hough_fit_end_point];
+        best_fit_parameters = [Hough_fit_start_point Hough_fit_end_point];
 
-    boundary_left  = [Hough_fit_start_point; Hough_fit_end_point] + ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
-    boundary_right = [Hough_fit_start_point; Hough_fit_end_point] - ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
+        boundary_left  = [Hough_fit_start_point; Hough_fit_end_point] + ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
+        boundary_right = [Hough_fit_start_point; Hough_fit_end_point] - ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
+    else
 
+
+    end
     domain_box = [boundary_left; flipud(boundary_right)];
     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 
     % Which points remain unfitted?
     unfitted_indicies(best_fit_agreement_indicies{ith_domain})=0;
 
-    % Save results into the domain structure
+    %% Save results into the domain structure
     domains{ith_domain} = fcn_geometry_fillEmptyDomainStructure;
 
-    if isempty(station_tolerance)
-        domains{ith_domain}.best_fit_type = 'Hough line';
+    if flag_this_is_a_circle
+        domains{ith_domain}.best_fit_type = 'Hough circle';
     else
-        domains{ith_domain}.best_fit_type = 'Hough segment';
+        domains{ith_domain}.best_fit_type = 'Hough arc';
     end
     domains{ith_domain}.points_in_domain         = points_in_domain;
     domains{ith_domain}.best_fit_source_indicies = best_fit_source_indicies;
