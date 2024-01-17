@@ -135,6 +135,31 @@ end
 setenv('MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS','1');
 setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
 
+%% Basic Functions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Functions
+% ____            _        ______                _   _                 
+% |  _ \          (_)      |  ____|              | | (_)                
+% | |_) | __ _ ___ _  ___  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+% |  _ < / _` / __| |/ __| |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+% | |_) | (_| \__ \ | (__  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+% |____/ \__,_|___/_|\___| |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Calculating Euclidean Distance between the points
+% Demonstrates fcn_geometry_euclideanPointsToPointsDistance
+
+fig_num = 22;
+
+pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
+pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
+
+
+                                                                       
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
