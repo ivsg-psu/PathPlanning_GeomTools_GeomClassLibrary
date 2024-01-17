@@ -249,32 +249,38 @@ if flag_do_plots
                     line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
-                case 'circle'
-                    % Plot the best-fit circle
+                case {'Hough circle'}
+                    %            'Hough circle' -
+                    %               [circleCenter_x.
+                    %                circleCenter_y,
+                    %                radius]
+                    %
+                    %            'Hough arc' -
+                    %
+                    %               [circleCenter_x.
+                    %                circleCenter_y,
+                    %                radius,
+                    %                start_angle_in_radians,
+                    %                end_angle_in_radians,
+                    %                flag_this_is_a_circle
+                    %               ]
+
+                    % Plot the best-fit crcle
                     circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
                     circleRadius = domain_to_plot.best_fit_parameters(1,3);
                     fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
-                    % Plot the domain box
-                    domain_box = domain_to_plot.best_fit_domain_box;
-                    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-                    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
-
-                case 'arc'
+                case {'Hough arc'}
                     % Plot the best-fit arc
                     circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
                     circleRadius = domain_to_plot.best_fit_parameters(1,3);
                     start_angle_in_radians = domain_to_plot.best_fit_parameters(1,4);
                     end_angle_in_radians = domain_to_plot.best_fit_parameters(1,5);
-                    fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, current_color,fig_num)  
+                    degree_step = []; % Use default
+                    fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, degree_step, current_color,fig_num);
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
-
-                    % Plot the domain box
-                    domain_box = domain_to_plot.best_fit_domain_box;
-                    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-                    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
                 otherwise
                     error('Unknown fit type detected: %s - unable to continue!', domain_to_plot.best_fit_type);

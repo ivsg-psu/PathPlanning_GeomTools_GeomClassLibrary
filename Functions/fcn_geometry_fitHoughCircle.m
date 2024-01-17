@@ -5,7 +5,8 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % outputs the fitted parameters and agreement indices of the top-voted
 % circle.
 % 
-% [best_fitted_parameters, best_fit_source_indicies, best_agreement_indicies, best_fit_is_a_circle]  = fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
+% domains  = ...
+% fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
 %         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num))
 % 
 % INPUTS:
@@ -26,11 +27,12 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 %      using only the transverse_tolerance.
 %
 %      points_required_for_agreement: the number of points required for an
-%      agreement to be valid, with minimum value of 3. If left empty, then
-%      the best agreement will always be returned. If a value is given,
-%      line fitting will continue by clustering data until there are no
-%      fits greater than or equal to points_required_for_agreement. The
-%      results of the line fit will be saved in a cell array.
+%      agreement to be valid, with minimum value of 3. Default is 10. If
+%      left empty, then the best agreement will always be returned. If a
+%      value is given, line fitting will continue by clustering data until
+%      there are no fits greater than or equal to
+%      points_required_for_agreement. The results of the line fit will be
+%      saved in a cell array.
 % 
 %      flag_force_circle_fit: specify that only circle fits are allowed.
 %      Can be set to:
@@ -182,7 +184,7 @@ end
 
 
 % Does user specify points_required_for_agreement?
-points_required_for_agreement = 1;
+points_required_for_agreement = 10;
 if (4<= nargin)
     temp = varargin{2};
     if ~isempty(temp)
@@ -245,6 +247,11 @@ end
 
 % Total number of points
 N_points = size(points,1);
+
+flag_fitting_only_circles = 0;
+if isempty(station_tolerance) || (flag_force_circle_fit==1)
+    flag_fitting_only_circles = 1;
+end
 
 % Do debugging plots?
 if flag_do_debug
@@ -311,12 +318,19 @@ fitted_parameters = zeros(N_permutations,3);
 %% Step 1: find all the agreement counts, save in array "agreements"
 agreements = zeros(N_permutations,1);
 
+if 0==flag_max_speed
+    if flag_fitting_only_circles==1
+        h_waitbar = waitbar(0,'Calculating circle fits...');
+    else
+        h_waitbar = waitbar(0,'Calculating arc fits...');
+    end
+end
 for ith_combo = 1:N_permutations
 
     % fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
     if 0==flag_max_speed
-        if 0==mod(ith_combo,10000)
-            fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
+        if 0==mod(ith_combo,1000)
+            waitbar(ith_combo/N_permutations);
         end
     end
 
@@ -333,9 +347,10 @@ for ith_combo = 1:N_permutations
     if (circleRadius>=expected_radii_range(1)) && (circleRadius<=expected_radii_range(2))
         % Find points in agreement?
         agreement_indicies = ...
-            fcn_geometry_findAgreementsOfPointsToArc(points,  combos_paired(ith_combo,1), circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(points_required_for_agreement), (-1));
-
-     end
+            fcn_geometry_findAgreementsOfPointsToArc(points, combos_paired(ith_combo,1), circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(points_required_for_agreement), (-1));
+    else
+        agreement_indicies = [];
+    end
 
     
     % Save the count of points in agreement
@@ -364,11 +379,15 @@ for ith_combo = 1:N_permutations
     end
 
 end
-
+if 0==flag_max_speed
+    close(h_waitbar)
+end
 
 %% Step 2: take the top agreements, accumulate them in prep for domains
 
 % Initialize outputs as cell arrays
+best_fit_circleCenters            = {};
+best_fit_circleRadii              = {};
 best_fit_source_indicies          = {};
 best_fit_agreement_indicies       = {};
 best_fit_flag_is_a_circle         = {};
@@ -414,6 +433,8 @@ else % Find many agreements, up to the number of specified votes
 
         % Accumulate results from best fits to prep for domain formation
         N_fits = N_fits+1;
+        best_fit_circleCenters{N_fits}          = circleCenter; %#ok<AGROW>
+        best_fit_circleRadii{N_fits}            = circleRadius; %#ok<AGROW>
         best_fit_agreement_indicies{N_fits}     = current_agreement_indicies; %#ok<AGROW>
         best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:); %#ok<AGROW>
         best_fit_flag_is_a_circle{N_fits}       = flag_is_a_circle; %#ok<AGROW>
@@ -442,7 +463,7 @@ end
 %% Step 3: form the domains
 
 % Convert outputs to domain type
-domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, best_fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance);
+domains = fcn_INTERNAL_filldomains(points, best_fit_circleCenters, best_fit_circleRadii, best_fit_agreement_indicies, best_fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance);
 
 
 %% Plot the results (for debugging)?
@@ -469,6 +490,15 @@ if flag_do_plots
     % Produce the sorted list, to create the Hough plot
     [~,sorted_indicies] = sort(agreements,'ascend');
 
+    % Get the color ordering?
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
+
+    N_colors = length(color_ordering(:,1));
+
     %% Plot the results in point space
 
     hold on;
@@ -483,28 +513,6 @@ if flag_do_plots
     % Plot the domains
     fcn_geometry_plotFitDomains(domains, fig_num);
 
-
-    % % Plot the circle fit
-    % if best_fit_is_a_circle==1
-    %     title('Circle fit');
-    % else
-    %     title('Arc fit');
-    % end
-    % 
-    % fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3), 'b-',fig_num)
-    % fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3)-transverse_tolerance, 'r-',fig_num) 
-    % fcn_geometry_plotCircle(best_fitted_parameters(1:2), best_fitted_parameters(3)+transverse_tolerance, 'r-',fig_num) 
-    % plot(best_fitted_parameters(1),best_fitted_parameters(2),'b+','MarkerSize',15);
-    % 
-    % % Plot the best-fit points
-    % plot(points(best_agreement_indicies,1),points(best_agreement_indicies,2),'r.','MarkerSize',15);
-    % 
-    % % Label the points
-    % text(points(best_agreement_indicies(end),1),points(best_agreement_indicies(end),2),sprintf('Start angle: %.3f deg', best_start_angle_in_radians*180/pi));
-    % text(points(best_agreement_indicies(1),1),points(best_agreement_indicies(1),2),sprintf('End angle: %.3f deg', best_end_angle_in_radians*180/pi));
-    % 
-    % % Plot the source points
-    % plot(points(best_fit_source_indicies,1),points(best_fit_source_indicies,2),'bo','MarkerSize',15);
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -575,20 +583,28 @@ if flag_do_plots
 
     end
 
-    % % Plot the best fits
-    % best_rho = atan2(best_fitted_parameters(:,2),best_fitted_parameters(:,1));
-    % best_distance_circle_center_from_origin = sum((best_fitted_parameters(:,1).^2+best_fitted_parameters(:,2).^2),2).^0.5;
-    % best_curvature = 1./best_fitted_parameters(:,3);
+    
+    % Plot the best fits
+    for ith_domain = 1:(length(domains)-1)
 
-    subplot(3,1,1);
-    plot(best_rho(1,1),best_distance_circle_center_from_origin(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
 
-    subplot(3,1,2);
-    plot(best_rho(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+        circleCenter = best_fit_circleCenters{ith_domain};
+        circleRadius = best_fit_circleRadii{ith_domain};
 
-    subplot(3,1,3);
-    plot3(best_rho(1,1),best_distance_circle_center_from_origin(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+        best_rho = atan2(circleCenter(:,2),circleCenter(:,1));
+        best_distance_circle_center_from_origin = sum((circleCenter(:,1).^2+circleCenter(:,2).^2),2).^0.5;
+        best_curvature = 1./circleRadius;
 
+        subplot(3,1,1);
+        plot(best_rho(1,1),best_distance_circle_center_from_origin(1,1),'.','MarkerSize',30,'Color',current_color);
+
+        subplot(3,1,2);
+        plot(best_rho(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',[1 0 0]);
+
+        subplot(3,1,3);
+        plot3(best_rho(1,1),best_distance_circle_center_from_origin(1,1),best_curvature(1,1),'.','MarkerSize',30,'Color',current_color);
+    end
     
 end % Ends check if plotting
 
@@ -610,7 +626,7 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 %% fcn_INTERNAL_filldomains
-function domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance)
+function domains = fcn_INTERNAL_filldomains(points, best_fit_circleCenters, best_fit_circleRadii, best_fit_agreement_indicies, fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance)
 
 % How many domains are there?
 N_domains = length(best_fit_agreement_indicies);
@@ -640,56 +656,33 @@ for ith_domain = 1:N_domains
     for ith_index = 1:length(fit_source_index_list(1,:))
         external_index = fit_source_indicies{ith_domain}(ith_index);
         domain_index = find(best_fit_agreement_indicies{ith_domain}==external_index,1);
+        if isempty(domain_index)
+            domain_index = nan;
+        end
         domain_specific_indicies(ith_index) = domain_index;
     end
     best_fit_source_indicies    = domain_specific_indicies;
 
 
     % Calculate the best-fit domain box
-    domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
-
-    inner_radius = circleRadius
-    if flag_this_is_a_circle
-        % Find the points that start and end the domain Hough fit
-        domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
-        domain_specific_end_point = points_in_domain(domain_specific_end_index,:);
-        unit_projection_vector = fcn_geometry_calcUnitVector(domain_specific_end_point-domain_specific_start_point);
-        unit_orthogonal_vector = unit_projection_vector*[0 1; -1 0];
-
-        base_projection_vectors = points_in_domain - domain_specific_start_point;
-
-        station_distances_of_points_in_domain = ...
-            sum(base_projection_vectors.* unit_projection_vector,2);
-        max_station = max(station_distances_of_points_in_domain);
-        min_station = min(station_distances_of_points_in_domain);
-        Hough_fit_start_point = domain_specific_start_point + unit_projection_vector*min_station;
-        Hough_fit_end_point   = domain_specific_start_point + unit_projection_vector*max_station;
-
-        best_fit_parameters = [Hough_fit_start_point Hough_fit_end_point];
-
-        boundary_left  = [Hough_fit_start_point; Hough_fit_end_point] + ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
-        boundary_right = [Hough_fit_start_point; Hough_fit_end_point] - ones(2,1)*unit_orthogonal_vector*transverse_tolerance;
-    else
-
-
+    circleCenter = best_fit_circleCenters{ith_domain};
+    circleRadius = best_fit_circleRadii{ith_domain};
+    start_angle = best_fit_start_angle_in_radians{ith_domain};
+    end_angle   = best_fit_end_angle_in_radians{ith_domain};
+    angle_step_in_radians = 1*pi/180;
+    if start_angle>end_angle
+        angle_step_in_radians = angle_step_in_radians*-1;
     end
+    angles = (start_angle:angle_step_in_radians:end_angle)';
 
-    centers = [3 4];
-    radii = 2;
-    start_angle_in_radians = 45 * pi/180;
-    end_angle_in_radians = 135 * pi/180;
-    degree_step = []; % Default is 1 degree
-    format = [];
-    fig_num = [];
+    domainShape = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles, transverse_tolerance,-1);
 
-    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format),(fig_num));
-
-
-    domain_box = [boundary_left; flipud(boundary_right)];
-    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-
-    % Which points remain unfitted?
-    unfitted_indicies(best_fit_agreement_indicies{ith_domain})=0;
+    % Save the best-fit parameters
+    if flag_this_is_a_circle
+        best_fit_parameters= [circleCenter circleRadius];
+    else
+        best_fit_parameters= [circleCenter circleRadius start_angle end_angle flag_this_is_a_circle];
+    end
 
     %% Save results into the domain structure
     domains{ith_domain} = fcn_geometry_fillEmptyDomainStructure;
@@ -703,6 +696,10 @@ for ith_domain = 1:N_domains
     domains{ith_domain}.best_fit_source_indicies = best_fit_source_indicies;
     domains{ith_domain}.best_fit_domain_box      = domainShape;
     domains{ith_domain}.best_fit_parameters      = best_fit_parameters;
+
+    %% Which points remain unfitted?
+    unfitted_indicies(best_fit_agreement_indicies{ith_domain})=0;
+
 end
 
 

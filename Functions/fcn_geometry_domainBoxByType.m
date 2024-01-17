@@ -91,49 +91,59 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(1,6); 
-    
-    % % Check the centers input
-    % fcn_DebugTools_checkInputsToFunctions(...
-    %     centers, '2column_of_numbers');
-    %
-    % % Use number of radii to calculate the number of centers
-    % Ncircles = length(centers(:,1));
-    %
-    % % Check the radii input
-    % fcn_DebugTools_checkInputsToFunctions(...
-    %     radii, '1column_of_numbers',Ncircles);
-    
+if (0==flag_max_speed)
+    if flag_check_inputs
+        switch type_of_domain, ...
+            case 'arc'
+            % Are there the right number of inputs?
+            narginchk(5,6);
+            otherwise
+                error('Unknown domain type given: %s',type_of_domain);
+        end
+    end
 end
 
-% % Does user want to specify the degree_step?
-% degree_step = 1;
-% if 5 <= nargin
-%     temp = varargin{1};
-%     if ~isempty(temp)
-%         degree_step = temp;
-%     end
-% end
-% 
-% % Set plotting defaults
-% plot_str = 'b-';
-% plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
-% 
-% % Check to see if user passed in a string or color style?
-% if 6 <= nargin
-%     input = varargin{2};
-%     if ~isempty(input)
-%         plot_str = input;
-%         if isnumeric(plot_str)  % Numbers are a color style
-%             plot_type = 2;
-%         end
-%     end
-% end
+% Get the variables out of the variable argument input cell array (varargin)
+switch type_of_domain
+    case{'arc'}
+        circleCenter            = varargin{1};
+        circleRadius            = varargin{2};
+        angles                  = varargin{3};
+        distance_from_circle_to_boundary = varargin{4};
+    otherwise
+        error('Unknown domain type given: %s',type_of_domain);
+end
+
+if (0==flag_max_speed)
+    if flag_check_inputs
+        switch type_of_domain, ...
+            case 'arc'
+            % Check the circleCenter input
+            fcn_DebugTools_checkInputsToFunctions(...
+                circleCenter, '2column_of_numbers',1);
+
+            % Use number of radii to calculate the number of centers
+            Ncircles = length(circleCenter(:,1));
+
+            % Check the circleRadius input
+            fcn_DebugTools_checkInputsToFunctions(...
+                circleRadius, '1column_of_numbers',1);
+
+            % Check the angles input
+            fcn_DebugTools_checkInputsToFunctions(...
+                angles, '1column_of_numbers');
+
+            % Check the distance_from_circle_to_boundary input
+            fcn_DebugTools_checkInputsToFunctions(...
+                distance_from_circle_to_boundary, '1column_of_numbers',1);
+            otherwise
+                error('Unknown domain type given: %s',type_of_domain);
+        end
+    end
+end
 
 % Does user want to specify the figure?
-flag_do_plot = 1;
+flag_do_plot = 0;
 if (0==flag_max_speed) && (6==nargin)
     temp = varargin{end};
     if ~isempty(temp)
@@ -155,13 +165,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch type_of_domain
     case {'arc'}
-        circleCenter            = varargin{1};
-        circleRadius            = varargin{2};
-        angles                  = varargin{3};
-        max_orthogonal_distance = varargin{4};
-
-        inner_radius = max(0,(circleRadius - max_orthogonal_distance));
-        outer_radius = circleRadius + max_orthogonal_distance;
+        
+        inner_radius = max(0,(circleRadius - distance_from_circle_to_boundary));
+        outer_radius = circleRadius + distance_from_circle_to_boundary;
         inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
         outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
         domain_box = [inner_arc; flipud(outer_arc)];
@@ -199,6 +205,7 @@ if flag_do_plot
     ylabel('Y [meters]')
 
     % Plot the result
+    current_color = [0 0 1];
     plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
     % Make axis slightly larger?

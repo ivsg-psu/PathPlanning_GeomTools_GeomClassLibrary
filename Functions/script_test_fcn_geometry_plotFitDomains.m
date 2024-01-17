@@ -76,6 +76,7 @@ axis equal
 grid minor;
 
 plot(multi_segment_test_points(:,1),multi_segment_test_points(:,2),'k.','MarkerSize',20);
+
 fcn_geometry_plotFitDomains(example_domains, fig_num);
 
 

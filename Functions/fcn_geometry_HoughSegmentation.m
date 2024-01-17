@@ -47,7 +47,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 %      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_fitLinearRegressionFromHoughFit 
 %      fcn_geometry_fitCircleRegressionFromHoughFit
-%      fcn_geometry_fitCircleRegressionFromHoughFit
+%      fcn_geometry_fitArcRegressionFromHoughFit
 %      fcn_geometry_plotCircle
 %      fcn_geometry_plotArc
 %      fcn_geometry_fitHoughLine
@@ -77,6 +77,8 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % -- added arc fitting
 % 2024_01_15 - S. Brennan
 % -- typo fix on domain field
+% 2024_01_17 - S. Brennan
+% -- added domains within Hough fitting
 
 %% Debugging and Input checks
 
@@ -218,19 +220,14 @@ end
 % lines are fitted, this proceeds further among many different types of
 % fits to the points: lines, arcs, spirals, etc.
 
-% best_original_agreement = best_agreement_count; % For plotting
-original_indicies = (1:length(points(:,1)))';
-non_zero_indicies = find(original_indicies);
-
 % Find domains based on removing peaks one at a time from agreements list
 remaining_points = points;
-remaining_indicies = ones(length(original_indicies),1);
 domain_count = 0;
 domains{1} = struct;
 
 % Define the fit types to search
-fit_types = {'line'}; % ,'circle','arc'};
-archive_of_remaining_points{1:length(fit_types)} = [];
+fit_types = {'line','circle','arc'};
+% archive_of_remaining_points{1} = [];
 
 fprintf(1,'\n\n');
 
@@ -241,7 +238,7 @@ for fit_index = 1:length(fit_types)
     % Calculate the best agreements of this type before starting the while loop
     if length(remaining_points(:,1))>threshold_max_points
         % Perform Hough fit
-        Hough_domains = fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fit_type_to_search, threshold_max_points);
+        Hough_domains = fcn_INTERNAL_findBestFit(remaining_points, transverse_tolerance, station_tolerance, fit_type_to_search, threshold_max_points, flag_max_speed);
         N_Hough_domains = length(Hough_domains)-1;
         fprintf(1,'Found: %.0d \n',length(Hough_domains)-1);
         
@@ -253,7 +250,7 @@ for fit_index = 1:length(fit_types)
 
         % Update the unfitted points
         remaining_points = Hough_domains{end}.points_in_domain;
-        archive_of_remaining_points{fit_index} = remaining_points;
+        % archive_of_remaining_points{fit_index} = remaining_points; %#ok<AGROW>
     end
         
 end % Ends looping through fitting types
@@ -266,7 +263,7 @@ domains{domain_count}.best_fit_type = 'unfitted';
 domains{domain_count}.best_fit_parameters = nan;
 domains{domain_count}.best_fit_source_indicies = nan;
 domains{domain_count}.best_fit_domain_box = nan;
-archive_of_remaining_points{fit_index}=unfitted_points;
+% archive_of_remaining_points{fit_index}=unfitted_points;
 
 
 %% Plot the results (for debugging)?
@@ -287,13 +284,13 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-    
-    N_colors = length(color_ordering(:,1));
+    % try
+    %     color_ordering = orderedcolors('gem12');
+    % catch
+    %     color_ordering = colororder;
+    % end
+    % 
+    % N_colors = length(color_ordering(:,1));
 
     tiledlayout('flow')
 
@@ -368,7 +365,13 @@ end % Ends main function
 
 %% fcn_INTERNAL_findBestFit
 function Hough_domains = ...
-    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fit_type_to_search, threshold_max_points)
+    fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fit_type_to_search, threshold_max_points, flag_max_speed)
+
+if flag_max_speed==1
+    fig_num = -1;
+else
+    fig_num = []; % Shut off the figure number
+end
 
 % Calculate the best agreements between different fit types, returning the
 % best fitting type.
@@ -377,33 +380,35 @@ switch fit_type_to_search
     case 'line'
         % Check line fitting - minimum model order is 2 points
         Hough_domains = ...
-            fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, threshold_max_points, -1);
+            fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, threshold_max_points, (fig_num));
 
     case 'circle'
+
         flag_force_circle_fit = 1;
         expected_radii_range = [2 8];
         flag_use_permutations = [];
 
         % Check circle fitting - minimum model order is 3 points
-        Hough_domains =  ...
-            fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (-1));
+        Hough_domains  = ...
+            fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
+            (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
 
     case 'arc'
         % If the station_tolerance is empty, then arc fitting should not do
         % anything as this will force circle fits instead. We do not want
         % to fit arcs to possible circles.
         if ~isempty(station_tolerance)
+
             flag_force_circle_fit = 0;
             expected_radii_range = [2 8];
             flag_use_permutations = [];
 
             % Check circle fitting - minimum model order is 3 points
-            [best_fit_parameters, best_fit_source_indicies, best_fit_associated_indicies] = ...
-                fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, (station_tolerance), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (-1));
+            Hough_domains  = ...
+                fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
+                (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));        
         else
-            best_fit_parameters  = [0 0 0];
-            best_fit_source_indicies = 1;
-            best_fit_associated_indicies = 1;
+            Hough_domains  = fcn_geometry_fillEmptyDomainStructure;
         end
     otherwise
         error('Unknown fit type detected - unable to continue!');

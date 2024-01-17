@@ -91,6 +91,7 @@ transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 10;
 input_points = corrupted_single_segment_test_points;
+
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
 %% Basic example: find 5 lines within noisy data
@@ -154,7 +155,7 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 
 
 %% Advanced example 3: find segments within a chevron
-M = 10; % 40 points per meter
+M = 10; % points per meter
 
 rng(234)
 sigma = 0.02;
@@ -196,11 +197,15 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 % Call the segmentation function
 fig_num = 3;
-transverse_tolerance = 0.02; % Units are meters
+transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
-threshold_max_points = 10;
+threshold_max_points = 30;
 input_points = multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+fig_num = 338;
+figure(fig_num); clf;
+fcn_geometry_plotFitDomains(domains, fig_num);
 
 %% Advanced example 3: find segments within a hashtag
 M = 10; % 40 points per meter
@@ -234,11 +239,15 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 % Call the segmentation function
 fig_num = 4;
-transverse_tolerance = 0.02; % Units are meters
+transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
-threshold_max_points = 10;
+threshold_max_points = 30;
 input_points = multi_segment_test_points;
 domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+fig_num = 383;
+figure(fig_num); clf;
+fcn_geometry_plotFitDomains(domains, fig_num);
 
 %% Test of fast mode
 % Perform the calculation in slow mode

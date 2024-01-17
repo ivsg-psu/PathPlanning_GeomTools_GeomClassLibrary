@@ -74,19 +74,20 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              station_distance_max,
 %             ]
 %
-%            'Hough circle' - [circleCenter_x circleCenter_y radius] of the
-%            circle fit
+%            'Hough circle' - 
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius]
 %            
 %            'Hough arc' - 
 %
-%                    [circleCenter_x.
-%                     circleCenter_y,
-%                     radius,
-%                     start_angle_in_radians, 
-%                     end_angle_in_radians] 
-%
-%            of the arc fit
-%
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_this_is_a_circle
+%               ] 
 %
 %            'Vector regression line fit' - 
 %

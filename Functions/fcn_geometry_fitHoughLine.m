@@ -201,7 +201,7 @@ unit_projection_vectors = fcn_geometry_calcUnitVector(projection_vectors);
 % Find the agreements between points and every single line fit
 agreements = ...
     fcn_INTERNAL_findAgreementsOfPointsToFits(...
-    points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance);
+    points, unit_projection_vectors, combos_paired, transverse_tolerance, station_tolerance, flag_max_speed);
 
 
 % Initialize outputs as cell arrays
@@ -544,7 +544,7 @@ function agreement_counts = ...
     input_points, ...
     unit_projection_vectors, ...
     combos_paired, ...
-    transverse_tolerance, station_tolerance)
+    transverse_tolerance, station_tolerance, flag_max_speed)
 
 N_combos = length(unit_projection_vectors(:,1));
 
@@ -552,7 +552,18 @@ N_combos = length(unit_projection_vectors(:,1));
 agreement_counts = zeros(N_combos,1);
 
 % Loop through all the combos, recording agreement with each combo
+if 0==flag_max_speed
+    h_waitbar = waitbar(0,'Calculating line and line segment fits...');
+end
+
 for ith_vector = 1:N_combos
+    % fprintf(1,'Checking %.0d of %.0d\n',ith_vector,N_combos);
+    if 0==flag_max_speed
+        if 0==mod(ith_vector,1000)
+            waitbar(ith_vector/N_combos);
+        end
+    end
+
     base_point_index = combos_paired(ith_vector,1);
 
     % Find the indicies in transverse agreement and station agreement.
@@ -562,7 +573,9 @@ for ith_vector = 1:N_combos
     agreement_count = length(indicies_in_both_lateral_and_station_agreement);
     agreement_counts(ith_vector) = agreement_count;
 end
-
+if 0==flag_max_speed
+    close(h_waitbar)
+end
 end % Ends fcn_INTERNAL_findAgreementsOfPointsToFits
 
 
