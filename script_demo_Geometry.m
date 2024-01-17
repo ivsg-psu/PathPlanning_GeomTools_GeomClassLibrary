@@ -156,10 +156,7 @@ fig_num = 22;
 pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
 pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
-
-
-                                                                       
+assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));                                                       
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,6 +169,57 @@ assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
  %  \_____|_|_|  \___|_|\___|      |_|  \___|_|\__,_|\__\___|\__,_|  \_____\__,_|_|\___|\__,_|_|\__,_|\__|_|\___/|_| |_|___/
  % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Determining whether an angle lies in b/w two different angles
+
+fig_num = 202;
+
+
+start_angle_in_radians = 0*pi/180;
+change_in_angle = 90*pi/180;
+end_angle_in_radians = start_angle_in_radians+change_in_angle;
+angles_to_test_in_radians = (start_angle_in_radians:(start_angle_in_radians+2*pi))';
+direction = 1;
+
+[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num));
+correct_results = (angles_to_test_in_radians-start_angle_in_radians)<=end_angle_in_radians;
+assert(isequal(isAngleBetween,correct_results));
+
+%% Test case for fcn_geometry_findAngleUsing3PointsOnCircle
+
+fig_num = 211;
+apex_points = [1 0];
+centers = [0 0];
+radii = [1];
+start_angles = [135]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)];
+end_angles = [-135]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
+incoming_source_points = [-2^0.5 0];
+outgoing_destination_points = [-2^0.5 0];
+
+[angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
+    apex_points,...
+    centers,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    radii,...
+    incoming_source_points,...
+    outgoing_destination_points,fig_num)
+
+%% Test case for fcn_geometry_findPhiConstraints
+
+fig_num = 121;
+
+p_apex = [0 0];
+vertex_1 = [1  0];
+vertex_2 = [-1 1];
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+fprintf(1,'Results of phi constrainter: \n');
+fprintf('\t %.2f \t %.2f\n', ...
+    mod(phi_start,2*pi)*180/pi, ...
+    mod(change,2*pi)*180/pi);
+
 
 %% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;

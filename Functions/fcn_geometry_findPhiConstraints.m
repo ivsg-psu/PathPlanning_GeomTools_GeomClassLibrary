@@ -26,8 +26,10 @@ function [phi_start,change_in_phi] = ...
 %      vertex_2: [N x 2] list of second adjacent vertex to be encountered by path
 %
 %      (OPTIONAL INPUTS)
-%
-%      fig_num: a figure number to plot results.
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -59,12 +61,31 @@ function [phi_start,change_in_phi] = ...
 %  add debug option
 %  2021_05_27  
 %  -- edits for input checking, prep for geometry library
+%  2024_01_17 - Aneesh Batchu
+%  -- added max speed options 
 
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting
-flag_do_debug = 0;     % Set equal to 1 for debugging
+% flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+% flag_do_plot = 0;      % Set equal to 1 for plotting
+% flag_do_debug = 0;     % Set equal to 1 for debugging
+
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -86,42 +107,59 @@ end
 
 %% check input arguments 
    
-    
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(3,4);
-    
-    % Check the p_apex input
-    fcn_DebugTools_checkInputsToFunctions(...
-        p_apex, '2column_of_numbers');
-    
-    % Use number of radii to calculate the number of centers
-    N_apexes = length(p_apex(:,1));
-    
-    % Check the vertex_1 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        vertex_1, '2column_of_numbers',[N_apexes N_apexes]);
-    
-    % Check the vertex_2 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        vertex_2, '2column_of_numbers',[N_apexes N_apexes]);
-    
+if 0==flag_max_speed
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(3,4);
+
+        % Check the p_apex input
+        fcn_DebugTools_checkInputsToFunctions(...
+            p_apex, '2column_of_numbers');
+
+        % Use number of radii to calculate the number of centers
+        N_apexes = length(p_apex(:,1));
+
+        % Check the vertex_1 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            vertex_1, '2column_of_numbers',[N_apexes N_apexes]);
+
+        % Check the vertex_2 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            vertex_2, '2column_of_numbers',[N_apexes N_apexes]);
+
+    end
 end
     
 
+% % Does user want to show the plots?
+% if 4 == nargin
+%     fig_num = varargin{end};
+%     figure(fig_num);
+%     flag_do_plot = 1;    
+% else
+%     if flag_do_debug
+%         fig = figure;
+%         fig_num = fig.Number;
+%         flag_do_plot = 1;
+%     end
+% end
+
 % Does user want to show the plots?
-if 4 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plot = 1;    
+flag_do_plot = 0;
+if (0==flag_max_speed) && (4 == nargin) 
+    temp = varargin{1};
+    if ~isempty(temp)
+        fig_num = temp;
+        figure(fig_num);
+        flag_do_plot = 1;
+    end
 else
     if flag_do_debug
-        fig = figure;
+        fig = figure; 
         fig_num = fig.Number;
         flag_do_plot = 1;
     end
 end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _
 %  |  \/  |     (_)

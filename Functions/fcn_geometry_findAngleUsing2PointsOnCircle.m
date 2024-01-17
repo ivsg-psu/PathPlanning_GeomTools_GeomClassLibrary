@@ -126,7 +126,7 @@ if 0==flag_max_speed
 
         % Check the radii input
         fcn_DebugTools_checkInputsToFunctions(...
-            radii, 'column_of_numbers',num_circles);
+            radii, '1column_of_numbers',num_circles);
 
         % Check the start_points_on_circle input
         fcn_DebugTools_checkInputsToFunctions(...
@@ -138,7 +138,7 @@ if 0==flag_max_speed
 
         % Check the cross_products input
         fcn_DebugTools_checkInputsToFunctions(...
-            cross_product_direction, 'column_of_numbers',num_circles);
+            cross_product_direction, '1column_of_numbers',num_circles);
 
     end
 end
