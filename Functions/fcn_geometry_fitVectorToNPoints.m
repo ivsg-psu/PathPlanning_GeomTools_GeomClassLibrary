@@ -112,7 +112,7 @@ end
 
 % Does user want to show the plots?
 flag_do_plot = 0;
-if (2 == nargin) && (0==flag_max_speed)
+if (0==flag_max_speed) && (2 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
         fig_num = temp;

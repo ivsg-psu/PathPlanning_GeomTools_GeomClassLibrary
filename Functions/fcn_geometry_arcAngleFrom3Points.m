@@ -15,7 +15,9 @@ function [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_cente
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %

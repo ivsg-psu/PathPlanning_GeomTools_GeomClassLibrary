@@ -1,4 +1,4 @@
-function domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
+function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
 % fcn_geometry_domainBoxByType -  generates the domain box given a
 % particular type of domain. NOTE: the inputs change depending on the type
 % of domain used.
@@ -16,12 +16,12 @@ function domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %      Types include:
 %
 %          'arc': produces an arc type. If the inputs cause negative radii,
-%          the arc is limited to zero radius.
+%          the arc is limited to zero radius. The call is:
 %
-%                circleCenter            = varargin{1};
-%                circleRadius            = varargin{2};
-%                angles                  = varargin{3};
-%                max_orthogonal_distance = varargin{4};
+%                domain_box = fcn_geometry_domainBoxByType(...
+%                'arc',...
+%                circleCenter, circleRadius, angles, distance_from_circle_to_boundary,
+%                (fig_num))
 %
 %      (OPTIONAL INPUTS)
 % 
@@ -31,8 +31,8 @@ function domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %
 % OUTPUTS:
 %
-%      domain_box: the [x y] coordinates of the bounding box representing
-%      the domain.
+%      domainShape: a polyshape created from the [x y] coordinates of the
+%      bounding box representing the domain.
 %
 % DEPENDENCIES:
 %
@@ -43,19 +43,12 @@ function domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 % See the script: script_test_fcn_geometry_domainBoxByType
 % for a full test suite.
 %
-% This function was written on 2020_10_13 by S. Brennan
+% This function was written on 2024_01_17 by S. Brennan
 % Questions or comments? sbrennan@psu.edu
 
 % Revision History:
-% 2021-05-22
-% -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
-% -- eliminates repo on fcn_plotCircles
-% 2024_01_16
-% -- updated comments
-% -- added fast mode by allowing fig_num set to -1
-% -- added degree_step as an optional input
-% -- fixed bug in figure argument input
-% -- added arc_points as outputs
+% 2024_01_17 - S. Brennan
+% -- wrote the function
 
 
 %% Debugging and Input checks
@@ -175,6 +168,8 @@ switch type_of_domain
     otherwise
         error('Unknown domain type given: %s',type_of_domain)
 end
+domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+
 
 %% Plot results?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,27 +198,8 @@ if flag_do_plot
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    % for ith_arc = 1:Ncircles
-    %     if Ncircles==1
-    %         x_arc = arc_points(:,1);
-    %         y_arc = arc_points(:,2);
-    %     else
-    %         x_arc = arc_points{ith_arc}(:,1);
-    %         y_arc = arc_points{ith_arc}(:,2);
-    %     end
-    % 
-    %     % Make plots
-    %     if plot_type==1
-    %         if length(plot_str)>3
-    %             eval_string = sprintf('plot(x_arc,y_arc,%s)',plot_str);
-    %             eval(eval_string);
-    %         else
-    %             plot(x_arc,y_arc,plot_str);
-    %         end
-    %     elseif plot_type==2
-    %         plot(x_arc,y_arc,'Color',plot_str);
-    %     end
-    % end
+    % Plot the result
+    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
     % Make axis slightly larger?
     if flag_rescale_axis

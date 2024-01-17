@@ -11,15 +11,17 @@ close all
 fig_num = 1;
 figure(fig_num); clf;
 
-centers = [1 3];
-radii = 2; 
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = 0 * pi/180;
 end_angle_in_radians = 90 * pi/180;
-degree_step = [];
-format = [];
+degree_step = 1;
+angles = (start_angle_in_radians:(degree_step*pi/180):end_angle_in_radians)';
 
-fcn_geometry_domainBoxByType(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format), fig_num);
-
+domain_box = fcn_geometry_domainBoxByType(...
+    'arc',...
+    circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
+    (fig_num));
 
 %% BASIC example for one arc plotting from 0 to 90, negative
 fig_num = 2;

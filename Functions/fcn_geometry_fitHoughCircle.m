@@ -646,7 +646,6 @@ for ith_domain = 1:N_domains
 
 
     % Calculate the best-fit domain box
-    URHERE
     domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
 
     inner_radius = circleRadius

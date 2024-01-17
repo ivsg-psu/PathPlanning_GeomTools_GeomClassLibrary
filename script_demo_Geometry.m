@@ -25,6 +25,47 @@
 % 2023_12_27 - sbrennan@psu.edu
 % -- switched to using environment settings for checking input parameters
 
+%% To-do items
+% 
+% make sure all functions have at least one straighforward test case in
+% this main code
+%
+% fix plotCircle to produce outputs, just like ploArc
+% 
+% update the README.md file
+% 
+% Fast mode updated: go through all the functions and 
+%  -- make sure they all have fast mode code flags at top, namely the code
+%        %% Debugging and Input checks
+%        
+%        % Check if flag_max_speed set. This occurs if the fig_num variable input
+%        % argument (varargin) is given a number of -1, which is not a valid figure
+%        % number.
+%        flag_max_speed = 0;
+%        if (nargin==8 && isequal(varargin{end},-1))
+%            (etc. --- to end of if-statement)
+% 
+% -- make sure the comment at top, for the fig_num, mentions the fast mode,
+%    like the following template:
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
+%
+% -- update their input checks for fast mode
+%        if 0==flag_max_speed
+%            if flag_check_inputs == 1
+%
+% -- update input area for optional figures(and ordered to check
+%    flag_max_speed first, namely: 
+%
+%        if (0==flag_max_speed) && (2<= nargin)
+%
+%
+% -- each function has working test scripts to make sure fast mode works 
+% 
+% -- run the test scripts to make sure above changes don't break codes
+
 %% Prep the workspace
 close all
 clc
@@ -107,7 +148,7 @@ setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
  % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Calculating a circle from 3 points
+%% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;
 points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
 hold on
@@ -177,7 +218,9 @@ is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, poi
 
 assert(isequal(is_counterClockwise,-1))
 
-%% Calculating an arc from 3 points
+%% Calculating an angle from points on an arc, from 3 points
+% Demos fcn_geometry_arcAngleFrom3Points
+
 fig_num = 103;
 Radius = 2;
 points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
