@@ -20,8 +20,10 @@ function [dist] = ...
 %      in the form: [x1 y1 z1; x2 y2 z2; ... ; xn yn zn]
 %
 %      (OPTIONAL INPUTS)
-%
-%      fig_num: a figure number to plot results.
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -51,12 +53,32 @@ function [dist] = ...
 % -- added plotting option
 % 2021-06-05
 % -- fixed comments, added debugging option
+% 2024_01_17 - Aneesh Batchu
+% -- added max speed options 
 
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting
-flag_do_debug = 0;     % Set equal to 1 for debugging
+% flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+% flag_do_plot = 0;      % Set equal to 1 for plotting
+% flag_do_debug = 0;     % Set equal to 1 for debugging
+
+
+flag_max_speed = 0;
+if (nargin==3 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -76,31 +98,50 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(2,3);
-    
-    % Check the points1 input
-    fcn_DebugTools_checkInputsToFunctions(...
-        points1, '2or3column_of_numbers');
-    
-    % Use number of rows in points1 to calculate Npoints
-    Npoints = length(points1(:,1));
-    
-    % Check the points2 input, forcing length to match points1
-    fcn_DebugTools_checkInputsToFunctions(...
-        points2, '2or3column_of_numbers',Npoints);       
+if 0==flag_max_speed
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(2,3);
+
+        % Check the points1 input
+        fcn_DebugTools_checkInputsToFunctions(...
+            points1, '2or3column_of_numbers');
+
+        % Use number of rows in points1 to calculate Npoints
+        Npoints = length(points1(:,1));
+
+        % Check the points2 input, forcing length to match points1
+        fcn_DebugTools_checkInputsToFunctions(...
+            points2, '2or3column_of_numbers',Npoints);
+    end
 end
     
 
+% % Does user want to show the plots?
+% if 3 == nargin
+%     fig_num = varargin{end};
+%     figure(fig_num);
+%     flag_do_plot = 1;
+% else
+%     if flag_do_debug
+%         fig = figure;
+%         fig_num = fig.Number;
+%         flag_do_plot = 1;
+%     end
+% end
+
 % Does user want to show the plots?
-if 3 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plot = 1;
+flag_do_plot = 0;
+if (0==flag_max_speed) && (3 == nargin) 
+    temp = varargin{1};
+    if ~isempty(temp)
+        fig_num = temp;
+        figure(fig_num);
+        flag_do_plot = 1;
+    end
 else
     if flag_do_debug
-        fig = figure;
+        fig = figure; 
         fig_num = fig.Number;
         flag_do_plot = 1;
     end
