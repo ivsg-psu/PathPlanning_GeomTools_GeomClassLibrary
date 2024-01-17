@@ -220,6 +220,26 @@ fprintf('\t %.2f \t %.2f\n', ...
     mod(phi_start,2*pi)*180/pi, ...
     mod(change,2*pi)*180/pi);
 
+%% Test case for fcn_geometry_findTangentPointFromPointToCircle
+
+fig_num = 2;
+centers = [0 0];
+radii = 1;
+points = [2 3];
+cross_prod = -3;
+points_tangent = fcn_geometry_findTangentPointFromPointToCircle(...
+    centers,radii,points,cross_prod,fig_num); %#ok<*NASGU>
+
+%% Test case for fcn_geometry_findTangentPointsFromPointToCircle
+
+fig_num = 1;
+centers = [0 0];
+radii = 1;
+points = [2 3];
+points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
+    centers,radii,points,fig_num); %#ok<*NASGU>
+
+assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
 
 %% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;
