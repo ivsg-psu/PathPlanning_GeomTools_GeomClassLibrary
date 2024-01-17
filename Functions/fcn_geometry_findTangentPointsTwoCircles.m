@@ -80,7 +80,7 @@ function [...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_findTangentPointsFromPointToCircle
 %      fcn_geometry_plotCircle
 %
@@ -140,19 +140,19 @@ if flag_check_inputs
     end
     
     % Check the centers_start input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers_start, '2column_of_numbers',Ncircles);
     
     % Check the centers_end input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers_end, '2column_of_numbers',Ncircles);
 
     % Check the radii_start input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         radii_start, 'column_of_numbers',Ncircles);
 
     % Check the radii_end input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         radii_end, 'column_of_numbers',Ncircles);
 end
 
@@ -176,11 +176,11 @@ end
 if flag_do_voting
     if flag_check_inputs
         % Check the voting_points_start input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             voting_points_start, '2column_of_numbers',Ncircles);
         
         % Check the voting_points_end input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             voting_points_end, '2column_of_numbers',Ncircles);
     end
 end

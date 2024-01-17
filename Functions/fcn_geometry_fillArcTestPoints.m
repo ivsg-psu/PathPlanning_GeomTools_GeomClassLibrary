@@ -27,7 +27,7 @@ function [test_points, true_circle_centers, true_circle_radii] = fcn_geometry_fi
 % 
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_circleCenterFrom3Points
 %      fcn_geometry_arcDirectionFrom3Points
 %      fcn_geometry_calcUnitVector
@@ -98,7 +98,7 @@ if (0==flag_max_speed)
         narginchk(3,4);
 
         % Check the points input to be length greater than or equal to 2
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             seed_points, '2column_of_numbers',[2 3]);
 
     end

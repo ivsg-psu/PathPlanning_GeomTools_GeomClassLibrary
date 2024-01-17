@@ -30,7 +30,7 @@ function [dist] = ...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %
 % EXAMPLES:
 %
@@ -81,14 +81,14 @@ if flag_check_inputs
     narginchk(2,3);
     
     % Check the points1 input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         points1, '2or3column_of_numbers');
     
     % Use number of rows in points1 to calculate Npoints
     Npoints = length(points1(:,1));
     
     % Check the points2 input, forcing length to match points1
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         points2, '2or3column_of_numbers',Npoints);       
 end
     

@@ -30,7 +30,7 @@ function [phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:
@@ -74,7 +74,7 @@ if flag_check_inputs
     narginchk(1,2);
     
     % Check the points input, and force it to be a 2x2 matrix
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         points, '2column_of_numbers',[2 2]);    
 end
 

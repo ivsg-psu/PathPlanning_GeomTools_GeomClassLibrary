@@ -52,7 +52,7 @@ function [...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:
@@ -118,26 +118,26 @@ if 0==flag_max_speed
         narginchk(5, 6);
 
         % Check the centers input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             centers, '2column_of_numbers');
 
         % Use number of radii to calculate the number of centers
         num_circles = length(centers(:,1));
 
         % Check the radii input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             radii, 'column_of_numbers',num_circles);
 
         % Check the start_points_on_circle input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             start_points_on_circle, '2column_of_numbers',num_circles);
 
         % Check the end_points_on_circle input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             end_points_on_circle, '2column_of_numbers',num_circles);
 
         % Check the cross_products input
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             cross_product_direction, 'column_of_numbers',num_circles);
 
     end

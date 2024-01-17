@@ -31,7 +31,7 @@ function fcn_geometry_plotCircle(centers,radii,varargin)
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %
 % EXAMPLES:
 %
@@ -75,15 +75,15 @@ if flag_check_inputs
     narginchk(2,4); 
     
     % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers, '2column_of_numbers');
     
     % Use number of radii to calculate the number of centers
     Ncircles = length(centers(:,1));
     
     % Check the radii input
-    fcn_geometry_checkInputsToFunctions(...
-        radii, 'column_of_numbers',Ncircles);
+    fcn_DebugTools_checkInputsToFunctions(...
+        radii, '1column_of_numbers',Ncircles);
     
 end
     

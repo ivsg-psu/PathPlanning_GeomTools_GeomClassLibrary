@@ -40,7 +40,7 @@ function [cross_products, err] ...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_findTangentPointsFromPointToCircle
 %
 % EXAMPLES:
@@ -91,7 +91,7 @@ if flag_check_inputs
     end
     
     % Check the path input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         path, '2column_of_numbers',[3 4]);
     
 end

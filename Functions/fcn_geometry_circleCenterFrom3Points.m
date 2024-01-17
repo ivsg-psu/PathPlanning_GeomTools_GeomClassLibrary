@@ -34,7 +34,7 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:

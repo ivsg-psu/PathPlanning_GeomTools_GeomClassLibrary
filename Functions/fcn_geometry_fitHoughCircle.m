@@ -610,7 +610,7 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 %% fcn_INTERNAL_filldomains
-function domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance);
+function domains = fcn_INTERNAL_filldomains(points, circleCenter, circleRadius, best_fit_agreement_indicies, fit_source_indicies, best_fit_flag_is_a_circle, best_fit_start_angle_in_radians, best_fit_end_angle_in_radians, transverse_tolerance, station_tolerance)
 
 % How many domains are there?
 N_domains = length(best_fit_agreement_indicies);
@@ -646,6 +646,10 @@ for ith_domain = 1:N_domains
 
 
     % Calculate the best-fit domain box
+    URHERE
+    domain_box = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
+
+    inner_radius = circleRadius
     if flag_this_is_a_circle
         % Find the points that start and end the domain Hough fit
         domain_specific_start_point = points_in_domain(domain_specific_start_index,:);
@@ -670,6 +674,18 @@ for ith_domain = 1:N_domains
 
 
     end
+
+    centers = [3 4];
+    radii = 2;
+    start_angle_in_radians = 45 * pi/180;
+    end_angle_in_radians = 135 * pi/180;
+    degree_step = []; % Default is 1 degree
+    format = [];
+    fig_num = [];
+
+    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format),(fig_num));
+
+
     domain_box = [boundary_left; flipud(boundary_right)];
     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 

@@ -29,7 +29,7 @@ function test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_r
 % 
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %
 % EXAMPLES:
 %      
@@ -94,19 +94,19 @@ if (0==flag_max_speed)
         narginchk(4,5);
 
         % Check the circle_center input to be [1x2] vector
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             circle_center, '2column_of_numbers',[1 1]);
 
         % Check the circle_radius input to be [1x1] vector
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             circle_radius, '1column_of_numbers',[1 1]);
 
         % Check the M input to be [1x1] vector
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             M, '1column_of_numbers',[1 1]);
 
         % Check the sigma input to be [1x1] vector
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             sigma, '1column_of_numbers',[1 1]);
     end
 end

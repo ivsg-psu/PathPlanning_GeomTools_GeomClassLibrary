@@ -112,18 +112,18 @@ if flag_check_inputs == 1
     end
     
     % Check wall_start input
-    fcn_geometry_checkInputsToFunctions(wall_start, '2column_of_numbers');
+    fcn_DebugTools_checkInputsToFunctions(wall_start, '2column_of_numbers');
     
     Nwalls = length(wall_start(:,1));
      
     % Check wall_end input
-    fcn_geometry_checkInputsToFunctions(wall_end, '2column_of_numbers',Nwalls);
+    fcn_DebugTools_checkInputsToFunctions(wall_end, '2column_of_numbers',Nwalls);
       
     % Check sensor_vector_start input
-    fcn_geometry_checkInputsToFunctions(sensor_vector_start, '2column_of_numbers',1);
+    fcn_DebugTools_checkInputsToFunctions(sensor_vector_start, '2column_of_numbers',1);
      
     % Check sensor_vector_end input
-    fcn_geometry_checkInputsToFunctions(sensor_vector_end, '2column_of_numbers',1);
+    fcn_DebugTools_checkInputsToFunctions(sensor_vector_end, '2column_of_numbers',1);
 end
 
 % Does user wish to specify search type?

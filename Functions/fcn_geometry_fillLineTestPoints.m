@@ -22,7 +22,7 @@ function [test_points, true_base_points, true_projection_vectors, true_distances
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_calcUnitVector
 %
 % EXAMPLES:
@@ -91,7 +91,7 @@ if (0==flag_max_speed)
         narginchk(3,4);
 
         % Check the points input to be length greater than or equal to 2
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             seed_points, '2column_of_numbers',[2 3]);
 
     end

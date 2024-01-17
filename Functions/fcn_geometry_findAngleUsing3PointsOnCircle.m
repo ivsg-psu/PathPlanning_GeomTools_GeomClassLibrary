@@ -67,7 +67,7 @@ function [...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_findTangentPointFromPointToCircle
 %      fcn_geometry_findTangentPointsFromPointToCircle
 %
@@ -118,33 +118,33 @@ if flag_check_inputs
     narginchk(7,8);
     
     % Check the apex_points input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         apex_points, '2column_of_numbers');
     
     num_circles = length(apex_points(:,1));
     
     % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers, '2column_of_numbers',num_circles);
     
     % Check the start_points_on_circle input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         start_points_on_circle, '2column_of_numbers',num_circles);
     
     % Check the end_points_on_circle input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         end_points_on_circle, '2column_of_numbers',num_circles);
     
     % Check the internal_apex_angles input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         radii, 'column_of_numbers',num_circles);
     
     % Check the incoming_source_points input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         incoming_source_points, '2column_of_numbers',num_circles);
     
     % Check the outgoing_destination_points input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         outgoing_destination_points, '2column_of_numbers',num_circles);
     
 end

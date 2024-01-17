@@ -40,7 +40,7 @@ function [phi_start,change_in_phi] = ...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:
@@ -92,18 +92,18 @@ if flag_check_inputs
     narginchk(3,4);
     
     % Check the p_apex input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         p_apex, '2column_of_numbers');
     
     % Use number of radii to calculate the number of centers
     N_apexes = length(p_apex(:,1));
     
     % Check the vertex_1 input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         vertex_1, '2column_of_numbers',[N_apexes N_apexes]);
     
     % Check the vertex_2 input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         vertex_2, '2column_of_numbers',[N_apexes N_apexes]);
     
 end

@@ -21,7 +21,7 @@ function [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,vararg
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:
@@ -97,7 +97,7 @@ if 0==flag_max_speed
         narginchk(1,2);
 
         % Check the points input to be length greater than or equal to 2
-        fcn_geometry_checkInputsToFunctions(...
+        fcn_DebugTools_checkInputsToFunctions(...
             points, '2column_of_numbers',[2 3]);
 
     end

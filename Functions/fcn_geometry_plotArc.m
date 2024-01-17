@@ -42,8 +42,10 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %
 %        A format string, e.g. 'b-', that dictates the plot style or
 %        A color vector, e.g. [1 0 0.23], that dictates the line color
-%
-%      fig_num: a figure number to plot results.
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -53,7 +55,7 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %
 % EXAMPLES:
 %
@@ -120,24 +122,24 @@ if flag_check_inputs
     narginchk(4,7); 
     
     % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers, '2column_of_numbers');
     
     % Use number of radii to calculate the number of centers
     Ncircles = length(centers(:,1));
     
     % Check the radii input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         radii, '1column_of_numbers',Ncircles);
     
 end
 
 % Does user want to specify the degree_step?
 degree_step = 1;
-if 5 == nargin
+if 5 <= nargin
     temp = varargin{1};
     if ~isempty(temp)
-        degree_step = 1;
+        degree_step = temp;
     end
 end
 
@@ -156,16 +158,22 @@ if 6 <= nargin
     end
 end
 
-% Does user want to specify the figure?
-flag_do_plot = 1;
-if (0==flag_max_speed) && (7==nargin)
-    temp = varargin{end};
-    if ~isempty(temp)
-        fig_num = temp;
-        flag_do_plot = 1;
-    else
-        flag_do_plot = 0;
+% Does user want to specify the figure? And make sure no plots are formed
+% if on max_speed mode!
+if (0==flag_max_speed)
+    flag_do_plot = 1;
+
+    if (7==nargin)
+        temp = varargin{end};
+        if ~isempty(temp)
+            fig_num = temp;
+            flag_do_plot = 1;
+        else
+            flag_do_plot = 0;
+        end
     end
+else
+    flag_do_plot = 0;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,6 +186,8 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Use number of radii to calculate the number of centers
+Ncircles = length(centers(:,1));
 
 % Set angles for plotting
 if start_angle_in_radians>end_angle_in_radians
@@ -244,10 +254,11 @@ if flag_do_plot
 
         % Make plots
         if plot_type==1
-            if length(plot_str)<=2
-                plot(x_arc,y_arc,plot_str);
+            if length(plot_str)>3
+                eval_string = sprintf('plot(x_arc,y_arc,%s)',plot_str);
+                eval(eval_string);
             else
-                plot(x_arc,y_arc,eval(plot_str));
+                plot(x_arc,y_arc,plot_str);
             end
         elseif plot_type==2
             plot(x_arc,y_arc,'Color',plot_str);

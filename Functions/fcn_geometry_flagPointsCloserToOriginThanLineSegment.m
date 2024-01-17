@@ -90,11 +90,11 @@ if flag_check_inputs == 1
     narginchk(2,3);
     
     % Check the segment_points input to have at least 2 or more rows
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         segment_points, '2column_of_numbers',[2 3]);
     
     % Check the test_points input to have at least 2 or more rows
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         test_points, '2column_of_numbers');
     
 end

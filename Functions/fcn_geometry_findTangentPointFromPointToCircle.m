@@ -46,7 +46,7 @@ function single_points_tangent = ...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_findTangentPointsFromPointToCircle
 %
 % EXAMPLES:
@@ -98,21 +98,21 @@ if flag_check_inputs
     narginchk(4,5);
     
     % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers, '2column_of_numbers');
     
     Ncircles = length(centers(:,1));
     
     % Check the radii input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         radii, 'column_of_numbers',Ncircles);
     
     % Check the points input    
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         points, '2column_of_numbers',Ncircles);
 
     % Check the cross_product_goal input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         cross_product_goal, 'column_of_numbers',Ncircles);
 end
 

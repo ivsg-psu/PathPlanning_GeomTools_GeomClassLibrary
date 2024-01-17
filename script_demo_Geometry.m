@@ -121,6 +121,30 @@ end
 fig_num = 107;
 fcn_geometry_plotCircle(centers,radii,'b-',fig_num) 
 
+
+%% Plotting an arc
+% One arc plotting from 0 to 90, positive
+
+fig_num = 108;
+figure(fig_num); clf;
+
+centers = [1 3];
+radii = 2; 
+start_angle_in_radians = 0 * pi/180;
+end_angle_in_radians = 90 * pi/180;
+degree_step = []; % Default is to space at 1 degree increments
+format = []; % Can be color like 'r.', color matrix like [1 0 1], or complex string
+
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format), fig_num);
+
+%% calculating which part of a circle is visible
+fig_num = 131;
+centers = [0 0; 1 4];
+radii = [1; 1];
+points = [2 3; 3 4];
+visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
+    centers,radii,points,fig_num);
+
 %% Calculating an arc from 2 points and a direction
 fig_num = 100;
 
@@ -169,6 +193,42 @@ assert(isequal(arc_angle_in_radians_1_to_3,-7*pi/4));
 assert(isequal(circle_centers,[0 0]));
 assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,0));
+
+%% Use fcn_geometry_plotArc to generate arc data, in matrix or cell arrays, even without plotting 
+% set fig_num to empty after clearing the figure
+fig_num = 104;
+figure(fig_num); clf;
+fig_num = [];
+
+centers = [3 4];
+radii = 2; 
+start_angle_in_radians = 45 * pi/180;
+end_angle_in_radians = 135 * pi/180;
+degree_step = []; % Default is 1 degree
+format = [];
+fig_num = [];
+
+arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format),(fig_num));
+
+% Pull multiple arcs at the same time
+centers  = [1 2; 2 4; 3 5];
+radii = [3; 4; 5];
+start_angle_in_radians = [0; 180; 270] * pi/180;
+end_angle_in_radians = [90; 200; 320] * pi/180;
+degree_step = 5;
+format = [];
+fig_num = [];
+
+arc_points_cell_array = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format),(fig_num));
+
+
+fig_num = 104;
+figure(fig_num); clf;
+figure(fig_num);
+hold on; grid on;
+axis equal
+plot(arc_points_matrix(:,1),arc_points_matrix(:,2),'b.-','MarkerSize',20);
+plot(arc_points_cell_array{1}(:,1),arc_points_cell_array{1}(:,2),'k.-','MarkerSize',20);
 
 
 

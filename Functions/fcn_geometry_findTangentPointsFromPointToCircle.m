@@ -45,7 +45,7 @@ function points_tangent = ...
 %
 % DEPENDENCIES:
 %
-%      fcn_geometry_checkInputsToFunctions
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_plotCircle
 %
 % EXAMPLES:
@@ -96,17 +96,17 @@ if flag_check_inputs
     narginchk(3,4);
     
     % Check the centers input
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         centers, '2column_of_numbers');
     
     Ncircles = length(centers(:,1));
     
     % Check the radii input
-    fcn_geometry_checkInputsToFunctions(...
-        radii, 'column_of_numbers',Ncircles);
+    fcn_DebugTools_checkInputsToFunctions(...
+        radii, '1column_of_numbers',Ncircles);
     
     % Check the points input    
-    fcn_geometry_checkInputsToFunctions(...
+    fcn_DebugTools_checkInputsToFunctions(...
         points, '2column_of_numbers',Ncircles);
     
     % Check whether divide by zero will occur, which happens if any points
