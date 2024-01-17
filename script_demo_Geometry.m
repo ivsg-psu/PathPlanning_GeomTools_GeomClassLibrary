@@ -241,6 +241,52 @@ points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
 
 assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
 
+%% Test case for fcn_geometry_findTangentPointsTwoCircles
+
+fig_num = 1551;
+centers_start = [0 0];
+centers_end   = [0 4];
+radii_start   = [0.3]; %#ok<*NBRAK>
+radii_end     = [0.2];
+flag_inside_or_outside = 0;
+[points_tangent_start, points_tangent_end] = ...
+    fcn_geometry_findTangentPointsTwoCircles(...
+    centers_start,...
+    centers_end,...
+    radii_start,...
+    radii_end,...
+    flag_inside_or_outside, [], [], fig_num) %#ok<*NOPTS,*ASGLU>
+
+assert(isequal(round(points_tangent_start,4),[0.2976,0.0375;-0.2976,0.0375;0.2999,0.0075;-0.2999,0.0075]));
+assert(isequal(round(points_tangent_end,4),[-0.1984,3.9750;0.1984,3.9750;0.1999,4.0050;-0.1999,4.005]));
+
+%% Test case for fcn_geometry_findTangentPointTwoCircles
+
+fig_num = 1;
+centers_start = [1 1];
+centers_end   = [3 1];
+radii_start   = [0.5]; %#ok<*NBRAK>
+radii_end     = [0.3];
+cross_products_start = [ 1];
+cross_products_end   = [-1];
+
+[...
+    points_tangent_start, ...
+    points_tangent_end] ...
+    = ...
+    fcn_geometry_findTangentPointTwoCircles(...
+    centers_start,...
+    centers_end,...
+    radii_start,...
+    radii_end,...
+    cross_products_start,...
+    cross_products_end,...
+    fig_num) %#ok<*NOPTS,*ASGLU>
+
+assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
+assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
+
+
 %% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;
 points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
@@ -250,6 +296,7 @@ for i=1:length(points(:,1))-2
     [centers, radii] = fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),fig_num);
     plot(points(:,1),points(:,2),'r-');
 end
+
 
 %% Plotting a circle
 fig_num = 107;
@@ -493,6 +540,21 @@ trueParameters = [true_circleCenter true_circleRadius];
 fig_num = 38383;
 [best_fit_regression_parameters, best_fit_domain_box, radial_errors, standard_deviation]  = ...
     fcn_geometry_fitCircleRegressionFromHoughFit(circle_test_points(1:3,:),circle_test_points, fig_num); %#ok<*ASGLU>
+
+%% Test case for fcn_geometry_fitVectorToNPoints
+
+fig_num = 4;
+A = -3;
+B = 2;
+C = 4;
+
+Npoints = 1000;
+x_data = linspace(-2,5,Npoints)';
+y_data = x_data*(-A/B) + (-C/B) + 0.2*randn(Npoints,1);
+points = [x_data,y_data];
+
+[root_point, unit_vector] = fcn_geometry_fitVectorToNPoints(points,fig_num);
+fprintf(1,'\n\nFigure: %.0d - Root point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',fig_num, root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

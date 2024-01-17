@@ -62,8 +62,10 @@ function [...
 %      has the matching cross product.
 %
 %      (OPTIONAL INPUTS)
-%  
-%      fig_num: a figure number to plot results.
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -95,11 +97,30 @@ function [...
 % -- First write of the code
 % 2021-05-22
 % -- Added plotting from: fcn_geometry_plotCircle
+% 2024_01_17 - Aneesh Batchu
+% -- added max speed options 
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting
-flag_do_debug = 0;     % Set equal to 1 for debugging
+% flag_check_inputs = 1; % Set equal to 1 to check the input arguments
+% flag_do_plot = 0;      % Set equal to 1 for plotting
+% flag_do_debug = 0;     % Set equal to 1 for debugging
+
+flag_max_speed = 0;
+if (nargin==7 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -124,51 +145,68 @@ end
 
 Ncircles = length(centers_start(:,1));  % The number of start and end circles
 
-if flag_check_inputs
-    if nargin < 6 || nargin > 7
-        error('Incorrect number of input arguments.')
+if 0==flag_max_speed
+    if flag_check_inputs
+        if nargin < 6 || nargin > 7
+            error('Incorrect number of input arguments.')
+        end
+
+        % Check the centers_start input
+        fcn_DebugTools_checkInputsToFunctions(...
+            centers_start, '2column_of_numbers',Ncircles);
+
+        % Check the centers_end input
+        fcn_DebugTools_checkInputsToFunctions(...
+            centers_end, '2column_of_numbers',Ncircles);
+
+        % Check the radii_start input
+        fcn_DebugTools_checkInputsToFunctions(...
+            radii_start, '1column_of_numbers',Ncircles);
+
+        % Check the radii_end input
+        fcn_DebugTools_checkInputsToFunctions(...
+            radii_end, '1column_of_numbers',Ncircles);
+
+        % Check the cross_products_start input
+        fcn_DebugTools_checkInputsToFunctions(...
+            cross_products_start, '1column_of_numbers',Ncircles);
+
+        % Check the cross_products_end input
+        fcn_DebugTools_checkInputsToFunctions(...
+            cross_products_end, '1column_of_numbers',Ncircles);
+
     end
-    
-    % Check the centers_start input
-    fcn_DebugTools_checkInputsToFunctions(...
-        centers_start, '2column_of_numbers',Ncircles);
-    
-    % Check the centers_end input
-    fcn_DebugTools_checkInputsToFunctions(...
-        centers_end, '2column_of_numbers',Ncircles);
-
-    % Check the radii_start input
-    fcn_DebugTools_checkInputsToFunctions(...
-        radii_start, 'column_of_numbers',Ncircles);
-
-    % Check the radii_end input
-    fcn_DebugTools_checkInputsToFunctions(...
-        radii_end, 'column_of_numbers',Ncircles);
-    
-    % Check the cross_products_start input
-    fcn_DebugTools_checkInputsToFunctions(...
-        cross_products_start, 'column_of_numbers',Ncircles);
-        
-    % Check the cross_products_end input
-    fcn_DebugTools_checkInputsToFunctions(...
-        cross_products_end, 'column_of_numbers',Ncircles);
-    
-    
 end
 
+% % Does user want to show the plots?
+% if 7 == nargin
+%     fig_num = varargin{1};
+%     figure(fig_num);
+%     flag_do_plot = 1;
+% else
+%     if flag_do_debug
+%         fig = figure;
+%         fig_num = fig.Number;
+%         flag_do_plot = 1;
+%     end
+% end
+
 % Does user want to show the plots?
-if 7 == nargin
-    fig_num = varargin{1};
-    figure(fig_num);
-    flag_do_plot = 1;
+flag_do_plot = 0;
+if (0==flag_max_speed) && (7 == nargin) 
+    temp = varargin{1};
+    if ~isempty(temp)
+        fig_num = temp;
+        figure(fig_num);
+        flag_do_plot = 1;
+    end
 else
     if flag_do_debug
-        fig = figure;
+        fig = figure; 
         fig_num = fig.Number;
         flag_do_plot = 1;
     end
 end
-
 
 %% Start of main code
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
