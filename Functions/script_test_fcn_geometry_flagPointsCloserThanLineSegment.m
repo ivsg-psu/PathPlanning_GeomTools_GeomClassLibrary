@@ -34,6 +34,42 @@ test_points = [1 1.5];
 fprintf(1,'Point flags are:\n');
 fprintf(1,'\t%.2f\n',point_flags);
 
+%% Test of fast implementation mode 
+
+% Perform the calculation in slow mode
+fig_num = [];
+REPS = 100; minTimeSlow = Inf; 
+tic;
+for i=1:REPS
+    tstart = tic;
+    [point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points, (fig_num));
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+fig_num = -1;
+minTimeFast = Inf; nsum = 10;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points, (fig_num));
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+
 %% Test 1: a basic test (FAIL ABOVE LINE)
 fig_num = 1;
 segment_points = [2 3; 4 5];

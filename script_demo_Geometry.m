@@ -413,7 +413,60 @@ axis equal
 plot(arc_points_matrix(:,1),arc_points_matrix(:,2),'b.-','MarkerSize',20);
 plot(arc_points_cell_array{1}(:,1),arc_points_cell_array{1}(:,2),'k.-','MarkerSize',20);
 
+%% Line Related Calculations
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Line%20calculations%20
+% .____    .__                              .__               .__          __  .__                       
+% |    |   |__| ____   ____     ____ _____  |  |   ____  __ __|  | _____ _/  |_|__| ____   ____   ______ 
+% |    |   |  |/    \_/ __ \  _/ ___\\__  \ |  | _/ ___\|  |  \  | \__  \\   __\  |/  _ \ /    \ /  ___/ 
+% |    |___|  |   |  \  ___/  \  \___ / __ \|  |_\  \___|  |  /  |__/ __ \|  | |  (  <_> )   |  \\___ \  
+% |_______ \__|___|  /\___  >  \___  >____  /____/\___  >____/|____(____  /__| |__|\____/|___|  /____  > 
+%         \/       \/     \/       \/     \/          \/                \/                    \/     \/  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Test case for fcn_geometry_selfCrossProduct
+
+fig_num = 333;
+path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
+[cross_products] = ...
+    fcn_geometry_selfCrossProduct(...
+    path, fig_num);
+
+%% Test case for fcn_geometry_polarLineFrom2PolarCoords
+
+fig_num = 3333;
+
+start_point_cart = [1 1];
+end_point_cart   = [4 3];
+
+[theta1,r1] = cart2pol(start_point_cart(:,1),start_point_cart(:,2));
+[theta2,r2]   = cart2pol(end_point_cart(:,1),end_point_cart(:,2));
+points = [theta1,r1;theta2,r2];
+
+% Calculate the line
+[phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points,fig_num);
+axis([0 5 0 5]);
+assert(isequal(round(phi,4),-0.9828));
+assert(isequal(round(rho,4),-0.2774));
+
+%% Test case for fcn_geometry_flagPointsFurtherFromOriginThanLineSegment
+
+fig_num = 313;
+segment_points = [2 3; 4 5];
+test_points = [1 4];
+[point_flags] = fcn_geometry_flagPointsFurtherFromOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
+
+%% Test case for fcn_geometry_flagPointsCloserToOriginThanLineSegment
+
+fig_num = 3113;
+segment_points = [2 3; 4 5];
+test_points = [1 1.5];
+[point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
