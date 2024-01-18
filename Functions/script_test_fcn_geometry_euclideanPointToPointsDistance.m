@@ -17,14 +17,14 @@ fig_num = 3;
 
 pt1 = rand(5,2);
 pt2 = rand(5,2);
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 
 % BASIC example - single points in 3D
 fig_num = 31;
 
 pt1 = [1 1 0];
 pt2 = [2 3 2];
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 assert(isequal(round(dist,4), [3]));
 
 %% BASIC example - two points in 3D
@@ -32,7 +32,7 @@ fig_num = 32;
 
 pt1 = [1 1 0; 0 0 1];
 pt2 = [2 3 4; 4 0 2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 assert(isequal(round(dist,4), [4.5826; 4.1231]));
 
 %% BASIC example - multiple points in 3D
@@ -40,7 +40,7 @@ fig_num = 33;
 
 pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
 pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
 
 %% BASIC example - multiple points in 3D
@@ -48,7 +48,7 @@ fig_num = 34;
 
 pt1 = rand(5,3);
 pt2 = rand(5,3);
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 
 %% Test of fast implementation mode 
 
@@ -58,7 +58,7 @@ REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -70,7 +70,7 @@ minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
