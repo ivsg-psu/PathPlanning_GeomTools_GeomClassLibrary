@@ -28,6 +28,8 @@
 
 %% To-do items
 %
+% create method to remove overlapping domains
+%
 % add lines and segments to domainBoxByType
 % 
 % make sure all functions have at least one straighforward test case in

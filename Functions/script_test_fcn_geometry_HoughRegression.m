@@ -1,5 +1,5 @@
-% script_test_fcn_geometry_HoughSegmentation
-% Exercises the function: fcn_geometry_HoughSegmentation
+% script_test_fcn_geometry_HoughRegression
+% Exercises the function: fcn_geometry_HoughRegression
 
 % Revision history:
 % 2023_12_15
@@ -92,67 +92,101 @@ station_tolerance = 1; % Units are meters. Usually station tolerance needs to be
 threshold_max_points = 10;
 input_points = corrupted_single_segment_test_points;
 
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
 
 %% Basic example: find 5 lines within noisy data
-fig_num = 1;
+fig_num = 20;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = inf; % Units are meters
 threshold_max_points = 20;
 input_points = corrupted_multi_segment_test_points;
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
 
 %% Basic example 2: find 5 line segments within same data
 % segments are created by imposing constraints on separation
 
 % Call the segmentation function
-fig_num = 2;
+fig_num = 30;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 10;
 input_points = corrupted_multi_segment_test_points;
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
+
 
 %% Basic example 3: find circle data
 
-fig_num = 3;
+fig_num = 40;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 2; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
 input_points = corrupted_circle_test_points;
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
 
 %% Basic example 3: find arc data
 
-fig_num = 4;
+fig_num = 50;
 transverse_tolerance = 0.03; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
 input_points = corrupted_onearc_test_points;
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
+
 
 %% Advanced example: find line segments and circles in same data set
 
-fig_num = 11; 
+fig_num = 60; 
 figure(fig_num); clf;
 
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 3; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 10;
 input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points];
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 
 %% Advanced example: find line segments and circles and arcs in same data set
-fig_num = 22; 
+fig_num = 70; 
 figure(fig_num); clf;
 
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 1.5; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
 input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points; corrupted_onearc_test_points+[0 8]];
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 %% Advanced example 3: find segments within a chevron
 M = 10; % points per meter
@@ -196,16 +230,21 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 
 % Call the segmentation function
-fig_num = 3;
+fig_num = 80;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
 threshold_max_points = 30;
 input_points = multi_segment_test_points;
-domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-fig_num = 338;
+fig_num = 81;
 figure(fig_num); clf;
-fcn_geometry_plotFitDomains(domains, fig_num);
+fcn_geometry_plotFitDomains(Hough_domains, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
 
 %% Advanced example 3: find segments within a hashtag
 M = 10; % 40 points per meter
@@ -238,16 +277,21 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 
 % Call the segmentation function
-fig_num = 4;
+fig_num = 90;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
 threshold_max_points = 30;
 input_points = multi_segment_test_points;
-domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-fig_num = 383;
+fig_num = 91;
 figure(fig_num); clf;
-fcn_geometry_plotFitDomains(domains, fig_num);
+fcn_geometry_plotFitDomains(Hough_domains, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num+2);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
 
 %% Test of fast mode
 % Perform the calculation in slow mode
@@ -256,20 +300,22 @@ REPS = 1; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num));
+
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains,
+
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
 minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
 
-    domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num));
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains,-1);
+
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

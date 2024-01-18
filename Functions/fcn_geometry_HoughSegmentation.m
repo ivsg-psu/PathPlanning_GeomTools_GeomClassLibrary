@@ -86,7 +86,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % OUTPUTS:
 %
 %      domains: the fitted domains of the segments, ordered from the fit
-%      that hast he most points included, to the domain that has the least.
+%      that has the most points included, to the domain that has the least.
 %
 % DEPENDENCIES:
 %      fcn_DebugTools_checkInputsToFunctions
