@@ -289,6 +289,23 @@ cross_products_end   = [-1];
 assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
 assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 
+%% Test case for fcn_geometry_findIntersectionOfSegments
+
+fprintf(1,'Simple intersection result: \n');
+wall_start = [0 10];
+wall_end   = [10 10];
+sensor_vector_start = [2 1];
+sensor_vector_end   = [5 15];
+fig_num = 2343;
+flag_search_type = 0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_num);
+
+assert(isequal(round(distance,4),9.2043));
+assert(isequal(round(location,4),[3.9286,10.0000]));
+
 
 %% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;
@@ -416,7 +433,60 @@ axis equal
 plot(arc_points_matrix(:,1),arc_points_matrix(:,2),'b.-','MarkerSize',20);
 plot(arc_points_cell_array{1}(:,1),arc_points_cell_array{1}(:,2),'k.-','MarkerSize',20);
 
+%% Line Related Calculations
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Line%20calculations%20
+% .____    .__                              .__               .__          __  .__                       
+% |    |   |__| ____   ____     ____ _____  |  |   ____  __ __|  | _____ _/  |_|__| ____   ____   ______ 
+% |    |   |  |/    \_/ __ \  _/ ___\\__  \ |  | _/ ___\|  |  \  | \__  \\   __\  |/  _ \ /    \ /  ___/ 
+% |    |___|  |   |  \  ___/  \  \___ / __ \|  |_\  \___|  |  /  |__/ __ \|  | |  (  <_> )   |  \\___ \  
+% |_______ \__|___|  /\___  >  \___  >____  /____/\___  >____/|____(____  /__| |__|\____/|___|  /____  > 
+%         \/       \/     \/       \/     \/          \/                \/                    \/     \/  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Test case for fcn_geometry_selfCrossProduct
+
+fig_num = 333;
+path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
+[cross_products] = ...
+    fcn_geometry_selfCrossProduct(...
+    path, fig_num);
+
+%% Test case for fcn_geometry_polarLineFrom2PolarCoords
+
+fig_num = 3333;
+
+start_point_cart = [1 1];
+end_point_cart   = [4 3];
+
+[theta1,r1] = cart2pol(start_point_cart(:,1),start_point_cart(:,2));
+[theta2,r2]   = cart2pol(end_point_cart(:,1),end_point_cart(:,2));
+points = [theta1,r1;theta2,r2];
+
+% Calculate the line
+[phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points,fig_num);
+axis([0 5 0 5]);
+assert(isequal(round(phi,4),-0.9828));
+assert(isequal(round(rho,4),-0.2774));
+
+%% Test case for fcn_geometry_flagPointsFurtherFromOriginThanLineSegment
+
+fig_num = 313;
+segment_points = [2 3; 4 5];
+test_points = [1 4];
+[point_flags] = fcn_geometry_flagPointsFurtherFromOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
+
+%% Test case for fcn_geometry_flagPointsCloserToOriginThanLineSegment
+
+fig_num = 3113;
+segment_points = [2 3; 4 5];
+test_points = [1 1.5];
+[point_flags] = fcn_geometry_flagPointsCloserToOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -886,6 +956,16 @@ threshold_to_check_arc = 1;
 fig_num = 2343;
 domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
 fcn_geometry_plotFitDomains(domains, fig_num);
+
+%% Test case for fcn_geometry_findPointsInSequence
+
+fig_num = 4353;
+
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

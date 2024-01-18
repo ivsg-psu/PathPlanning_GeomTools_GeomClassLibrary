@@ -52,7 +52,9 @@ function [distance,location,wall_that_was_hit] = ...
 %            respectively, where the M rows represent all the detected
 %            intersections.
 %
-%      fig_num: a figure number to plot results. Turns debugging on.
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
@@ -77,13 +79,32 @@ function [distance,location,wall_that_was_hit] = ...
 % Revision history:
 %      2021_06_05 
 %      - wrote the code, templated from fcn_geometry_findIntersectionOfSegments
+%  2024_01_17 - Aneesh Batchu
+%  -- added max speed options
 
 
 
 %% Set up for debugging
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_do_plot = 0; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+% flag_do_debug = 0; % Flag to plot the results for debugging
+% flag_do_plot = 0; % Flag to plot the results for debugging
+% flag_check_inputs = 1; % Flag to perform input checking
+
+flag_max_speed = 0;
+if (nargin==6 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -132,14 +153,31 @@ if 5 <= nargin
 end
 
 
+% % Does user want to show the plots?
+% if 6 == nargin
+%     fig_num = varargin{end};
+%     figure(fig_num);
+%     flag_do_plot = 1;
+% else
+%     if flag_do_debug
+%         fig = figure;
+%         fig_num = fig.Number;
+%         flag_do_plot = 1;
+%     end
+% end
+
 % Does user want to show the plots?
-if 6 == nargin
-    fig_num = varargin{end};
-    figure(fig_num);
-    flag_do_plot = 1;
+flag_do_plot = 0;
+if (0==flag_max_speed) && (6 == nargin) 
+    temp = varargin{2};
+    if ~isempty(temp)
+        fig_num = temp;
+        figure(fig_num);
+        flag_do_plot = 1;
+    end
 else
     if flag_do_debug
-        fig = figure;
+        fig = figure; 
         fig_num = fig.Number;
         flag_do_plot = 1;
     end
