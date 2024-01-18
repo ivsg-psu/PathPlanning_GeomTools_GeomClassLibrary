@@ -286,6 +286,23 @@ cross_products_end   = [-1];
 assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
 assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 
+%% Test case for fcn_geometry_findIntersectionOfSegments
+
+fprintf(1,'Simple intersection result: \n');
+wall_start = [0 10];
+wall_end   = [10 10];
+sensor_vector_start = [2 1];
+sensor_vector_end   = [5 15];
+fig_num = 2343;
+flag_search_type = 0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_num);
+
+assert(isequal(round(distance,4),9.2043));
+assert(isequal(round(location,4),[3.9286,10.0000]));
+
 
 %% Calculating a circle's center and radius from 3 points on the circle
 fig_num = 102;
@@ -936,6 +953,16 @@ threshold_to_check_arc = 1;
 fig_num = 2343;
 domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
 fcn_geometry_plotFitDomains(domains, fig_num);
+
+%% Test case for fcn_geometry_findPointsInSequence
+
+fig_num = 4353;
+
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

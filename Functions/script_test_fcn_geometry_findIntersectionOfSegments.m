@@ -27,6 +27,48 @@ print_results(distance,location);
 assert(isequal(round(distance,4),9.2043));
 assert(isequal(round(location,4),[3.9286,10.0000]));
 
+%% Test of fast implementation mode 
+
+% Perform the calculation in slow mode
+fig_num = [];
+REPS = 100; minTimeSlow = Inf; 
+tic;
+for i=1:REPS
+    tstart = tic;
+    [distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type, (fig_num));
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+fig_num = -1;
+minTimeFast = Inf; nsum = 10;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type, (fig_num));
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+
 %% Simple test 2 - no intersections
 fprintf(1,'No intersection result: \n');
 wall_start = [-4 10];
