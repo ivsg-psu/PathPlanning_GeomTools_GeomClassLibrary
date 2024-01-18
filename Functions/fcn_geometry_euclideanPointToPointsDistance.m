@@ -114,6 +114,7 @@ if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp; %#ok<NASGU>
+        figure(fig_num);
         flag_do_plots = 1;
     end
 end
