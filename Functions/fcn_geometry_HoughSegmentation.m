@@ -3,14 +3,59 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % Given a set of points, attempts to segment the points into line segments,
 % circles, arcs, etc. by using a Hough transform methodology. 
 % 
-% Step 1: Points are checked against each type of fit using N choose K
-% combinations of point indicies associated with the number of points
-% needed for the minimum fit. For example, a line fit requires a
-% minimum of 2 points, so if there are 5 points to fit, then the N choose
-% combinations becomes (5 choose 2) which gives:
+% The method used here is to search through each of the fitting types one
+% at a time. Each fit must do several things:
+% 
+% Step 1:  use the minimum model order to find all possible permutations of
+% points that can create a fit. The minimum model order refers to the
+% minimum number of points needed for the type of fit Given these points,
+% find all possible index permutations that can form a complete model. The
+% minimum number of points (M) for each type of model fit is as follows:
+% 
+%   line or line segment fit - 2 points minimum
+% 
+%   circle or arc fit - 3 points minimum
+%   
+%   spiral fit - this requires infinite points, and thus only highly
+%   constrained fits would be possible
 %
-% Note, the nchoosek funciton in MATLAB produces these combination
-% sequencies automatically.
+% If there are N points, then there are N choose M permutations possible
+% assuming M is the minimum number of points for the model fit.  NOTE: the
+% nchoosek funciton in MATLAB produces these combination sequencies
+% automatically.
+%
+% Step 2: Given all possible index combinations of points, find the model
+% fit and the "votes" for that fit. The model fit is simply the geometric
+% equation created by the M indicies. For a line, this would be the
+% equation of the line for the 2 points of a particular index combination.
+% The votes are determined by creating a tolerance around the fit, a
+% regrion of agreement. Any of the points that are within this region are
+% considered associated with each fit. The total count of points in
+% agreement represent the "votes" for that particular fit.
+%
+% Step 3: Find the highest votes for a fit. The "best" is given by some
+% point threshold - for example, 10 points, and any fits with 10 points or
+% more would be considered "good" fits.
+% 
+% Step 4: For the highest votes, save the relevant information such as the
+% associated points, the model fit, the shape of the domain of the fit.
+%
+% The above process is repeated from simplest fit types to the most
+% complex, until no more fits are possible for a given point threshold.
+% Usually, this starts with the simplest fit type first (lines). After all
+% lines are fitted, this proceeds to the next most complicated fit
+% (circles), then the next most complicated (arcs), etc.
+%
+% NOTE: The fits are ordered from simplest (and fastest) first, then to
+% more complex. This is necessary not only for speed, but also because of
+% degeneracy in the fitting process itself. For example, all line segments
+% are portions of lines, all lines are circles with infinite radius, all
+% circles are arcs that extend up to 2*pi, all arcs are spirals with a
+% radial slope equal to zero, etc. In other words, if one starts attempting
+% to fit points first using advanced and complex geometric representations
+% - a spiral, for example - before trying simpler ones first such as a line
+% segment, then the simpler forms would never be found because all the line
+% segments would be fit by spirals.
 %
 % Format: 
 % domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num))
@@ -172,53 +217,7 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-if flag_do_debug
-    figure(fig_debug);
-    clf;
-    hold on;
-    grid on;
 
-    plot(points(:,1),points(:,2),'k.','MarkerSize',20);
-    title('Debugging figure for fcn_geometry_HoughSegmentation','Interpreter','none');
-end
-
-
-% Search through all the fitting types to find the best fits. The fits are
-% ordered from simplest (and fastest) first, then to more complex. This is
-% necessary not only for speed, but also because of degeneracy in the
-% fitting process itself.
-%
-% For example, all lines are circles with infinite radius, all circles are
-% arcs that extend up to 2*pi, all arcs are spirals with a radial slope
-% equal to zero, etc. In other words, to allow fits of more advanced and
-% complex geometric representations before trying simpler ones first, the
-% simpler forms would not be used.%
-%
-% Each fit must do several things:
-% 
-% Step 1: Given a minimum model order - how many points are needed for the
-% minimum fit? Given these points, find all possible index permutations
-% that can form a complete model. For example, a line fit requires 2 points
-% minimum. If there are N points, then there are N choose 2 permutations
-% possible assuming the line is not ordered.
-%
-% Step 2: Given all possible model fits, find the fit and find also which
-% points are associated with each fit given tolerance fators. These point
-% totals represent the "votes" for that particular fit.
-%
-% Step 3: Find the best permutation of a fit, namely the one that has the
-% highest votes among all the fits of that type - the best line fit among
-% all line fits, for example. Using these, find the regression fit
-% coefficients and domain of the best fit.
-% 
-% Step 4: Given the domain, find the points that are members of that
-% best-fit permutation.
-%
-% The above process is repeated until no more fits are possible for a given
-% fit type, starting with the simplest fit type first (lines). After all
-% lines are fitted, this proceeds further among many different types of
-% fits to the points: lines, arcs, spirals, etc.
 
 % Find domains based on removing peaks one at a time from agreements list
 remaining_points = points;

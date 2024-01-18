@@ -16,6 +16,7 @@
 % 2016-2018 - Seth Tau 
 % 2023-2024 - Aneesh Batchu
 % 2024 - Xinyu Cao
+% 2024 - Aneesh Batchu
 
 
 
@@ -26,6 +27,8 @@
 % -- switched to using environment settings for checking input parameters
 
 %% To-do items
+%
+% add lines and segments to domainBoxByType
 % 
 % make sure all functions have at least one straighforward test case in
 % this main code

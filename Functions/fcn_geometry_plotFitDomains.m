@@ -249,7 +249,7 @@ if flag_do_plots
                     line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
-                case {'Hough circle'}
+                case {'Hough circle','Regression circle'}
                     %            'Hough circle' -
                     %               [circleCenter_x.
                     %                circleCenter_y,
@@ -271,7 +271,7 @@ if flag_do_plots
                     fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
-                case {'Hough arc'}
+                case {'Hough arc','Regression arc'}
                     % Plot the best-fit arc
                     circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
                     circleRadius = domain_to_plot.best_fit_parameters(1,3);

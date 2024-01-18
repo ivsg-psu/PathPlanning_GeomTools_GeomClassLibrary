@@ -1,41 +1,32 @@
-function [regression_fit_arc_center_and_radius_and_angles, domain_box, radial_errors, standard_deviation]  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
+function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, varargin)
+
+%[regression_fit_arc_center_and_radius_and_angles, domain_box, radial_errors, standard_deviation]  =  ...
+%    fcn_geometry_fitArcRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
 % fcn_geometry_fitArcRegressionFromHoughFit
-% Given a set of points that are matched to an arc via a Hough vote,
-% finds the arc regression fit and domain box. 
+% Given a domain containing a set of points that are matched to an arc via
+% a Hough vote, finds the arc regression fit and domain box.
 % 
 % Format: 
-% [regression_fit_arc_center_and_radius_and_angles, domain_box] = fcn_geometry_fitArcRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, (fig_num))
 %
 % INPUTS:
-%      source_points: a 3x2 matrix of the points used to create the Hough circle fit (used to find direction): 
-% 
-%      [point1_x  point1_y; point2_x  point2_y; point3_x  point3_y;]
-%
-%      These points are used to determine the direction of the resulting
-%      circle fit.
-%
-%      associated_points_in_domain: an Nx2 list of points that should be
-%      fit with regression, identified as within the domain according to
-%      Hough voting.
+%      Hough_domain: a structure that records details of the domain of
+%      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot the results.
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
-%      regression_fit_arc_center_and_radius_and_angles: a 5x1 matrix of the format:
+%      regression_domain: a structure that records details of the domain of
+%      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
-%      [circleCenter_x  circleCenter_y circleRadius arc_start_angle_in_radians arc_end_angle_in_radians]
-%
-%      domain_box: the box that encloses the 2-standard-deviation interval
-%      around the regression circle fit.
-%
-%      radial_errors: the individual errors in each point, radially, in an
-%      [N x 1] matrix
-%
-%      standard_deviation: the standard deviation in the errors
+%      std_dev_orthogonal_distance: the standard deviation in the point
+%      fit, as measured in the transverse direction (orthogonal to the line
+%      fit). E.g., this is the total-least-squares standard deviation.
 %
 % DEPENDENCIES:
 %
@@ -52,6 +43,8 @@ function [regression_fit_arc_center_and_radius_and_angles, domain_box, radial_er
 % Revision history:
 % 2024_01_09 - S Brennan
 % -- wrote the code
+% 2024_01_18 - S Brennan
+% -- changed to domain inputs and outputs
 
 %% Debugging and Input checks
 
@@ -59,7 +52,7 @@ function [regression_fit_arc_center_and_radius_and_angles, domain_box, radial_er
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==2 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -100,23 +93,23 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,3);
+        narginchk(1,2);
 
-        % Check the source_points input to be length exactly equal to 3
-        fcn_DebugTools_checkInputsToFunctions(...
-            source_points, '2column_of_numbers',[3 3]);
-
-        % Check the associated_points_in_domain input to be length greater
-        % than or equal to 3
-        fcn_DebugTools_checkInputsToFunctions(...
-            associated_points_in_domain, '2column_of_numbers',[3 4]);
+        % % Check the source_points input to be length exactly equal to 3
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     source_points, '2column_of_numbers',[3 3]);
+        %
+        % % Check the associated_points_in_domain input to be length greater
+        % % than or equal to 3
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     associated_points_in_domain, '2column_of_numbers',[3 4]);
     end
 end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (3<= nargin) && (0==flag_max_speed)
+if  (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -135,48 +128,95 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initialze the domain structure for output
+regression_domain = fcn_geometry_fillEmptyDomainStructure;
 
-% The solution approach is simple: fit with a circle and then find the start/end angles
-[regression_fit_circle_center_and_radius, ~, radial_errors, standard_deviation] = ...
-    fcn_geometry_fitCircleRegressionFromHoughFit(...
-    [associated_points_in_domain(1,:); associated_points_in_domain(2,:); associated_points_in_domain(end,:)], ...
-    associated_points_in_domain);
+% Pull out key variables
+best_fit_type            = Hough_domain.best_fit_type;
+points_in_domain         = Hough_domain.points_in_domain;
+Hough_best_fit_source_indicies = Hough_domain.best_fit_source_indicies;
+
+% Check to make sure we have a Hough fit input
+switch best_fit_type
+    case {'Hough circle'}
+        regression_domain.best_fit_type = 'Regression circle';
+        Hough_flag_this_is_a_circle  = 1;
+    case {'Hough arc'}
+        regression_domain.best_fit_type = 'Regression arc';
+        Hough_flag_this_is_a_circle  = Hough_domain.best_fit_parameters(1,6);
+    otherwise
+        error('A domain was tested for fitting that was not a Hough fit');
+end
+regression_domain.points_in_domain = points_in_domain;
 
 
-circleCenter = regression_fit_circle_center_and_radius(1,1:2); 
+% Pull out parameters from the Hough domain fit
+associated_points_in_domain = points_in_domain;
+source_points = [...
+    associated_points_in_domain(Hough_best_fit_source_indicies(1),:); 
+    associated_points_in_domain(Hough_best_fit_source_indicies(2),:); 
+    associated_points_in_domain(Hough_best_fit_source_indicies(3),:)];
+
+regression_domain.points_in_domain = points_in_domain;
+
+%% The solution approach is simple: fit with a circle and then find the start/end angles
+
+% Fit the circle portion
+[regression_fit_circle_center_and_radius, ~, ~, standard_deviation] = ...
+    fcn_geometry_fitCircleRegressionFromHoughFit(source_points, associated_points_in_domain);
+
+circleCenter = regression_fit_circle_center_and_radius(1,1:2);
 circleRadius = regression_fit_circle_center_and_radius(1,3);
-index_source_point = 1;
-station_tolerance = circleRadius*3*pi; % Allow the arc to go all the way around
 
-[~, ~, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
+% Calculate the remaining arc details?
+if Hough_flag_this_is_a_circle
+    regression_domain.best_fit_parameters = [circleCenter, circleRadius];
+    start_angle_in_radians = 0;
+    end_angle_in_radians = 2*pi;
+    degree_step = 1;
+else
+    % Find the arc angles associated with the regression fit
+    % These may be slightly different from Hough fit because the circle center
+    % and radius will be different, due to regression fit
+    index_source_point = Hough_best_fit_source_indicies(1);
+    station_tolerance = circleRadius*3*pi; % Allow the arc to go all the way around, we only do this to force the check below to use all the points
 
-% Check the direction
-degree_step = 1;
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
-if is_counterClockwise~=1
-    degree_step = -1*degree_step;
-    temp = start_angle_in_radians;
-    start_angle_in_radians = end_angle_in_radians;
-    end_angle_in_radians = temp;
+    [~, ~, start_angle_in_radians, end_angle_in_radians] = ...
+        fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
+
+    % Check the direction. If direction is not aligned with the input regression direction, flip it
+    degree_step = 1;
+    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
+    if is_counterClockwise~=1
+        degree_step = -1*degree_step;
+        temp = start_angle_in_radians;
+        start_angle_in_radians = end_angle_in_radians;
+        end_angle_in_radians = temp;
+    end
+
+    % Fill in the results
+    regression_fit_arc_center_and_radius_and_angles_and_flag = [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, Hough_flag_this_is_a_circle];
+    regression_domain.best_fit_parameters = regression_fit_arc_center_and_radius_and_angles_and_flag;
 end
 
-% Fill in the results
-regression_fit_arc_center_and_radius_and_angles = [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians];
-
-% Fill in domain box
-sigma_multiplier = 2;
-max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
-
-% Create a domain by doing a large range of angles across an inner and
+%% Calculate the domain boxes
+% Create a domain by doing a range of angles across inner and
 % outer arc that spans the test area
 
 angles = (start_angle_in_radians:degree_step*pi/180:end_angle_in_radians)';
-inner_radius = max(0,(circleRadius - max_orthogonal_distance));
-outer_radius = circleRadius + max_orthogonal_distance;
-inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
-outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
-domain_box = [inner_arc; flipud(outer_arc)];
+
+% Calculate the domain boxes
+std_dev_orthogonal_distance = standard_deviation;
+sigma_orthogonal_distance = std_dev_orthogonal_distance; % max(abs(orthogonal_distances));
+
+domain_box_1_sigma = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles,  1*sigma_orthogonal_distance,-1);
+domain_box_2_sigma = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles,  2*sigma_orthogonal_distance,-1);
+domain_box_3_sigma = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles,  3*sigma_orthogonal_distance,-1);
+
+regression_domain.best_fit_1_sigma_box = domain_box_1_sigma;
+regression_domain.best_fit_2_sigma_box = domain_box_2_sigma;
+regression_domain.best_fit_3_sigma_box = domain_box_3_sigma;
+regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
 
 
 %% Plot the results (for debugging)?
@@ -197,29 +237,38 @@ if flag_do_plots
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end        
+    end    
+
+    % Get the color ordering?
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
+
+    N_colors = length(color_ordering(:,1));
 
     hold on;
     grid on;
-    title('Regression fit of circle data');
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
-    
+    axis equal;
+
+    % Plot the fits    
+    ith_domain = 1;
+    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); %#ok<NASGU>
       
-    % Plot the inputs: the source_points and associated_points_in_domain 
-    plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
-    plot(source_points(2,1),source_points(2,2),'b.','MarkerSize',30);
-    plot(source_points(3,1),source_points(3,2),'r.','MarkerSize',30);
-    h_plot = plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',10);
-    current_color = get(h_plot,'Color');
+    
+    if flag_do_debug
+        % Plot the source_points
+        plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
+        plot(source_points(2,1),source_points(2,2),'b.','MarkerSize',30);
+        plot(source_points(3,1),source_points(3,2),'r.','MarkerSize',30);
+    end
 
-    % Plot the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
-    plot(circleCenter(1,1),circleCenter(1,2),'b+','MarkerSize',30);
+    % Plot the associated_points_in_domain
+    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',40,'Color',current_color);
 
-    % Plot the domain
-    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+    % Plot the domains
+    fcn_geometry_plotFitDomains(regression_domain, fig_num);
 
     % Make axis slightly larger?
     if flag_rescale_axis

@@ -1,13 +1,16 @@
-function [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, varargin)
-% fcn_geometry_fitLinearRegressionFromHoughFit Given a set of points that
-% are matched via a Hough vote, finds the regression fit vector and domain
-% box. Note: the vector fit is not the same as a least-squares regression,
-% which minimizes sum-of-squares of the vertical errors between a line fit
-% and the respective points. but is similar to total-least-squares. Namely,
-% the vector is found that approximately minimizes the sum-of-squares
-% distance between the vector and the orthogonal projection to each point.
-% Thus, unlike linear regression, this method works for data aligned
-% vertically.
+function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, varargin)
+% fcn_geometry_fitLinearRegressionFromHoughFit Given a domain containting a
+% set of points that are matched via a Hough vote, finds the regression fit
+% vector and domain box. 
+% 
+% NOTE: the vector fit is not the same as a least-squares linear
+% regression, which minimizes sum-of-squares of the VERTICAL errors between
+% a line fit and the respective points. The method here is similar to
+% total-least-squares. Namely, the vector is found that approximately
+% minimizes the sum-of-squares distance between the vector and the
+% orthogonal projection to each point. Thus, the fit is minimizing
+% ORTHOGONAL errors. Unlike linear regression, this method works for data
+% aligned vertically.
 % 
 % Format: 
 % [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, (fig_num))
@@ -27,7 +30,7 @@ function [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLine
 %      regression_domain: a structure that records details of the domain of
 %      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
-%      std_dev_transverse_distance: the standard deviation in the point
+%      std_dev_orthogonal_distance: the standard deviation in the point
 %      fit, as measured in the transverse direction (orthogonal to the line
 %      fit). E.g., this is the total-least-squares standard deviation.
 %
@@ -143,6 +146,7 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Initialze the domain structure for output
 regression_domain = fcn_geometry_fillEmptyDomainStructure;
 
 % Pull out key variables
@@ -264,8 +268,8 @@ orthogonal_distances = sum(projections.*unit_converted_orthogonal_vector,2);
 regression_domain.best_fit_parameters = [unit_converted_projection_vector base_point_on_line transverse_distance_to_lowest_point transverse_distance_to_highest_point];
 
 % Calculate the domain boxes
-std_dev_transverse_distance = std(orthogonal_distances);
-sigma_orthogonal_distance = std_dev_transverse_distance; % max(abs(orthogonal_distances));
+std_dev_orthogonal_distance = std(orthogonal_distances);
+sigma_orthogonal_distance = std_dev_orthogonal_distance; % max(abs(orthogonal_distances));
 
 N_sigmas = 1;
 domain_box_1_sigma = ...

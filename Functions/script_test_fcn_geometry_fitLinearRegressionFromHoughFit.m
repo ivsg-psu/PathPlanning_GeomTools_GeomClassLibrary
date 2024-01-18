@@ -11,6 +11,7 @@ clc;
 
 %% Fill test data 
 fig_num = 9999;
+figure(fig_num); clf;
 
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
@@ -32,8 +33,8 @@ shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupte
 
 % Demo Hough line fitting
 
-transverse_tolerance = 0.1;
-station_tolerance = [];
+transverse_tolerance = 0.05;
+station_tolerance = 2;
 points_required_for_agreement = 20;
 
 domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);

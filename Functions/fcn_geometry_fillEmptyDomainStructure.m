@@ -106,6 +106,22 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              station_distance_min,
 %              station_distance_max,
 %             ]
+%
+%            'Regression circle' - 
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius]
+%            
+%            'Regression arc' - 
+%
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_this_is_a_circle
+%               ] 
+%
 %            
 %      emptyDomain.best_fit_domain_box = [];
 %
