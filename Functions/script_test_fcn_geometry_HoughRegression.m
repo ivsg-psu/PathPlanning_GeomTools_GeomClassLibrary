@@ -39,6 +39,11 @@ circle_center = [3 5];
 circle_radius = 2;
 M = 5; % 5 points per meter
 sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
@@ -50,6 +55,26 @@ arc_seed_points = [2 3; 4 5; 6 3];
 
 M = 10; % Points per meter
 sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Fill test data for 1 arc
 onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
@@ -84,6 +109,21 @@ corrupted_twoarc_test_points = ...
 
 %% Basic example: find one line segment
 
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+
 fig_num = 10; 
 figure(fig_num); clf;
 
@@ -101,6 +141,20 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 %% Basic example: find 5 lines within noisy data
 fig_num = 20;
+
+% Multiple segments
+seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+multi_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_multi_segment_test_points = fcn_geometry_corruptPointsWithOutliers(multi_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = inf; % Units are meters
 threshold_max_points = 20;
@@ -117,6 +171,21 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 % Call the segmentation function
 fig_num = 30;
+
+% Multiple segments
+seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+multi_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_multi_segment_test_points = fcn_geometry_corruptPointsWithOutliers(multi_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 10;
@@ -135,6 +204,23 @@ fig_num = 40;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 2; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
+
+% Create circle data
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+
 input_points = corrupted_circle_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
@@ -149,6 +235,23 @@ fig_num = 50;
 transverse_tolerance = 0.03; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
+
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
 input_points = corrupted_onearc_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
@@ -162,6 +265,36 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 fig_num = 60; 
 figure(fig_num); clf;
+
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+% Create circle data
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
 
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 3; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
@@ -177,6 +310,52 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 %% Advanced example: find line segments and circles and arcs in same data set
 fig_num = 70; 
 figure(fig_num); clf;
+
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+% Create circle data
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
 
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 1.5; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
@@ -293,7 +472,7 @@ regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num+2);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 
 
-%% Test of fast mode
+% Test of fast mode
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 1; minTimeSlow = Inf;
@@ -301,7 +480,7 @@ tic;
 for i=1:REPS
     tstart = tic;
 
-    regression_domains = fcn_geometry_HoughRegression(Hough_domains,
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains,(fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -309,12 +488,13 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
+fig_num = -1;
 minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
 
-    regression_domains = fcn_geometry_HoughRegression(Hough_domains,-1);
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains,(fig_num));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
