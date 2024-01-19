@@ -938,6 +938,7 @@ station_tolerance = 0.5;
 
 
 %% fcn_geometry_findAgreementsOfPointsToArc finds the indicies that agree with an arc in both radial and station form
+
 fig_num = 233;
 figure(fig_num); clf;
 
@@ -953,6 +954,42 @@ threshold_to_check_arc = 1;
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
     fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
 
+%% Test case for fcn_geometry_findAgreementsOfPointsToCircle 
+
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
+fig_num = 3333;
+figure(fig_num); clf;
+
+points = corrupted_outlieronearc_test_points;
+circleCenter = true_circleCenter;
+circleRadius = true_circleRadius;
+transverse_tolerance = 0.2;
+
+
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num));
 
 %% fcn_geometry_plotFitDomains plots the domains of fit
 fig_num = 2343;

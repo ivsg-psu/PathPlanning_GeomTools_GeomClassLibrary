@@ -114,6 +114,7 @@ if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp; %#ok<NASGU>
+        figure(fig_num);
         flag_do_plots = 1;
     end
 end
@@ -148,7 +149,38 @@ dist = sum((pt1-pt2).^2,2).^0.5;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-   % Nothing to plot
+   % Set up the figure
+    figure(fig_num);
+    clf
+    hold on;
+    grid on; grid minor;
+        
+    midpoints = (pt1+pt2)/2;
+    for ith_point=1:N_points
+        % 2D plot?
+        if length(midpoints(1,:))==2
+            % Plot the points
+            xdata = [pt1(ith_point,1) pt2(ith_point,1)];
+            ydata = [pt1(ith_point,2) pt2(ith_point,2)];
+            plot(xdata,ydata,'.-','Linewidth',3,'Markersize',20);
+            
+            % Label the midpoints
+            text(midpoints(ith_point,1),midpoints(ith_point,2),sprintf('d - %.1f',dist(ith_point,1)));
+        else
+            % Plot the points
+            xdata = [pt1(ith_point,1) pt2(ith_point,1)];
+            ydata = [pt1(ith_point,2) pt2(ith_point,2)];
+            zdata = [pt1(ith_point,3) pt2(ith_point,3)];
+            plot3(xdata,ydata,zdata,'.-','Linewidth',3,'Markersize',20);
+
+            % Label the midpoints
+            text(midpoints(ith_point,1),midpoints(ith_point,2),midpoints(ith_point,3),sprintf('d - %.1f',dist(ith_point,1)));
+            
+            % Set to 3D view
+            view(3);
+        end
+        
+    end
     
 end % Ends check if plotting
 

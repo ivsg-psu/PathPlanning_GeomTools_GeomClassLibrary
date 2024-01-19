@@ -1,0 +1,15 @@
+Velodyne LiDAR PointCloud Data Info
+
+Written by: Xinyu Cao
+
+Velodyne PointCloud data was parsed from ROS message /velodyne_packets with the velodyne-decoder library.
+The decoded point clouds are provided either as a structured NumPy array.
+
+Array details:
+Column 1: x [m] - The x coord in Cartesian coordinates
+Column 2: y [m] - The y coord in Cartesian coordinates
+Column 3: z [m] - The z coord in Cartesian coordinates
+Column 4: intensity - The measured intensity at the point
+Column 5: ring - The ring number of the laser
+Column 6: time - The time stamp of the measured point (The unit of the time still need to be checked)
+
