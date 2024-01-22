@@ -273,7 +273,7 @@ end
 N_colors = length(color_ordering(:,1));
 
 
-for time_iteration = 1:95 % length(ptCloud_pts_layers_separated_cell)
+for time_iteration = 1:95 % length(ptCloud_pts_raw_rings_cell_save)
     currentScanRaw = ptCloud_pts_raw_rings_cell_save{time_iteration};
 
     mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
