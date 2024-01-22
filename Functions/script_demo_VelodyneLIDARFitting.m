@@ -254,9 +254,9 @@ load("Data\LIDAR_debugging.mat","results_to_plot");
 load('PointCloud_Separated_Data_Raw.mat'); % Contains ptCloud_pts_raw_rings_cell_save
 
 % Load the RingNames and N_rings
-currentScan = ptCloud_pts_layers_separated_cell{1};
+% currentScan = ptCloud_pts_layers_separated_cell{1};
 currentScanRaw = ptCloud_pts_raw_rings_cell_save{1};
-RingNames = fieldnames(currentScan);
+RingNames = fieldnames(currentScanRaw);
 N_rings = length(RingNames);
 
 % For plotting
@@ -281,7 +281,8 @@ for time_iteration = 1:95 % length(ptCloud_pts_layers_separated_cell)
     good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;  
 
     fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering);
-
+    pause(0.01);
+    
 end % Ends loop through time
 
 %% Find and plot all the points in each ring, in 3D
@@ -306,7 +307,7 @@ for ith_ring = 1:N_rings
     RingDataRaw = currentScanRaw.(ringName);
     plot3(RingDataRaw(:,1), RingDataRaw(:,2), RingDataRaw(:,3),'k.','MarkerSize',10);
 end
-view(3)
+view(30,30)
 axis(good_limits);
 
 
