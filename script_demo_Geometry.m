@@ -438,13 +438,16 @@ plot(arc_points_cell_array{1}(:,1),arc_points_cell_array{1}(:,2),'k.-','MarkerSi
 %% Line Related Calculations
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Line%20calculations%20
-% .____    .__                              .__               .__          __  .__                       
-% |    |   |__| ____   ____     ____ _____  |  |   ____  __ __|  | _____ _/  |_|__| ____   ____   ______ 
-% |    |   |  |/    \_/ __ \  _/ ___\\__  \ |  | _/ ___\|  |  \  | \__  \\   __\  |/  _ \ /    \ /  ___/ 
-% |    |___|  |   |  \  ___/  \  \___ / __ \|  |_\  \___|  |  /  |__/ __ \|  | |  (  <_> )   |  \\___ \  
-% |_______ \__|___|  /\___  >  \___  >____  /____/\___  >____/|____(____  /__| |__|\____/|___|  /____  > 
-%         \/       \/     \/       \/     \/          \/                \/                    \/     \/  
+% http://patorjk.com/software/taag/#p=display&f=Big&t=Line%20Calculations
+%
+%  _      _               _____      _            _       _   _
+% | |    (_)             / ____|    | |          | |     | | (_)
+% | |     _ _ __   ___  | |     __ _| | ___ _   _| | __ _| |_ _  ___  _ __  ___
+% | |    | | '_ \ / _ \ | |    / _` | |/ __| | | | |/ _` | __| |/ _ \| '_ \/ __|
+% | |____| | | | |  __/ | |___| (_| | | (__| |_| | | (_| | |_| | (_) | | | \__ \
+% |______|_|_| |_|\___|  \_____\__,_|_|\___|\__,_|_|\__,_|\__|_|\___/|_| |_|___/
+%
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Test case for fcn_geometry_selfCrossProduct
@@ -590,6 +593,29 @@ corrupted_twoarc_test_points = ...
 % % For debugging
 % figure(33838);
 % plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
+
+%% Filling test data for spheres
+fig_num = 6666;
+figure(fig_num);
+clf;
+
+
+sphere_center = [3 5];
+sphere_radius = 2;
+M = 10; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillSphereTestPoints(sphere_center, sphere_radius, M, sigma); % (fig_num));
+
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num)); %#ok<*NASGU>
+axis equal;
 
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -11,11 +11,22 @@
 close all
 clc
 
-%% Use the GPSandLidar_Data.mat in the Data folder to start, the loaded data is a struct containing two fields
-% rawdata_selected.GPS_SparkFun_Temp_ENU_selected and rawdata_selected.Lidar_pointcloud_cell_selected
-data_folder = fullfile("..","Data");
-addpath(data_folder)
-load('GPSandLidar_Data.mat')
+%% Basic example
+fig_num = 1;
+
+% Fill in the true values
+
+
+% Call the fitting function
+[C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_array);
+
+
+%% ADVANCED EXAMPLE
+% Use the GPSandLidar_Data.mat in the Data folder to start, the loaded data
+% is a struct containing two fields
+% rawdata_selected.GPS_SparkFun_Temp_ENU_selected and
+% rawdata_selected.Lidar_pointcloud_cell_selected
+load('GPSandLidar_Data.mat','rawdata_selected');
 
 %% Grab the GPS and Lidar Data
 GPS_SparkFun_Temp_ENU = rawdata_selected.GPS_SparkFun_Temp_ENU_selected;
@@ -26,11 +37,15 @@ N_fake_points = 20;
 thetavec = linspace(0,pi,N_fake_points).';
 phivec = linspace(0,2*pi,2*N_fake_points).';
 [theta_fake, phi_fake] = meshgrid(thetavec, phivec);
-% The actual radius of the sphere target
+
+
+% Simulate a sphere using the same radius of the sphere target
 R_set = 0.151;
 r_vec = R_set*ones(size(phi_fake));
-gps_select_range = 1:length(GPS_SparkFun_Temp_ENU);
-a = 0.01; % the magnitude of the random noise added to the data
+N_data = length(GPS_SparkFun_Temp_ENU);
+gps_select_range = 1:N_data;
+noise_magnitude = 0.01; % the magnitude of the random noise added to the data
+fake_PointCloud_cell{N_data} = [];
 for n_gps_idxs = gps_select_range
     center = GPS_SparkFun_Temp_ENU(n_gps_idxs,:);
     X_fake = center(1) + r_vec.*sin(theta_fake).*cos(phi_fake);
@@ -40,11 +55,13 @@ for n_gps_idxs = gps_select_range
     X_fake_reshaped = reshape(X_fake,[size_fake_data(1)*size_fake_data(2),1]);
     Y_fake_reshaped = reshape(Y_fake,[size_fake_data(1)*size_fake_data(2),1]);
     Z_fake_reshaped = reshape(Z_fake,[size_fake_data(1)*size_fake_data(2),1]);
+    
     % Generate random noise to X, Y and Z
-    X_noise = -a + 2*a*rand(size(X_fake_reshaped));
-    Y_noise = -a + 2*a*rand(size(Y_fake_reshaped));
-    Z_noise = -a + 2*a*rand(size(Z_fake_reshaped));
-    % Add noise to X, Y and Z
+    X_noise = noise_magnitude*randn(size(X_fake_reshaped));
+    Y_noise = noise_magnitude*randn(size(Y_fake_reshaped));
+    Z_noise = noise_magnitude*randn(size(Z_fake_reshaped));
+    
+    % Add the noise to X, Y and Z
     X_fake_with_noise = X_fake_reshaped+X_noise;
     Y_fake_with_noise = Y_fake_reshaped+Y_noise;
     Z_fake_with_noise = Z_fake_reshaped+Z_noise;
@@ -74,12 +91,16 @@ end
 
 %% Fit Sphere Target with the fake pointcloud data
 clear C_array R_array E_ave_array pointCloud_space_cell
-fit_range = 1:500;
-for idx_fit = fit_range
+
+for idx_fit = 1:N_data
     current_scan = fake_PointCloud_cell{idx_fit,1};
     XYZ_array = current_scan(:,1:3);
     Intensity = current_scan(:,4);
+
+    % Call the fitting function
     [C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_array);
+
+
     C_sphere_array(idx_fit,:) = C_sphere;
     R_sphere_array(idx_fit,:) = R_sphere;
     E_total_array(idx_fit,:) = E_total;
