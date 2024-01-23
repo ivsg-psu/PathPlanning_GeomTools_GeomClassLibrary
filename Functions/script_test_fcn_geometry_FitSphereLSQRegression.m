@@ -5,24 +5,11 @@
 % Revision history:
 % 2023_11_22
 % -- first write of the code
-close all;
+
 
 %% Set up the workspace
 close all
 clc
-
-%% Check assertions for basic path operations and function testing
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                              _   _                 
-%      /\                     | | (_)                
-%     /  \   ___ ___  ___ _ __| |_ _  ___  _ __  ___ 
-%    / /\ \ / __/ __|/ _ \ '__| __| |/ _ \| '_ \/ __|
-%   / ____ \\__ \__ \  __/ |  | |_| | (_) | | | \__ \
-%  /_/    \_\___/___/\___|_|   \__|_|\___/|_| |_|___/
-%                                                    
-%                                                    
-% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Assertions
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Use the GPSandLidar_Data.mat in the Data folder to start, the loaded data is a struct containing two fields
 % rawdata_selected.GPS_SparkFun_Temp_ENU_selected and rawdata_selected.Lidar_pointcloud_cell_selected
