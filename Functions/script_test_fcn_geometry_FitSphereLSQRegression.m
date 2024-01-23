@@ -74,7 +74,7 @@ end
 
 %% Fit Sphere Target with the fake pointcloud data
 clear C_array R_array E_ave_array pointCloud_space_cell
-fit_range = 1:500;
+fit_range = 1:100;
 for idx_fit = fit_range
     current_scan = fake_PointCloud_cell{idx_fit,1};
     XYZ_array = current_scan(:,1:3);
