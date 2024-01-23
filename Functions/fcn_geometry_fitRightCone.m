@@ -1,4 +1,4 @@
-function cone_parameters = fcn_geometry_fitRightCone(inputPoints,ring_id,varargin)
+function [cone_parameters,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,varargin)
 
 % fcn_geometry_fitRightCone calculates the ratio of radius to height of the
 % cone
@@ -118,11 +118,24 @@ end
 x_pts = inputPoints(:,1);
 y_pts = inputPoints(:,2);
 z_pts = inputPoints(:,3);
+N_points = length(x_pts);
+R_square = x_pts.^2+y_pts.^2;
 % calculates the c, the ratio of radius to height of the cone
-c_square = mean((x_pts.^2+y_pts.^2)./(z_pts.^2));
-c = sqrt(c_square);
-cone_parameters = [c, ring_id];
+c_ratio_square = mean((R_square)./(z_pts.^2));
+c_ratio = sqrt(c_ratio_square);
 
+
+% Estimate the Z with x, y and c
+if ring_id<=7
+    z_fitting = -sqrt(R_square./c_ratio_square);
+else
+    z_fitting = sqrt(R_square./c_ratio_square);
+end
+fittingPoints = [x_pts,y_pts,z_fitting];
+cone_parameters = [c_ratio, ring_id];
+fitting_error_sum = sum(vecnorm(inputPoints-fittingPoints,2,2));
+fitting_error_mean = fitting_error_sum/N_points;
+fitting_result = [z_fitting,fitting_error_sum, fitting_error_mean];
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -156,9 +169,9 @@ if flag_do_plots
     X_plot = R.*cos(Th) ;
     Y_plot = R.*sin(Th) ;
     if ring_id<=7
-        Z_plot = -R/c;
+        Z_plot = -R/c_ratio;
     else
-        Z_plot = R/c;
+        Z_plot = R/c_ratio;
     end
   
     coneSurf = surf(X_plot,Y_plot,Z_plot);
