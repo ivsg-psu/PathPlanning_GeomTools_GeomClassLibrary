@@ -1,4 +1,4 @@
-function [cone_parameters,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,varargin)
+function [cone_parameters,fittedPoints, fitted_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,varargin)
 
 % fcn_geometry_fitRightCone calculates the ratio of radius to height of the
 % cone
@@ -89,8 +89,7 @@ if flag_check_inputs
         fcn_DebugTools_checkInputsToFunctions(...
             inputPoints, '3column_of_numbers');
 
-        N_points = size(inputPoints,1);
-
+       
 
 end
 
@@ -118,7 +117,7 @@ end
 x_pts = inputPoints(:,1);
 y_pts = inputPoints(:,2);
 z_pts = inputPoints(:,3);
-N_points = length(x_pts);
+N_points = size(inputPoints,1);
 R_square = x_pts.^2+y_pts.^2;
 % calculates the c, the ratio of radius to height of the cone
 c_ratio_square = mean((R_square)./(z_pts.^2));
@@ -131,11 +130,11 @@ if ring_id<=7
 else
     z_fitting = sqrt(R_square./c_ratio_square);
 end
-fittingPoints = [x_pts,y_pts,z_fitting];
+fittedPoints = [x_pts,y_pts,z_fitting];
 cone_parameters = [c_ratio, ring_id];
-fitting_error_sum = sum(vecnorm(inputPoints-fittingPoints,2,2));
-fitting_error_mean = fitting_error_sum/N_points;
-fitting_result = [z_fitting,fitting_error_sum, fitting_error_mean];
+fitted_error_sum = sum(vecnorm(inputPoints-fittedPoints,2,2));
+fitted_error_mean = fitted_error_sum/N_points;
+fitted_result = [fitted_error_sum, fitted_error_mean];
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -173,13 +172,19 @@ if flag_do_plots
     else
         Z_plot = R/c_ratio;
     end
-  
+    plot3(0,0,0,'m.','MarkerSize',20)
+    hold on
     coneSurf = surf(X_plot,Y_plot,Z_plot);
     set(coneSurf,'FaceColor', [0 0 1], 'FaceAlpha',0.5)
-    hold on
      % Plot the input points
     plot3(inputPoints(:,1),inputPoints(:,2),inputPoints(:,3),'r.','MarkerSize',20);
-
+    plot3(fittedPoints(:,1),fittedPoints(:,2),fittedPoints(:,3),'g.','MarkerSize',20)
+    
+    view(30,30)
+    xlabel("X [m]",'fontsize',16)
+    ylabel("Y [m]",'fontsize',16)
+    zlabel("Z [m]",'fontsize',16)
+    legend('Origin','Cone Surface','Input Points','Fitted Points','fontsize',16)
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
