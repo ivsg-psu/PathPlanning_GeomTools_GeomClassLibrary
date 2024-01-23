@@ -10,11 +10,10 @@ load('PointCloud_Separated_Data_Raw.mat');
 
 % Load the RingNames and N_rings
 currentScan = ptCloud_pts_layers_separated_cell{1};
-currentScanRaw = ptCloud_pts_raw_rings_cell_save{1};
 RingNames = fieldnames(currentScan);
 N_rings = length(RingNames);
 
-%% For plotting
+% For plotting
 
 % Get the color ordering?
 try
@@ -272,18 +271,22 @@ catch
 end
 N_colors = length(color_ordering(:,1));
 
+filt_circle_center = results_to_plot(1).mean_circle_center;
+while(1)
+    for time_iteration = 1:95 % length(ptCloud_pts_raw_rings_cell_save)
+        currentScanRaw = ptCloud_pts_raw_rings_cell_save{time_iteration};
 
-for time_iteration = 1:95 % length(ptCloud_pts_raw_rings_cell_save)
-    currentScanRaw = ptCloud_pts_raw_rings_cell_save{time_iteration};
+        mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
+        weight = 0.7;
+        filt_circle_center = weight*filt_circle_center + (1-weight)*mean_circle_center;
+        rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;
+        good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;
 
-    mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
-    rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;  
-    good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;  
+        fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering);
+        pause(0.01);
 
-    fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering);
-    pause(0.01);
-    
-end % Ends loop through time
+    end % Ends loop through time
+end
 
 %% Find and plot all the points in each ring, in 3D
 function fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering)
