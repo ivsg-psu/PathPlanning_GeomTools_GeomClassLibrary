@@ -193,21 +193,26 @@ elseif size(gridBoundaries,1) == 3
                 gridYMax = yMin + j_2D * gridSize;
                 gridZMin = zMin + (k_3D - 1) * gridSize;
                 gridZMax = zMin + k_3D * gridSize;
-                gridDomains{count_var + j_2D + k_3D} = [gridXMin gridXMax gridYMin gridYMax gridZMin gridZMax];
+                gridDomains{count_var + k_3D} = [gridXMin gridXMax gridYMin gridYMax gridZMin gridZMax];
 
                 % Find indices of points within the current grid
                 pointsInGrid = find(inputPoints(:, 1) >= gridXMin & inputPoints(:, 1) < gridXMax & ...
                     inputPoints(:, 2) >= gridYMin & inputPoints(:, 2) < gridYMax & ...
                     inputPoints(:, 2) >= gridZMin & inputPoints(:, 2) < gridZMax);
 
-                gridIndices{count_var + j_2D + k_3D} = pointsInGrid;
-                gridCenters{count_var + j_2D + k_3D} = [mean([gridXMin, gridXMax]), mean([gridYMin, gridYMax]), mean([gridZMin, gridZMax])];
+                gridIndices{count_var + k_3D} = pointsInGrid;
+                gridCenters{count_var + k_3D} = [mean([gridXMin, gridXMax]), mean([gridYMin, gridYMax]), mean([gridZMin, gridZMax])];
             end
             count_var = count_var + j_2D;
         end
-        count_var = count_var + j_2D + k_3D;
+        count_var = count_var + j_2D + i_1D;
     end
 end
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+end
+
 end
 
 
