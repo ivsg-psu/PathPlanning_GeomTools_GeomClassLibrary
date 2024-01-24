@@ -1,13 +1,14 @@
-function fcn_geometry_plotSphere(centers,radii,varargin)   
+function sphere_points = fcn_geometry_plotSphere(centers,radii,varargin)   
 % fcn_geometry_plotSphere -  plots a sphere by creating a vector of angles
 % spaced 0.01 radians apart, and plotting this as a line around the
 % perimeter.
 %
 % FORMAT:
 %
-%     fcn_geometry_plotSphere(...
+%     XYZ_points = fcn_geometry_plotSphere(...
 %     centers,...
 %     radii,...
+%     (color_vector);
 %     (fig_num))
 %
 % INPUTS:
@@ -19,15 +20,16 @@ function fcn_geometry_plotSphere(centers,radii,varargin)
 %
 %      (OPTIONAL INPUTS)
 %
-%      format:
-%        A format string, e.g. 'b-', that dictates the plot style or
-%        A color vector, e.g. [1 0 0.23], that dictates the line color
+%      color_vector: A color vector, e.g. [1 0 0.23], that dictates the
+%      sphere color. 
 %
 %      fig_num: a figure number to plot results.
 %
 % OUTPUTS:
 %
-%      (none)
+%      sphere_points: the [x y z] coordinates of the sphere points. If N
+%      centers and radii are given, with N>1, then sphere_points will be a
+%      cell array of points.
 %
 % DEPENDENCIES:
 %
@@ -48,9 +50,27 @@ function fcn_geometry_plotSphere(centers,radii,varargin)
 
 
 %% Debugging and Input checks
-flag_check_inputs = 1; % Set equal to 1 to check the input arguments
-flag_do_plot = 0;      % Set equal to 1 for plotting "extra" figures (not used)
-flag_do_debug = 0;     % Set equal to 1 for debugging
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==4 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
+
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -69,42 +89,52 @@ end
 %              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if (0==flag_max_speed)
+    if flag_check_inputs
+        % Are there the right number of inputs?
+        narginchk(2,4);
 
-if flag_check_inputs    
-    % Are there the right number of inputs?
-    narginchk(2,4); 
-    
-    % Check the centers input
-    fcn_DebugTools_checkInputsToFunctions(...
-        centers, '3column_of_numbers');
-    
-    % Use number of radii to calculate the number of centers
-    Nspheres = length(centers(:,1));
-    
-    % Check the radii input
-    fcn_DebugTools_checkInputsToFunctions(...
-        radii, '1column_of_numbers',Nspheres);
-    
-end
-    
+        % Check the centers input
+        fcn_DebugTools_checkInputsToFunctions(...
+            centers, '3column_of_numbers');
 
-% Does user want to specify the figure?
-flag_do_plot = 1;
-fig_num = [];
-if 4 == nargin
-    fig_num = varargin{end};
-    flag_do_plot = 1;
-else
-    if flag_do_debug
-        fig = figure;
-        fig_num = fig.Number;
-        flag_do_plot = 1;
-        flag_new_figure = 1;
+        % Use number of radii to calculate the number of centers
+        Nspheres = length(centers(:,1));
+
+        % Check the radii input
+        fcn_DebugTools_checkInputsToFunctions(...
+            radii, '1column_of_numbers',Nspheres);
+
     end
 end
-if isempty(fig_num)
-    fig = gcf;
-    fig_num = fig.Number;
+
+% Does user want to specify the color_vector? 
+color_vector = [];
+if (3 <=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        color_vector = temp;
+    end
+end
+
+% Does user want to specify the figure? And make sure no plots are formed
+% if on max_speed mode!
+if (0==flag_max_speed)
+    flag_do_plot = 1;
+
+    if (4 <= nargin)
+        temp = varargin{end};
+        if ~isempty(temp)
+            fig_num = temp;
+        else
+            flag_do_plot = 0;
+        end
+    else
+        fig = gcf;
+        fig_num = fig.Number;
+    end
+else
+    flag_do_plot = 0;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,74 +148,46 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-% Set plotting defaults
-plot_str = 'b-';
-plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
-
-% Check to see if user passed in a string or color style?
-if 3 <= nargin
-    input = varargin{1};
-    if ~isempty(input)
-        plot_str = input;
-        if isnumeric(plot_str)  % Numbers are a color style
-            plot_type = 2;
-        end
-    end
-end
-
 % Get a default sphere construct
 [X,Y,Z] = sphere;
 
+% How many spheres are we calculating?
+N_spheres = length(radii);
 
-% Fix the size and position
-X2 = X * radii + centers(1);
-Y2 = Y * radii + centers(2);
-Z2 = Z * radii + centers(3);
-
-% Plot the results in point space
-temp_h = figure(fig_num);
-flag_rescale_axis = 0;
-if isempty(get(temp_h,'Children'))
-    flag_rescale_axis = 1;
-    hold on;
-    axis equal
-    grid minor;
-else
-    hold on;
-    axis equal
+% Initialize cell array, if more than one sphere
+if N_spheres~=1
+    sphere_points{N_spheres} = [];
 end
 
-% % Get the color ordering?
-% try
-%     color_ordering = orderedcolors('gem12');
-% catch
-%     color_ordering = colororder;
-% end
-% 
-% N_colors = length(color_ordering(:,1));
+% Loop through spheres, calculating XYZ data for each
+plotting_X{N_spheres}= [];
+plotting_Y{N_spheres}= [];
+plotting_Z{N_spheres}= [];
+
+for ith_sphere = 1:N_spheres
+    % Fix the size and position
+    X2 = X * radii(ith_sphere) + centers(ith_sphere,1);
+    Y2 = Y * radii(ith_sphere) + centers(ith_sphere,2);
+    Z2 = Z * radii(ith_sphere) + centers(ith_sphere,3);
 
 
-% Make plots
-if plot_type==1
-    h_plot = surf(X2,Y2,Z2,'EdgeColor',[0 0.4 0],'FaceAlpha',0.1,'EdgeAlpha',0.1);
-    % colormap([0 1 0]);
-    %  plot(x_sphere,y_sphere,plot_str);
-elseif plot_type==2
-    h_plot = surf(X2,Y2,Z2);
-    %  plot(x_sphere,y_sphere,'Color',plot_str);
-end
+    % Save results
+    plotting_X{ith_sphere}= X2;
+    plotting_Y{ith_sphere}= Y2;
+    plotting_Z{ith_sphere}= Z2;
 
-view(3);
+    if nargout>0
+        sizeX = size(X2);
+        X3 = reshape(X2,sizeX(1)*sizeX(2),1);
+        Y3 = reshape(Y2,sizeX(1)*sizeX(2),1);
+        Z3 = reshape(Z2,sizeX(1)*sizeX(2),1);
+        if N_spheres==1
+            sphere_points = [X3 Y3 Z3];
+        else
+            sphere_points{ith_sphere} = [X3 Y3 Z3];
+        end
 
-% Make axis slightly larger?
-if flag_rescale_axis
-    temp = axis;
-    %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
 end
 
 %% Plot results?
@@ -201,7 +203,58 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plot
-    % Nothing more to do here!
+    % set up the figure and check if it has been used before. If not used
+    % already, note that the axes will be re-scaled
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+        hold on;
+        axis equal
+        grid minor;
+        view(3);
+    else
+        hold on;
+        axis equal
+    end
+
+    for ith_sphere = 1:N_spheres
+
+        X2 = plotting_X{ith_sphere};
+        Y2 = plotting_Y{ith_sphere};
+        Z2 = plotting_Z{ith_sphere};
+
+
+        % Make plots
+        if ~isempty(color_vector)
+            N_levels = 10;
+            increment = 1/N_levels;
+            scalings = (increment:increment:1)';
+            if length(color_vector(:,1))==length(radii)
+                current_color_vector = color_vector(ith_sphere,:);
+            else
+                current_color_vector = color_vector ;
+            end
+            color_map = current_color_vector .* scalings;
+            surf(X2,Y2,Z2,'EdgeColor',current_color_vector*increment,'FaceAlpha',0.1,'EdgeAlpha',0.1);
+
+            colormap(color_map);
+        else
+            surf(X2,Y2,Z2,'EdgeColor',[0.4 0.4 0.4],'FaceAlpha',0.1,'EdgeAlpha',0.1);
+        end
+
+    end
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
+    end
 end
 
 if flag_do_debug

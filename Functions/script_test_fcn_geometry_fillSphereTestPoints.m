@@ -8,38 +8,53 @@ close all;
 clc;
 
 
-%% Test 1: a basic test with 4 points, producing 2 arcs that are similar
+%% Test 1: a basic test with 200 points
 fig_num = 1;
 figure(fig_num);
 clf;
 
-circle_center = [3 5];
-circle_radius = 2;
-M = 5; % 5 points per meter
+N_points = 200;
+sphere_center = [3 5 0];
+sphere_radius = 2;
 sigma = 0.02;
 
-test_points = fcn_geometry_fillSphereTestPoints(circle_center, circle_radius, M, sigma, (fig_num));
+test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num));
+assert(length(test_points(:,1))==N_points);
+
+
+%% Test 1: a basic test with 100 points
+fig_num = 1;
+
+N_points = 100;
+sphere_center = [6 2 0];
+sphere_radius = 1;
+sigma = 0.02;
+
+test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num));
+assert(length(test_points(:,1))==N_points);
 
 
 %% Speed test
 
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillSphereTestPoints(circle_center, circle_radius, M, sigma, ([]));
+    test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
+fig_num = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillSphereTestPoints(circle_center, circle_radius, M, sigma, (-1));
+    test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);

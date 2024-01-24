@@ -29,14 +29,14 @@ fig_num = 3;
 
 centers = [1 2];
 radii = 3;
-fcn_geometry_plotCircle(centers,radii,'b',fig_num)
+fcn_geometry_plotCircle(centers,radii,'b',fig_num);
 
 %% BASIC example 4
 fig_num = 4;
 
 centers    = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
-fcn_geometry_plotCircle(centers,radii,'r.',fig_num)
+fcn_geometry_plotCircle(centers,radii,'r.',fig_num);
 
 %% BASIC example 5
 fig_num = 5;
@@ -45,7 +45,7 @@ centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
 
 % Do a light blue
-fcn_geometry_plotCircle(centers,radii,[0.5 0.5 1],fig_num)
+fcn_geometry_plotCircle(centers,radii,[0.5 0.5 1],fig_num);
 
 %% BASIC example 6
 fig_num = 6;

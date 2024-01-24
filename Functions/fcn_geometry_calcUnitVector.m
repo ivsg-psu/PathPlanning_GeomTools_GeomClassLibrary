@@ -37,6 +37,8 @@ function unit_vectors = fcn_geometry_calcUnitVector(input_vectors, varargin)
 % -- added fast mode option
 % -- added environmental variable options
 % -- Fixed typo in comments on script call
+% 2024_01_23 - S. Brennan
+% -- added support for 3 dimensional vectors
 
 %% Debugging and Input checks
 
@@ -89,7 +91,7 @@ if 0==flag_max_speed
 
         % Check the projection_vector input to be length greater than or equal to 1
         fcn_DebugTools_checkInputsToFunctions(...
-            input_vectors, '2column_of_numbers');
+            input_vectors, '2or3column_of_numbers');
 
     end
 end

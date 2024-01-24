@@ -126,11 +126,11 @@ if flag_check_inputs
         centers, '2column_of_numbers');
     
     % Use number of radii to calculate the number of centers
-    Ncircles = length(centers(:,1));
+    Narcs = length(centers(:,1));
     
     % Check the radii input
     fcn_DebugTools_checkInputsToFunctions(...
-        radii, '1column_of_numbers',Ncircles);
+        radii, '1column_of_numbers',Narcs);
     
 end
 
@@ -187,7 +187,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Use number of radii to calculate the number of centers
-Ncircles = length(centers(:,1));
+Narcs = length(centers(:,1));
 
 % Set angles for plotting
 if start_angle_in_radians>end_angle_in_radians
@@ -195,19 +195,20 @@ if start_angle_in_radians>end_angle_in_radians
 end
 
 % Loop through the arcs, prepping data for plotting each
-x_arc = [];
-y_arc = [];
-for ith_arc = 1:Ncircles 
+if Narcs>1
+    arc_points{Narcs} = [];
+end
+for ith_arc = 1:Narcs 
     angles = (start_angle_in_radians(ith_arc,1):degree_step*pi/180:end_angle_in_radians(ith_arc,1))';
     % Nangles = length(angles(:,1));
 
     xdata = centers(ith_arc,1)+radii(ith_arc)*cos(angles);
     ydata = centers(ith_arc,2)+radii(ith_arc)*sin(angles);
 
-    x_arc = [x_arc; NaN; xdata]; %#ok<AGROW>
-    y_arc = [y_arc; NaN; ydata]; %#ok<AGROW>
+    x_arc = xdata; % [x_arc; NaN; xdata]; %#ok<AGROW>
+    y_arc = ydata; %[y_arc; NaN; ydata]; %#ok<AGROW>
 
-    if Ncircles==1
+    if Narcs==1
         arc_points = [x_arc y_arc];
     else
         arc_points{ith_arc} = [x_arc y_arc];
@@ -243,8 +244,8 @@ if flag_do_plot
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    for ith_arc = 1:Ncircles
-        if Ncircles==1
+    for ith_arc = 1:Narcs
+        if Narcs==1
             x_arc = arc_points(:,1);
             y_arc = arc_points(:,2);
         else

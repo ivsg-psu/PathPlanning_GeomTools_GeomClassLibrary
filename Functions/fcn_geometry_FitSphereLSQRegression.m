@@ -1,11 +1,11 @@
 %% fcn_LidarPoseEstimation_FitSphereLSQ
-function [C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_array, varargin)
+function [C_sphere,R_sphere,E_total, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, varargin)
 % Fitting a sphere to points using least squares based on squared differences 
 % of squared lengths and square radius
 %
 % FORMAT:
 %
-%       [C,R,E_total] = fcn_LidarPoseEstimation_FitSphereLSQ(XYZ_array)
+%       [C,R,E_total,errors] = fcn_LidarPoseEstimation_FitSphereLSQ(XYZ_array)
 %
 % INPUTS:
 %
@@ -16,8 +16,10 @@ function [C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_a
 %
 %       C_sphere : a 1x3 vector contains the coordinate of the center of the sphere
 %       R_sphere : the radius of the sphere
-%       E_total  : ths sum of the squared differences of squared lengths 
+%       E_total  : the sum of the squared differences of squared lengths 
 %                  and square radius
+%       errors   : the differences of point distances to center to fitted
+%       radius
 %
 % DEPENDENCIES:
 %
@@ -40,6 +42,8 @@ function [C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_a
 % -- fixed header area (debugging)
 % -- added varargin input for figures
 % -- added input checking
+% -- added plotting
+% -- added errors output
 
 flag_max_speed = 0;
 if (nargin==2 && isequal(varargin{end},-1))
@@ -133,12 +137,12 @@ Q = sum(sum((XYZ_diff.').^2,1).*XYZ_diff.',2);
 
 C_sphere = XYZ_ave + 1/2*(P\Q).';
 diff_vec = C_sphere - XYZ_array;
-dist_vec = vecnorm(diff_vec,2,2);
+dist_vec = sum(diff_vec.^2,2).^0.5;
 R_squre_sum = sum(dist_vec.^2);
 R_squre = R_squre_sum/N_points;
 R_sphere = sqrt(R_squre);
-E_total = sum((dist_vec.^2 - R_sphere^2).^2);
-
+errors = dist_vec - R_sphere;
+E_total = sum(errors.^2);
 
 %% Any debugging?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,45 +157,45 @@ E_total = sum((dist_vec.^2 - R_sphere^2).^2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the inputs?    
 if flag_do_plots
+     % set up the figure and check if it has been used before. If not used
+    % already, note that the axes will be re-scaled
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
+        hold on;
+        axis equal
+        grid minor;
+        view(3);
+
+        xlabel('X [m]');
+        ylabel('Y [m]');
+        zlabel('Z [m]');
+
+    else
+        hold on;
+        axis equal
     end
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
+    
+    % Plot the input points
+    plot3(XYZ_array(:,1), XYZ_array(:,2),  XYZ_array(:,3), 'k.','MarkerSize',20);
 
-    N_colors = length(color_ordering(:,1));
+    % Plot the fitted sphere
+    plot3(C_sphere(1,1), C_sphere(1,2), C_sphere(1,3), 'r+','MarkerSize',30);
 
-    hold on;
-    grid on;
-    axis equal;
+    % Plot the sphere
+    fcn_geometry_plotSphere(C_sphere, R_sphere, [0 0 1], fig_num);
 
-    % Plot the fits
-    ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); %#ok<NASGU>
-
-    % Plot the base point and vector
-    plot(base_point_of_domain(1,1),base_point_of_domain(1,2),'g.','MarkerSize',30);
-    quiver(base_point_of_domain(:,1),base_point_of_domain(:,2),unit_tangent_vector_of_domain(:,1),unit_tangent_vector_of_domain(:,2),0,'g','Linewidth',5);
-
-    % Plot the domain
-    fcn_geometry_plotFitDomains(regression_domain, fig_num);
-
-    % Make axis slightly larger? And since this is the first one, save the
-    % axis limits.
+    % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
         axis_range_x = temp(2)-temp(1);
         axis_range_y = temp(4)-temp(3);
         percent_larger = 0.3;
-        new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
-        axis(new_axis);
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
     end
 end
 

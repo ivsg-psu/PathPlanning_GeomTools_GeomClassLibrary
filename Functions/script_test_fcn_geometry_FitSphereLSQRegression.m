@@ -13,13 +13,155 @@ clc
 
 %% Basic example
 fig_num = 1;
+figure(fig_num); clf;
 
 % Fill in the true values
+sphere_center = [6 2 0];
+sphere_radius = 1;
+
+% Fill in the test data
+N_points = 1000;
+sigma = 0.02;
+XYZ_array = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma,-1);
+assert(length(XYZ_array(:,1))==N_points);
 
 
 % Call the fitting function
-[C_sphere,R_sphere,E_total] = fcn_geometry_FitSphereLSQRegression(XYZ_array);
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
 
+
+% Print the results
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
+
+true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];
+fitted_params = true_params;
+fcn_INTERNAL_printResults('True parameters', fitted_params)
+
+
+fitted_params = [C_sphere(1,1),C_sphere(1,2), C_sphere(1,3), R_sphere];
+fcn_INTERNAL_printResults('Fitted parameters', fitted_params)
+
+fprintf(1,'ERRORS:\n');
+error_fitted_params = abs(fitted_params - true_params);
+N_points_used = length(XYZ_array(:,1));
+predicted_errors = [sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points)^0.5];
+fcn_INTERNAL_printResults('Predicted errors', predicted_errors)
+fcn_INTERNAL_printResults('Fitting errors', error_fitted_params)
+fcn_INTERNAL_printResults('Error ratio', error_fitted_params./predicted_errors)
+
+
+fprintf('N points used: %.0d\n',N_points_used);
+fprintf('predicted sigma (m): %.4f\n',sigma);
+fprintf('Actual sigma (m)   : %.4f\n',std(errors));
+
+% figure(11);
+% normplot(errors)
+% 
+% figure(12);
+% histogram(errors,50)
+
+%% Half sphere example
+fig_num = 2;
+figure(fig_num); clf;
+
+% Fill in the true values
+sphere_center = [6 2 0];
+sphere_radius = 1;
+
+% Fill in the test data
+N_points = 200;
+sigma = 0.02;
+XYZ_array = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma,-1);
+assert(length(XYZ_array(:,1))==N_points);
+
+XYZ_array = XYZ_array(XYZ_array(:,1)<sphere_center(1),:);
+
+% Call the fitting function
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+
+
+% Print the results
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
+
+true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];
+fitted_params = true_params;
+fcn_INTERNAL_printResults('True parameters', fitted_params)
+
+
+fitted_params = [C_sphere(1,1),C_sphere(1,2), C_sphere(1,3), R_sphere];
+fcn_INTERNAL_printResults('Fitted parameters', fitted_params)
+
+fprintf(1,'ERRORS:\n');
+error_fitted_params = abs(fitted_params - true_params);
+N_points_used = length(XYZ_array(:,1));
+predicted_errors = [sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points)^0.5];
+fcn_INTERNAL_printResults('Predicted errors', predicted_errors)
+fcn_INTERNAL_printResults('Fitting errors', error_fitted_params)
+fcn_INTERNAL_printResults('Error ratio', error_fitted_params./predicted_errors)
+
+
+fprintf('N points used: %.0d\n',N_points_used);
+fprintf('predicted sigma (m): %.4f\n',sigma);
+fprintf('Actual sigma (m)   : %.4f\n',std(errors));
+
+% figure(21);
+% normplot(errors)
+% 
+% figure(22);
+% histogram(errors,50)
+
+%% Partial sphere example
+fig_num = 3;
+figure(fig_num); clf;
+
+% Fill in the true values
+sphere_center = [6 2 0];
+sphere_radius = 1;
+
+% Fill in the test data
+N_points = 400;
+sigma = 0.02;
+XYZ_array = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma,-1);
+assert(length(XYZ_array(:,1))==N_points);
+
+XYZ_array = XYZ_array(XYZ_array(:,1)<(sphere_center(1) - sphere_radius*2/3),:);
+
+% Call the fitting function
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+
+
+% Print the results
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
+
+true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];
+fitted_params = true_params;
+fcn_INTERNAL_printResults('True parameters', fitted_params)
+
+
+fitted_params = [C_sphere(1,1),C_sphere(1,2), C_sphere(1,3), R_sphere];
+fcn_INTERNAL_printResults('Fitted parameters', fitted_params)
+
+fprintf(1,'ERRORS:\n');
+error_fitted_params = abs(fitted_params - true_params);
+N_points_used = length(XYZ_array(:,1));
+predicted_errors = [sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points_used)^0.5 sigma/(N_points)^0.5];
+fcn_INTERNAL_printResults('Predicted errors', predicted_errors)
+fcn_INTERNAL_printResults('Fitting errors', error_fitted_params)
+fcn_INTERNAL_printResults('Error ratio', error_fitted_params./predicted_errors)
+
+
+fprintf('N points used: %.0d\n',N_points_used);
+fprintf('predicted sigma (m): %.4f\n',sigma);
+fprintf('Actual sigma (m)   : %.4f\n',std(errors));
+
+% figure(31);
+% normplot(errors)
+% 
+% figure(32);
+% histogram(errors,50)
 
 %% ADVANCED EXAMPLE
 % Use the GPSandLidar_Data.mat in the Data folder to start, the loaded data
@@ -113,12 +255,12 @@ for idx_fit = 1:N_data
 end
 
 %% Compute errors and visualize result
-C_sphere_actual = GPS_SparkFun_Temp_ENU(fit_range,:);
+C_sphere_actual = GPS_SparkFun_Temp_ENU(gps_select_range,:);
 % Compute the offsets between the actual sphere center and the fitting
 % center
 C_offset = vecnorm(C_sphere_actual-C_sphere_array,2,2);
 % Compute the root mean square error (RMSE) of the center
-N_fitting_center = length(fit_range);
+N_fitting_center = length(N_data);
 C_rmse = sqrt(sum((C_sphere_array - C_sphere_actual).^2,2)./N_fitting_center);
 figure(1221)
 clf
@@ -139,6 +281,19 @@ zlabel('Z [m]')
 % axis equal
 
 
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+
 %% Internal function
 function fcn_Internal_showPairsOfPoints(data_set_1,data_set_2)
     plot3(data_set_1(:,1),data_set_1(:,2),data_set_1(:,3),'linewidth',2,color='red',marker='.',markersize = 20)
@@ -150,4 +305,17 @@ function fcn_Internal_showPairsOfPoints(data_set_1,data_set_2)
                         data_set_2(idx_points,1),data_set_2(idx_points,2),data_set_2(idx_points,3)];
         plot3(points_pair(:,1),points_pair(:,2),points_pair(:,3),Color='green',LineWidth=2)
     end
+end
+
+
+function fcn_INTERNAL_printResults(param_string, params)
+header_string = sprintf('%s',param_string);
+fixed_header_string = fcn_DebugTools_debugPrintStringToNCharacters(header_string,25);
+fprintf(1,'%s ',fixed_header_string)
+for ith_value = 1:length(params)
+    param_string = sprintf('%.4f',params(ith_value));
+    fixed_param_string = fcn_DebugTools_debugPrintStringToNCharacters(param_string,15);
+    fprintf(1,'%s ',fixed_param_string)   
+end
+fprintf(1,'\n');
 end

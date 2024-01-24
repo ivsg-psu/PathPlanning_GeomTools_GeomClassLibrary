@@ -1,10 +1,10 @@
-function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, M, sigma, varargin)
+function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, varargin)
 % fcn_geometry_fillSphereTestPoints
 % given N points, with N>=3, creates a set of quasi-uniformly sampled
 % points around the perimeter of a sphere with points randomly distributed
 % radially, with variance sigma.
 %
-% test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, M, sigma, (fig_num))
+% test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num))
 %
 % INPUTS:
 %
@@ -14,9 +14,6 @@ function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center
 %      center of the sphere
 %
 %      sphere_radius: a 1x1 vector denoting the radius of the sphere
-%
-%      M: the number of test points to generate per unit
-%      distance around the circumference
 %
 %      sigma: the standard deviation in points in the radial direction
 %
@@ -53,7 +50,7 @@ function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -95,7 +92,7 @@ end
 if (0==flag_max_speed)
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(5,6);
+        narginchk(4,5);
 
         % Check the N_points input to be [1x1] vector
         fcn_DebugTools_checkInputsToFunctions(...
@@ -106,15 +103,11 @@ if (0==flag_max_speed)
 
         % Check the sphere_center input to be [1x2] vector
         fcn_DebugTools_checkInputsToFunctions(...
-            sphere_center, '2column_of_numbers',[1 1]);
+            sphere_center, '3column_of_numbers',[1 1]);
 
         % Check the sphere_radius input to be [1x1] vector
         fcn_DebugTools_checkInputsToFunctions(...
             sphere_radius, '1column_of_numbers',[1 1]);
-
-        % Check the M input to be [1x1] vector
-        fcn_DebugTools_checkInputsToFunctions(...
-            M, '1column_of_numbers',[1 1]);
 
         % Check the sigma input to be [1x1] vector
         fcn_DebugTools_checkInputsToFunctions(...
@@ -124,7 +117,7 @@ end
 
 % Does user want to show the plots?
 flag_do_plots = 0;
-if (0==flag_max_speed) && (6 == nargin) 
+if (0==flag_max_speed) && (5 == nargin) 
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -148,10 +141,13 @@ end
 p = haltonset(3,'Skip',1e3,'Leap',1e2);
 
 % Keep only the N_points
-points = p(N_points,:);
+points = p(1:N_points,:);
+
+% Rescale the points to -1 to 1 (they are 0 to 1 by default)
+rescaled_points = 2*points - ones(N_points,1);
 
 % Convert points to unit vectors
-unit_radial_vectors = fcn_geometry_calcUnitVector(points);
+unit_radial_vectors = fcn_geometry_calcUnitVector(rescaled_points);
 
 % Find radii of each point
 radii = randn(N_points,1)*sigma + ones(N_points,1)*sphere_radius;
@@ -175,27 +171,45 @@ test_points = perturbed_points;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    figure(fig_num);
-    axis equal;
-    hold on;
-    grid on;
-    view(3);
+    % set up the figure and check if it has been used before. If not used
+    % already, note that the axes will be re-scaled
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+        hold on;
+        axis equal
+        grid minor;
+        view(3);
+
+        xlabel('X [m]');
+        ylabel('Y [m]');
+        zlabel('Z [m]');
+
+    else
+        hold on;
+        axis equal
+    end
 
     % Plot the input sphere
     plot3(sphere_center(1,1), sphere_center(1,2), sphere_center(1,3), 'r+','MarkerSize',30);
 
-    fcn_geometry_plotCircle(sphere_center,sphere_radius,'b-', fig_num)
+    % Plot the sphere
+    fcn_geometry_plotSphere(sphere_center, sphere_radius, [0 0 1], fig_num);
 
     % Plot the results
-    plot(test_points(:,1), test_points(:,2), 'k.','MarkerSize',20);
+    plot3(test_points(:,1), test_points(:,2),  test_points(:,3), 'k.','MarkerSize',20);
 
-    % Make axis slightly larger
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
 
+    end
     
 end % Ends check if plotting
 
