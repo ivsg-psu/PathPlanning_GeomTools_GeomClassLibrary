@@ -14,30 +14,48 @@ input_vectors = [3 3];
 
 unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num); %#ok<NASGU>
 
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
 
 %% Test 2: many vectors
 fig_num = 2;
 input_vectors = randn(10,2); 
 unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
 
-%% Test 3: fast mode
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+%% Test 2: many 3D vectors
+fig_num = 3;
+input_vectors = randn(10,3); 
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+%% Testing fast mode
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, []);
+    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-REPS = 1000; minTimeFast = Inf; nsum = 10;
+fig_num = -1;
+REPS = 1000; minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, -1);
+    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -51,7 +69,6 @@ fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
-
 
 %% Fail conditions
 if 1==0

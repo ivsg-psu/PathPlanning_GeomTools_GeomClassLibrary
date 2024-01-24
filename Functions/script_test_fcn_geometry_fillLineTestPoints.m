@@ -19,6 +19,8 @@ sigma = 0.02;
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
+assert(length(test_points(:,1))>length(seed_points(:,1)))
+
 %% Test 2: a basic test with just 3 points
 fig_num = 2;
 figure(fig_num);
@@ -30,6 +32,7 @@ sigma = 0.2;
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
+assert(length(test_points(:,1))>length(seed_points(:,1)))
 
 %% Test 3: a basic test with just 4 points
 fig_num = 3;
@@ -43,25 +46,43 @@ sigma = 0.2;
 
 test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
+assert(length(test_points(:,1))>length(seed_points(:,1)))
+
+
+%% Test 4: a 3D test with 4 points
+fig_num = 4;
+figure(fig_num);
+clf;
+
+
+seed_points = [2 3 0; 4 5 0; 7 0 2; 9 5 3];
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+assert(length(test_points(:,1))>length(seed_points(:,1)))
 %% Test of fast mode
 
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, []);
+    test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-minTimeFast = Inf; nsum = 10;
+fig_num = -1;
+minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
+    test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
