@@ -28,7 +28,9 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 %
 % DEPENDENCIES:
 %
+%      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_calcUnitVector
+%      fcn_geometry_calcOrthogonalVector
 %
 % EXAMPLES:
 %      
@@ -47,6 +49,8 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 % 2024_01_05 - S. Brennan
 % -- switched to random-normal distributions
 % -- fixed bug where only y values were being corrupted
+% 2024_01_23 - S. Brennan
+% -- added support for 3 dimensional points
 
 %% Debugging and Input checks
 
@@ -98,7 +102,7 @@ if 0==flag_max_speed
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
-            input_points, '2column_of_numbers',[2 3]);
+            input_points, '2or3column_of_numbers',[2 3]);
 
     end
 end
@@ -127,7 +131,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (4<= nargin) && (0==flag_max_speed)
+if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -159,17 +163,17 @@ if ~isempty(indicies_to_become_outliers)
         indicies_to_become_outliers(1)=2;
     end
 
-    % Calculate vectors in unit orthogonal direction
-    vectors_at_indicies = input_points(indicies_to_become_outliers,:) - input_points(indicies_to_become_outliers-1,:);
-    unit_vectors_at_indicies = fcn_geometry_calcUnitVector(vectors_at_indicies,-1);
-    orthogonal_unit_vectors_at_indicies = unit_vectors_at_indicies*[0 1; -1 0];
-
     % Add random magnitudes onto orthogonal direction
     % y_range = max(input_points(:,2)) - min(input_points(:,2));
     % positive_or_negative = (rand(length(indicies_to_become_outliers),1)>0.5)*2.0 - 1;
     % magnitude_of_change = rand(length(indicies_to_become_outliers),1).*y_range.*magnitude_of_corruption./2 .* positive_or_negative;
     magnitude_of_change = randn(length(indicies_to_become_outliers),1).*magnitude_of_corruption;
 
+    % Find unit vectors orthogonal to point-to-point vectors
+    vectors_at_indicies = input_points(indicies_to_become_outliers,:) - input_points(indicies_to_become_outliers-1,:);
+    orthogonal_unit_vectors_at_indicies = fcn_geometry_calcOrthogonalVector(vectors_at_indicies, -1); 
+    
+    % Corrupt using unit vectors
     corrupted_points(indicies_to_become_outliers,:) = corrupted_points(indicies_to_become_outliers,:) + magnitude_of_change.*orthogonal_unit_vectors_at_indicies;
 
 end
@@ -199,11 +203,22 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    % Plot the input points
-    plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',20);
-    
-    % Plot the corrupted points
-    plot(corrupted_points(:,1),corrupted_points(:,2),'m.','MarkerSize',15);
+    if length(input_points(1,:))==2
+
+        % Plot the input points
+        plot(input_points(:,1),input_points(:,2),'k.','MarkerSize',20);
+
+        % Plot the corrupted points
+        plot(corrupted_points(:,1),corrupted_points(:,2),'m.','MarkerSize',15);
+    else
+        zlabel('Z [meters]')
+
+        % Plot the input points
+        plot3(input_points(:,1),input_points(:,2), input_points(:,3),'k.','MarkerSize',20);
+
+        % Plot the corrupted points
+        plot3(corrupted_points(:,1),corrupted_points(:,2),corrupted_points(:,3),'m.','MarkerSize',15);
+    end
 
     % Make axis slightly larger?
     if flag_rescale_axis

@@ -163,6 +163,106 @@ pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
 assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));                                                       
 
+%% fcn_geometry_calcUnitVector - calculates unit vectors in N-D
+% Test 1: a basic test
+fig_num = 1;
+input_vectors = [3 3]; 
+
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Test 2: many vectors
+fig_num = 2;
+input_vectors = randn(10,2); 
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Test 2: many 3D vectors
+fig_num = 3;
+input_vectors = randn(10,3); 
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+%% fcn_geometry_calcOrthogonalVector - calculates orthogonal vectors in N-D coordinates
+% Test 1: one vector in 2D
+fig_num = 1;
+figure(fig_num);
+clf;
+
+input_vectors = [3 3]; 
+
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors.*unit_vectors,2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+% Test 2: many vectors in 2D
+fig_num = 2;
+figure(fig_num);
+clf;
+
+input_vectors = randn(5,2); 
+
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors.*unit_vectors,2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+% Test 3: a basic test in 3D
+fig_num = 3;
+figure(fig_num);
+clf;
+
+input_vectors = [1/2^0.5 1/2^0.5 0]; 
+
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors*unit_vectors',2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+% Test 4: a basic test in 3D, many points
+fig_num = 4;
+figure(fig_num);
+clf;
+
+step = 0.05;
+input_vectors = (step:step:1)'.*[3 2 4]; 
+
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors*unit_vectors',2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % See http://patorjk.com/software/taag/#p=display&f=Big&t=Filling%20Test%20Data
@@ -458,6 +558,8 @@ path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
     fcn_geometry_selfCrossProduct(...
     path, fig_num);
 
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
 %% Test case for fcn_geometry_polarLineFrom2PolarCoords
 
 fig_num = 3333;
@@ -518,9 +620,23 @@ sigma = 0.02;
 
 line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
+fig_num = 4;
+figure(fig_num);
+clf;
+
+% It also works in 3D
+fig_num = 2;
+seed_points = [2 3 0; 4 5 0; 7 0 2; 9 5 3];
+M = 10;
+sigma = 0.2;
+
+line_3d_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+assert(length(test_points(:,1))>length(seed_points(:,1)))
+
 
 % Corrupt the results with outliers
-fig_num = 2;
+fig_num = 3;
 probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
@@ -599,21 +715,20 @@ fig_num = 6666;
 figure(fig_num);
 clf;
 
-
-sphere_center = [3 5];
+N_points = 200;
+sphere_center = [3 5 0];
 sphere_radius = 2;
-M = 10; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillSphereTestPoints(sphere_center, sphere_radius, M, sigma); % (fig_num));
-
+sphere_test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num));
+assert(length(sphere_test_points(:,1))==N_points);
 
 % Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+URHERE
+corrupted_sphere_test_points = fcn_geometry_corruptPointsWithOutliers(sphere_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (fig_num)); %#ok<*NASGU>
 axis equal;
 

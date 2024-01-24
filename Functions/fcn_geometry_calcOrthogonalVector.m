@@ -1,51 +1,43 @@
-function [test_points, true_base_points, true_projection_vectors, true_distances] = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, varargin)
-% fcn_geometry_fillLineTestPoints
-% given N points, with N>=2, creates a set of M points per unit distance
-% between these points randomly distributed with variance sigma.
+function unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, varargin)
+% fcn_geometry_calcOrthogonalVector
+% Finds the unit vectors orthogonal to an input list of input vectors. For
+% 2D inputs, the orthogonal vectors are always positive direction. For N-D
+% vectors, the orthogonal vectors are always orthogonal, but have random
+% rotations around the axis of the input vectors.
 %
-% [test_points] = fcn_geometry_fillLineTestPoints(seed_points, M, sigma)
+% Format: 
+% unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, (fig_num))
 %
 % INPUTS:
+%      input_vectors: a list of Nxm vector where N is the number of vectors
+%      that should be converted into unit-length orthogonal vector, and m
+%      is the dimension of the vector (typically 2 or 3).
 %
-%      seed_points: a Nx2 or Nx3 vector where N is the number of points,
-%      but at least 2.
-%
-%      M: the number of test points to generate per unit
-%      distance.
-%
-%      sigma: athe standard deviation in points
+%      (OPTIONAL INPUTS)
+% 
+%      fig_num: a figure number to plot the results.
 %
 % OUTPUTS:
 %
-%      test_points: a list of test points used to test regression fitting
-%
-%      true_base_points, true_projection_vectors, true_distances: the true
-%      values of the fitting
+%      unit_orthogonal_vectors: the unit-length vectors orthogonal to each input vector.
 %
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
 %      fcn_geometry_calcUnitVector
-%      fcn_geometry_calcOrthogonalVector
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fillLineTestPoints
+% See the script: script_test_fcn_geometry_calcOrthogonalVector
 % for a full test suite.
 %
-% NOTE: This function does NOT work for fitting all lines.
-%
-% This function was written on 2023_12_05 by S. Brennan
+% This function was written on 2024_01_24 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2023_12_05 
+% 2024_01_24 - S. Brennan
 % -- wrote the code
-% 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
-% 2024_01_23 - S. Brennan
-% -- added support for 3 dimensional points
+
 
 %% Debugging and Input checks
 
@@ -53,7 +45,7 @@ function [test_points, true_base_points, true_projection_vectors, true_distances
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==2 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -72,10 +64,11 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
+
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,33 +83,29 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if (0==flag_max_speed)
+if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(1,2);
 
-        % Check the points input to be length greater than or equal to 2
+        % Check the projection_vector input to be length greater than or equal to 1
         fcn_DebugTools_checkInputsToFunctions(...
-            seed_points, '2or3column_of_numbers',[2 3]);
+            input_vectors, '2or3column_of_numbers');
 
     end
 end
 
-% Does user want to show the plots?
+% Does user want to specify fig_num?
+fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed)
-    if (4 == nargin)
-        temp = varargin{end};
-        if ~isempty(temp)
-            fig_num = temp;
-            figure(fig_num);
-            flag_do_plots = 1;
-        end
-    elseif flag_do_debug
-        fig = figure;
-        fig_num = fig.Number;
+if (0==flag_max_speed) && (2<= nargin) 
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num = temp;
+        flag_do_plots = 1;
     end
 end
+
 
 %% Solve for the circle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,29 +117,36 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-N_segments = length(seed_points(:,1)) -1;
 
-distances = sum((seed_points(2:end,:) - seed_points(1:end-1,:)).^2,2).^0.5;
-unit_vectors = fcn_geometry_calcUnitVector(seed_points(2:end,:)-seed_points(1:end-1,:),-1);
-unit_orthogonals = fcn_geometry_calcOrthogonalVector(unit_vectors, -1);
+% How many points do we have?
+N_vectors = length(input_vectors(:,1));
 
-test_points = [];
-for ith_point = 1:N_segments
-    projection_distances = (0:(1/M):distances(ith_point))';
-    N_points = length(projection_distances);
-    orthogonal_distances = randn(N_points,1)*sigma;
+% Calculate unit vectors
+unit_input_vectors = fcn_geometry_calcUnitVector(input_vectors,-1);
 
-    if length(seed_points(1,:))==2        
-        test_points = [test_points; seed_points(ith_point,:) + projection_distances*unit_vectors(ith_point,:) + orthogonal_distances.*unit_orthogonals(ith_point,:)]; %#ok<AGROW>
-    else
-        segment_orthogonals = fcn_geometry_calcOrthogonalVector(ones(N_points,1)*unit_vectors(ith_point,:),-1);
-        test_points = [test_points; seed_points(ith_point,:) + projection_distances*unit_vectors(ith_point,:) + orthogonal_distances.*segment_orthogonals]; %#ok<AGROW>
-    end
+% Find unit vectors orthogonal to point-to-point vectors
+if length(input_vectors(1,:))==2 % 2D vectors
+    unit_orthogonal_vectors = unit_input_vectors*[0 1; -1 0];
+
+elseif length(input_vectors(1,:))==3 % 3D vectors
+
+    % Generate random direction vectors
+    random_directions = 2*rand(N_vectors,3) - ones(N_vectors,3);
+    
+    % Calculate the portion of the random direction aligned with the unit
+    % vector. This is just the dot product
+    distance_along_unit_vector = sum(random_directions.*unit_input_vectors,2);
+
+    % Subtract off the aligned part. What is left is only the portion of
+    % random directions orthogonal to the unit vectors
+    random_orthogonal_vectors = random_directions - distance_along_unit_vector.*unit_input_vectors;
+
+    % Convert to unit vectors
+    unit_orthogonal_vectors = fcn_geometry_calcUnitVector(random_orthogonal_vectors,-1);
+
+else
+    error('unknown dimension encountered when calculating unit vectors');
 end
-
-true_base_points = seed_points(1:end-1,:);
-true_projection_vectors = unit_vectors;
-true_distances = distances;
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,8 +160,6 @@ true_distances = distances;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-
-
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
@@ -179,24 +173,21 @@ if flag_do_plots
     ylabel('Y [m]')
 
     % Plot the input vectors alongside the unit vectors
-    if length(seed_points(1,:))==2 % 2D vectors
-        % Plot the input points
-        plot(seed_points(:,1),seed_points(:,2),'r.-','MarkerSize',20);
-
-        % Plot the results
-        plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
-
+    if length(input_vectors(1,:))==2 % 2D vectors
+        for ith_vector = 1:N_vectors
+            h_plot = quiver(0,0,input_vectors(ith_vector,1),input_vectors(ith_vector,2),0,'-','LineWidth',3);
+            plot_color = get(h_plot,'Color');
+            quiver(0,0,unit_orthogonal_vectors(ith_vector,1),unit_orthogonal_vectors(ith_vector,2),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
+        end
 
     else % 3D vectors
         zlabel('Z [m]')
-
         view(3);
-        % Plot the input points
-        plot3(seed_points(:,1),seed_points(:,2),seed_points(:,3),'r.-','MarkerSize',20);
-
-        % Plot the results
-        plot3(test_points(:,1),test_points(:,2),test_points(:,3),'b.','MarkerSize',10);
-
+        for ith_vector = 1:N_vectors
+            h_plot = quiver3(0,0,0, input_vectors(ith_vector,1),input_vectors(ith_vector,2),input_vectors(ith_vector,3),0,'-','LineWidth',3);
+            plot_color = get(h_plot,'Color');
+            quiver3(0,0,0, unit_orthogonal_vectors(ith_vector,1),unit_orthogonal_vectors(ith_vector,2),unit_orthogonal_vectors(ith_vector,3),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
+        end
     end
 
     % Make axis slightly larger?
@@ -229,9 +220,6 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-
-
-
 
 
 
