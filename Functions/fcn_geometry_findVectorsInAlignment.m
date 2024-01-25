@@ -106,12 +106,15 @@ if 0==flag_max_speed
     if flag_check_inputs
         % Are there the right number of inputs?
         narginchk(3,4);
+        
+        % Test if reference vector and input Vectors are numeric inputs
+        if ~isnumeric(refVector) || ~isnumeric(inputVectors)
+            error('The refVector and inputVectors must be numeric inputs')
+        end
 
-        % % Check the points reference vector to be a 2 or 3 column vector
-        % fcn_DebugTools_checkInputsToFunctions(refVector, '2or3column_of_numbers',[1 1]);
-        % 
-        % % Check the points input vectors to be a 2 or 3 column vector
-        % fcn_DebugTools_checkInputsToFunctions(inputVectors, '2or3column_of_numbers');
+        if length(refVector(1,:)) ~= length(inputVectors(1,:))
+            error('The columns in inputVectors must be same as the columns in refVectors')
+        end
 
         % Check the tolerance input is a positive single number
         fcn_DebugTools_checkInputsToFunctions(tolerance, 'positive_1column_of_numbers',1);
