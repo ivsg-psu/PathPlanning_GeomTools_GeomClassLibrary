@@ -190,29 +190,33 @@ if flag_do_plots
     origin = [0 0 0];
 
     %plot the unit reference vector in GREEN
-    quiver3(origin(1,1), origin(1,2), origin(1,3), unitRefVector(1,1), unitRefVector(1,2), unitRefVector(1,3), 'Color', 'g', 'LineWidth', 4);
+    quiver3(origin(1,1), origin(1,2), origin(1,3), unitRefVector(1,1), unitRefVector(1,2), unitRefVector(1,3), 'Color', 'g', 'LineWidth', 4, 'DisplayName','Reference Vector');
 
     % plot the unit vectors of the input vectors in RED
     N_inputVectors = length(unitVectors_inputVectors(:,1));
 
     for ith_vector = 1:N_inputVectors
 
-        quiver3(origin(1,1), origin(1,2), origin(1,3), unitVectors_inputVectors(ith_vector,1), unitVectors_inputVectors(ith_vector,2), unitVectors_inputVectors(ith_vector,3), 'Color', 'r', 'LineWidth', 1);
+        quiver3(origin(1,1), origin(1,2), origin(1,3), unitVectors_inputVectors(ith_vector,1), unitVectors_inputVectors(ith_vector,2), unitVectors_inputVectors(ith_vector,3), 'Color', 'r', 'LineWidth', 1, 'DisplayName','Unit Input Vectors');
 
     end
+
+    vectorsCloseToRef_magnitude = sum(vectorsCloseToRef.^2,2).^0.5;
+    unitVectors_vectorsCloseToRef = vectorsCloseToRef./vectorsCloseToRef_magnitude;
 
     % plot the vectors that are in alignment with reference vector in BLUE
     N_vectorsCloseTOref = length(vectorsCloseToRef(:,1));
 
     for ith_vector = 1:N_vectorsCloseTOref
 
-        quiver3(origin(1,1), origin(1,2), origin(1,3), vectorsCloseToRef(ith_vector,1), vectorsCloseToRef(ith_vector,2), vectorsCloseToRef(ith_vector,3), 'Color', 'b', 'LineWidth', 2);
+        quiver3(origin(1,1), origin(1,2), origin(1,3), unitVectors_vectorsCloseToRef(ith_vector,1), unitVectors_vectorsCloseToRef(ith_vector,2), unitVectors_vectorsCloseToRef(ith_vector,3), 'Color', 'b', 'LineWidth', 2, 'DisplayName','Unit Vectors in Alignment with Ref Vec');
 
     end
 
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
+    % legend('Reference Vector', 'Unit Input Vectors', 'Unit Vectors Close to Ref');
     
     view(3) % View plot in 3D
 
