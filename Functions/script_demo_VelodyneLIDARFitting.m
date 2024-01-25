@@ -113,6 +113,7 @@ for time_iteration = 1:length(ptCloud_pts_layers_separated_cell)
     flag_force_circle_fit = 1;
     nominalRadius = 0.151; % meters
     expected_radii_range = [0.09 0.2];
+    flag_find_only_best_agreement = [];
     flag_use_permutations = [];
 
     % Try Hough fitting, then regression fitting, to pull out all the centers
@@ -136,7 +137,7 @@ for time_iteration = 1:length(ptCloud_pts_layers_separated_cell)
             if length(inputPoints(:,1))>points_required_for_agreement
                 Hough_domains  = ...
                     fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-                    (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), -1);
+                    (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), -1);
 
                 if flag_do_plots
                     fcn_geometry_plotFitDomains(Hough_domains, fig_num);

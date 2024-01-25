@@ -7,7 +7,7 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % 
 % domains  = ...
 % fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
-%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num))
+%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num))
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -47,6 +47,11 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 %
 %      expected_radii_range: a vector in form of [r_min r_max] indicating
 %      expected radius. Any radii outside this range will not be assessed. 
+% 
+%      flag_find_only_best_agreement: set to 1 if want to only keep best
+%      agreement. Otherwise, searches will be continued until none are left
+%      that have more than points_required_for_agreement. Default is 0, to
+%      find all agreements
 % 
 %      flag_use_permutations: specify permutation type. Can be set to:
 %
@@ -112,6 +117,9 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % 2024_01_15 - S. Brennan
 % -- changed outputs to domain types
 % -- added fcn_geometry_plotFitDomains for plotting
+% 2024_01_25 - S. Brennan
+% -- added flag_find_only_best_agreement input
+% -- added break out of searching if all points are fit
 
 %% Debugging and Input checks
 
@@ -119,7 +127,7 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==8 && isequal(varargin{end},-1))
+if (nargin==9 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -160,7 +168,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,8);
+        narginchk(2,9);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -213,19 +221,29 @@ if (6<=nargin)
     end
 end
 
-% Does user want to specify flag_use_permutations?
-flag_use_permutations = 1;
+% Does user want to specify flag_find_only_best_agreement?
+flag_find_only_best_agreement = 0;
 if (7<=nargin)
     temp = varargin{5};
+    if ~isempty(temp)
+        flag_find_only_best_agreement = temp;
+    end
+end
+
+% Does user want to specify flag_use_permutations?
+flag_use_permutations = 1;
+if (8<=nargin)
+    temp = varargin{6};
     if ~isempty(temp)
         flag_use_permutations = temp;
     end
 end
 
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (8<=nargin)
+if (0==flag_max_speed) && (9<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -357,6 +375,11 @@ for ith_combo = 1:N_permutations
     agreement_count = length(agreement_indicies);
     agreements(ith_combo) = agreement_count;
 
+    % Break out if all points agree. No need to do more calculations!
+    if agreement_count==N_points
+        break;
+    end
+
     % Redo debugging plots to see how fit worked?
     if flag_do_debug
         figure(debug_fig_num);
@@ -396,21 +419,32 @@ best_fit_end_angle_in_radians     = {};
 
 
 % Find best agreements
-flag_find_only_best_agreement = 0;
-
 if flag_find_only_best_agreement ==1
-    %% CODE THIS LATER
-    % [~, best_agreement_index] = max(agreements);
-    % base_point_index = combos_paired(best_agreement_index,1);
-    % 
-    % % Find the indicies corresponding to the best transverse agreement and station agreement.
-    % % For debugging:  figure(2345); clf;
-    % best_fit_agreement_indicies{1} = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vectors(best_agreement_index,:), base_point_index, transverse_tolerance, station_tolerance, -1);
-    % 
-    % % Save results to outputs
-    % % best_fit_parameters_phi_rho_form{1} = fitted_parameters(best_agreement_index,:);
-    % best_fit_source_indicies{1} = combos_paired(best_agreement_index,:);
-    % % best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) station_distances];
+    N_fits = 0;
+    remaining_agreements = agreements;
+
+    [~, best_agreement_index] = max(remaining_agreements);
+
+    % Which point index is the base point?
+    base_point_index = combos_paired(best_agreement_index,1);
+
+    % Find the indicies in transverse agreement and station agreement
+    % with this best fit
+    circleCenter  = fitted_parameters(best_agreement_index,1:2);
+    circleRadius  = fitted_parameters(best_agreement_index,3);
+
+    [current_agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
+        fcn_geometry_findAgreementsOfPointsToArc(points, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(points_required_for_agreement), (-1));
+
+    % Accumulate results from best fits to prep for domain formation
+    N_fits = N_fits+1;
+    best_fit_circleCenters{N_fits}          = circleCenter;
+    best_fit_circleRadii{N_fits}            = circleRadius;
+    best_fit_agreement_indicies{N_fits}     = current_agreement_indicies;
+    best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:);
+    best_fit_flag_is_a_circle{N_fits}       = flag_is_a_circle;
+    best_fit_start_angle_in_radians{N_fits} = start_angle_in_radians;
+    best_fit_end_angle_in_radians{N_fits}   = end_angle_in_radians;
 
 else % Find many agreements, up to the number of specified votes
     N_fits = 0;

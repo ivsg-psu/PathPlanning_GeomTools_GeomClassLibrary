@@ -44,6 +44,8 @@ function [C_sphere,R_sphere,E_total, errors] = fcn_geometry_FitSphereLSQRegressi
 % -- added input checking
 % -- added plotting
 % -- added errors output
+% 2024_01_25 by S. Brennan
+% -- added color-coded errors
 
 flag_max_speed = 0;
 if (nargin==2 && isequal(varargin{end},-1))
@@ -179,7 +181,32 @@ if flag_do_plots
 
     
     % Plot the input points
-    plot3(XYZ_array(:,1), XYZ_array(:,2),  XYZ_array(:,3), 'k.','MarkerSize',20);
+    flag_show_error_in_color = 1;
+    if flag_show_error_in_color==0
+        plot3(XYZ_array(:,1), XYZ_array(:,2),  XYZ_array(:,3), 'k.','MarkerSize',20);
+    else
+        % This is from temp = colormap('turbo')
+        error_colorMap = [   
+            0.1900    0.0718    0.2322
+            0.2737    0.3835    0.8449
+            0.2093    0.6654    0.9760
+            0.1034    0.8960    0.7150
+            0.4483    0.9959    0.3694
+            0.7824    0.9376    0.2033
+            0.9800    0.7300    0.2216
+            0.9643    0.4186    0.0964
+            0.7941    0.1660    0.0143
+            0.4796    0.0158    0.0106];
+        max_error = max(abs(errors));
+        error_indicies = max(1,round(abs(errors)./max_error * length(error_colorMap(:,1))));
+        
+        for ith_color = 1:length(error_colorMap(:,1))
+            current_color = error_colorMap(ith_color,:);
+            points_to_plot = XYZ_array(error_indicies==ith_color,:);
+            plot3(points_to_plot(:,1), points_to_plot(:,2),  points_to_plot(:,3), '.','MarkerSize',20,'Color',current_color);
+        end
+
+    end
 
     % Plot the fitted sphere
     plot3(C_sphere(1,1), C_sphere(1,2), C_sphere(1,3), 'r+','MarkerSize',30);
