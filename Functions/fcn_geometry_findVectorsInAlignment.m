@@ -113,7 +113,7 @@ if 0==flag_max_speed
         end
 
         if length(refVector(1,:)) ~= length(inputVectors(1,:))
-            error('The columns in inputVectors must be same as the columns in refVectors')
+            error('The number of columns in inputVectors must be the same as the number of columns in refVectors.')
         end
 
         % Check the tolerance input is a positive single number
