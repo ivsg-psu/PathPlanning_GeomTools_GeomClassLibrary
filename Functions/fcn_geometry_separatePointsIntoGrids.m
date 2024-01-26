@@ -31,6 +31,8 @@ function [gridIndices,gridDomains,gridCenters] = fcn_geometry_separatePointsInto
 %     gridCenters : matrix in 2D or 3D that gives the respective
 %     gridDomain centers
 %
+%     lefover_points: points outside grid boundaries
+%
 %
 % DEPENDENCIES:
 %
@@ -61,7 +63,7 @@ if flag_do_debug
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
     debug_fig_num = 34838;
 else
-    debug_fig_num = [];  % no plotting yet
+    debug_fig_num = [];  %#ok<NASGU> % no plotting yet
 end
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,6 +134,7 @@ numGridsY = ceil((yMax - yMin) / gridSize);
 numGridsZ = ceil((zMax - zMin) / gridSize);
 
 % total number of domains
+
 if size(gridBoundaries,1) == 1
     totalDomains = numGridsX;
 elseif size(gridBoundaries,1) == 2
@@ -141,12 +144,19 @@ elseif size(gridBoundaries,1) == 3
 end
 
 
+
 % % once we have the gridBoundaries in x, y and z we can go ahead and
 % % calculate the domains in the AABB format
 %
 % % iterating through the grids
 
 count_var = 0;
+
+% predefining variables
+gridDomains{totalDomains} = [];
+gridIndices{totalDomains} = [];
+gridCenters{totalDomains} = [];
+
 if size(gridBoundaries,1) == 1
     for i_1D = 1:numGridsX
         % for 1D (only x is evaluated)
