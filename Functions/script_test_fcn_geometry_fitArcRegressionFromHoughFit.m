@@ -64,22 +64,23 @@ station_tolerance = 1;
 points_required_for_agreement = 20;
 flag_force_circle_fit = 0;
 expected_radii_range = [1 10];
+flag_find_only_best_agreement = [];
 flag_use_permutations = [];
 
-%% Find all the domains
+% Find all the domains
 fig_num = 234;
 figure(fig_num); clf;
 inputPoints = onearc_test_points;
 domains_onearc_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
 fig_num = 235;
 figure(fig_num); clf;
 inputPoints = corrupted_twoarc_test_points;
 domains_corrupted_twoarc_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
 % BASIC call with circle data, fitting it with a circle by not specifying station tolerance
 fig_num = 1111;
@@ -91,12 +92,13 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
+flag_find_only_best_agreement = [];
 flag_use_permutations = [];
 
 
 domains_corrupted_circle_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
 
 %% Basic call with clean data

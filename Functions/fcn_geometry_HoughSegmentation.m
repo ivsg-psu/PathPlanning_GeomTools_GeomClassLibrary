@@ -385,12 +385,13 @@ switch fit_type_to_search
 
         flag_force_circle_fit = 1;
         expected_radii_range = [2 8];
+        flag_find_only_best_agreement = [];
         flag_use_permutations = [];
 
         % Check circle fitting - minimum model order is 3 points
         Hough_domains  = ...
             fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
-            (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+            (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
     case 'arc'
         % If the station_tolerance is empty, then arc fitting should not do
@@ -400,12 +401,13 @@ switch fit_type_to_search
 
             flag_force_circle_fit = 0;
             expected_radii_range = [2 8];
+            flag_find_only_best_agreement = [];
             flag_use_permutations = [];
 
             % Check circle fitting - minimum model order is 3 points
             Hough_domains  = ...
                 fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
-                (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));        
+                (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));        
         else
             Hough_domains  = fcn_geometry_fillEmptyDomainStructure;
         end

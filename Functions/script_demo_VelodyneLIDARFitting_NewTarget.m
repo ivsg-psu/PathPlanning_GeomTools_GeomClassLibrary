@@ -1,28 +1,17 @@
-% script_demo_VelodyneLIDARFitting
+% script_demo_VelodyneLIDARFitting_NewTarget.m
 
 clear all; %#ok<CLALL>
 close all;
 
 
 %% Load the data
-load('PointCloud_Separated_Data_newTarget.mat')
+load('PointCloud_Separated_Data_newTarget.mat','ptCloud_pts_layers_separated_cell'); 
 
 % Load the RingNames and N_rings
 currentScan = ptCloud_pts_layers_separated_cell{1};
 RingNames = fieldnames(currentScan);
 N_rings = length(RingNames);
 N_scans = length(ptCloud_pts_layers_separated_cell);
-
-% For plotting
-
-% Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-
-N_colors = length(color_ordering(:,1));
 
 %% Look at data
 flag_do_plots = 1;
@@ -65,7 +54,7 @@ for time_iteration = 1:N_scans
         end
         view(3)
 
-        good_limits = axis;
+        good_axis_limits = axis;
 
         % Now plot the entire scan
         for ith_ring = 1:N_rings
@@ -79,7 +68,7 @@ for time_iteration = 1:N_scans
             end
         end
         view(3)
-        axis(good_limits);
+        axis(good_axis_limits);
 
     end
 
@@ -110,8 +99,9 @@ for time_iteration = 1:N_scans
     station_tolerance = 3;
     points_required_for_agreement = 10;
     flag_force_circle_fit = 1;
-    nominalRadius = 0.251; % meters
-    expected_radii_range = [0.15 0.3];
+    nominalRadius = 0.31; % meters
+    expected_radii_range = [0.2 0.4];
+    flag_find_only_best_agreement = [];
     flag_use_permutations = [];
 
     % Try Hough fitting, then regression fitting, to pull out all the centers
@@ -120,8 +110,8 @@ for time_iteration = 1:N_scans
     rings_to_keep = [];
 
     N_domains = N_rings;
-    Hough_domains_to_keep{N_domains} = struct;
-    Regression_domains_to_keep{N_domains} = struct;
+    Hough_domains_to_keep{N_domains} = struct; %#ok<SAGROW>
+    Regression_domains_to_keep{N_domains} = struct; %#ok<SAGROW>
 
     for ith_ring = 1:N_rings  % 2:6
         ringName = RingNames{ith_ring};
@@ -135,7 +125,7 @@ for time_iteration = 1:N_scans
             if length(inputPoints(:,1))>points_required_for_agreement
                 Hough_domains  = ...
                     fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-                    (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), -1);
+                    (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), []);
 
                 if flag_do_plots
                     fcn_geometry_plotFitDomains(Hough_domains, fig_num);
@@ -227,8 +217,8 @@ for time_iteration = 1:N_scans
 
     % Grab all the good domains
     N_good_domains = length(rings_in_agreement);
-    good_Hough_domains_to_keep{N_good_domains} = struct;
-    good_Regression_domains_to_keep{N_good_domains} = struct;
+    good_Hough_domains_to_keep{N_good_domains} = struct; %#ok<SAGROW>
+    good_Regression_domains_to_keep{N_good_domains} = struct; %#ok<SAGROW>
     for ith_ring = 1:length(rings_in_agreement)
         ring_to_keep = rings_in_agreement(ith_ring);
         good_Hough_domains_to_keep{ith_ring} = Hough_domains_to_keep{ring_to_keep};
@@ -245,21 +235,53 @@ for time_iteration = 1:N_scans
     results_to_plot(time_iteration).good_Regression_domains_to_keep = good_Regression_domains_to_keep;  %#ok<SAGROW>
 
 end % Ends loop through time
+%%
 save("Data\LIDAR_debugging_newTarget.mat","results_to_plot");
 
 %% Load and plot the data
 load("Data\LIDAR_debugging_newTarget.mat","results_to_plot");
-load('PointCloud_Separated_Data_newTarget.mat'); % Contains ptCloud_pts_raw_rings_cell_save
+load('PointCloud_Separated_Data_newTarget.mat','ptCloud_pts_layers_separated_cell'); 
 
 % Load the RingNames and N_rings
 % currentScan = ptCloud_pts_layers_separated_cell{1};
+currentScanRaw = ptCloud_pts_layers_separated_cell{1};
+RingNames = fieldnames(currentScanRaw);
+
+% For plotting
+% Get axis limits
+good_axis_limits = [0.5    2.5    1.0    3   -1    1];
+
+
+filt_circle_center = results_to_plot(1).mean_circle_center;
+
+for time_iteration = 1:length(ptCloud_pts_layers_separated_cell)
+    currentScanRaw = ptCloud_pts_layers_separated_cell{time_iteration};
+
+    mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
+    weight = 0.7;
+    filt_circle_center = weight*filt_circle_center + (1-weight)*mean_circle_center;
+    rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;
+    good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;
+
+    fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_axis_limits);
+    pause(0.01);
+
+end % Ends loop through time
+
+
+%% START HERE: Load, plot, and fit the sphere data
+
+load('Data\LIDAR_debugging_newTarget.mat' , 'results_to_plot');
+load('Data\PointCloud_Separated_Data_newTarget.mat','ptCloud_pts_layers_separated_cell'); 
+
+% Load the RingNames and N_rings
 currentScanRaw = ptCloud_pts_layers_separated_cell{1};
 RingNames = fieldnames(currentScanRaw);
 N_rings = length(RingNames);
 
 % For plotting
 % Get axis limits
-good_limits = [0.5    2.5    1.0    3   -1    1];
+good_axis_limits = [0.5    2.5    1.0    3   -1    1];
 
 
 % Get the color ordering
@@ -270,25 +292,80 @@ catch
 end
 N_colors = length(color_ordering(:,1));
 
+N_scans = length(ptCloud_pts_layers_separated_cell);
+
+iterationSpheres = zeros(N_scans,1);
+centerSpheres = zeros(N_scans,3);
+radiiSpheres  = zeros(N_scans,1);
+stdSpheres = zeros(N_scans,1);
+all_points = [];
+all_errors = [];
 filt_circle_center = results_to_plot(1).mean_circle_center;
-while(1)
-    for time_iteration = 1:95 % length(ptCloud_pts_raw_rings_cell_save)
-        currentScanRaw = ptCloud_pts_layers_separated_cell{time_iteration};
 
-        mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
-        weight = 0.7;
-        filt_circle_center = weight*filt_circle_center + (1-weight)*mean_circle_center;
-        rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;
-        good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;
+for time_iteration = 1:N_scans
+    currentScanRaw = ptCloud_pts_layers_separated_cell{time_iteration};
 
-        fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering);
-        pause(0.01);
+    mean_circle_center = results_to_plot(time_iteration).mean_circle_center;
+    rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;
+    good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;
 
-    end % Ends loop through time
-end
+    % Filter the solution
+    weight = 0.7;
+    filt_circle_center = weight*filt_circle_center + (1-weight)*mean_circle_center;
+
+    only_fitted_sphere_points = fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_axis_limits);
+    
+    % Call the fitting function
+    % fig_num = 2343;
+    % figure(fig_num); clf;
+    [C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(only_fitted_sphere_points(:,1:3), -1);
+
+
+    % Save results
+    all_points = [all_points; only_fitted_sphere_points(:,1:3)]; %#ok<AGROW>
+    all_errors = [all_errors; errors]; %#ok<AGROW>
+    iterationSpheres(time_iteration,:)  = time_iteration;
+    centerSpheres(time_iteration,:) = C_sphere;
+    radiiSpheres(time_iteration,:)  = R_sphere;
+    stdSpheres(time_iteration,:)  = std(errors);
+
+    % pause(0.01);
+
+end % Ends loop through time
+
+% Fit the data for all points at once
+% Call the fitting function
+fig_num = 1112;
+figure(fig_num); clf;
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(all_points, fig_num);
+
+
+% Print results
+fprintf(1,'\n\nResults using all points in each scan: \n');
+table_data = [iterationSpheres centerSpheres radiiSpheres stdSpheres];
+header_strings = [{'Time'}, {'Center X'},{'Center Y'},{'Center Z'},{'Radius'},{'Std'}]; % Headers for each column
+formatter_strings = [{'%.0d'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?
+N_chars = [4, 12, 12, 12, 12, 12]; % Specify spaces for each column
+fcn_DebugTools_debugPrintTableToNCharacters(table_data, header_strings, formatter_strings,N_chars);
+
+fprintf(1,'\n\nStandard deviations in each fit: \n');
+table_data = [999 std(centerSpheres,0,1) std(radiiSpheres,0,1) std(stdSpheres,0,1)];
+header_strings = [{'All'}, {'Center X'},{'Center Y'},{'Center Z'},{'Radius'},{'Std'}]; % Headers for each column
+formatter_strings = [{'%.0d'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?
+fcn_DebugTools_debugPrintTableToNCharacters(table_data, header_strings, formatter_strings,N_chars);
+
+
+% Print results
+fprintf(1,'\n\nResults using all points at once:');
+table_data = [999 C_sphere R_sphere std(errors)];
+header_strings = [{'All'}, {'Center X'},{'Center Y'},{'Center Z'},{'Radius'},{'Std'}]; % Headers for each column
+formatter_strings = [{'%.0d'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?
+fcn_DebugTools_debugPrintTableToNCharacters(table_data, header_strings, formatter_strings,N_chars);
+fprintf(1,'Predicted error in fitting (meters): %.6f\n',std(errors)/length(errors).^0.5);
+
 
 %% Find and plot all the points in each ring, in 3D
-function fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering)
+function only_fitted_sphere_points = fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_axis_limits)
 figure(47464);
 clf;
 hold on;
@@ -299,6 +376,12 @@ title(sprintf('Time: %.0d',time_iteration));
 
 plot3(mean_circle_center(:,1), mean_circle_center(:,2), mean_circle_center(:,3),'r.','MarkerSize',50, 'Linewidth',3);
 
+% Get the color ordering?
+try
+    color_ordering = orderedcolors('gem12');
+catch
+    color_ordering = colororder;
+end
 
 N_colors = length(color_ordering(:,1));
 
@@ -309,8 +392,8 @@ for ith_ring = 1:N_rings
     RingDataRaw = currentScanRaw.(ringName);
     plot3(RingDataRaw(:,1), RingDataRaw(:,2), RingDataRaw(:,3),'k.','MarkerSize',10);
 end
-view(30,30)
-axis(good_limits);
+view(-15,55)
+axis(good_axis_limits);
 
 
 
@@ -318,7 +401,6 @@ axis(good_limits);
 all_close_RingData = {};
 all_fitted_RingData = {};
 only_fitted_sphere_points = [];
-only_sphere_points = [];
 
 if 1==0
     % Pull out and plot all the fits
@@ -357,7 +439,7 @@ end
 
 % Pull out and plot all the close points in any ring.
 % Set a distance threshold
-threshold_point_distance = 0.4;
+threshold_point_distance = 0.35; % Actual radius is about 0.336
 for ith_ring = 1:N_rings
     ringName = RingNames{ith_ring};
     RingDataRaw = currentScanRaw.(ringName);

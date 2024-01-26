@@ -144,12 +144,12 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
 %% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
 fig_num = 222;
@@ -161,12 +161,12 @@ station_tolerance = 1;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range),(flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
 %% BASIC call with arc data, fitting it with a circle and some arcs by specifying medium station tolerance
 fig_num = 333;
@@ -178,12 +178,12 @@ station_tolerance = 4;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
 %% BASIC call with arc data, fitting it with all circles by specifying large station tolerance
 fig_num = 334;
@@ -195,12 +195,12 @@ station_tolerance = 10;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
 %% BASIC call with arc data, forcing circle fit to fail, by using flag_force_circle_fit to give ONLY circles that meet all criteria
 fig_num = 444;
@@ -212,12 +212,12 @@ station_tolerance = 1;
 points_required_for_agreement = [];
 flag_force_circle_fit = 1;
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
 %% BASIC call with arc data, forcing circle fit by using flag_force_circle_fit to give ONLY circles that meet all criteria
 % Passes because station tolerance is larger
@@ -230,12 +230,12 @@ station_tolerance = 4;
 points_required_for_agreement = [];
 flag_force_circle_fit = 1;
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% BASIC call with circle data, fitting it with a circle by not specifying station tolerance
 fig_num = 1111;
@@ -247,12 +247,12 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% BASIC call with circle data, fitting it with a circle by specifying station tolerance that winds all the way around
 % NOTE: notice how this is much slower than the previous call, as it takes
@@ -267,12 +267,12 @@ station_tolerance = 2;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% BASIC call with circle data, fitting it with an arc by specifying station tolerance is too small
 fig_num = 3333;
@@ -284,12 +284,12 @@ station_tolerance = 0.8;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% BASIC call with circle AND arc data, fitting it with an arc because this has the most points
 fig_num = 4444;
@@ -305,12 +305,12 @@ station_tolerance = 2;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% BASIC call with circle AND arc data, fitting it with a circle because of flag setting
 fig_num = 5555;
@@ -326,12 +326,12 @@ station_tolerance = 1;
 points_required_for_agreement = [];
 flag_force_circle_fit = 1;
 expected_radii_range = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% Test using expected radii range
 fig_num = 2;
@@ -343,12 +343,12 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% Test using expected radii range that is bad
 fig_num = 2;
@@ -360,12 +360,12 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [10 30];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% Speed test effect of adding radii range to show this speeds up calculations
 % Note, there is more speed-up the more corrupted and larger the data is
@@ -375,7 +375,7 @@ transverse_tolerance = 0.1;
 station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 % Perform the calculation in slow mode
 expected_radii_range = [];
@@ -387,7 +387,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -404,7 +404,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -428,6 +428,7 @@ station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 5];
+flag_find_only_best_agreement = []; 
 flag_use_permutations = [];
 
 
@@ -439,7 +440,7 @@ figure(fig_num); clf;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 % Make station tolerance larger so it finds entire arc, connecting together
 % but not finding a circle
@@ -450,7 +451,7 @@ figure(fig_num); clf;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 % Fit a circle by shutting station tolerance off
 station_tolerance = [];
@@ -460,7 +461,7 @@ figure(fig_num); clf;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 % Force a circle that forces station tolerance to be met by using flag
 station_tolerance = 10;
@@ -471,7 +472,7 @@ figure(fig_num); clf;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 
 
@@ -490,12 +491,14 @@ station_tolerance = 0.5;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
+flag_find_only_best_agreement = []; 
+
 flag_use_permutations = 0;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 %% Test using flag_use_permutations for fractional setting (e.g. only 50%)
 % This assumes that the points are over-fitted, e.g. that there are way
@@ -511,12 +514,14 @@ station_tolerance = 0.5;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
+flag_find_only_best_agreement = []; 
+
 flag_use_permutations = 0.5;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
@@ -536,12 +541,14 @@ station_tolerance = 0.5;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
+flag_find_only_best_agreement = []; 
+
 flag_use_permutations = 30;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
@@ -557,12 +564,14 @@ station_tolerance = 0.5;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
+flag_find_only_best_agreement = []; 
+
 flag_use_permutations = 30;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
@@ -596,8 +605,11 @@ station_tolerance = 1;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
+flag_find_only_best_agreement = []; 
+
 slow_flag_use_permutations = 1;
 fast_flag_use_permutations = 0;
+
 
 
 % Perform the calculation in slow mode
@@ -609,7 +621,7 @@ for i=1:REPS
 
     slowdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (slow_flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (slow_flag_use_permutations), (fig_num));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -625,7 +637,7 @@ for i=1:REPS
 
     fastdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (fast_flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (fast_flag_use_permutations), (fig_num));
     
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -651,7 +663,7 @@ station_tolerance = 1;
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 3];
-flag_use_permutations = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 % Perform the calculation in slow mode
 fig_num = [];
@@ -662,7 +674,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
     
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -678,7 +690,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -692,4 +704,181 @@ fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+%% Basic test illustrating flag_find_only_best_agreement
+
+inputPoints = [
+    2.1337    1.6760
+    2.1132    1.6480
+    2.0894    1.6178
+    2.0873    1.6045
+    2.0835    1.5901
+    2.0843    1.5792
+    2.0773    1.5625
+    2.0702    1.5459
+    2.0721    1.5366
+    2.0759    1.5282
+    2.0783    1.5183
+    2.0725    1.5030
+    2.0758    1.4949
+    2.0731    1.4820
+    2.0782    1.4747
+    2.0818    1.4663
+    2.0901    1.4613
+    2.0790    1.4428
+    2.0873    1.4378
+    2.0891    1.4283
+    2.0973    1.4232
+    2.1022    1.4158
+    2.0990    1.4030
+    2.1069    1.3982
+    2.1099    1.3902
+    2.1213    1.3871
+    2.1245    1.3786
+    2.1177    1.3637
+    2.1291    1.3606
+    2.1372    1.3552
+    2.1552    1.3561
+    2.1549    1.3455
+    2.1529    1.3338
+    2.1609    1.3283
+    2.1722    1.3249
+    2.1768    1.3173
+    2.1881    1.3137
+    2.1893    1.3041
+    2.1990    1.2994
+    2.2103    1.2957
+    2.2249    1.2939
+    2.2277    1.2852
+    2.2424    1.2832
+    2.2554    1.2802
+    2.2667    1.2762
+    2.2832    1.2750
+    2.2945    1.2708
+    2.3092    1.2685
+    2.3378    1.2735
+    2.3699    1.2803];
+
+transverse_tolerance = 0.02;
+points_required_for_agreement = 10;
+flag_force_circle_fit = 1;
+expected_radii_range = [0.2 0.4];
+flag_find_only_best_agreement = 1; 
+flag_use_permutations = [];
+
+Hough_domains  = fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), -1);
+
+fcn_geometry_plotFitDomains(Hough_domains, 10);
+
+
+
+%% Speed test effect of flag_find_only_best_agreement
+
+
+inputPoints = [
+    2.1337    1.6760
+    2.1132    1.6480
+    2.0894    1.6178
+    2.0873    1.6045
+    2.0835    1.5901
+    2.0843    1.5792
+    2.0773    1.5625
+    2.0702    1.5459
+    2.0721    1.5366
+    2.0759    1.5282
+    2.0783    1.5183
+    2.0725    1.5030
+    2.0758    1.4949
+    2.0731    1.4820
+    2.0782    1.4747
+    2.0818    1.4663
+    2.0901    1.4613
+    2.0790    1.4428
+    2.0873    1.4378
+    2.0891    1.4283
+    2.0973    1.4232
+    2.1022    1.4158
+    2.0990    1.4030
+    2.1069    1.3982
+    2.1099    1.3902
+    2.1213    1.3871
+    2.1245    1.3786
+    2.1177    1.3637
+    2.1291    1.3606
+    2.1372    1.3552
+    2.1552    1.3561
+    2.1549    1.3455
+    2.1529    1.3338
+    2.1609    1.3283
+    2.1722    1.3249
+    2.1768    1.3173
+    2.1881    1.3137
+    2.1893    1.3041
+    2.1990    1.2994
+    2.2103    1.2957
+    2.2249    1.2939
+    2.2277    1.2852
+    2.2424    1.2832
+    2.2554    1.2802
+    2.2667    1.2762
+    2.2832    1.2750
+    2.2945    1.2708
+    2.3092    1.2685
+    2.3378    1.2735
+    2.3699    1.2803];
+
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+points_required_for_agreement = [];
+flag_force_circle_fit = [];
+expected_radii_range = [1 3];
+flag_use_permutations = [];
+
+
+
+% Perform the calculation in slow mode
+fig_num = -1;
+flag_find_only_best_agreement = 0; 
+REPS = 3; minTimeSlow = Inf; 
+tic;
+for i=1:REPS
+    tstart = tic;
+
+    slowdomains  = ...
+        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+fig_num = -1;
+flag_find_only_best_agreement = 1; 
+minTimeFast = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+
+    fastdomains  = ...
+        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+    
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fcn_geometry_fitHoughCircle with flag_find_only_best_agreement = 0 (slow) and with flag_use_permutations= 1 (fast):\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
+fprintf(1,'Slow parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',slowdomains{1}.best_fit_parameters(1),slowdomains{1}.best_fit_parameters(2),slowdomains{1}.best_fit_parameters(3));
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Fast parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',fastdomains{1}.best_fit_parameters(1),fastdomains{1}.best_fit_parameters(2),fastdomains{1}.best_fit_parameters(3));
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
 

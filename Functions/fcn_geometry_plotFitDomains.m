@@ -268,7 +268,7 @@ if flag_do_plots
                     % Plot the best-fit crcle
                     circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
                     circleRadius = domain_to_plot.best_fit_parameters(1,3);
-                    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
+                    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num);
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
                 case {'Hough arc','Regression arc'}
