@@ -15,7 +15,10 @@
 clc
 close all
 
-%% Basic Example to test if the input vectors are in the vicinity of reference vector
+%% Basic Example to test if the input vectors are exactly the same as reference vector
+fig_num = 1;
+figure(fig_num);
+clf;
 
 % NOTE
 %
@@ -35,15 +38,41 @@ refVector = [0.5 0.5 0.5];
 % input vector is considered to be in the vicinity of the reference vector
 tolerance = 0.1;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, 1);
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
 
 % The unit vector of input vector and reference vector are same. Therefore,
 % the euclidean distance between both the vectors is zero.
 assert(isequal(dist_btw_unit_refVectAndInputVec, 0));
 assert(isequal(vectorsCloseToRef, inputVectors))
 
+%% Basic Example to test if the input vectors are in the vicinity of reference vector
+fig_num = 2;
+figure(fig_num);
+clf;
 
-%% Basic Example to test if the input vectors are in alignment of reference vector 
+inputVectors = [0.47 0.52 0.48];
+
+% Reference Vector
+refVector = [0.5 0.5 0.5];
+
+% This is the tolerance limit to determine if a vector is in alignment with
+% the reference vector or not. Here, the euclidean distance of the unit
+% vectors of input vectors and the unit vector of reference vector is
+% computed. If the distance is less than or equal to tolerance limit, the
+% input vector is considered to be in the vicinity of the reference vector
+tolerance = 0.1;
+
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
+
+% The unit vector of input vector and reference vector are same. Therefore,
+% the euclidean distance between both the vectors is zero.
+assert(dist_btw_unit_refVectAndInputVec<tolerance);
+assert(isequal(vectorsCloseToRef, inputVectors))
+
+%% Basic Example to test if the input vectors are NOT in alignment of reference vector 
+fig_num = 3;
+figure(fig_num);
+clf;
 
 inputVectors = [1 2 3];
 
@@ -57,7 +86,7 @@ refVector = [0.5 0.5 0.5];
 % input vector is considered to be in the vicinity of the reference vector
 tolerance = 0.1;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance,2);
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance,(fig_num));
 
 unit_inputVectors = fcn_geometry_calcUnitVector(inputVectors, -1);
 unit_refVector = fcn_geometry_calcUnitVector(refVector, -1); 
@@ -71,6 +100,9 @@ assert(isequal(dist_btw_unit_refVectAndInputVec, dist_calculated))
 assert(isequal(vectorsCloseToRef,  0 * zeros(0, 3)))
 
 %% Basic Example to test if the input vectors are in alignment with reference vector
+fig_num = 4;
+figure(fig_num);
+clf;
 
 inputVectors = [1 1 1; 2 2 2; 1 3 1; 2 2 1; 8 -3 2; -3 -3 -3; 5 -3 2];
 
@@ -84,7 +116,7 @@ refVector = [0.5 0.5 0.5];
 % input vector is considered to be in the vicinity of the reference vector
 tolerance = 0.5;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, 3);
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
 
 assert(~isequal(dist_btw_unit_refVectAndInputVec, 0));
 
@@ -100,7 +132,7 @@ assert(isequal(vectorsCloseToRef, vectors_aligned));
 
 %% Basic Example to test if the input vectors are in alignment with reference vector
 
-fig_num = 4;
+fig_num = 5;
 figure(fig_num);
 clf;
 
@@ -116,7 +148,7 @@ refVector = [0.5 0.5 0.5];
 % is considered to be in the vicinity of the reference vector.
 tolerance = 0.5;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
+[~, ~] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
 
 % assert(~isequal(dist_btw_unit_refVectAndInputVec, 0));
 
@@ -127,6 +159,9 @@ vectors_aligned = [1     1     1;
 
 % assert(isequal(vectorsCloseToRef, vectors_aligned));
 %% Basic Example to test if the function works for 2D
+fig_num = 6;
+figure(fig_num);
+clf;
 
 inputVectors = [1 1];
 
@@ -140,7 +175,7 @@ refVector = [0.5 1];
 % input vector is considered to be in the vicinity of the reference vector
 tolerance = 0.5;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance);
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
 
 unit_inputVectors = fcn_geometry_calcUnitVector(inputVectors, -1);
 unit_refVector = fcn_geometry_calcUnitVector(refVector, -1); 
@@ -153,6 +188,9 @@ assert(isequal(vectorsCloseToRef, inputVectors));
 
 
 %% Basic Example to test if the function works for 4D
+fig_num = 7;
+figure(fig_num);
+clf;
 
 inputVectors = [1 1 1 0.5];
 
@@ -166,7 +204,7 @@ refVector = [0.5 1 1 1];
 % input vector is considered to be in the vicinity of the reference vector
 tolerance = 0.5;
 
-[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance);
+[dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, (fig_num));
 
 unit_inputVectors = fcn_geometry_calcUnitVector(inputVectors, -1);
 unit_refVector = fcn_geometry_calcUnitVector(refVector, -1); 

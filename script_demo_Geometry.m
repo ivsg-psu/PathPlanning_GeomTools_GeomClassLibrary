@@ -262,6 +262,22 @@ assert(all(abs(length_errors)<(eps*100)));
 dot_product_sums = sum(input_vectors*unit_vectors',2);
 assert(all(abs(dot_product_sums)<(eps*100)));
 
+%% fcn_geometry_separatePointsIntoGrids separates points into grids
+% works for 1D, 2D, and 3D points
+
+fig_num = 200;
+figure(fig_num);
+clf;
+
+inputPoints = 10*rand(300,2);
+gridSize = 2;
+gridBoundaries = [2 10 2 8]; 
+
+[gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
+
+assert(isequal(length(gridIndices(:,1)),length(inputPoints(:,1))));
+assert(isequal(length(grid_AABBs(:,1)),12));
+assert(isequal(length(gridCenters(:,1)),12));
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

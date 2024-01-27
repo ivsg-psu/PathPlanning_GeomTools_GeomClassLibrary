@@ -1,5 +1,5 @@
 function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_findVectorsInAlignment(refVector, inputVectors, tolerance, varargin)
-% fcn_findVectorsINvicinity
+% fcn_geometry_findVectorsInAlignment
 %
 % Finds the vectors that are in alignment with the reference vector. The
 % unit vectors of the input vectors and reference are calculated. Then, the
@@ -10,7 +10,7 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 %
 % FORMAT: 
 % 
-% [dist_btw_unit_refVectAndInputVec, vectorsCloseTOref] = fcn_findVectorsINvicinity(inputVectors, refVector, tolerance, fig_num)
+% [dist_btw_unit_refVectAndInputVec, vectorsCloseTOref] = fcn_geometry_findVectorsInAlignment(inputVectors, refVector, tolerance, fig_num)
 %
 % INPUTS:
 %
@@ -35,7 +35,7 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 %      up code to maximize speed.
 % 
 %      NOTE: Figure can only be plotted if the reference vector and input
-%      vectors have exactly three columns. 
+%      vectors are 2D or 3D
 %
 % OUTPUTS: 
 %  
@@ -52,7 +52,7 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_findVectorsINvicinity
+% See the script: script_test_fcn_geometry_findVectorsInAlignment
 % for a full test suite.
 %
 % This function was written on 2024_01_23 by Aneesh Batchu
@@ -61,6 +61,9 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 % Revision history:
 % 2024_01_23 
 % -- wrote the code - Aneesh Batchu
+% 2024_01_26 - S. Brennan
+% -- added 2D plotting
+% -- cleaned up comments a bit
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -184,42 +187,57 @@ if flag_do_plots
     figure(fig_num)
     hold on;
     grid on;
-    % axis equal
+    axis equal
     
-    % origin for plotting
-    origin = [0 0 0];
+    if length(unitRefVector(1,:))==3
+        % origin for plotting
+        origin = [0 0 0];
 
-    %plot the unit reference vector in GREEN
-    quiver3(origin(1,1), origin(1,2), origin(1,3), unitRefVector(1,1), unitRefVector(1,2), unitRefVector(1,3), 'Color', 'g', 'LineWidth', 4, 'DisplayName','Reference Vector');
+        %plot the unit reference vector in GREEN
+        quiver3(origin(1,1), origin(1,2), origin(1,3), unitRefVector(1,1), unitRefVector(1,2), unitRefVector(1,3), 'Color', 'g', 'LineWidth', 4, 'DisplayName','Reference Vector');
 
-    % plot the unit vectors of the input vectors in RED
-    N_inputVectors = length(unitVectors_inputVectors(:,1));
+        % plot the unit vectors of the input vectors in RED
+        N_inputVectors = length(unitVectors_inputVectors(:,1));
+        ones_col = ones(N_inputVectors,1);
+        quiver3(ones_col*origin(1,1), ones_col*origin(1,2), ones_col*origin(1,3), unitVectors_inputVectors(:,1), unitVectors_inputVectors(:,2), unitVectors_inputVectors(:,3), 'Color', 'r', 'LineWidth', 1, 'DisplayName','Unit Input Vectors');
 
-    for ith_vector = 1:N_inputVectors
 
-        quiver3(origin(1,1), origin(1,2), origin(1,3), unitVectors_inputVectors(ith_vector,1), unitVectors_inputVectors(ith_vector,2), unitVectors_inputVectors(ith_vector,3), 'Color', 'r', 'LineWidth', 1, 'DisplayName','Unit Input Vectors');
+        % plot the vectors that are in alignment with reference vector in BLUE
+        vectorsCloseToRef_magnitude = sum(vectorsCloseToRef.^2,2).^0.5;
+        unitVectors_vectorsCloseToRef = vectorsCloseToRef./vectorsCloseToRef_magnitude;
+        N_vectorsCloseTOref = length(vectorsCloseToRef(:,1));
+        ones_col = ones(N_vectorsCloseTOref,1);       
+        quiver3(ones_col*origin(1,1), ones_col*origin(1,2), ones_col*origin(1,3), unitVectors_vectorsCloseToRef(:,1), unitVectors_vectorsCloseToRef(:,2), unitVectors_vectorsCloseToRef(:,3), 'Color', 'b', 'LineWidth', 2, 'DisplayName','Unit Vectors in Alignment with Ref Vec');
 
+        xlabel('X-axis');
+        ylabel('Y-axis');
+        zlabel('Z-axis');
+        % legend('Reference Vector', 'Unit Input Vectors', 'Unit Vectors Close to Ref');
+
+        view(3) % View plot in 3D
+    elseif length(unitRefVector(1,:))==2
+        % origin for plotting
+        origin = [0 0];
+
+        %plot the unit reference vector in GREEN
+        quiver(origin(1,1), origin(1,2), unitRefVector(1,1), unitRefVector(1,2), 'Color', 'g', 'LineWidth', 4, 'DisplayName','Reference Vector');
+
+        % plot the unit vectors of the input vectors in RED
+        N_inputVectors = length(unitVectors_inputVectors(:,1));
+        ones_col = ones(N_inputVectors,1);
+        quiver(ones_col*origin(1,1), ones_col*origin(1,2), unitVectors_inputVectors(:,1), unitVectors_inputVectors(:,2),  'Color', 'r', 'LineWidth', 1, 'DisplayName','Unit Input Vectors');
+
+        % plot the vectors that are in alignment with reference vector in BLUE
+        vectorsCloseToRef_magnitude = sum(vectorsCloseToRef.^2,2).^0.5;
+        unitVectors_vectorsCloseToRef = vectorsCloseToRef./vectorsCloseToRef_magnitude;
+        N_vectorsCloseTOref = length(vectorsCloseToRef(:,1));
+        ones_col = ones(N_vectorsCloseTOref,1);
+        quiver(ones_col*origin(1,1), ones_col*origin(1,2), unitVectors_vectorsCloseToRef(:,1), unitVectors_vectorsCloseToRef(:,2), 'Color', 'b', 'LineWidth', 2, 'DisplayName','Unit Vectors in Alignment with Ref Vec');
+
+        xlabel('X-axis');
+        ylabel('Y-axis');
+        % legend('Reference Vector', 'Unit Input Vectors', 'Unit Vectors Close to Ref');
     end
-
-    vectorsCloseToRef_magnitude = sum(vectorsCloseToRef.^2,2).^0.5;
-    unitVectors_vectorsCloseToRef = vectorsCloseToRef./vectorsCloseToRef_magnitude;
-
-    % plot the vectors that are in alignment with reference vector in BLUE
-    N_vectorsCloseTOref = length(vectorsCloseToRef(:,1));
-
-    for ith_vector = 1:N_vectorsCloseTOref
-
-        quiver3(origin(1,1), origin(1,2), origin(1,3), unitVectors_vectorsCloseToRef(ith_vector,1), unitVectors_vectorsCloseToRef(ith_vector,2), unitVectors_vectorsCloseToRef(ith_vector,3), 'Color', 'b', 'LineWidth', 2, 'DisplayName','Unit Vectors in Alignment with Ref Vec');
-
-    end
-
-    xlabel('X-axis');
-    ylabel('Y-axis');
-    zlabel('Z-axis');
-    % legend('Reference Vector', 'Unit Input Vectors', 'Unit Vectors Close to Ref');
-    
-    view(3) % View plot in 3D
-
 end
 
 if flag_do_debug

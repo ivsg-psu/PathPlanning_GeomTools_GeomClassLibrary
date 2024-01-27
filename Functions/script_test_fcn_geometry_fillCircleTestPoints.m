@@ -24,22 +24,24 @@ test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M,
 %% Speed test
 
 % Perform the calculation in slow mode
+fig_num = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma, ([]));
+    test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
+fig_num = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma, (-1));
+    test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma, (fig_num));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
