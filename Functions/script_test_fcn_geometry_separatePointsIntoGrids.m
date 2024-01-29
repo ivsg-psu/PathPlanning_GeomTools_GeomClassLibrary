@@ -88,7 +88,7 @@ figure(fig_num);
 clf;
 
 N_points = 10000;
-inputPoints = ones(N_points,1)*[51 101].*rand(N_points,2);
+inputPoints = ones(N_points,1)*[60 110].*rand(N_points,2) - 5*ones(N_points,2);
 gridSize = 10;
 gridBoundaries = [0 50 0 100]; 
 
