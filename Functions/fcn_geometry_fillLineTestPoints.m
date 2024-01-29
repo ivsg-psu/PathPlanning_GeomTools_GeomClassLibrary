@@ -132,7 +132,7 @@ N_segments = length(seed_points(:,1)) -1;
 
 distances = sum((seed_points(2:end,:) - seed_points(1:end-1,:)).^2,2).^0.5;
 unit_vectors = fcn_geometry_calcUnitVector(seed_points(2:end,:)-seed_points(1:end-1,:),-1);
-unit_orthogonals = fcn_geometry_calcOrthogonalVector(unit_vectors, -1);
+unit_orthogonals = fcn_geometry_calcOrthogonalVector(unit_vectors, [], -1);
 
 test_points = [];
 for ith_point = 1:N_segments
@@ -143,7 +143,7 @@ for ith_point = 1:N_segments
     if length(seed_points(1,:))==2        
         test_points = [test_points; seed_points(ith_point,:) + projection_distances*unit_vectors(ith_point,:) + orthogonal_distances.*unit_orthogonals(ith_point,:)]; %#ok<AGROW>
     else
-        segment_orthogonals = fcn_geometry_calcOrthogonalVector(ones(N_points,1)*unit_vectors(ith_point,:),-1);
+        segment_orthogonals = fcn_geometry_calcOrthogonalVector(ones(N_points,1)*unit_vectors(ith_point,:),[], -1);
         test_points = [test_points; seed_points(ith_point,:) + projection_distances*unit_vectors(ith_point,:) + orthogonal_distances.*segment_orthogonals]; %#ok<AGROW>
     end
 end

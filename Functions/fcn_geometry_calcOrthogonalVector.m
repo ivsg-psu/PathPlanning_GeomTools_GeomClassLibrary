@@ -15,6 +15,10 @@ function unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vecto
 %
 %      (OPTIONAL INPUTS)
 % 
+%      seed_points: a set of points, of Nxm, representing seed points for
+%      calculating the orthogonal directions if the dimension is 3 or more.
+%      Default is a random number.
+% 
 %      fig_num: a figure number to plot the results.
 %
 % OUTPUTS:
@@ -37,7 +41,8 @@ function unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vecto
 % Revision history:
 % 2024_01_24 - S. Brennan
 % -- wrote the code
-
+% 2024_01_28 - S. Brennan
+% -- added seed point inputs
 
 %% Debugging and Input checks
 
@@ -45,7 +50,7 @@ function unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vecto
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -86,7 +91,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(1,3);
 
         % Check the projection_vector input to be length greater than or equal to 1
         fcn_DebugTools_checkInputsToFunctions(...
@@ -96,9 +101,18 @@ if 0==flag_max_speed
 end
 
 % Does user want to specify fig_num?
+seed_points = []; % Default is to have no seed pionts
+if (2<= nargin) 
+    temp = varargin{1};
+    if ~isempty(temp)
+        seed_points = temp;
+    end
+end
+
+% Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (2<= nargin) 
+if (0==flag_max_speed) && (3<= nargin) 
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -130,8 +144,12 @@ if length(input_vectors(1,:))==2 % 2D vectors
 
 elseif length(input_vectors(1,:))==3 % 3D vectors
 
-    % Generate random direction vectors
-    random_directions = 2*rand(N_vectors,3) - ones(N_vectors,3);
+    if isempty(seed_points)
+        % Generate random direction vectors
+        random_directions = 2*rand(N_vectors,3) - ones(N_vectors,3);
+    else
+        random_directions = seed_points;
+    end
     
     % Calculate the portion of the random direction aligned with the unit
     % vector. This is just the dot product
@@ -186,7 +204,10 @@ if flag_do_plots
         for ith_vector = 1:N_vectors
             h_plot = quiver3(0,0,0, input_vectors(ith_vector,1),input_vectors(ith_vector,2),input_vectors(ith_vector,3),0,'-','LineWidth',3);
             plot_color = get(h_plot,'Color');
-            quiver3(0,0,0, unit_orthogonal_vectors(ith_vector,1),unit_orthogonal_vectors(ith_vector,2),unit_orthogonal_vectors(ith_vector,3),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
+
+            % Plot the results
+            quiver3(input_vectors(ith_vector,1),input_vectors(ith_vector,2),input_vectors(ith_vector,3),...
+                unit_orthogonal_vectors(ith_vector,1),unit_orthogonal_vectors(ith_vector,2),unit_orthogonal_vectors(ith_vector,3),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
         end
     end
 

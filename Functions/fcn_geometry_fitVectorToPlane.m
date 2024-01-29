@@ -1,18 +1,18 @@
-function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals, plane_distances] = ...
-    fcn_geometry_fitPlaneLinearRegression(points,varargin)
-% fcn_geometry_fitPlaneLinearRegression
-% Finds the coefficients, C1, C2, and C3 in the equation:
-%
-% z = C1*x + C2y + C3
+function [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = ...
+    fcn_geometry_fitVectorToPlane(points,varargin)
+% fcn_geometry_fitVectorToPlane
+% Finds the vector that is normal to a set of points that define a 3D
+% plane. The method is to find the vector fitting XY, YZ, and XZ data, and
+% then using cross products between the two largest vectors to find the
+% normal.
 %
 % FORMAT: 
 %
-% [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = ...
-%    fcn_geometry_fitPlaneLinearRegression(points,(fig_num))
+% [vector_root, unit_vector] = fcn_geometry_fitVectorToPlane(points)
 %
 % INPUTS:
 %
-%      points: a Nx3 vector where N is the number of points, length N>=3. 
+%      points: a Nx3 vector where N is the number of points, length N>=2. 
 %
 %      (OPTIONAL INPUTS)
 % 
@@ -22,19 +22,12 @@ function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, s
 %
 % OUTPUTS:
 %
-%      params: the [1 x 3] matrix of the parameters [C1 C2 C3]
+%      vector_root: the [1 x 3] matrix of the (x,y) point representing the
+%      root of the vector, wherein the root is the point on the vector
+%      closest to the origin.
 %
-%      standard_deviation_in_z: the standard deviation in the z-error of
-%      the 
-%  
-%     z_fit: the model-fit z values
-%
-%     unit_vector: the unit vector in the direction of <A, B, C> for the
-%     equation: 
-%
-%             A*(x-x0) + B(y-y0) + C(z-z0) = 0
-% 
-%     base_point: the location closest to the origin of the plane
+%      unit_vector: the [1 x 3] matrix of the (deltax,deltay,deltaz) length of the
+%      unit vector attached to the root.
 %
 %     standard_deviation_in_plane_orthogonals: the standard deviation in
 %     the point fitting error in the direction of the unit_vector
@@ -45,19 +38,26 @@ function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, s
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
+%      fcn_geometry_fitVectorToNPoints
 %
 % EXAMPLES:
-%       
-% See the script: script_test_fcn_geometry_fitPlaneLinearRegression
+%      
+%      % BASIC example
+%      points = [2 3 4; 4 5 6; 1 1 1];
+%      [vector_root, unit_vector] = fcn_geometry_fitVectorToPlane(points)
+% 
+% See the script: script_test_fcn_geometry_fitVectorToPlane
 % for a full test suite.
 %
-% This function was written on 2024_01_19 by S. Brennan
+% This function was written on 2024_01_27 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 
 % Revision history:
-% 2024_01_19 - S. Brennan
+% 2024_01_27 
 % -- wrote the code
+% -- modified from fcn_geometry_fitVectorToNPoints
+
 
 %% Debugging and Input checks
 
@@ -137,58 +137,62 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% The code below uses the least-y-squared solution of:
-% z = Ax + By + C
-%
-% z = [x y 1]*[A B C]'
-%
-% Let X = [x y 1], P = [A B C]'
-%
-% then
-%   z = X*P
-% 
-% which, solved for P:
-%
-% inv(X'*X)*(X'z) = P
-
 x = points(:,1);
 y = points(:,2);
-N_points = length(x(:,1));
-
-X = [x, y, ones(length(points(:,1)),1)];
 z = points(:,3);
 
-if abs(det((X'*X)))>0.00001
-    P = (X'*X)\(X'*z);
-else
-    P = nan(3,1);
+fitting_fig_num = -1; % Force speed mode
+
+% Find the XYZ vector solution
+[~, standard_deviation_in_z_XYZ, ~, unit_vector_XYZ, base_point_XYZ, standard_deviation_in_plane_orthogonals_XYZ, plane_distances_XYZ] = fcn_geometry_fitPlaneLinearRegression([x y z],fitting_fig_num);
+
+% Find the XZY vector
+[~, standard_deviation_in_z_XZY, ~, unit_vector_XZY, base_point_XZY, standard_deviation_in_plane_orthogonals_XZY, plane_distances_XZY] = fcn_geometry_fitPlaneLinearRegression([x z y],fitting_fig_num);
+
+% Find the YZX vector
+[~, standard_deviation_in_z_YZX, ~, unit_vector_YZX, base_point_YZX, standard_deviation_in_plane_orthogonals_YZX, plane_distances_YZX] = fcn_geometry_fitPlaneLinearRegression([y z x],fitting_fig_num);
+
+% Perform reassembly
+unit_vector_XYZ_corrected = unit_vector_XYZ;
+unit_vector_XZY_corrected = [unit_vector_XZY(1) unit_vector_XZY(3) unit_vector_XZY(2)] ;
+unit_vector_YZX_corrected = [unit_vector_YZX(3) unit_vector_YZX(1) unit_vector_YZX(2)];
+
+base_point_XYZ_corrected = base_point_XYZ;
+base_point_XZY_corrected = [base_point_XZY(1) base_point_XZY(3) base_point_XZY(2)] ;
+base_point_YZX_corrected = [base_point_YZX(3) base_point_YZX(1) base_point_YZX(2)];
+
+[~,min_std_z_index] = min([standard_deviation_in_z_XYZ, standard_deviation_in_z_XZY, standard_deviation_in_z_YZX]);
+[~,min_std_ortho_index] = min([standard_deviation_in_plane_orthogonals_XYZ, standard_deviation_in_plane_orthogonals_XZY, standard_deviation_in_plane_orthogonals_YZX]);
+
+if min_std_z_index~=min_std_ortho_index
+    warning('on','backtrace');
+    warning('minimum direction for standard deviations in z does not match minimum directions for standard deviations in plane orthogonals.');
 end
 
-parameters = P;
-
-z_fit = [x y ones(N_points,1)]*parameters; % Solve for z vertices data
-z_error = z - z_fit;
-standard_deviation_in_z = std(z_error, 0, 1);
-
-%% Calculate A, B, and C for unit vector
-C1 = parameters(1);
-C2 = parameters(2);
-
-vector_projection = [-C1 -C2 1];
-
-if ~any(isnan(vector_projection))
-    unit_vector = fcn_geometry_calcUnitVector(vector_projection);
-else
-    unit_vector = [nan nan nan];
+% Find the root and unit vector depending on which situation gives minimum
+% standard deviation
+switch min_std_ortho_index
+    case 1
+        vector_root = base_point_XYZ_corrected;
+        unit_vector = unit_vector_XYZ_corrected;
+        standard_deviation_in_plane_orthogonals = standard_deviation_in_plane_orthogonals_XYZ;
+        plane_distances = plane_distances_XYZ;
+    case 2
+        vector_root = base_point_XZY_corrected;
+        unit_vector = unit_vector_XZY_corrected;
+        standard_deviation_in_plane_orthogonals = standard_deviation_in_plane_orthogonals_XZY;
+        plane_distances = plane_distances_XZY;
+    case 3
+        vector_root = base_point_YZX_corrected;
+        unit_vector = unit_vector_YZX_corrected;
+        standard_deviation_in_plane_orthogonals = standard_deviation_in_plane_orthogonals_YZX;
+        plane_distances = plane_distances_YZX;
+    otherwise 
+        warning('on','backtrace');
+        warning('minimum direction for standard deviations in z does not match minimum directions for standard deviations in plane orthogonals.');
+        error('unexpected situation occurred, unable to find minimum standard deviations.');
 end
 
-%% Calculate the base point
-% This is done by projecting all the input points via the unit vector
-plane_distances = sum(ones(N_points,1)*unit_vector.*points,2);
-mean_plane_distance = mean(plane_distances);
-standard_deviation_in_plane_orthogonals = std(plane_distances);
-base_point = mean_plane_distance*unit_vector;
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -202,55 +206,62 @@ base_point = mean_plane_distance*unit_vector;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-
-
-    % Plot the results in point space
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end      
+    end        
 
     hold on;
     grid on;
-    axis equal;
+    axis equal
+    xlabel('X [m]')
+    ylabel('Y [m]')
+    ylabel('Z [m]')
+    view(3)
 
-    % Plot the points
-    plot3(points(:,1),points(:,2),points(:,3),'k.','MarkerSize',20);
-    plot3(points(:,1),points(:,2),z_fit,'.','MarkerSize',20);
-    view(3);
+    % Plot the input points    
+    plot3(points(:,1),points(:,2),points(:,3),'k.');
+    
+    % Plot the root
+    plot3(vector_root(:,1),vector_root(:,2),vector_root(:,3),'b.','Markersize',50);
+    
+    % Plot the unit vector
+    quiver3(vector_root(1,1),vector_root(1,2),vector_root(1,3), unit_vector(1,1),unit_vector(1,2),unit_vector(1,3),0,'b','Linewidth',3);
 
     % Make axis slightly larger?
+    temp_axis = axis;
     if flag_rescale_axis
-        temp_axis = axis;
         %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
         axis_range_x = temp_axis(2)-temp_axis(1);
         axis_range_y = temp_axis(4)-temp_axis(3);
         percent_larger = 0.3;
         axis([temp_axis(1)-percent_larger*axis_range_x, temp_axis(2)+percent_larger*axis_range_x,  temp_axis(3)-percent_larger*axis_range_y, temp_axis(4)+percent_larger*axis_range_y]);
-    else
-        temp_axis = axis;
     end
 
 
     % Plot the plane
-    % x = [1 -1 -1 1]; % Generate data for x vertices
-    x = [temp_axis(2) temp_axis(1) temp_axis(1) temp_axis(2)]';
+    up_direction = fcn_geometry_calcOrthogonalVector(unit_vector);
+    right_direction = cross(unit_vector,up_direction);
 
-    % y = [1 1 -1 -1]; % Generate data for y vertices
-    y = [temp_axis(4) temp_axis(4) temp_axis(3) temp_axis(3)]';
+    distances_up    = sum(up_direction.*points,2);
+    distances_right = sum(right_direction.*points,2);
 
-    N_points = length(x(:,1));
-    z = [x y ones(N_points,1)]*parameters; % Solve for z vertices data
+    max_up = max(distances_up);
+    min_up = min(distances_up);
+    max_right = max(distances_right);
+    min_right = min(distances_right);
 
-    h_patch = patch(x, y, z, [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
+    plane_boundaries = ones(4,1)*vector_root + [
+        min_up*up_direction+min_right*right_direction;
+        min_up*up_direction+max_right*right_direction;
+        max_up*up_direction+max_right*right_direction;
+        max_up*up_direction+min_right*right_direction;
+        ];
+    h_patch = patch(plane_boundaries(:,1), plane_boundaries(:,2), plane_boundaries(:,3), [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
 
-    % Plot the base point
-    plot3(base_point(1,1),base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
 
-    % Plot the unit vector
-    quiver3(base_point(1,1),base_point(1,2),base_point(1,3), unit_vector(1,1),unit_vector(1,2),unit_vector(1,3),0,'g','Linewidth',3);
-
+    
 end % Ends check if plotting
 
 if flag_do_debug

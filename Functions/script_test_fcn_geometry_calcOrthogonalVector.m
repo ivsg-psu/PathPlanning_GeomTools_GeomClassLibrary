@@ -16,8 +16,8 @@ figure(fig_num);
 clf;
 
 input_vectors = [3 3]; 
-
-unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+seed_points = [];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -33,8 +33,8 @@ figure(fig_num);
 clf;
 
 input_vectors = randn(5,2); 
-
-unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+seed_points = [];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -50,8 +50,8 @@ figure(fig_num);
 clf;
 
 input_vectors = [1/2^0.5 1/2^0.5 0]; 
-
-unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+seed_points = [];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -67,9 +67,29 @@ figure(fig_num);
 clf;
 
 step = 0.05;
-input_vectors = (step:step:1)'.*[3 2 4]; 
 
-unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+input_vectors = (step:step:1)'.*[3 2 4]; 
+seed_points = [];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors*unit_vectors',2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+
+%% Test 5: testing seed points
+fig_num = 5;
+figure(fig_num);
+clf;
+
+
+input_vectors = [3 3 3]; 
+seed_points = [1 0 0];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -83,11 +103,14 @@ assert(all(abs(dot_product_sums)<(eps*100)));
 %% Testing fast mode
 % Perform the calculation in slow mode
 fig_num = [];
+input_vectors = (step:step:1)'.*[3 2 4]; 
+seed_points = [];
+
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, (fig_num));
+    unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -99,7 +122,7 @@ REPS = 1000; minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, (fig_num));
+    unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

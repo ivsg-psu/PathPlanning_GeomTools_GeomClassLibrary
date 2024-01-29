@@ -26,11 +26,11 @@ function [vector_root, unit_vector] = ...
 %
 % OUTPUTS:
 %
-%      vector_root: the [2 x 1] matrix of the (x,y) point representing the
+%      vector_root: the [1 x 2] matrix of the (x,y) point representing the
 %      root of the vector, wherein the root is the point on the vector
 %      closest to the origin.
 %
-%      unit_vector: the [2 x 1] matrix of the (deltax,deltay) length of the
+%      unit_vector: the [1 x 2] matrix of the (deltax,deltay) length of the
 %      unit vector attached to the root.
 %
 % DEPENDENCIES:
@@ -58,6 +58,8 @@ function [vector_root, unit_vector] = ...
 % -- improved comments a bit
 % -- added max speed options
 % -- fixed bug wherein it crashes if empty figure given
+% 2024_01_27 - S. Brennan
+% -- typo fixes in comments
 
 %% Debugging and Input checks
 

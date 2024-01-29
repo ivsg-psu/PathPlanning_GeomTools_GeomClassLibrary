@@ -171,7 +171,7 @@ if ~isempty(indicies_to_become_outliers)
 
     % Find unit vectors orthogonal to point-to-point vectors
     vectors_at_indicies = input_points(indicies_to_become_outliers,:) - input_points(indicies_to_become_outliers-1,:);
-    orthogonal_unit_vectors_at_indicies = fcn_geometry_calcOrthogonalVector(vectors_at_indicies, -1); 
+    orthogonal_unit_vectors_at_indicies = fcn_geometry_calcOrthogonalVector(vectors_at_indicies, [], -1); 
     
     % Corrupt using unit vectors
     corrupted_points(indicies_to_become_outliers,:) = corrupted_points(indicies_to_become_outliers,:) + magnitude_of_change.*orthogonal_unit_vectors_at_indicies;
