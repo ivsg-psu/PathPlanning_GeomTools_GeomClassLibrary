@@ -35,7 +35,7 @@ Search for this, and you will find!
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="structure">Repo Structure</a>
+    <li><a href="#repo-structure">Repo Structure</a>
       <ul>
         <li><a href="#directories">Top-Level Directories</li>
         <li><a href="#dependencies">Dependencies</li>
@@ -45,24 +45,53 @@ Search for this, and you will find!
         <ul>
           <li><a href="#fcn_geometry_checkinputstofunctions">fcn_geometry_checkInputsToFunctions</li>
           <li><a href="#fcn_geometry_plotcircle">fcn_geometry_plotCircle</li>
+          <li><a href="#fcn_geometry_plotarc">fcn_geometry_plotArc</li>
+          <li><a href="#fcn_geometry_plotfitdomains">fcn_geometry_plotFitDomains</li>
+          <li><a href="#fcn_geometry_calcunitvector">fcn_geometry_calcUnitVector</li>
+          <li><a href="#fcn_geometry_calcorthogonalvector">fcn_geometry_calcOrthogonalVector</li>
+          <li><a href="#fcn_geometry_shufflepointordering">fcn_geometry_shufflePointOrdering</li>
           <li><a href="#fcn_geometry_circlecenterfrom3points">fcn_geometry_circleCenterFrom3Points</li>
           <li><a href="#fcn_geometry_findangleusing2pointsoncircle">fcn_geometry_findAngleUsing2PointsOnCircle</li>
           <li><a href="#fcn_geometry_findangleusing3pointsoncircle">fcn_geometry_findAngleUsing3PointsOnCircle</li>
           <li><a href="#fcn_geometry_findtangentpointsfrompointtocircle">fcn_geometry_findTangentPointsFromPointToCircle</li>
           <li><a href="#fcn_geometry_findtangentpointfrompointtocircle">fcn_geometry_findTangentPointFromPointToCircle</li>
+          <li><a href="#fcn_geometry_arcanglefrom3points">fcn_geometry_arcAngleFrom3Points</li>
+          <li><a href="#fcn_geometry_arcdirectionfrom3points">fcn_geometry_arcDirectionFrom3Points</li>
           <li><a href="#fcn_geometry_polarlinefrom2polarcoords">fcn_geometry_polarLineFrom2PolarCoords</li>
           <li><a href="#fcn_geometry_findvisiblearcsfrompoints">fcn_geometry_findVisibleArcsFromPoints</li>
           <li><a href="#fcn_geometry_findtangentpointstwocircles">fcn_geometry_findTangentPointsTwoCircles</li>
           <li><a href="#fcn_geometry_findtangentpointtwocircles">fcn_geometry_findTangentPointTwoCircles</li>
           <li><a href="#fcn_geometry_findphiconstraints">fcn_geometry_findPhiConstraints</li>
+          <li><a href="#fcn_geometry_findpointsinsequence">fcn_geometry_findPointsInSequence</li>
           <li><a href="#fcn_geometry_findintersectionlinesegmentwithcircle">fcn_geometry_findIntersectionLineSegmentWithCircle</li>
           <li><a href="#fcn_geometry_selfcrossproduct">fcn_geometry_selfCrossProduct</li>
           <li><a href="#fcn_geometry_euclideanpointstopointsdistance">fcn_geometry_euclideanPointsToPointsDistance</li>
+          <li><a href="#fcn_geometry_euclideanpointtopointsdistance">fcn_geometry_euclideanPointToPointsDistance</li>
           <li><a href="#fcn_geometry_findintersectionofsegments">fcn_geometry_findIntersectionOfSegments</li>
           <li><a href="#fcn_geometry_fitslopeinterceptnpoints">fcn_geometry_fitSlopeInterceptNPoints</li>
           <li><a href="#fcn_geometry_fitvectortonpoints">fcn_geometry_fitVectorToNPoints</li>
           <li><a href="#fcn_geometry_flagpointsfurtherfromoriginthanlinesegment">fcn_geometry_flagPointsFurtherFromOriginThanLineSegment</li>
           <li><a href="#fcn_geometry_flagpointsclosertooriginthanlinesegment">fcn_geometry_flagPointsCloserToOriginThanLineSegment</li>
+          <li><a href="#fcn_geometry_filllinetestpoints">fcn_geometry_fillLineTestPoints</li>
+          <li><a href="#fcn_geometry_fillcircletestpoints">fcn_geometry_fillCircleTestPoints</li>
+          <li><a href="#fcn_geometry_fillarctestpoints">fcn_geometry_fillArcTestPoints</li>
+          <li><a href="#fcn_geometry_fillemptydomainstructure">fcn_geometry_fillEmptyDomainStructure</li>
+          <li><a href="#fcn_geometry_fillspheretestpoints">fcn_geometry_fillSphereTestPoints</li>
+          <li><a href="#fcn_geometry_corruptpointswithoutliers">fcn_geometry_corruptPointsWithOutliers</li>
+          <li><a href="#fcn_geometry_domainboxbytype">fcn_geometry_domainBoxByType</li>
+          <li><a href="#fcn_geometry_findagreementsofpointstolinevector">fcn_geometry_findAgreementsOfPointsToLineVector</li>
+          <li><a href="#fcn_geometry_findagreementsofpointstocircle">fcn_geometry_findAgreementsOfPointsToCircle</li>
+          <li><a href="#fcn_geometry_findagreementsofpointstoarc">fcn_geometry_findAgreementsOfPointsToArc</li>
+          <li><a href="#fcn_geometry_findanglebetweenangles">fcn_geometry_findAngleBetweenAngles</li>
+          <li><a href="#fcn_geometry_findarcagreementindicies">fcn_geometry_findArcAgreementIndicies</li>
+          <li><a href="#fcn_geometry_fitcircleregressionfromhoughfit">fcn_geometry_fitCircleRegressionFromHoughFit</li>
+          <li><a href="#fcn_geometry_fitarcregressionfromhoughfit">fcn_geometry_fitArcRegressionFromHoughFit</li>
+          <li><a href="#fcn_geometry_fithoughline">fcn_geometry_fitHoughLine</li>
+          <li><a href="#fcn_geometry_fithoughcircle">fcn_geometry_fitHoughCircle</li>
+          <li><a href="#fcn_geometry_fithougharc">fcn_geometry_fitHoughArc</li>
+          <li><a href="#fcn_geometry_fitlinearregressionfromhoughfit">fcn_geometry_fitLinearRegressionFromHoughFit</li>
+          <li><a href="#fcn_geometry_houghsegmentation">fcn_geometry_HoughSegmentation</li>
+          <li><a href="#fcn_geometry_houghregression">fcn_geometry_HoughRegression</li>
         </ul>
       </ul>
     <li><a href="#usage">Usage</a></li>
@@ -70,6 +99,7 @@ Search for this, and you will find!
      <li><a href="#general-usage">General Usage</li>
      </ul>
     <li><a href="#license">License</a></li>
+     <li><a href="#major-release-versionse">Major Release Versions</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
@@ -81,9 +111,9 @@ Search for this, and you will find!
 
 <!--[![Product Name Screen Shot][product-screenshot]](https://example.com)-->
 
-Add ABOUT here
+Library of MATLAB functions related to geometric calculations for paths.
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
@@ -105,11 +135,14 @@ To get a local copy up and running follow these simple steps.
 
 4. Confirm it works! Run script_demo_GeomTools. If the code works, the script should run without errors. This script produces numerous example images such as those in this README file.
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
 <!-- STRUCTURE OF THE REPO -->
+
+## Repo Structure
+
 ### Directories
 
 The following are the top level directories within the repository:
@@ -119,7 +152,7 @@ The following are the top level directories within the repository:
  <li>Images folder: Contains images used in the README file.</li>
 </ul>
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
@@ -127,9 +160,9 @@ The following are the top level directories within the repository:
 
 * [Errata_Tutorials_DebugTools](https://github.com/ivsg-psu/Errata_Tutorials_DebugTools) - The DebugTools repo is used for the initial automated folder setup, and for input checking and general debugging calls within subfunctions. The repo can be found at: <https://github.com/ivsg-psu/Errata_Tutorials_DebugTools>
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
-
 The dependencies are automatically installed by running the root master script (script_demo_GeomTools.m).
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
@@ -144,6 +177,7 @@ Checks the variable types commonly used in the geometry codes to ensure they are
 This function is typically called at the top of most functions. The input is a variable and a string defining the "type" of the variable. This function checks to see that they are compatible. For example, say there 'column_vector' type of variables used in the function that is always a N x 1 array; if someone had a variable called "test_example", they could check that this fit the 'column_vector' type by calling fcn_geometry_checkInputsToFunctions(test_example,'column_vector'). This function would then check that the array was N x 1, and if it was not, it would send out an error warning.
 
 **FORMAT:**
+
 ```MATLAB
 fcn_geometry_checkInputsToFunctions(variable,variable_type_string,(optional_arguments))
 ```
@@ -246,6 +280,235 @@ for a full test suite.
 
 ***
 
+#### **fcn_geometry_plotArc**
+
+This function plots an arc by creating a vector of angles
+spaced a fixed angle apart, and plotting this from the start angle to the
+end angle. 
+
+NOTE: If the end angle is numerically larger than the start angle, the
+plot will be in the positive direction; otherwise, the plot will be in
+the negative direction starting at the start angle, proceeding to the end
+angle.
+
+NOTE: The user can specify the fixed angle used to space the plotting
+points via an optional input, degree_step.
+
+**FORMAT:**
+
+```MATLAB
+    arc_points = fcn_geometry_plotArc(...
+    centers,...
+    radii,...
+    start_angle_in_radians, 
+    end_angle_in_radians,
+    (degree_step),
+    (format),
+    (fig_num))
+```
+
+**INPUTS:**
+
+centers: an [N x 2] vector in [x y] of the points of circle centers
+
+radii: a [N x 1] vector of the radii of the circles (to avoid
+calculation time)
+
+start_angle_in_radians: the starting angle of the arc, in radians
+
+end_angle_in_radians: the starting angle of the arc, in radians
+
+(OPTIONAL INPUTS)
+
+degree_step: how many degrees between plotting points. Default is 1
+degree.
+
+format:
+
+<ul>
+A format string, e.g. 'b-', that dictates the plot style or
+A color vector, e.g. [1 0 0.23], that dictates the line color
+</ul>
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+      
+**OUTPUTS:**
+
+arc_points: the [x y] coordinates of the arc points. If N
+centers and radii are given, with N>1, then arc_points will be a
+cell array of points.
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_plotArc
+for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_plotFitDomains**
+
+Given a set of domains obtained by Hough or regression fitting, plots
+these. An optional figure number can be given.
+
+**FORMAT:**
+
+```MATLAB
+ fcn_geometry_plotFitDomains(domains, (fig_num))
+```
+
+**INPUTS:**
+
+domains: a structure that includes the domains to be plotted. See
+fcn_geometry_HoughSegmentation for example outputs
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+      
+**OUTPUTS:**
+
+(none)
+
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_plotFitDomains
+for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_calcUnitVector**
+
+This function finds the unit vectors associated with a list of input vectors
+
+**FORMAT:**
+
+```MATLAB
+ unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (fig_num))
+```
+
+**INPUTS:**
+
+input_vectors: a list of Nxm vector where N is the number of vectors
+that should be converted into unit-length vector, and m is the
+dimension of the vector (typically 2 or 3).
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot the results.
+      
+**OUTPUTS:**
+
+unit_vectors: the unit-length vectors corresponding to each input vector.
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_calcUnitVector
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_calcOrthogonalVector**
+
+Finds the unit vectors orthogonal to an input list of input vectors. For
+2D inputs, the orthogonal vectors are always positive direction. For N-D
+vectors, the orthogonal vectors are always orthogonal, but have random
+rotations around the axis of the input vectors.
+
+**FORMAT:**
+
+```MATLAB
+ unit_orthogonal_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, (fig_num))
+```
+
+**INPUTS:**
+
+input_vectors: a list of Nxm vector where N is the number of vectors
+that should be converted into unit-length orthogonal vector, and m
+is the dimension of the vector (typically 2 or 3).
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot the results.
+
+      
+**OUTPUTS:**
+
+unit_orthogonal_vectors: the unit-length vectors orthogonal to each input vector.
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_calcOrthogonalVector
+for a full test suite
+
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_shufflePointOrdering**
+
+given N points, with N>=2, this function creates a set of M points per unit distance
+between these points randomly distributed with variance sigma.
+
+**FORMAT:**
+
+```MATLAB
+corrupted_points = fcn_geometry_shufflePointOrdering(input_points,
+(probability_of_corruption), (magnitude_of_corruption), (fig_num));
+```
+
+**INPUTS:**
+
+input_points: a Nx2 vector where N is the number of points, but at
+least 2.
+
+(Optional Inputs)
+
+fig_num: the figure number to use for plotting
+      
+**OUTPUTS:**
+
+shuffled_points: a list of test points that are shuffled in ordering
+
+**Dependencies:**
+
+none
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_shufflePointOrdering
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
 
 #### **fcn_geometry_circleCenterFrom3Points**
 
@@ -446,8 +709,6 @@ y] where x and y are columns. The radii must be a column vector of same
 length as centers. Points are also in [x y] format, of same length as
 centers. 
 
-
-
 **FORMAT:**
 ```MATLAB
 points_tangent = fcn_geometry_findTangentPointFromPointToCircle(centers,radii,points,cross_product_goal,(fig_num))
@@ -479,6 +740,105 @@ fcn_geometry_findTangentPointsFromPointToCircle
 **Examples:**
 
 See the script: script_test_fcn_geometry_findTangentPointFromPointToCircle
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_arcAngleFrom3Points**
+
+This function calculates the angle between three
+points such that the angle starts at point1, passes through point2, and
+ends at point3. The angles are presented as positive
+
+**FORMAT:**
+```MATLAB
+[arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians]  = fcn_geometry_arcAngleFrom3Points(points1, points2, points3,(fig_num))
+```
+
+**INPUTS:**
+
+point1, point2, point3: a Nx2 vectors of point pairings. Note: this
+function is vectorized so that multiple points can be entered
+simultaneously
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+arc_angle_in_radians_1_to_2: an [Nx1] vector containing the angle
+subtending from point1 to point2, passing toward point3
+
+arc_angle_in_radians_1_to_3: an [Nx1] vector containing the angle
+subtending from point1 to point3, passing through point2
+
+circle_centers: the centers of the circles of the arcs, as [Nx2]
+vector
+
+radii: the radii of the arcs as an [Nx1] vector
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_arcDirectionFrom3Points
+fcn_geometry_findAngleUsing2PointsOnCircle
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_arcAngleFrom3Points
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_arcDirectionFrom3Points**
+
+This function calculates whether or not 3 points
+make an arc in the clockwise or counter-clockwise diretion. The direction
+is calculated by performing a cross product between the vectors from
+points1 to points3, versus the vectors from points1 to points2. The
+funtion returns the sign of the result.
+
+**FORMAT:**
+```MATLAB
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(point1, point2, point3,(fig_num))
+```
+
+**INPUTS:**
+
+point1, point2, point3: a Nx2 vectors of point pairings. Note: this
+function is vectorized so that multiple points can be entered
+simultaneously
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results
+
+       
+**OUTPUTS:**
+
+is_counterClockwise: an [Nx1] vector containing 1 if the
+corresponding row of points creates a counter-clockwise arc
+(positive) or -1 if it would create a clockwise arc (e.g. negative).
+It returns 0 if the direction is undefined (if points are repeated,
+colinear, etc.).
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+cross
+sign
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_arcDirectionFrom3Points
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -756,6 +1116,51 @@ for a full test suite.
 
 ***
 
+#### **fcn_geometry_findPointsInSequence**
+
+This function finds the indicies before and after a base point that are within a tolerance distance sequence of the base point
+
+**FORMAT:**
+```MATLAB
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, (fig_num))
+```
+
+**INPUTS:**
+
+input_distances: a Nx1 vector of distances where N is the number of
+distances.
+
+base_point_index: the index of the point that anchors the sequence
+
+station_tolerance: the maximum distance allowed between any points
+in the sequence either before or after the base point.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+       
+**OUTPUTS:**
+
+sequence_indicies: the indicies that meet the sequence agreement
+criteria around the base point, including the index of the base
+point
+
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findPointsInSequence
+for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
 #### **fcn_geometry_findIntersectionLineSegmentWithCircle**
 
 This function evaluates an edge
@@ -884,13 +1289,48 @@ for a full test suite.
 
 ***
 
+#### **fcn_geometry_euclideanPointToPointsDistance**
+
+This function finds distance(s) from one point to another point(s)
+
+**FORMAT:**
+
+```MATLAB
+[dist] = fcn_geometry_euclideanPointToPointsDistance(pt1,pt2, (fig_num))
+```
+**INPUTS:**
+
+pt1,pt2: [NxM set of points]
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+dist: distances between the point(s)
+    
+**Dependencies:**
+
+fcn_geometry_checkInputsToFunctions
+
+**Examples:**
+
+See the script: fcn_geometry_euclideanPointToPointsDistance
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
 #### **fcn_geometry_findIntersectionOfSegments**
 
 This function calculates hits between a sensor
 projection and a set of walls, both specified by start and end points,
 returning the distance, and location of the hit, and the wall number of
 each hit.
-
 
 **FORMAT:**
 ```MATLAB
@@ -1143,7 +1583,1379 @@ for a full test suite.
 
 ***
 
+#### **fcn_geometry_fillLineTestPoints**
 
+given N points, with N>=2, this function creates a set of M points per unit distance between these points randomly distributed with variance sigma.
+
+**FORMAT:**
+```MATLAB
+[test_points] = fcn_geometry_fillLineTestPoints(seed_points, M, sigma)
+```
+
+**INPUTS:**
+
+seed_points: a Nx2 or Nx3 vector where N is the number of points,
+but at least 2.
+
+M: the number of test points to generate per unit
+distance.
+
+sigma: athe standard deviation in points
+       
+**OUTPUTS:**
+
+test_points: a list of test points used to test regression fitting
+
+true_base_points, true_projection_vectors, true_distances: the true
+values of the fitting
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+fcn_geometry_calcOrthogonalVector
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fillLineTestPoints
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fillCircleTestPoints**
+
+given N points, with N>=2, this function creates a set of M points per unit distance
+around the perimeter of a circle with points randomly distributed
+radially, with variance sigma.
+
+**FORMAT:**
+
+```MATLAB
+[test_points] = fcn_geometry_fillCircleTestPoints(seed_points, M, sigma)
+```
+
+**INPUTS:**
+
+circle_center: a 1x2 vector denoting the [X Y] location of the
+center of the circle
+
+circle_radius: a 1x1 vector denoting the radius of the circle
+
+M: the number of test points to generate per unit
+distance around the circumference
+
+sigma: the standard deviation in points in the radial direction
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.  
+       
+**OUTPUTS:**
+
+test_points: a list of test points used to test regression fitting
+    
+**Dependencies:**
+
+fcn_geometry_checkInputsToFunctions
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fillCircleTestPoints
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fillArcTestPoints**
+
+given N seed_points, with N>=3, this function creates test_points that follow arcs
+consisting of M points per unit distance, by fitting circles between
+consecutive pairs of 3 points. The location of the points on the arcs
+follows a radius that is corrupted by perturbations randomly, with
+perturbations normally distributed about the nominal radius with variance
+sigma.
+
+**FORMAT:**
+```MATLAB
+[test_points] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma)
+```
+
+**INPUTS:**
+
+seed_points: a Nx2 vector where N is the number of points, but at
+least 2.
+
+M: the number of test points to generate per unit
+distance.
+
+sigma: athe standard deviation in points
+
+       
+**OUTPUTS:**
+
+test_points: a list of test points used to test regression fitting
+
+true_circle_centers, true_circle_radii: the true values of the
+circle equations used to fill the points
+
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_arcDirectionFrom3Points
+fcn_geometry_calcUnitVector
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fillArcTestPoints
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fillEmptyDomainStructure**
+
+This function fills in an empty domain-type structure with the minimum fields. These
+fields include:
+
+**FORMAT:**
+
+```MATLAB
+emptyDomain = fcn_geometry_fillEmptyDomainStructure((fig_num))
+```
+
+**INPUTS:**
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+**OUTPUTS:**
+
+emptyDomain: a domain-type structure containing the following
+fields:
+
+emptyDomain.best_fit_type = 'empty';
+
+<ul>
+
+This is a string used to denote the fit type: 
+
+'empty' - no fit yet done
+
+'unfitted' - points left over after a fit is done 
+
+'Hough line' - A Hough fit of line type
+
+'Hough segment' - A Hough fit of line segment type
+
+'Hough circle' - A Hough fit of a circle type
+
+'Hough arc' - A Hough fit of arc type
+
+'Vector regression line fit' - a vector fit of line data,
+using regression
+
+'Vector regression segment fit' - a vector fit of a line
+segment, using regression
+
+</ul>
+
+emptyDomain.points_in_domain = [nan nan];
+<ul>
+These are the points in [N x 2] or [N x 3] format that were
+used to create the domain, particularly the statistics of the
+domain
+</ul>
+
+emptyDomain.best_fit_parameters = nan;
+
+<ul>
+These are the parameters of the fit. They are defined
+in each fit type in the following manner:
+
+'empty' - no fit yet done, so [nan]
+
+'unfitted' - points left over after a fit is done, so [nan]
+
+'Hough line' - 
+
+[unit_projection_vector_x,
+unit_projection_vector_y,
+base_point_x, 
+base_point_y, 
+]
+
+'Hough segment' - 
+
+[unit_projection_vector_x,
+unit_projection_vector_y,
+base_point_x, 
+base_point_y, 
+station_distance_min,
+station_distance_max,
+]
+
+'Hough circle' - 
+[circleCenter_x.
+circleCenter_y,
+radius]
+
+'Hough arc' - 
+
+[circleCenter_x.
+circleCenter_y,
+radius,
+start_angle_in_radians, 
+end_angle_in_radians,
+flag_this_is_a_circle
+] 
+
+'Vector regression line fit' - 
+
+[unit_projection_vector_x,
+unit_projection_vector_y,
+base_point_x, 
+base_point_y, 
+]
+
+'Vector regression segment fit' -
+
+[unit_projection_vector_x,
+unit_projection_vector_y,
+base_point_x, 
+base_point_y, 
+station_distance_min,
+station_distance_max,
+]
+
+'Regression circle' - 
+[circleCenter_x.
+circleCenter_y,
+radius]
+
+'Regression arc' - 
+
+[circleCenter_x.
+circleCenter_y,
+radius,
+start_angle_in_radians, 
+end_angle_in_radians,
+flag_this_is_a_circle
+] 
+</ul>
+
+emptyDomain.best_fit_domain_box = [];
+<ul>
+These are the points in [N x 2] format that define the outer
+boundary of the best-fit domain, generally. For regression
+fits, it is the 2-sigma box. For Hough fits, it is the
+bounding box used for Hough voting.
+</ul>
+emptyDomain.best_fit_1_sigma_box = [];
+<ul>
+These are the points in [N x 2] format that define the outer
+boundary of the domain which is the fit, +/- 1 sigma.
+</ul>
+emptyDomain.best_fit_2_sigma_box = [];
+<ul>
+These are the points in [N x 2] format that define the outer
+boundary of the domain which is the fit, +/- 2 sigma.
+</ul>
+emptyDomain.best_fit_3_sigma_box = [];
+<ul>
+These are the points in [N x 2] format that define the outer
+boundary of the domain which is the fit, +/- 3 sigma.
+</ul>
+
+    
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fillEmptyDomainStructure
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fillSphereTestPoints**
+
+given N points, with N>=3, this fuunction creates a set of quasi-uniformly sampled
+points around the perimeter of a sphere with points randomly distributed
+radially, with variance sigma.
+
+
+**FORMAT:**
+```MATLAB
+test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num))
+```
+
+**INPUTS:**
+
+N_points: the number of points to generate, with N>=3
+
+sphere_center: a 1x2 vector denoting the [X Y] location of the
+center of the sphere
+
+sphere_radius: a 1x1 vector denoting the radius of the sphere
+
+sigma: the standard deviation in points in the radial direction
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.  
+       
+**OUTPUTS:**
+
+test_points: a list of test points used to test regression fitting
+of spheres
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fillSphereTestPoints
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_corruptPointsWithOutliers**
+
+given a set of [Nx2] points, this function randomly adds outliers in the orthogonal direction using a random-normal magnitude.
+
+**FORMAT:**
+```MATLAB
+corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
+(probability_of_corruption), (magnitude_of_corruption), (fig_num));
+```
+
+**INPUTS:**
+
+input_points: a Nx2 vector where N is the number of points, but at
+least 2.
+
+(Optional Inputs)
+
+probability_of_corruption: the probabiity that a given point is an
+outlier, from 0 to 1 (default is 0.02)
+
+magnitude_of_corruption: the magnitude of corruption wherein the
+outlier multiplied by a random-normal distribution. The default is
+2.
+
+fig_num: the figure number to use for plotting
+       
+**OUTPUTS:**
+
+corrupted_points: a list of test points that are corrupted
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+fcn_geometry_calcOrthogonalVector
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_corruptPointsWithOutliers
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_domainBoxByType**
+
+This function generates the domain box given a
+particular type of domain. NOTE: the inputs change depending on the type
+of domain 
+
+
+**FORMAT:**
+```MATLAB
+domain_box = fcn_geometry_domainBoxByType(...
+type_of_domain,...
+(options),
+(fig_num))
+```
+
+**INPUTS:**
+
+type_of_domain: a string indicating the type of domain to calculate.
+
+Types include:
+<ul>
+
+'arc': produces an arc type. If the inputs cause negative radii,
+the arc is limited to zero radius. The call is:
+
+domain_box = fcn_geometry_domainBoxByType(...
+'arc',...
+circleCenter, circleRadius, angles, distance_from_circle_to_boundary,
+(fig_num))
+
+</ul>
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+ 
+       
+**OUTPUTS:**
+
+domainShape: a polyshape created from the [x y] coordinates of the
+bounding box representing the domain.
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_domainBoxByType
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findAgreementsOfPointsToLineVector**
+
+Given a set of XY points, a unit projection vector and a base point that the vector is
+attached to, find the indicies of the points that are within a
+transverse_tolerance distance away from the vector. Then, among these
+points, finds the indicies that are within a station_tolerance distance
+from each other in a group that includes the base point.
+
+
+**FORMAT:**
+```MATLAB
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2
+rows.
+
+unit_projection_vector: a 1x2 vector that is a unit vector in the
+direction to check.
+
+base_point_index: the index of the point to use as a base point,
+among the input points.
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear vector fit that indicate whether a point "belongs" to the
+fit. A point belongs to the fit if the transverse distance is less
+than or equal to the transverse_tolerance
+
+station_tolerance: the projection distance between the points in a
+vector fit, along the direction of the line, that indicate whether a
+point "belongs" to the linear fit of a line segment or not. A line
+segment is considered continous if station interval distance is less
+than or equal to the station_tolerance. Set station_tolerance to an
+empty value, [], to avoid line segment fitting and instead find pure
+line fits along the vector.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+agreement_indicies: the indicies of the points that are within
+agreement of the best-fit parameters, given the transverse and
+station tolerance settings. If a station_tolerance is specified, the
+indicies are sorted in station-increasing order.
+
+station_distances: the station distances, relative to the base
+point, that are in agreement
+
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_findPointsInSequence
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findAgreementsOfPointsToLineVector
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findAgreementsOfPointsToCircle**
+
+Given a set of XY points, a circleCenter, and a circleRadius, finds the indicies of the points that are within a
+transverse_tolerance distance away from the circle.
+
+**FORMAT:**
+```MATLAB
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2
+rows.
+
+circleCenter: a 1x2 vector that is a the [x y] coordinates of the
+circle center to test.
+
+circleRadius: the radius of the circle to test
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear vector fit that indicate whether a point "belongs" to the
+fit. A point belongs to the fit if the transverse distance is less
+than or equal to the transverse_tolerance
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+agreement_indicies: the indicies of the points that are within
+agreement of the best-fit parameters, given the transverse and
+station tolerance settings. If a station_tolerance is specified, the
+indicies are sorted in station-increasing order.
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_findPointsInSequence
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findAgreementsOfPointsToCircle
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findAgreementsOfPointsToArc**
+
+Given a set of XY points, a base_point_index where an arc is rooted, a
+circleCenter, and a circleRadius, finds the indicies of the points that
+are within a transverse_tolerance distance away from the circle radius,
+while keeping within station_tolerance distance from each point within
+the cluster centered at the base_point_index.
+
+
+**FORMAT:**
+```MATLAB
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToArc(points, circleCenter, circleRadius, transverse_tolerance, (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2
+rows.
+
+base_point_index: the index of the point to use as a base point,
+among the input points.
+
+circleCenter: a 1x2 vector that is a the [x y] coordinates of the
+circle center to test.
+
+circleRadius: the radius of the circle to test
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear vector fit that indicate whether a point "belongs" to the
+fit. A point belongs to the fit if the transverse distance is less
+than or equal to the transverse_tolerance
+
+(OPTIONAL INPUTS)
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the line, that indicate whether a
+point "belongs" to the circle fit (if distance is less than or equal
+to the tolerance), or is "outside" the fit (if distance is greater
+than the tolerance). If left empty, then a circle fit is performed
+using only the transverse_tolerance.
+
+flag_force_circle_fit: specify that only circle fits are allowed.
+Can be set to:
+<ul>
+0: search for both arcs and circles (default)
+
+1: search only for circle fits. If station tolerance is given,
+then a circle will only be returned if all points meet both the
+transverse and station tolerances. Note: to force a circle fit
+irregardless of station tolerance, set station_tolerance to an
+empty value, e.g. station_tolerance = [];
+</ul>
+
+threshold_to_check_arc: a positive integer that represents the
+minimum number of points that must be in circle agreement before an
+arc is checked. The circle testing is very fast; however, the arc
+testing is slow. If the threshold is known beforehand, then entering
+this threshold significantly speeds up the analysis.
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+
+agreement_indicies: the indicies of the points that are within
+agreement of the best-fit parameters, given the transverse and
+station tolerance settings. If a station_tolerance is specified, the
+indicies are sorted in station-increasing order.
+
+flag_is_a_circle: 1 if the result forms a circle, 0 otherwise
+
+start_angle_in_radians: the angle that the arc starts at, between 0
+and 2pi
+
+end_angle_in_radians: the angle that the arc ends at, between 0
+and 2pi
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_findAgreementsOfPointsToCircle
+fcn_geometry_findArcAgreementIndicies
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findAgreementsOfPointsToArc
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findAngleBetweenAngles**
+
+This function checks whether angles lie between two
+different angles
+
+**FORMAT:**
+```MATLAB
+[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num))
+```
+
+**INPUTS:**
+
+start_angle_in_radians: the start angle in radians
+
+end_angle_in_radians: the end angle in radians
+
+direction: the direction connecting the start and end angles to
+check. Enter 1 for clockwise, anything else for counter-clockwise.
+
+angles_to_test: a vector of [N x 1] angles in radians to check
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results.
+       
+**OUTPUTS:**
+
+isAngleBetween: an [Nx1] vector containing the 1 if the respective test angle
+is between the start and end angles, 0 if not
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_arcDirectionFrom3Points
+fcn_geometry_findAngleUsing2PointsOnCircle
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findAngleBetweenAngles
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findArcAgreementIndicies**
+
+Given a set of points, a circle center and radius, and the index of a
+source point within the set of points, finds the indicies of the points
+that are within a station_tolerance distance from each other, as measured
+in arc length along the circle, around the source point. This is useful
+to determine sets of points that fall on or around a circle perimeter,
+centered near a test point, that form a "contiguous" arc but perhaps not
+completely around the circle. Contiguous is defined as having an arc
+distance, when the points are projected onto the circle, less than or
+equal to the station tolerance.
+
+**FORMAT:**
+```MATLAB
+[indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
+fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, (fig_num));
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2 rows. 
+
+circleCenter: an 1x2 vector containing the [X Y] location of the
+circle used to define the arc
+
+circleRadius: an 1x1 scalar defining the radius of the circle used
+to define the arc
+
+index_source_point: the index of the point that will be the "root"
+point for searching for a contiguous arc among all the points. This
+is needed for the common situations where point data may include
+many different arc portions along the same circle, and thus one must
+define which arc is desired.
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the line, that indicate whether a
+point "belongs" to the arc (if distance is less than or equal
+to the tolerance), or is "outside" the fit (if distance is greater
+than the tolerance). 
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+
+indicies_in_station_agreement: the indicies on the points that are
+in a contiguous arc that contains the source_point
+
+flag_is_a_circle: a flag that is 1 if the arc extends completely
+around the perimeter thus forming a complete circle. It is 0
+otherwise.
+
+start_angle_in_radians: the start angle of the arc
+
+end_angle_in_radians: the end angle of the arc.
+
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findArcAgreementIndicies
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fitCircleRegressionFromHoughFit**
+
+Given a set of points that are matched to a circle via a Hough vote,
+finds the circular regression fit circle and domain box. 
+
+**FORMAT:**
+```MATLAB
+[regression_fit_circle_center_and_radius, domain_box] = fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+```
+
+**INPUTS:**
+
+source_points: a 3x2 matrix of the points used to create the Hough circle fit (used to find direction): 
+
+[point1_x  point1_y; point2_x  point2_y; point3_x  point3_y;]
+
+These points are used to determine the direction of the resulting
+circle fit.
+
+associated_points_in_domain: an Nx2 list of points that should be
+fit with regression, identified as within the domain according to
+Hough voting.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot the results.
+       
+**OUTPUTS:**
+
+regression_fit_circle_center_and_radius: a 3x1 matrix of the format:
+
+[circleCenter_x  circleCenter_y; circleRadius]
+
+domain_box: the box that encloses the 2-standard-deviation interval
+around the regression circle fit.
+
+radial_errors: the individual errors in each point, radially, in an
+[N x 1] matrix
+
+standard_deviation: the standard deviation in the errors
+
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+fcn_geometry_fitSlopeInterceptNPoints
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitCircleRegressionFromHoughFit
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fitArcRegressionFromHoughFit**
+
+Given a domain containing a set of points that are matched to an arc via
+a Hough vote, finds the arc regression fit and domain box
+
+**FORMAT:**
+```MATLAB
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, (fig_num))
+```
+
+**INPUTS:**
+
+Hough_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+regression_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+std_dev_orthogonal_distance: the standard deviation in the point
+fit, as measured in the transverse direction (orthogonal to the line
+fit). E.g., this is the total-least-squares standard deviation.
+    
+**Dependencies:**
+
+fcn_geometry_fitCircleRegressionFromHoughFit
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitArcRegressionFromHoughFit
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+
+#### **fcn_geometry_fitHoughLine**
+
+Checks all permutations between points to fit a line (N choose 2), then
+calculates the line fit in polar form (rho and phi), and determines which
+of the points are within a tolerance distance of that line fit. This is
+calculated for all possible 2-point permutations, ordered in N-choose-2
+format. The best-fit parameters are returned
+
+**FORMAT:**
+```MATLAB
+[best_fitted_parameters, agreement_indicies] = fcn_geometry_fitHoughLine(points,varargin)
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2 rows.
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear curve fit that indicate whether a point "belongs" to the
+fit. A point belongs to the fit if the transverse distance is less
+than or equal to the transverse_tolerance
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the line, that indicate whether a
+point "belongs" to the linear fit of a line segment or not. A line
+segment is considered continous if station interval distance is less
+than or equal to the station_tolerance. Set station_tolerance to an
+empty value, [], to avoid line segment fitting and instead find pure
+line fits.
+
+(OPTIONAL INPUTS)
+
+points_required_for_agreement: the number of points required for an
+agreement to be valid, with minimum value of 3. If left empty, then
+the best agreement will always be returned. If a value is given,
+line fitting will continue by clustering data until there are no
+fits greater than or equal to points_required_for_agreement. The
+results of the line fit will be saved in a cell array.
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+domains: a structure that records details of the domain of fitting.
+See fcn_geometry_fillEmptyDomainStructure for details.
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+fcn_geometry_findAgreementsOfPointsToLineVector    
+fcn_geometry_fillEmptyDomainStructure
+fcn_geometry_plotFitDomains
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitHoughLine
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fitHoughCircle**
+
+This function takes the input points and tolerance as the input and
+outputs the fitted parameters and agreement indices of the top-voted
+circle
+
+**FORMAT:**
+```MATLAB
+domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2 rows. 
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear curve fit that indicate whether a point "belongs" to the
+fit (if distance is less than or equal to the tolerance), or is
+"outside" the fit (if distance is greater than the tolerance).
+
+(OPTIONAL INPUTS)
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the line, that indicate whether a
+point "belongs" to the circle fit (if distance is less than or equal
+to the tolerance), or is "outside" the fit (if distance is greater
+than the tolerance). If left empty, then a circle fit is performed
+using only the transverse_tolerance.
+
+points_required_for_agreement: the number of points required for an
+agreement to be valid, with minimum value of 3. Default is 10. If
+left empty, then the best agreement will always be returned. If a
+value is given, line fitting will continue by clustering data until
+there are no fits greater than or equal to
+points_required_for_agreement. The results of the line fit will be
+saved in a cell array.
+
+flag_force_circle_fit: specify that only circle fits are allowed.
+Can be set to:
+<ul>
+0:search for both arcs and circles (default)
+
+1:search only for circle fits. If station tolerance is given,
+then a circle will only be returned if all points meet both the
+transverse and station tolerances. Note: to force a circle fit
+irregardless of station tolerance, set station_tolerance to an
+empty value, e.g. station_tolerance = [];
+</ul>
+expected_radii_range: a vector in form of [r_min r_max] indicating
+expected radius. Any radii outside this range will not be assessed. 
+
+flag_find_only_best_agreement: set to 1 if want to only keep best
+agreement. Otherwise, searches will be continued until none are left
+that have more than points_required_for_agreement. Default is 0, to
+find all agreements
+
+flag_use_permutations: specify permutation type. Can be set to:
+<ul>
+0:search for permutations via ordering 1-2-3, then 2-3-4, etc.
+This assumes best-fit circle will be formed by points in direct
+sequence, and the points are in order (VERY fast)
+
+1: (default) search for permutations via nchoosek, which assumes best-fit
+circle will not be formed by points not in direct sequence, but
+the points are in order. (somewhat slow, especially in number of
+points is greater than 100).  
+
+N: search for permutations by randomly selecting N of them to
+test. This essentially turns the Hough transform vote into
+RANSAC.
+</ul>
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+       
+**OUTPUTS:**
+
+domains: a structure that records details of the domain of fitting.
+See fcn_geometry_fillEmptyDomainStructure for details
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_plotCircle 
+fcn_geometry_findArcAgreementIndicies
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitHoughCircle
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fitHoughArc**
+
+This function is just a renamed version of fitHoughCircle 
+
+**FORMAT:**
+```MATLAB
+domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2 rows. 
+
+transverse_tolerance: the orthogonal distance between the points and
+the linear curve fit that indicate whether a point "belongs" to the
+fit (if distance is less than or equal to the tolerance), or is
+"outside" the fit (if distance is greater than the tolerance).
+
+(OPTIONAL INPUTS)
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the line, that indicate whether a
+point "belongs" to the circle fit (if distance is less than or equal
+to the tolerance), or is "outside" the fit (if distance is greater
+than the tolerance). If left empty, then a circle fit is performed
+using only the transverse_tolerance.
+
+points_required_for_agreement: the number of points required for an
+agreement to be valid, with minimum value of 3. Default is 10. If
+left empty, then the best agreement will always be returned. If a
+value is given, line fitting will continue by clustering data until
+there are no fits greater than or equal to
+points_required_for_agreement. The results of the line fit will be
+saved in a cell array.
+
+flag_force_circle_fit: specify that only circle fits are allowed.
+Can be set to:
+<ul>
+0:search for both arcs and circles (default)
+
+1:search only for circle fits. If station tolerance is given,
+then a circle will only be returned if all points meet both the
+transverse and station tolerances. Note: to force a circle fit
+irregardless of station tolerance, set station_tolerance to an
+empty value, e.g. station_tolerance = [];
+</ul>
+expected_radii_range: a vector in form of [r_min r_max] indicating
+expected radius. Any radii outside this range will not be assessed. 
+
+flag_find_only_best_agreement: set to 1 if want to only keep best
+agreement. Otherwise, searches will be continued until none are left
+that have more than points_required_for_agreement. Default is 0, to
+find all agreements
+
+flag_use_permutations: specify permutation type. Can be set to:
+<ul>
+0:search for permutations via ordering 1-2-3, then 2-3-4, etc.
+This assumes best-fit circle will be formed by points in direct
+sequence, and the points are in order (VERY fast)
+
+1: (default) search for permutations via nchoosek, which assumes best-fit
+circle will not be formed by points not in direct sequence, but
+the points are in order. (somewhat slow, especially in number of
+points is greater than 100).  
+
+N: search for permutations by randomly selecting N of them to
+test. This essentially turns the Hough transform vote into
+RANSAC.
+</ul>
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+       
+**OUTPUTS:**
+
+domains: a structure that records details of the domain of fitting.
+See fcn_geometry_fillEmptyDomainStructure for details
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_plotCircle 
+fcn_geometry_findArcAgreementIndicies
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitHoughCircle
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+
+#### **fcn_geometry_fitLinearRegressionFromHoughFit**
+
+Given a domain containting a
+set of points that are matched via a Hough vote, finds the regression fit
+vector and domain box. 
+
+NOTE: the vector fit is not the same as a least-squares linear
+regression, which minimizes sum-of-squares of the VERTICAL errors between
+a line fit and the respective points. The method here is similar to
+total-least-squares. Namely, the vector is found that approximately
+minimizes the sum-of-squares distance between the vector and the
+orthogonal projection to each point. Thus, the fit is minimizing
+ORTHOGONAL errors. Unlike linear regression, this method works for data
+aligned vertically.
+
+
+**FORMAT:**
+```MATLAB
+[regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, (fig_num))
+```
+
+**INPUTS:**
+
+Hough_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+regression_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+std_dev_orthogonal_distance: the standard deviation in the point
+fit, as measured in the transverse direction (orthogonal to the line
+fit). E.g., this is the total-least-squares standard deviation.
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_calcUnitVector
+fcn_geometry_fitVectorToNPoints
+fcn_geometry_fitSlopeInterceptNPoints 
+
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_fitLinearRegressionFromHoughFit
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_HoughSegmentation**
+
+Given a set of points, attempts to segment the points into line segments,
+circles, arcs, etc. by using a Hough transform methodology. 
+
+The method used here is to search through each of the fitting types one
+at a time. Each fit must do several things:
+
+Step 1:  use the minimum model order to find all possible permutations of
+points that can create a fit. The minimum model order refers to the
+minimum number of points needed for the type of fit Given these points,
+find all possible index permutations that can form a complete model. The
+minimum number of points (M) for each type of model fit is as follows:
+
+<ul>
+line or line segment fit - 2 points minimum
+
+circle or arc fit - 3 points minimum
+
+spiral fit - this requires infinite points, and thus only highly
+constrained fits would be possible
+</ul>
+
+If there are N points, then there are N choose M permutations possible
+assuming M is the minimum number of points for the model fit.  NOTE: the
+nchoosek funciton in MATLAB produces these combination sequencies
+automatically.
+
+Step 2: Given all possible index combinations of points, find the model
+fit and the "votes" for that fit. The model fit is simply the geometric
+equation created by the M indicies. For a line, this would be the
+equation of the line for the 2 points of a particular index combination.
+The votes are determined by creating a tolerance around the fit, a
+regrion of agreement. Any of the points that are within this region are
+considered associated with each fit. The total count of points in
+agreement represent the "votes" for that particular fit.
+
+Step 3: Find the highest votes for a fit. The "best" is given by some
+point threshold - for example, 10 points, and any fits with 10 points or
+more would be considered "good" fits.
+
+Step 4: For the highest votes, save the relevant information such as the
+associated points, the model fit, the shape of the domain of the fit.
+
+The above process is repeated from simplest fit types to the most
+complex, until no more fits are possible for a given point threshold.
+Usually, this starts with the simplest fit type first (lines). After all
+lines are fitted, this proceeds to the next most complicated fit
+(circles), then the next most complicated (arcs), etc.
+
+NOTE: The fits are ordered from simplest (and fastest) first, then to
+more complex. This is necessary not only for speed, but also because of
+degeneracy in the fitting process itself. For example, all line segments
+are portions of lines, all lines are circles with infinite radius, all
+circles are arcs that extend up to 2*pi, all arcs are spirals with a
+radial slope equal to zero, etc. In other words, if one starts attempting
+to fit points first using advanced and complex geometric representations
+- a spiral, for example - before trying simpler ones first such as a line
+segment, then the simpler forms would never be found because all the line
+segments would be fit by spirals.
+
+
+**FORMAT:**
+```MATLAB
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx2 vector where N is the number of points, but at least 2 rows. 
+
+threshold_max_points: the number of points below which a match is no
+longer performed.
+
+transverse_tolerance: the orthogonal distance between the points and
+a curve fit that indicate whether a point "belongs" to the fit
+(if distance is less than or equal to the tolerance), or is
+"outside" the fit (if distance is greater than the tolerance).
+
+station_tolerance: the projection distance between the points in a
+curve fit, along the direction of the fit, that indicate whether a
+point "belongs" to the fit (if distance is less than or equal to the
+tolerance), or is "outside" the fit (if distance is greater than the
+tolerance).
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+domains: the fitted domains of the segments, ordered from the fit
+that has the most points included, to the domain that has the least.
+    
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_fitLinearRegressionFromHoughFit 
+fcn_geometry_fitCircleRegressionFromHoughFit
+fcn_geometry_fitArcRegressionFromHoughFit
+fcn_geometry_plotCircle
+fcn_geometry_plotArc
+fcn_geometry_fitHoughLine
+fcn_geometry_fitHoughCircle
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_HoughSegmentation
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_HoughRegression**
+
+Given a set of Hough fits of points in regions, performs regression
+fitting on each domain.
+
+**FORMAT:**
+```MATLAB
+domains = fcn_geometry_HoughRegression(Hough_domains, (fig_num))
+```
+
+**INPUTS:**
+
+Hough_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+       
+**OUTPUTS:**
+
+regression_domain: a structure that records details of the domain of
+fitting. See fcn_geometry_fillEmptyDomainStructure for details.
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_fitLinearRegressionFromHoughFit 
+fcn_geometry_fitCircleRegressionFromHoughFit
+fcn_geometry_fitCircleRegressionFromHoughFit
+fcn_geometry_plotCircle
+fcn_geometry_plotArc
+fcn_geometry_fitHoughLine
+fcn_geometry_fitHoughCircle
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_HoughRegression
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -1169,7 +2981,7 @@ help fcn_fcnname
 
 for any function to view function details.
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 <!-- LICENSE -->
@@ -1177,7 +2989,7 @@ for any function to view function details.
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
@@ -1185,7 +2997,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 This code is still in development (alpha testing)
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
@@ -1194,9 +3006,9 @@ This code is still in development (alpha testing)
 
 Sean Brennan - sbrennan@psu.edu
 
-Project Link: [https://github.com/ivsg-psu/FeatureExtraction_DataTransforms_TransformClassLibrary](https://github.com/ivsg-psu/FeatureExtraction_DataTransforms_TransformClassLibrary)
+Project Link: [https://github.com/ivsg-psu/PathPlanning_GeomTools_GeomClassLibrary](https://github.com/ivsg-psu/PathPlanning_GeomTools_GeomClassLibrary)
 
-<a href="#featureextraction_datatransforms_transformclasslibrary">Back to top</a>
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
 ***
 
