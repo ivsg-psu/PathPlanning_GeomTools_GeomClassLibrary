@@ -273,7 +273,22 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_plotCircle
+```MATLAB
+%% BASIC example for multiple circles
+fig_num = 2;
+figure(fig_num); axis square; grid minor;
+
+centers = [1 3; 2 4];
+radii = [2; 3];
+fcn_geometry_plotCircle(centers,radii,[],fig_num);
+```
+
+<pre align="center">
+  <img src=".\Images\plotCircle.jpg" alt="fcn_geometry_plotCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_plotCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -346,8 +361,92 @@ fcn_DebugTools_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_plotArc
+```MATLAB
+%% BASIC example for one arc plotting from 0 to 90, negative
+fig_num = 2;
+figure(fig_num); clf;
+
+centers = [1 3];
+radii = 2; 
+start_angle_in_radians = 0 * pi/180;
+end_angle_in_radians = -90 * pi/180;
+degree_step = [];
+format = [];
+
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (degree_step), (format), fig_num);
+```
+
+<pre align="center">
+  <img src=".\Images\plotArc.jpg" alt="fcn_geometry_plotArc picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_plotArc
 for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_plotSphere**
+
+This function plots a sphere by creating a vector of angles
+spaced 0.01 radians apart, and plotting this as a line around the
+perimeter.
+
+**FORMAT:**
+```MATLAB
+    XYZ_points = fcn_geometry_plotSphere(...
+    centers,...
+    radii,...
+    (color_vector);
+    (fig_num))
+```
+
+**INPUTS:**
+
+centers: an [N x 2] vector in [x y] of the points of sphere centers
+
+radii: a [N x 1] vector of the radii of the spheres (to avoid
+calculation time)
+
+(OPTIONAL INPUTS)
+
+color_vector: A color vector, e.g. [1 0 0.23], that dictates the
+sphere color. 
+
+fig_num: a figure number to plot results.
+       
+**OUTPUTS:**
+
+sphere_points: the [x y z] coordinates of the sphere points. If N
+centers and radii are given, with N>1, then sphere_points will be a
+cell array of points.
+
+**Dependencies:**
+
+fcn_geometry_checkInputsToFunctions
+
+**Examples:**
+
+```MATLAB
+%% BASIC example for one circle
+fig_num = 1;
+figure(fig_num); clf;
+
+center = [1 3 5];
+radius = [2]; %#ok<*NBRAK>
+color_vector = [];
+fcn_geometry_plotSphere(center, radius, color_vector, fig_num);
+```
+
+<pre align="center">
+  <img src=".\Images\plotSphere.jpg" alt="fcn_geometry_plotCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_plotSphere
+for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
 
