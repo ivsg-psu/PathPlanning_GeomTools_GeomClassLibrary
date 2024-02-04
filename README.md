@@ -2426,7 +2426,55 @@ fcn_geometry_fitSlopeInterceptNPoints
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitCircleRegressionFromHoughFit
+```MATLAB
+%% Fill test data 
+fig_num = 21;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+% circle
+circle_center = [3 4];
+circle_radius = 2;
+M = 50; % points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitCircleRegressionFromHoughFit_1.jpg" alt="fcn_geometry_fitCircleRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+```MATLAB
+% Basic call with clean data
+fig_num = 1;
+figure(fig_num);
+clf;
+hold on;
+
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitCircleRegressionFromHoughFit_2.jpg" alt="fcn_geometry_fitCircleRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitCircleRegressionFromHoughFit
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2469,6 +2517,81 @@ fcn_geometry_fitCircleRegressionFromHoughFit
 
 **Examples:**
 
+
+```MATLAB
+
+%% Filling test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitArcRegressionFromHoughFit_1.jpg" alt="fcn_geometry_fitArcRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+```MATLAB
+%% Fit the onarc_test_points
+fig_num = 234;
+figure(fig_num); clf;
+
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+points_required_for_agreement = 20;
+flag_force_circle_fit = 0;
+expected_radii_range = [1 10];
+flag_find_only_best_agreement = [];
+flag_use_permutations = [];
+
+fig_num = 235;
+figure(fig_num); clf;
+inputPoints = corrupted_twoarc_test_points;
+domains_corrupted_twoarc_test_points  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
+```
+<pre align="center">
+  <img src=".\Images\fitArcRegressionFromHoughFit_2.jpg" alt="fcn_geometry_fitArcRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+```MATLAB
+%% Basic call with bad data
+fig_num = 2;
+figure(fig_num);
+clf;
+hold on;
+
+regression_domain  =  ...
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, fig_num); 
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitArcRegressionFromHoughFit_3.jpg" alt="fcn_geometry_fitArcRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, 
 See the script: script_test_fcn_geometry_fitArcRegressionFromHoughFit
 for a full test suite.
 
@@ -2535,7 +2658,49 @@ fcn_geometry_plotFitDomains
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitHoughLine
+```MATLAB
+%% Fill in some test data
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
+%% Test 2: a basic test of line segment fitting, noisy points
+fig_num = 2;
+figure(fig_num);
+clf;
+
+transverse_tolerance = 0.2;
+station_tolerance = 0.4;
+points_required_for_agreement = [];
+
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+```
+
+
+<pre align="center">
+  <img src=".\Images\fitHoughLine.jpg" alt="fcn_geometry_fitHoughLine picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitHoughLine
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2633,7 +2798,68 @@ fcn_geometry_findArcAgreementIndicies
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitHoughCircle
+```MATLAB
+%% Fill test data 
+
+% 1 arc
+fig_num = 23;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitHoughCircle_1.jpg" alt="fcn_geometry_fitHoughCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+
+```MATLAB
+%% BASIC call with arc data, fitting it with a circle by not specifying station tolerance
+fig_num = 111;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = [];
+points_required_for_agreement = [];
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
+
+
+domains  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitHoughCircle_2.jpg" alt="fcn_geometry_fitHoughCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitHoughCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2729,7 +2955,66 @@ fcn_geometry_findArcAgreementIndicies
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitHoughCircle
+```MATLAB
+%% Fill test data 
+
+% 1 arc
+fig_num = 23;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitHoughCircle_1.jpg" alt="fcn_geometry_fitHoughArc picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+```MATLAB
+%% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
+fig_num = 222;
+figure(fig_num); clf;
+
+inputPoints = corrupted_onearc_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+points_required_for_agreement = [];
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_find_only_best_agreement = []; flag_use_permutations = [];
+
+
+domains  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range),(flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
+```
+
+<pre align="center">
+  <img src=".\Images\fitHoughArc.jpg" alt="fcn_geometry_fitHoughArc picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+
+For more examples, see the script: script_test_fcn_geometry_fitHoughCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2788,7 +3073,62 @@ fcn_geometry_fitSlopeInterceptNPoints
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitLinearRegressionFromHoughFit
+```MATLAB
+%% Fill test data 
+fig_num = 9999;
+figure(fig_num); clf;
+
+% Fill in points
+seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
+M = 10;
+sigma = 0.02;
+
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Corrupt the results with outliers
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+% Shuffle points?
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+% Demo Hough line fitting
+
+transverse_tolerance = 0.05;
+station_tolerance = 2;
+points_required_for_agreement = 20;
+
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitLinearRegressionFromHoughFit_1.jpg" alt="fcn_geometry_fitLinearRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+```MATLAB
+
+%% Basic call - line fitting
+fig_num = 1;
+figure(fig_num);
+clf;
+hold on;
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitLinearRegressionFromHoughFit_2.jpg" alt="fcn_geometry_fitLinearRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitLinearRegressionFromHoughFit
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2904,7 +3244,42 @@ fcn_geometry_fitHoughCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_HoughSegmentation
+```MATLAB
+%% Fill in test points
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+%% Basic example: find one line segment
+
+fig_num = 10; 
+figure(fig_num); clf;
+
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 10;
+input_points = corrupted_single_segment_test_points;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\HoughSegmentation.jpg" alt="fcn_geometry_HoughSegmentation picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_HoughSegmentation
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -2950,7 +3325,47 @@ fcn_geometry_fitHoughCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_HoughRegression
+```MATLAB
+%% Basic example: find one line segment
+
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+
+fig_num = 10; 
+figure(fig_num); clf;
+
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 10;
+input_points = corrupted_single_segment_test_points;
+
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
+
+```
+
+<pre align="center">
+  <img src=".\Images\HoughRegression.jpg" alt="fcn_geometry_HoughRegression picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_HoughRegression
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
