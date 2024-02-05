@@ -46,6 +46,7 @@ Search for this, and you will find!
           <li><a href="#fcn_geometry_checkinputstofunctions">fcn_geometry_checkInputsToFunctions</li>
           <li><a href="#fcn_geometry_plotcircle">fcn_geometry_plotCircle</li>
           <li><a href="#fcn_geometry_plotarc">fcn_geometry_plotArc</li>
+          <li><a href="#fcn_geometry_plotsphere">fcn_geometry_plotSphere</li>
           <li><a href="#fcn_geometry_plotfitdomains">fcn_geometry_plotFitDomains</li>
           <li><a href="#fcn_geometry_calcunitvector">fcn_geometry_calcUnitVector</li>
           <li><a href="#fcn_geometry_calcorthogonalvector">fcn_geometry_calcOrthogonalVector</li>
@@ -441,7 +442,7 @@ fcn_geometry_plotSphere(center, radius, color_vector, fig_num);
 ```
 
 <pre align="center">
-  <img src=".\Images\plotSphere.jpg" alt="fcn_geometry_plotCircle picture" width="500" height="400">
+  <img src=".\Images\plotSphere.jpg" alt="fcn_geometry_plotSphere picture" width="500" height="400">
   <figcaption></figcaption>
 </pre>
 
@@ -521,7 +522,23 @@ fcn_DebugTools_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_calcUnitVector
+```MATLAB
+%% Test 2: many vectors
+fig_num = 2;
+input_vectors = randn(10,2); 
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+```
+
+<pre align="center">
+  <img src=".\Images\calcUnitVector.jpg" alt="fcn_geometry_calcUnitVector picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_calcUnitVector
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -563,7 +580,34 @@ fcn_geometry_calcUnitVector
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_calcOrthogonalVector
+```MATLAB
+%% Test 4: a basic test in 3D, many points
+fig_num = 4;
+figure(fig_num);
+clf;
+
+step = 0.05;
+
+input_vectors = (step:step:1)'.*[3 2 4]; 
+seed_points = [];
+unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, seed_points, (fig_num)); 
+
+% Check that they are all unit length
+length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
+assert(all(abs(length_errors)<(eps*100)));
+
+% Check that dot products are zero
+dot_product_sums = sum(input_vectors*unit_vectors',2);
+assert(all(abs(dot_product_sums)<(eps*100)));
+
+```
+
+<pre align="center">
+  <img src=".\Images\calcOrthogonalVector.jpg" alt="fcn_geometry_calcOrthogonalVector picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_calcOrthogonalVector
 for a full test suite
 
 
@@ -601,6 +645,26 @@ shuffled_points: a list of test points that are shuffled in ordering
 none
 
 **Examples:**
+
+```MATLAB
+%% Test 1: a basic test 
+fig_num = 1;
+figure(fig_num);
+clf;
+
+seed_points = [2 3; 4 5; 3 2];
+M = 10;
+sigma = 0.02;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+shuffled_points = fcn_geometry_shufflePointOrdering(test_points, (fig_num));
+```
+
+<pre align="center">
+  <img src=".\Images\shufflePointOrdering.jpg" alt="fcn_geometry_shufflePointOrdering picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
 
 See the script: script_test_fcn_geometry_shufflePointOrdering
 for a full test suite.
