@@ -93,6 +93,9 @@ Search for this, and you will find!
           <li><a href="#fcn_geometry_fitlinearregressionfromhoughfit">fcn_geometry_fitLinearRegressionFromHoughFit</li>
           <li><a href="#fcn_geometry_houghsegmentation">fcn_geometry_HoughSegmentation</li>
           <li><a href="#fcn_geometry_houghregression">fcn_geometry_HoughRegression</li>
+          <li><a href="#fcn_geometry_fitplanelinearregression">fcn_geometry_fitPlaneLinearRegression</li>
+          <li><a href="#fcn_geometry_fitspherelsqregression">fcn_geometry_FitSphereLSQRegression</li>
+          <li><a href="#fcn_geometry_fitrightcone">fcn_geometry_fitRightCone</li>
         </ul>
       </ul>
     <li><a href="#usage">Usage</a></li>
@@ -3274,6 +3277,11 @@ domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_po
   <figcaption></figcaption>
 </pre>
 
+<pre align="center">
+  <img src=".\Images\fitLinearRegressionFromHoughFit_2.jpg" alt="fcn_geometry_fitLinearRegressionFromHoughFit picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
 ```MATLAB
 
 %% Basic call - line fitting
@@ -3287,7 +3295,7 @@ regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fi
 ```
 
 <pre align="center">
-  <img src=".\Images\fitLinearRegressionFromHoughFit_2.jpg" alt="fcn_geometry_fitLinearRegressionFromHoughFit picture" width="500" height="400">
+  <img src=".\Images\fitLinearRegressionFromHoughFit_3.jpg" alt="fcn_geometry_fitLinearRegressionFromHoughFit picture" width="500" height="400">
   <figcaption></figcaption>
 </pre>
 
@@ -3529,6 +3537,213 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
 </pre>
 
 For more examples, see the script: script_test_fcn_geometry_HoughRegression
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_fitPlaneLinearRegression**
+
+This function fits a plane to the points and finds the coefficients, C1, C2, and C3 in the equation
+
+z = C1*x + C2y + C3
+
+**FORMAT:**
+```MATLAB
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = ...
+   fcn_geometry_fitPlaneLinearRegression(points,(fig_num))
+```
+
+**INPUTS:**
+
+points: a Nx3 vector where N is the number of points, length N>=3. 
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+**OUTPUTS:**
+
+params: the [1 x 3] matrix of the parameters [C1 C2 C3]
+
+standard_deviation_in_z: the standard deviation in the z-error of
+the 
+
+z_fit: the model-fit z values
+
+unit_vector: the unit vector in the direction of <A, B, C> for the
+equation: 
+
+      A*(x-x0) + B(y-y0) + C(z-z0) = 0
+
+base_point: the location closest to the origin of the plane
+
+standard_deviation_in_plane_orthogonals: the standard deviation in
+the point fitting error in the direction of the unit_vector
+
+plane_distances: the distances of each of the N points to the plane,
+measured orthogonally from the plane. Returned as an [N x 1 ] vector.
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+```MATLAB
+fig_num = 1;
+figure(fig_num);
+clf;
+rng(1823);
+
+true_parameters = [ 0.1 0.2 3]';
+points = randn(100,3);
+x = points(:,1);
+y = points(:,2);
+true_z = [x y ones(size(x))]*true_parameters; % Solve for z vertices data
+
+z = true_z;
+
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression([x y z],fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitPlaneLinearRegression.jpg" alt="fcn_geometry_fitPlaneLinearRegression picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitPlaneLinearRegression
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_FitSphereLSQRegression**
+
+Fitting a sphere to points using least squares based on squared differences 
+of squared lengths and square radius
+
+**FORMAT:**
+```MATLAB
+[C,R,E_total,errors] = fcn_LidarPoseEstimation_FitSphereLSQ(XYZ_array)
+```
+
+**INPUTS:**
+
+XYZ_array: an Nx3 array contains X,Y and Z coordinates in Velodyne
+Lidar Coordinate, with N>=3.
+
+**OUTPUTS:**
+
+C_sphere : a 1x3 vector contains the coordinate of the center of the sphere
+R_sphere : the radius of the sphere
+E_total  : the sum of the squared differences of squared lengths 
+            and square radius
+errors   : the differences of point distances to center to fitted
+radius
+
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+```MATLAB
+fig_num = 1;
+figure(fig_num); clf;
+
+% Fill in the true values
+sphere_center = [6 2 0];
+sphere_radius = 1;
+
+% Fill in the test data
+N_points = 1000;
+sigma = 0.02;
+XYZ_array = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma,-1);
+assert(length(XYZ_array(:,1))==N_points);
+
+
+% Call the fitting function
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\FitSphereLSQRegression.jpg" alt="fcn_geometry_fFitSphereLSQRegression picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_FitSphereLSQRegression
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+#### **fcn_geometry_fitRightCone**
+
+This function calculates the ratio of radius to height of the
+cone
+
+**FORMAT:**
+```MATLAB
+cone_parameters = fcn_geometry_fitRightCone(inputPoints,ring_id)
+```
+
+**INPUTS:**
+
+inputPoints: a Nx3 vectors of point pairings in the one single scan
+layer
+
+ring_id : an integer number indicates the id of the layer, ranging 
+from 0 to 15
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+**OUTPUTS:**
+
+cone_parameters: an [1x2] vector containing ratio of radius to 
+height of the cone and the id of the scan layer
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+
+**Examples:**
+
+```MATLAB
+%% Load Data: Use the rawdata_lidar.mat in the Data folder to start, 
+% the loaded data is a struct containing two fields
+% rawdata.GPS_SparkFun_Temp_ENU and rawdata.Lidar_pointcloud_cell
+data_folder = fullfile("..","Data");
+addpath(data_folder)
+load('PointCloud_Separated_Data_newTarget.mat')
+
+%% Test 1: a basic test, change the index of scan and ring label if needed
+idx_scan = 1;
+test_ring = ptCloud_pts_layers_separated_cell{idx_scan}.Ring0;
+inputPoints = test_ring(:,1:3);
+ring_id = test_ring(1,5);
+fig_num = 1;
+[cone_parameters,fittedPoints,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,fig_num);
+
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitRightCone.jpg" alt="fcn_geometry_fitRightCone picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_FitSphereLSQRegression
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
