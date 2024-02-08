@@ -8,7 +8,7 @@ close all
 
 
 % Assumptions: All the fits should have unique points. No input point
-% should be repeated in any fits.
+% should be repeated in any geometric fits.
 
 rng(3423)
 
