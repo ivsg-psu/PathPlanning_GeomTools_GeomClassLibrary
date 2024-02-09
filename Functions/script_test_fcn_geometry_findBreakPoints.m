@@ -91,7 +91,7 @@ breakPointsCell = fcn_geometry_findBreakpoints(domains);
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
 
-%% In this case, two arcs and one line have been used as the test data. The break points are saved in breakPointsCell array  
+%% In this case, two arcs and one line have been used as the test data. The break points are saved in breakPointsCell array 
 
 % Fill data points with lines and arcs
 rng(3)
@@ -164,11 +164,14 @@ assert(isequal(domains{3}.points_in_domain(1,:) == breakPointsCell{3}.firstBreak
 assert(isequal(domains{3}.points_in_domain(end,:) == breakPointsCell{3}.lastBreakPoint, [1 1]));
 
 
-%% More complicated case: Two arcs and Two straight lines
+%% More complicated case: Two arcs and Two straight lines (not perfect) 
 
 
-% Assumptions: All the fits should have unique points. No input point
-% should be repeated in any geometric fits.
+% Hough Segmentation is not executed correctly. Need to give
+% station-transverse coordinates as the input points to get the unique fit
+% in each stage. 
+% However, the findBreakPoints function finds the break points. The break
+% points are not valid since the geometric fits are not unique.
 
 rng(3423)
 
