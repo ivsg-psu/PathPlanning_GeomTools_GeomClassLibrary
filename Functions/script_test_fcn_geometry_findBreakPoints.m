@@ -152,7 +152,7 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 % w = domains{1,2}.points_in_domain;
 % e = domains{1,3}.points_in_domain;
 
-breakPointsCell = fcn_geometry_findBreakpoints(domains);
+[breakPointsCell, breakPointClosePairs] = fcn_geometry_findBreakpoints(domains);
 
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
