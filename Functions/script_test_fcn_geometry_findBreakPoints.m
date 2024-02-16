@@ -48,11 +48,13 @@ input_points = corrupted_testpoints;
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
 % Find break points
-
-breakPointsCell = fcn_geometry_findBreakpoints(domains);
+tolerance = 0.5;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance);
 
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
+
+assert(isequal(closeBreakPointPairs,  zeros(0, 2)))
 
 %% Simple Arc Case
 
@@ -86,10 +88,13 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 
 % Find break points
 
-breakPointsCell = fcn_geometry_findBreakpoints(domains);
+tolerance = 0.5;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance);
 
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
+
+assert(isequal(closeBreakPointPairs,  zeros(0, 2)))
 
 %% In this case, two arcs and one line have been used as the test data. The break points are saved in breakPointsCell array 
 
@@ -152,7 +157,8 @@ domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, tra
 % w = domains{1,2}.points_in_domain;
 % e = domains{1,3}.points_in_domain;
 
-[breakPointsCell, breakPointClosePairs] = fcn_geometry_findBreakpoints(domains);
+tolerance = 0.5;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance);
 
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
@@ -165,9 +171,8 @@ assert(isequal(domains{3}.points_in_domain(end,:) == breakPointsCell{3}.lastBrea
 
 
 figure(34)
-for i = 1:length(breakPointClosePairs)
-    plot(breakPointClosePairs(i,1), breakPointClosePairs(i,2),'.c' ,'MarkerSize',13)
-end
+
+plot(closeBreakPointPairs(:,1), closeBreakPointPairs(:,2), '.c','MarkerSize',13);
 
 
 %% More complicated case: Two arcs and Two straight lines (not perfect) 
@@ -235,7 +240,8 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-breakPointsCell = fcn_geometry_findBreakpoints(domains);
+tolerance = 0.5;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance);
 
 assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreakPoint, [1 1]));
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
@@ -248,3 +254,6 @@ assert(isequal(domains{3}.points_in_domain(end,:) == breakPointsCell{3}.lastBrea
 
 assert(isequal(domains{4}.points_in_domain(1,:) == breakPointsCell{4}.firstBreakPoint, [1 1]));
 assert(isequal(domains{4}.points_in_domain(end,:) == breakPointsCell{4}.lastBreakPoint, [1 1]));
+
+figure(44)
+plot(closeBreakPointPairs(:,1), closeBreakPointPairs(:,2), '.c','MarkerSize',13);
