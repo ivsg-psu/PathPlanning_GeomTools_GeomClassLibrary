@@ -11,7 +11,7 @@ Search for this, and you will find!
   </h2>
 
   <pre align="center">
-    <img src=".\Images\" alt="Geom Tools Picture" width="577" height="246.67">
+    <img src=".\Images\Geometry.jpeg" alt="Geom Tools Picture" width="600" height="500">
   </pre>
 
   <p align="center">
@@ -488,7 +488,87 @@ up code to maximize speed.
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_plotFitDomains
+```MATLAB
+
+%% Fill in some test data
+% This takes a while - it's generated from the test script for Hough
+% Segmentation
+
+clear example_domains
+
+if ~exist('example_domains','var')
+    % Advanced example 3: find segments within a chevron
+    M = 10; % 40 points per meter
+
+    rng(234)
+    sigma = 0.02;
+
+    multi_segment_test_points = [];
+
+    seed_points = [0 0; 10 0];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points]; %#ok<*NASGU>
+
+    seed_points = [0 0; 10 5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+    seed_points = [2 0; 3 1.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+    seed_points = [4 0; 5 2.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+    seed_points = [6 0; 7 3.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+    seed_points = [8 0; 9 4.5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+
+    seed_points = [10 0; 10 5];
+    subtest_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+    multi_segment_test_points = [multi_segment_test_points; subtest_points];
+     
+    % Add outliers to corrupt the results
+    outliers = [10*randn(100,1) 5*randn(100,1)];
+    multi_segment_test_points = [multi_segment_test_points; outliers];
+
+
+    % Call the segmentation function
+    fig_num = 3;
+    transverse_tolerance = 0.1; % Units are meters
+    station_tolerance = 0.2; % Units are meters
+    threshold_max_points = 10;
+    input_points = multi_segment_test_points;
+
+    example_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+end
+
+%% BASIC test of plotting
+fig_num = 1234;
+figure(fig_num);
+clf;
+hold on;
+grid on;
+axis equal
+grid minor;
+
+plot(multi_segment_test_points(:,1),multi_segment_test_points(:,2),'k.','MarkerSize',20);
+
+fcn_geometry_plotFitDomains(example_domains, fig_num);
+
+```
+
+<pre align="center">
+  <img src=".\Images\plotFitDomains.jpg" alt="fcn_geometry_plotFitDomains picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_plotFitDomains
 for a full test suite
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -710,7 +790,17 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_circleCenterFrom3Points
+
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\circleCenterFrom3Points.jpg" alt="fcn_geometry_circleCenterFrom3Points picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_circleCenterFrom3Points
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -758,7 +848,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findAngleUsing2PointsOnCircle
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findAngleUsing2PointsOnCircle.jpg" alt="fcn_geometry_findAngleUsing2PointsOnCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findAngleUsing2PointsOnCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -812,7 +911,16 @@ fcn_geometry_findTangentPointsFromPointToCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findAngleUsing3PointsOnCircle
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findAngleUsing3PointsOnCircle.jpg" alt="fcn_geometry_findAngleUsing3PointsOnCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findAngleUsing3PointsOnCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -856,7 +964,17 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findTangentPointsFromPointToCircle
+
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findTangentPointsFromPointToCircle.jpg" alt="fcn_geometry_findTangentPointsFromPointToCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findTangentPointsFromPointToCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -905,7 +1023,16 @@ fcn_geometry_findTangentPointsFromPointToCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findTangentPointFromPointToCircle
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findTangentPointFromPointToCircle.jpg" alt="fcn_geometry_findTangentPointFromPointToCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findTangentPointFromPointToCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -957,7 +1084,16 @@ fcn_geometry_findAngleUsing2PointsOnCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_arcAngleFrom3Points
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\arcAngleFrom3Points.jpg" alt="fcn_geometry_arcAngleFrom3Points picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_arcAngleFrom3Points
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1004,7 +1140,16 @@ sign
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_arcDirectionFrom3Points
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\arcDirectionFrom3Points.jpg" alt="fcn_geometry_arcDirectionFrom3Points picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_arcDirectionFrom3Points
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1044,7 +1189,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_polarLineFrom2PolarCoords
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\polarLineFrom2PolarCoords.jpg" alt="fcn_geometry_polarLineFrom2PolarCoords picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_polarLineFrom2PolarCoords
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1086,7 +1240,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findVisibleArcsFromPoints
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findVisibleArcsFromPoints.jpg" alt="fcn_geometry_findVisibleArcsFromPoints picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findVisibleArcsFromPoints
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1163,7 +1326,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findTangentPointsTwoCircles
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findTangentPointsTwoCircles.jpg" alt="fcn_geometry_findTangentPointsTwoCircles picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findTangentPointsTwoCircles
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1231,7 +1403,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findTangentPointTwoCircles
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findTangentPointTwoCircles.jpg" alt="fcn_geometry_findTangentPointTwoCircles picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findTangentPointTwoCircles
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1275,7 +1456,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findPhiConstraints
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findPhiConstraints.jpg" alt="fcn_geometry_findPhiConstraints picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findPhiConstraints
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1320,7 +1510,16 @@ point
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findPointsInSequence
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findPointsInSequence.jpg" alt="fcn_geometry_findPointsInSequence picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findPointsInSequence
 for a full test suite
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1362,7 +1561,16 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: geometry_findIntersectionLineSegmentWithCircle.m
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findIntersectionLineSegmentWithCircle.jpg" alt="fcn_geometry_findIntersectionLineSegmentWithCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findIntersectionLineSegmentWithCircle.m
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1408,7 +1616,16 @@ fcn_geometry_findTangentPointsFromPointToCircle
       
 **Examples:**
 
-See the script: script_test_fcn_geometry_selfCrossProduct
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\selfCrossProduct.jpg" alt="fcn_geometry_selfCrossProduct picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_selfCrossProduct
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1448,7 +1665,16 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_euclideanPointsToPointsDistance
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\euclideanPointsToPointsDistance.jpg" alt="fcn_geometry_euclideanPointsToPointsDistance picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_euclideanPointsToPointsDistance
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1484,7 +1710,16 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: fcn_geometry_euclideanPointToPointsDistance
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\euclideanPointToPointsDistance.jpg" alt="fcn_geometry_euclideanPointToPointsDistance picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_euclideanPointToPointsDistance
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1558,7 +1793,16 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_findIntersectionOfSegments.m
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\findIntersectionOfSegments.jpg" alt="fcn_geometry_findIntersectionOfSegments picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findIntersectionOfSegments.m
 for a full test suite. 
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1592,7 +1836,17 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitSlopeInterceptNPoints
+
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitSlopeInterceptNPoints.jpg" alt="fcn_geometry_fitSlopeInterceptNPoints picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitSlopeInterceptNPoints
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1637,7 +1891,16 @@ fcn_geometry_plotCircle
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_fitVectorToNPoints
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\fitVectorToNPoints.jpg" alt="fcn_geometry_fitVectorToNPoints picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_fitVectorToNPoints
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -1692,7 +1955,16 @@ fcn_geometry_checkInputsToFunctions
 
 **Examples:**
 
-See the script: script_test_fcn_geometry_flagPointsFurtherFromOrigin.m
+```MATLAB
+
+```
+
+<pre align="center">
+  <img src=".\Images\flagPointsFurtherFromOrigin.jpg" alt="fcn_geometry_flagPointsFurtherFromOrigin picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_flagPointsFurtherFromOrigin.m
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>

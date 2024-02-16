@@ -164,6 +164,12 @@ assert(isequal(domains{3}.points_in_domain(1,:) == breakPointsCell{3}.firstBreak
 assert(isequal(domains{3}.points_in_domain(end,:) == breakPointsCell{3}.lastBreakPoint, [1 1]));
 
 
+figure(34)
+for i = 1:length(breakPointClosePairs)
+    plot(breakPointClosePairs(i,1), breakPointClosePairs(i,2),'.c' ,'MarkerSize',13)
+end
+
+
 %% More complicated case: Two arcs and Two straight lines (not perfect) 
 
 

@@ -55,7 +55,6 @@ idx_breakpoint_close_pairs_column = reshape(idx_breakpoint_close_pairs.', [], 1)
 % Finding the break point close pairs 
 breakPointClosePairs = breakPointsMatrix(idx_breakpoint_close_pairs_column,:);
 
-
 end
 
 
