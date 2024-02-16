@@ -39,10 +39,10 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 %
 % OUTPUTS: 
 %  
-%   vectorsCloseTOref: the vectors that are in the vicinity of the
+%   vectorsCloseTOref: the vectors that are in the alignment of the
 %   reference vector are calculated
 %
-%   SameDirection_vectorsCloseTOref: the vectors that are in the vicinity
+%   SameDirection_vectorsCloseTOref: the vectors that are in the alignment
 %   and are in the same direction of the reference vector are computed
 %   
 %
