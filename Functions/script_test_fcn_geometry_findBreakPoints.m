@@ -13,10 +13,9 @@
 
 %% Clear workspace
 clc
-clear 
 close all
 
-%% Simple Line Case
+%% Simple Line Segment Case
 
 rng(343)
 
@@ -55,6 +54,80 @@ assert(isequal(domains{1}.points_in_domain(1,:) == breakPointsCell{1}.firstBreak
 assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBreakPoint, [1 1]));
 
 assert(isequal(closeBreakPointPairs,  zeros(0, 2)))
+
+%% Two line segments: The ending point of a line segment is joined to the starting point of the other line segment 
+
+rng(343)
+
+fig_num = 112;
+
+% Line test points
+seed_points = [1 2; 2 4; 4 5];
+M = 10;
+sigma = 0.02;
+
+test_points_twoLineSegments = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+% Corrupt the points
+fig_num = 113;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(test_points_twoLineSegments,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 114;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+
+%% Two line segments: The ending point of a line segment is not joined to the starting point of the other line segment 
+
+rng(343)
+
+fig_num = 115;
+
+% Line 1 test points
+seed_points = [1 2; 2 4];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [2.5 4.5; 4 5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 116;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 117;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
 
 %% Simple Arc Case
 
