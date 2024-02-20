@@ -55,6 +55,7 @@ assert(isequal(domains{1}.points_in_domain(end,:) == breakPointsCell{1}.lastBrea
 
 assert(isequal(closeBreakPointPairs,  zeros(0, 2)))
 
+
 %% Two line segments: The ending point of a line segment is joined to the starting point of the other line segment 
 
 rng(343)
@@ -121,6 +122,213 @@ corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
 
 % Hough Segmentation
 fig_num = 117;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+
+%% Two line segments (Far): The ending point of a line segment is not joined to the starting point of the other line segment 
+
+rng(343)
+
+fig_num = 118;
+
+% Line 1 test points
+seed_points = [1 2; 2 4];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [4 5; 6 5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 119;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 120;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+%% Two line segments: Both the segments have an intersecting point
+
+rng(343)
+
+fig_num = 121;
+
+% Line 1 test points
+seed_points = [1 2; 2 4];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [1 4; 4 2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 122;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 123;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+%% Two line segments: Extend one of the line segments to find the intersecting point
+
+rng(343)
+
+fig_num = 124;
+
+% Line 1 test points
+seed_points = [1 2; 2 4];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [2.5 3; 4 4.5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 125;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 126;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+%% Two line segments: Both segments seem to be parallel but actually they are not (Slopes are not equal). Extend both the segments to find an intersecting point
+
+rng(343)
+
+fig_num = 127;
+
+% Line 1 test points
+seed_points = [1 2; 2 5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [2.5 2.5; 4 6];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 128;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 129;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+
+%% Two line segments: Both segments are parallel (Slopes are equal).
+
+rng(343)
+
+fig_num = 130;
+
+% Line 1 test points
+seed_points = [1 2; 2 4];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [2 3; 3 5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 131;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 132;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 10;
