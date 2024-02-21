@@ -87,6 +87,68 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+% Fit parameters of Line Segment
+%
+% breakPointsCell{}.fitParameters(1) = unit_projection_vector_x 
+% breakPointsCell{}.fitParameters(2) = unit_projection_vector_y 
+% breakPointsCell{}.fitParameters(3) = base_point_x 
+% breakPointsCell{}.fitParameters(4) = base_point_y
+% breakPointsCell{}.fitParameters(5) = station_distance_min 
+% breakPointsCell{}.fitParameters(6) = station_distance_max
+
+% Creating a matrix to store the best fit parameters
+fitParametersMatrix = zeros([length(breakPointsCell),6]);
+
+for i = 1: length(breakPointsCell)
+    fitParametersMatrix(i,:) = breakPointsCell{i}.fitParameters;
+    
+end
+
+% Finding the slopes of the lines
+slopesLines = fitParametersMatrix(:,2)./fitParametersMatrix(:,1);
+% Finding the y-intercepts of the lines 
+yInterceptsLines = fitParametersMatrix(:,4) - slopesLines.*fitParametersMatrix(:,3);
+
+% Line: ax+by+c = 0 ---> -mx+y-yIntercept = 0
+% 
+% a = -slopesLines; b = 1; c = -yInterceptsLines
+%
+% -mx + b = c
+% AA = [-m1  1; -m2 1]
+% bb = [c1; c2]
+
+% Solving for intersecting point 
+AA = [-1.*(slopesLines), ones(size(slopesLines))]; 
+bb = (yInterceptsLines);
+
+% Finding the intersection point
+intersection_point = AA\bb;
+
+% Printing the point
+fprintf('Intersection Point: (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
+
+% Plotting the intersection point using the best fit parameters
+figure(113)
+hold on 
+
+% Define x range for plotting
+x_range = linspace(-10, 10, 100);
+
+% Calculate y values for each line
+y1 = slopesLines(1,1) * x_range + yInterceptsLines(1,1);
+y2 = slopesLines(2,1) * x_range + yInterceptsLines(2,1);
+
+% Plot the lines
+% figure(888)
+plot(x_range, y1, 'k--', 'LineWidth', 2);
+plot(x_range, y2, 'b--', 'LineWidth', 2); % plot second line in red
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
 %% Two line segments: The ending point of a line segment is not joined to the starting point of the other line segment 
 
@@ -129,6 +191,19 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 116;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+% Plotting the intersection point using the best fit parameters
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
 %% Two line segments (Far): The ending point of a line segment is not joined to the starting point of the other line segment 
 
@@ -171,6 +246,19 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 119;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
 %% Two line segments: Both the segments have an intersecting point
 
 rng(343)
@@ -212,6 +300,19 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 122;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
 %% Two line segments: Extend one of the line segments to find the intersecting point
 
 rng(343)
@@ -227,7 +328,7 @@ test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma
 
 
 % Line 2 test points
-seed_points = [2.5 3; 4 4.5];
+seed_points = [2.5 3; 4 4];
 M = 10;
 sigma = 0.02;
 
@@ -252,6 +353,19 @@ threshold_max_points = 10;
 input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 125;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
 %% Two line segments: Both segments seem to be parallel but actually they are not (Slopes are not equal). Extend both the segments to find an intersecting point
 
@@ -294,6 +408,18 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 128;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
 %% Two line segments: Both segments are parallel (Slopes are equal).
 
@@ -302,7 +428,7 @@ rng(343)
 fig_num = 130;
 
 % Line 1 test points
-seed_points = [1 2; 2 4];
+seed_points = [1 2; 4 2];
 M = 10;
 sigma = 0.02;
 
@@ -310,7 +436,7 @@ test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma
 
 
 % Line 2 test points
-seed_points = [2 3; 3 5];
+seed_points = [5 5; 8 5];
 M = 10;
 sigma = 0.02;
 
@@ -336,6 +462,134 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 131;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+%% Two line segments: Both segments are parallel (Slopes are equal) and close to each other
+
+rng(343)
+
+fig_num = 133;
+
+% Line 1 test points
+seed_points = [1 2; 4 2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [4 2.2; 7 2.2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 134;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 135;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 134;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+%% Three line segments: All three segments are close to each other
+
+rng(343)
+
+fig_num = 133;
+
+% Line 1 test points
+seed_points = [1 2; 4 2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [3 2.5; 6 2.5];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+% Line 3 test points
+seed_points = [2 3; 8 3];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment3 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+testpoints = [test_points_LineSegment1; test_points_LineSegment2; test_points_LineSegment3];
+
+% Corrupt the points
+fig_num = 134;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+
+% Hough Segmentation
+fig_num = 135;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.5; % Units are meters. 
+threshold_max_points = 10;
+input_points = corrupted_testpoints;
+
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+tolerance = 0.5;
+[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+
+fig_num = 134;
+intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
+
+figure(fig_num)
+hold on 
+
+% Plot the intersection point
+plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
+plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
 %% Simple Arc Case
 
