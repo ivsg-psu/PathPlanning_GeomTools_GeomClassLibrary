@@ -792,7 +792,16 @@ fcn_geometry_plotCircle
 
 
 ```MATLAB
+fig_num = 1;
+points = [0 0; 1 4; 0.5 -1];
+[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
 
+fcn_summarize(...
+    centers,...
+    radii,...
+    points);
+assert(isequal(round(centers,4), [3.6667,1.2083]))
+assert(isequal(round(radii,4), 3.8606))
 ```
 
 <pre align="center">
@@ -849,6 +858,36 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example for one circle, incoming and outgoing are 90 degrees
+fig_num = 1;
+centers = [0 0];
+radii = [1];  %#ok<*NBRAK>
+
+start_angles = [45]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)];
+end_angles = [-45]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
+cross_products = [1];
+
+true_angle = start_angles - end_angles;
+
+[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
+    centers,...
+    radii,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    cross_products,...
+    fig_num);
+
+assert(isequal(round(angles,4),4.7124));
+
+fcn_summarize(angles,...
+    true_angle,...
+    centers,...
+    radii,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    cross_products);
 
 ```
 
@@ -912,7 +951,27 @@ fcn_geometry_findTangentPointsFromPointToCircle
 **Examples:**
 
 ```MATLAB
+apex_points = [1 0];
+centers = [0 0];
+radii = [1]; %#ok<*NBRAK>
+start_angles = [45]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)];
+end_angles = [-45]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
+incoming_source_points = [0 2^0.5];
+outgoing_destination_points = [0 -2^0.5];
 
+[angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
+    apex_points,...
+    centers,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    radii,...
+    incoming_source_points,...
+    outgoing_destination_points,fig_num) %#ok<*ASGLU,*NOPTS>
+
+assert(isequal(round(angles,4), 1.5708));
+assert(isequal(round(better_angles,4), 3.1416));
 ```
 
 <pre align="center">
@@ -966,7 +1025,15 @@ fcn_geometry_plotCircle
 
 
 ```MATLAB
+%% BASIC example for one circle and one point
+fig_num = 1;
+centers = [0 0];
+radii = 1;
+points = [2 3];
+points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
+    centers,radii,points,fig_num); %#ok<*NASGU>
 
+assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
 ```
 
 <pre align="center">
@@ -1024,7 +1091,16 @@ fcn_geometry_findTangentPointsFromPointToCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example for one circle and one point (positive cross product)
+fig_num = 1;
+centers = [0 0];
+radii = 1;
+points = [2 3];
+cross_prod = 1; % Keep the postive cross product
+points_tangent = fcn_geometry_findTangentPointFromPointToCircle(...
+    centers,radii,points,cross_prod,fig_num); %#ok<*NASGU>
 
+assert(isequal(round(points_tangent,4),[-0.6456,0.7637]));
 ```
 
 <pre align="center">
@@ -1085,7 +1161,23 @@ fcn_geometry_findAngleUsing2PointsOnCircle
 **Examples:**
 
 ```MATLAB
+%% Test 5: a basic test with 3 points: in same sector
+fig_num = 5;
 
+Radius = 2;
+points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
+
+points1 = points(1,:);
+points2 = points(2,:);
+points3 = points(3,:);
+
+[arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+assert(isequal(arc_angle_in_radians_1_to_2,pi/4));
+assert(isequal(arc_angle_in_radians_1_to_3,pi/2));
+assert(isequal(circle_centers,[0 0]));
+assert(isequal(radii,2));
+assert(isequal(start_angles_in_radians,0));
 ```
 
 <pre align="center">
@@ -1141,7 +1233,16 @@ sign
 **Examples:**
 
 ```MATLAB
+%% BASIC example 1 - positive
+fig_num = 1;
+figure(fig_num);clf;
 
+points1 = [0 0];
+points2 = [1 4];
+points3 = [0 5];
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+
+assert(isequal(is_counterClockwise,1))
 ```
 
 <pre align="center">
@@ -1190,6 +1291,21 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% script_test_fcn_geometry_polarLineFrom2PolarCoords
+fig_num = 1;
+
+start_point_cart = [1 1];
+end_point_cart   = [4 3];
+
+[theta1,r1] = cart2pol(start_point_cart(:,1),start_point_cart(:,2));
+[theta2,r2]   = cart2pol(end_point_cart(:,1),end_point_cart(:,2));
+points = [theta1,r1;theta2,r2];
+
+% Calculate the line
+[phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points,fig_num);
+axis([0 5 0 5]);
+assert(isequal(round(phi,4),-0.9828));
+assert(isequal(round(rho,4),-0.2774));
 
 ```
 
@@ -1241,13 +1357,26 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example for one circle and one point
+fig_num = 1;
+centers = [0 0];
+radii = 1;
+points = [2 3];
+visible_arc_angles = fcn_geometry_findVisibleArcsFromPoints(...
+    centers,radii,points,fig_num);
 
+fcn_summarize(visible_arc_angles,...
+    centers,...
+    radii,...
+    points);
+
+assert(isequal(round(visible_arc_angles,4),2.5559));
 ```
 
-<pre align="center">
+<!-- <pre align="center">
   <img src=".\Images\findVisibleArcsFromPoints.jpg" alt="fcn_geometry_findVisibleArcsFromPoints picture" width="500" height="400">
   <figcaption></figcaption>
-</pre>
+</pre> -->
 
 For more examples, see the script: script_test_fcn_geometry_findVisibleArcsFromPoints
 for a full test suite.
@@ -1327,7 +1456,23 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example - find all the points for one circle
+fig_num = 1;
+centers_start = [0 0];
+centers_end   = [0 4];
+radii_start   = [0.3]; %#ok<*NBRAK>
+radii_end     = [0.2];
+flag_inside_or_outside = 0;
+[points_tangent_start, points_tangent_end] = ...
+    fcn_geometry_findTangentPointsTwoCircles(...
+    centers_start,...
+    centers_end,...
+    radii_start,...
+    radii_end,...
+    flag_inside_or_outside, [], [], fig_num) %#ok<*NOPTS,*ASGLU>
 
+assert(isequal(round(points_tangent_start,4),[0.2976,0.0375;-0.2976,0.0375;0.2999,0.0075;-0.2999,0.0075]));
+assert(isequal(round(points_tangent_end,4),[-0.1984,3.9750;0.1984,3.9750;0.1999,4.0050;-0.1999,4.005]));
 ```
 
 <pre align="center">
@@ -1404,7 +1549,30 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example - find the points for two circle, all inner
+fig_num = 1;
+centers_start = [1 1];
+centers_end   = [3 1];
+radii_start   = [0.5]; %#ok<*NBRAK>
+radii_end     = [0.3];
+cross_products_start = [ 1];
+cross_products_end   = [-1];
 
+[...
+    points_tangent_start, ...
+    points_tangent_end] ...
+    = ...
+    fcn_geometry_findTangentPointTwoCircles(...
+    centers_start,...
+    centers_end,...
+    radii_start,...
+    radii_end,...
+    cross_products_start,...
+    cross_products_end,...
+    fig_num) %#ok<*NOPTS,*ASGLU>
+
+assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
+assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 ```
 
 <pre align="center">
@@ -1457,7 +1625,20 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% Simple test - should result in 90 to 0
+fig_num = fig_num + 1;
 
+p_apex = [0 0];
+vertex_1 = [1  0];
+vertex_2 = [0 1];
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+fprintf(1,'Results of phi constrainter: \n');
+fprintf('\t %.2f \t %.2f\n', ...
+    mod(phi_start,2*pi)*180/pi, ...
+    mod(change,2*pi)*180/pi);
+
+assert(isequal(round(phi_start,4),1.5708));
+assert(isequal(round(change,4),-1.5708));
 ```
 
 <pre align="center">
@@ -1511,6 +1692,14 @@ point
 **Examples:**
 
 ```MATLAB
+%% Example - 1 - BASIC call
+fig_num = 1;
+
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
 ```
 
@@ -1562,7 +1751,68 @@ fcn_geometry_checkInputsToFunctions
 **Examples:**
 
 ```MATLAB
+% Script to test the fcn_geometry_findIntersectionOfLineSegmentWithCircle
 
+% Set flags for whether or not to use existing x,y data to run the check
+% and whether to get new data (if requested) with the mouse or simply run
+% the static test cases
+flag_getNewData = 1;
+flag_getDataViaMouse = 0;
+
+if flag_getNewData
+    % Clear variables out of the workspace
+    clearvars -except flag*
+% Check to make sure the get new data flag was not unset by accident (for
+% example if the script was not previously run) and reset it if the x or y
+% data are missing
+elseif ~exist('x','var') || ~exist('y','var')
+  flag_getNewData = 1;
+end
+
+% Set up figure one, clearing any existing plot objects
+figure(1)
+clf reset
+hold on
+grid on
+axis equal
+
+% Define the circle
+pc = [0 0];
+R = 25;
+
+% Plot the circle
+fcn_geometry_plotCircle(pc,R,'b-',1)
+
+if flag_getNewData && flag_getDataViaMouse
+    % Prompt the user for two points
+    title('Use mouse clicks to set the two endpoints of the line segment');
+    [x,y] = ginput(2);
+elseif flag_getNewData
+  x = [2; 10];
+  y = [2; 5];
+end
+
+title([]);
+% Plot the user line segment
+plot(x,y,'k.-','markersize',10)
+
+% Assign the user data points to point arrays
+pa = [x(1) y(1)];
+pb = [x(2) y(2)];
+
+% Run the intersection solution code
+[intAngles,intPoints] = fcn_geometry_findIntersectionLineSegmentWithCircle(pa,pb,pc,R);
+
+% Determine the number of intersections
+Nintersections = size(intAngles,1);
+
+if Nintersections > 0
+    % Plot the results
+    plot(intPoints(:,1),intPoints(:,2),'r*')
+    fprintf(1,'%d intersection(s) found between given line segment and circle\n',Nintersections);
+else
+    fprintf(1,'No intersections found between given line segment and circle\n');
+end
 ```
 
 <pre align="center">
@@ -1617,6 +1867,14 @@ fcn_geometry_findTangentPointsFromPointToCircle
 **Examples:**
 
 ```MATLAB
+%% BASIC example - find the  cross-products for positive bend
+fig_num = 1;
+path = [0 0; 1 1; 0 2];
+[cross_products] = ...
+    fcn_geometry_selfCrossProduct(...
+    path, fig_num) %#ok<*NOPTS,*NASGU>
+
+assert(isequal(cross_products,2));
 
 ```
 
@@ -1666,7 +1924,13 @@ fcn_geometry_checkInputsToFunctions
 **Examples:**
 
 ```MATLAB
+%% BASIC example - single points in 2D
+fig_num = 1;
 
+pt1 = [1 1];
+pt2 = [2 3];
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+assert(isequal(round(dist,4), 2.2361));
 ```
 
 <pre align="center">
@@ -1711,7 +1975,13 @@ fcn_geometry_checkInputsToFunctions
 **Examples:**
 
 ```MATLAB
+%% BASIC example - multiple points in 3D
+fig_num = 33;
 
+pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
+pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
+assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
 ```
 
 <pre align="center">
@@ -1794,7 +2064,22 @@ fcn_geometry_checkInputsToFunctions
 **Examples:**
 
 ```MATLAB
+%% Simple test 1 - a simple intersection
+fprintf(1,'Simple intersection result: \n');
+wall_start = [0 10];
+wall_end   = [10 10];
+sensor_vector_start = [2 1];
+sensor_vector_end   = [5 15];
+fig_debugging = 2343;
+flag_search_type = 0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
+assert(isequal(round(distance,4),9.2043));
+assert(isequal(round(location,4),[3.9286,10.0000]));
 ```
 
 <pre align="center">
@@ -1838,6 +2123,12 @@ fcn_geometry_plotCircle
 
 
 ```MATLAB
+%% Test 1: a basic test
+points = [2 3; 4 5];
+[slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
+assert(isequal(slope,1));
+assert(isequal(intercept,1));
 
 ```
 
@@ -1892,7 +2183,15 @@ fcn_geometry_plotCircle
 **Examples:**
 
 ```MATLAB
+%% Test 1: a basic test
+% -x + y + 1 = 0;
+fig_num = 1;
+points = [2 1; 3 2];
+[root_point, unit_vector] = fcn_geometry_fitVectorToNPoints(points,fig_num);
+fprintf(1,'\n\nFigure: %.0d - Root point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',fig_num, root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 
+assert(isequal(round(root_point,4),[0.5000,-0.5000]));
+assert(isequal(round(unit_vector,4),[0.7071,0.7071]));
 ```
 
 <pre align="center">
@@ -1956,6 +2255,15 @@ fcn_geometry_checkInputsToFunctions
 **Examples:**
 
 ```MATLAB
+%% Test 1: a basic test (FAIL)
+fig_num = 1;
+segment_points = [2 3; 4 5];
+test_points = [1 -1];
+[point_flags] = fcn_geometry_flagPointsFurtherFromOriginThanLineSegment(segment_points, test_points,fig_num);
+fprintf(1,'Point flags are:\n');
+fprintf(1,'\t%.2f\n',point_flags);
+
+assert(isequal(point_flags,0));
 
 ```
 
