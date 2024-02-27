@@ -6,6 +6,8 @@
 % Modification history:
 %      2021_06_05
 %      -- wrote function, adapted from script_test_fcn_geometry_findIntersectionOfSegments.m
+%      2024_02_27
+%      -- Added test cases for flags 3 and 4. 
 
 clc
 close all
@@ -27,47 +29,6 @@ print_results(distance,location);
 assert(isequal(round(distance,4),9.2043));
 assert(isequal(round(location,4),[3.9286,10.0000]));
 
-%% Test of fast implementation mode 
-
-% Perform the calculation in slow mode
-fig_num = [];
-REPS = 100; minTimeSlow = Inf; 
-tic;
-for i=1:REPS
-    tstart = tic;
-    [distance,location] = ...
-    fcn_geometry_findIntersectionOfSegments(...
-    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
-    flag_search_type, (fig_num));
-    telapsed = toc(tstart);
-    minTimeSlow = min(telapsed,minTimeSlow);
-end
-averageTimeSlow = toc/REPS;
-
-% Perform the operation in fast mode
-fig_num = -1;
-minTimeFast = Inf; nsum = 10;
-tic;
-for i=1:REPS
-    tstart = tic;
-    [distance,location] = ...
-    fcn_geometry_findIntersectionOfSegments(...
-    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
-    flag_search_type, (fig_num));
-    telapsed = toc(tstart);
-    minTimeFast = min(telapsed,minTimeFast);
-end
-averageTimeFast = toc/REPS;
-
-fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
-fprintf(1,'N repetitions: %.0d\n',REPS);
-fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
-fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
-fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
-fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
-fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
-fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
-
 
 %% Simple test 2 - no intersections
 fprintf(1,'No intersection result: \n');
@@ -76,7 +37,7 @@ wall_end   = [2 10];
 sensor_vector_start = [0 0];
 sensor_vector_end   = [5 12];
 fig_debugging = 2343;
-flag_search_type = 0;
+flag_search_type =0;
 [distance,location] = ...
     fcn_geometry_findIntersectionOfSegments(...
     wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
@@ -141,19 +102,6 @@ flag_search_type = 0;
     wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
     flag_search_type,fig_debugging);
 print_results(distance,location);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 %% Simple test 7 - identically overlapping colinear
 fprintf(1,'identically overlapping colinear result: \n');
@@ -284,11 +232,6 @@ flag_search_type = 0;
     flag_search_type,fig_debugging);
 print_results(distance,location);
 
-
-
-
-
-
 %% Simple test 27 - identically overlapping colinear BACKWARDS
 fprintf(1,'identically overlapping colinear BACKWARDS result: \n');
 path = [0 10; 10 10];
@@ -418,8 +361,6 @@ flag_search_type = 0;
     flag_search_type,fig_debugging);
 print_results(distance,location);
 
-
-
 %% Simple test 15 - non overlapping colinear 1
 fprintf(1,'Non overlapping colinear result: \n');
 path = [0 10; 10 10];
@@ -445,7 +386,7 @@ wall_end   = path(2:end,:);
 sensor_vector_start = [13 10];
 sensor_vector_end   = [15 10];
 fig_debugging = 2343;
-flag_search_type = 0;
+flag_search_type = 4;
 [distance,location] = ...
     fcn_geometry_findIntersectionOfSegments(...
     wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
@@ -514,10 +455,12 @@ path = [0 10; 10 10; 0 6; 10 6; 0 2];
 
 wall_start = path(1:end-1,:);
 wall_end   = path(2:end,:);
-sensor_vector_start = [0 0];
-sensor_vector_end   = [5 12];
+% sensor_vector_start = [0 0];
+% sensor_vector_end   = [5 12];
+sensor_vector_start = [10 0];
+sensor_vector_end   = [15 12];
 fig_debugging = 23488;
-flag_search_type = 2;
+flag_search_type = 4;
 [distance,location] = ...
     fcn_geometry_findIntersectionOfSegments(...
     wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
@@ -1176,6 +1119,151 @@ flag_search_type = 0;
     wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
     flag_search_type,fig_debugging);
 print_more_results(distance,location,path_segments);
+
+%% Simple test - Extend wall vector (for flag_search_type = 3)
+fprintf(1,'No intersection result: \n');
+wall_start = [-4 10];
+wall_end   = [2 10];
+sensor_vector_start = [0 0];
+sensor_vector_end   = [5 12];
+fig_debugging = 2343;
+flag_search_type =3;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+%% Simple test - No intersection (for flag_search_type = 3)
+fprintf(1,'No intersection result: \n');
+wall_start = [-4 10];
+wall_end   = [2 10];
+sensor_vector_start = [0 0];
+sensor_vector_end   = [4 6];
+fig_debugging = 2343;
+flag_search_type =3;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+%% Simple test - Extend both the vectors (for flag_search_type = 4)
+fprintf(1,'No intersection result: \n');
+wall_start = [-4 10];
+wall_end   = [2 10];
+sensor_vector_start = [0 0];
+sensor_vector_end   = [5 12];
+fig_debugging = 2343;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+%% Simple test - Extend both the vectors (for flag_search_type = 4)
+fprintf(1,'No intersection result: \n');
+wall_start = [-4 10];
+wall_end   = [2 10];
+sensor_vector_start = [0 0];
+sensor_vector_end   = [4 6];
+fig_debugging = 2343;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+%% Advanced test 1 - intersection beyond a sensor's range with flag (for flag_search_type = 4)
+fprintf(1,'Intersection beyond sensor range result: \n');
+path = [0 5; 4 5; 8 2];
+
+wall_start = path(1:end-1,:);
+wall_end   = path(2:end,:);
+sensor_vector_start = [4 0];
+sensor_vector_end   = [4 2];
+fig_debugging = 2343;
+flag_search_type =0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+
+fig_debugging = 2344;
+flag_search_type = 4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+% Test the negative condition
+sensor_vector_start = [4 6];
+sensor_vector_end   = [4 8];
+fig_debugging = 2345;
+flag_search_type = 0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+
+fig_debugging = 2346;
+flag_search_type = 4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end, sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
+
+%% Test of fast implementation mode 
+
+% Perform the calculation in slow mode
+fig_num = [];
+REPS = 100; minTimeSlow = Inf; 
+tic;
+for i=1:REPS
+    tstart = tic;
+    [distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type, (fig_num));
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+fig_num = -1;
+minTimeFast = Inf; nsum = 10;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type, (fig_num));
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+
 
 %%
 function print_results(distance,location)

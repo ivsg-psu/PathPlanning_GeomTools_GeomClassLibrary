@@ -41,7 +41,7 @@ function [distance,location,wall_that_was_hit] = ...
 %            only if the given sensor_vector overlaps the wall (this is the
 %            default)
 %
-%            1: return distane and location if any projection of the sensor
+%            1: return distance and location if any projection of the sensor
 %            vector, in any direction, hits the wall (in other words, if
 %            there is any intersection). Note that distance returned will
 %            be negative if the nearest intersection is in the opposite
@@ -51,6 +51,19 @@ function [distance,location,wall_that_was_hit] = ...
 %            first one as in the options above) as M x 1 and M x 2 vectors
 %            respectively, where the M rows represent all the detected
 %            intersections.
+%
+%            3: return distance and location if any projection of the wall
+%            vector, in any direction, hits the sensor (in other words, if
+%            there is any intersection). Note that distance returned will
+%            be negative if the nearest intersection is in the opposite
+%            direction of the given sensor vector.
+%
+%            4: return distance and location if any projection of the wall
+%            vector, in any direction, hits the sensor or if any projection
+%            of the sensor vector, in any direction, hits the wall (in
+%            other words, if there is any intersection). Note that distance
+%            returned will be negative if the nearest intersection is in
+%            the opposite direction of the given sensor vector.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -81,6 +94,8 @@ function [distance,location,wall_that_was_hit] = ...
 %      - wrote the code, templated from fcn_geometry_findIntersectionOfSegments
 %  2024_01_17 - Aneesh Batchu
 %  -- added max speed options
+%  2024_02_22 - Aneesh Batchu
+%  -- added flags: 3 and 4. 
 
 
 
@@ -309,6 +324,10 @@ elseif 1 == flag_search_type
     good_vector = ((0<=t).*(1>=t));
 elseif 2 == flag_search_type
     good_vector = ((0<=t).*(1>=t).*(0<=u).*(1>=u));
+elseif 3 == flag_search_type           % Changed on Feb 22 2024 
+    good_vector = ((0<=u).*(1>=u));
+elseif 4 == flag_search_type           % Changed on Feb 22 2024 
+    good_vector = ((Inf>u).*(Inf>t));
 else
     error('Incorrect flag_search_type entered');
 end
@@ -317,8 +336,9 @@ end
 good_indices = find(good_vector>0);
 
 if ~isempty(good_indices)
-    result = p + t.*r; 
-    intersections(good_indices,:) = result(good_indices,:);    
+    result = p + t.*r;
+    % result = q + u.*s;      % Changed
+    intersections(good_indices,:) = result(good_indices,:);
 end
 
 % Find the distances via Euclidian distance to the sensor's origin
