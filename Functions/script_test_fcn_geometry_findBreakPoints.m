@@ -87,8 +87,32 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
+fig_num = 113;
+
+figure(fig_num)
+
 tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.firstBreakPoint(1) breakPointsCell{1}.firstBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 233;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
 
 % Fit parameters of Line Segment
 %
@@ -128,10 +152,10 @@ bb = (yInterceptsLines);
 intersection_point = AA\bb;
 
 % Printing the point
-fprintf('Intersection Point: (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
+fprintf('Intersection Point (using backslash operator): (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
 
 % Plotting the intersection point using the best fit parameters
-figure(113)
+figure(fig_num)
 hold on 
 
 % Define x range for plotting
@@ -191,10 +215,16 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 116;
+tolerance = 1;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 % Plotting the intersection point using the best fit parameters
@@ -204,6 +234,22 @@ hold on
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.firstBreakPoint(1) breakPointsCell{1}.firstBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 333;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
 
 %% Two line segments (Far): The ending point of a line segment is not joined to the starting point of the other line segment 
 
@@ -246,10 +292,18 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 119;
+tolerance = 2.1;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
@@ -258,6 +312,21 @@ hold on
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.firstBreakPoint(1) breakPointsCell{1}.firstBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 433;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
+
 
 %% Two line segments: Both the segments have an intersecting point
 
@@ -300,18 +369,40 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 122;
+
+tolerance = 1;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{2}.firstBreakPoint(1), breakPointsCell{2}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{1}.lastBreakPoint(1), breakPointsCell{1}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
 hold on 
-
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.lastBreakPoint(1), breakPointsCell{1}.lastBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.firstBreakPoint(1), breakPointsCell{2}.firstBreakPoint(2)];
+fig_debugging = 533;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
 %% Two line segments: Extend one of the line segments to find the intersecting point
 
@@ -354,10 +445,18 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 125;
+tolerance = 1.1;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
@@ -366,6 +465,22 @@ hold on
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 633;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
 %% Two line segments: Both segments seem to be parallel but actually they are not (Slopes are not equal). Extend both the segments to find an intersecting point
 
@@ -408,10 +523,16 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 128;
+tolerance = 1.6;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{1}.lastBreakPoint(1), breakPointsCell{1}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
@@ -420,6 +541,21 @@ hold on
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.lastBreakPoint(1), breakPointsCell{1}.lastBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 733;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
 %% Two line segments: Both segments are parallel (Slopes are equal).
 
@@ -462,10 +598,11 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 131;
+tolerance = 3.1;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
@@ -475,6 +612,23 @@ hold on
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
 
+% figure(fig_num)
+% hold on
+% plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'c.', 'MarkerSize',20)
+% plot(breakPointsCell{1}.lastBreakPoint(1), breakPointsCell{1}.lastBreakPoint(2), 'c.', 'MarkerSize',20)
+
+fprintf(1,'Intersection result: \n');
+wall_start = closeBreakPointPairs(1,:);
+wall_end   = closeBreakPointPairs(2,:);
+sensor_vector_start = closeBreakPointPairs(3,:);
+sensor_vector_end   = closeBreakPointPairs(4,:);
+fig_debugging = 833;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
 %% Two line segments: Both segments are parallel (Slopes are equal) and close to each other
 
@@ -517,10 +671,16 @@ input_points = corrupted_testpoints;
 
 domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 
-tolerance = 0.5;
-[breakPointsCell, ~] = fcn_geometry_findBreakpoints(domains, tolerance);
-
 fig_num = 134;
+tolerance = 0.5;
+[breakPointsCell, closeBreakPointPairs] = fcn_geometry_findBreakpoints(domains, tolerance, fig_num);
+
+figure(fig_num)
+hold on
+plot(breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2), 'b.', 'MarkerSize',20)
+plot(breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2), 'b.', 'MarkerSize',20)
+
+
 intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num); 
 
 figure(fig_num)
@@ -529,6 +689,20 @@ hold on
 % Plot the intersection point
 plot(intersection_point(1), intersection_point(2), 'go', 'MarkerSize',30, 'LineWidth',2)
 plot(intersection_point(1), intersection_point(2), 'c.', 'MarkerSize',20)
+
+
+fprintf(1,'Intersection result: \n');
+wall_start = [breakPointsCell{1}.firstBreakPoint(1), breakPointsCell{1}.firstBreakPoint(2)];
+wall_end   = closeBreakPointPairs(1,:);
+sensor_vector_start = closeBreakPointPairs(2,:);
+sensor_vector_end   = [breakPointsCell{2}.lastBreakPoint(1), breakPointsCell{2}.lastBreakPoint(2)];
+fig_debugging = 933;
+flag_search_type =4;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_debugging);
+print_results(distance,location);
 
 %% Three line segments: All three segments are close to each other
 
@@ -792,3 +966,24 @@ assert(isequal(domains{4}.points_in_domain(end,:) == breakPointsCell{4}.lastBrea
 
 figure(44)
 plot(closeBreakPointPairs(:,1), closeBreakPointPairs(:,2), '.c','MarkerSize',13);
+
+
+%%
+function print_results(distance,location)
+fprintf(1,'Distance \t Location X \t Location Y \n');
+if ~isempty(distance)
+    for i_result = 1:length(distance(:,1))
+        fprintf(1,'%.3f \t\t %.3f \t\t\t %.3f\n',distance(i_result),location(i_result,1),location(i_result,2));
+    end
+end
+end
+
+%%
+function print_more_results(distance,location,path_segments)
+fprintf(1,'Distance \t Location X \t Location Y \t PathSegment \n');
+if ~isempty(distance)
+    for i_result = 1:length(distance(:,1))
+        fprintf(1,'%.3f \t\t %.3f \t\t\t %.3f \t\t %.0d\n',distance(i_result),location(i_result,1),location(i_result,2),path_segments(i_result));
+    end
+end
+end

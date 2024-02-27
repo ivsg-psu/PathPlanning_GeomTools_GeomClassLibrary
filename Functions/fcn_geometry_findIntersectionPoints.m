@@ -46,7 +46,7 @@ bb = (yInterceptsLines);
 intersection_point = AA\bb;
 
 % Printing the point
-fprintf('Intersection Point: (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
+fprintf('Intersection Point (using back slash operator) : (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
 
 % Plotting the intersection point using the best fit parameters
 figure(fig_num)

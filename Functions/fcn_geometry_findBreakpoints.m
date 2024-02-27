@@ -190,7 +190,7 @@ if flag_do_plots
     figure(fig_num)
 
 % Plotting the close break point pairs
-plot(closeBreakPointPairs(:,1), closeBreakPointPairs(:,2), '.c');
+plot(closeBreakPointPairs(:,1), closeBreakPointPairs(:,2), '.c', 'MarkerSize',20);
 xlabel('X');
 ylabel('Y');
 grid on;
