@@ -10,7 +10,7 @@
 
 % Note: All the fits should have unique points. No input point
 % should be repeated in any geometric fits.
-% In this case, the detected breakpoints of the fits are valid. 
+% In this case, the detected endpoints of the fits are valid. 
 
 
 %% Clear workspace
