@@ -376,7 +376,7 @@ if flag_do_plot
     
     % Set up the figure
     figure(fig_num);
-    clf;
+    % clf;
     hold on;
     axis equal;
     grid on; grid minor;
