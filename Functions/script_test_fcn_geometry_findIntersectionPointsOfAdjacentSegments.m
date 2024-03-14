@@ -1,5 +1,5 @@
 % script_test_fcn_geometry_findIntersectionPointsOfAdjacentSegments.m
-% tests fcn_geometry_findIntersectionPointsOfAdjacentSegments.m
+% tests fcn_geometry_findBreakpointsOfAdjacentSegments.m
 
 % This script uses "fcn_geometry_HoughRegression.m" to fit the segments
 

@@ -5,10 +5,10 @@ function [distance,location,wall_that_was_hit] = ...
     sensor_vector_start,...
     sensor_vector_end,...
     varargin)   
-% fcn_geometry_findIntersectionOfSegments calculates hits between a sensor
-% projection and a set of walls, both specified by start and end points,
-% returning the distance, and location of the hit, and the wall number of
-% each hit.
+%% fcn_geometry_findIntersectionOfSegments 
+% calculates hits between a sensor projection and a set of walls, both
+% specified by start and end points, returning the distance, and location
+% of the hit, and the wall number of each hit.
 %
 % FORMAT: 
 %

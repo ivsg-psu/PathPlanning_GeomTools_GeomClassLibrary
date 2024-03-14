@@ -25,8 +25,15 @@
 % -- started a demo code set
 % 2023_12_27 - sbrennan@psu.edu
 % -- switched to using environment settings for checking input parameters
+% 2024_03_14 - sbrennan@psu.edu
+% -- updated the Path library dependence to the new function
+
 
 %% To-do items
+%
+% 2024_03_14 - S. Brennan
+% -- need to update the intersection calculation to use the Path
+% library function, NOT the geometry library version
 %
 % create method to remove overlapping domains
 %
@@ -89,11 +96,11 @@ library_name{ith_library}    = 'DebugTools_v2023_04_22';
 library_folders{ith_library} = {'Functions','Data'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_DebugTools/archive/refs/tags/DebugTools_v2023_04_22.zip';
 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'PathClass_v2023_10_18';
-% library_folders{ith_library} = {'Functions'};
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2023_10_18.zip';
-% 
+ith_library = ith_library+1;
+library_name{ith_library}    = 'PathClass_v2024_03_14';
+library_folders{ith_library} = {'Functions'};
+library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2024_03_14.zip';
+
 % ith_library = ith_library+1;
 % library_name{ith_library}    = 'GPSClass_v2023_06_29';
 % library_folders{ith_library} = {'Functions'};
