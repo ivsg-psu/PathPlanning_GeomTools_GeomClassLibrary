@@ -33,3 +33,6 @@ octave-workspace
 
 # unit test log files
 *script_test_fcn_geometry_all_stdout.txt
+
+# Utilities
+Utilities/
