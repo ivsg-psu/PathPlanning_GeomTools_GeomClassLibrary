@@ -66,7 +66,7 @@ if ~exist('example_domains','var')
     example_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
 end
 
-%% BASIC test of plotting
+% BASIC test of plotting
 fig_num = 1234;
 figure(fig_num);
 clf;

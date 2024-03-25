@@ -28,6 +28,14 @@ assert(isequal(round(rho,4),-0.2774));
 
 %% Test of fast implementation mode 
 
+
+start_point_cart = [1 1];
+end_point_cart   = [4 3];
+
+[theta1,r1] = cart2pol(start_point_cart(:,1),start_point_cart(:,2));
+[theta2,r2]   = cart2pol(end_point_cart(:,1),end_point_cart(:,2));
+points = [theta1,r1;theta2,r2];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

@@ -38,6 +38,9 @@ assert(all(abs(length_errors)<(eps*100)));
 
 %% Testing fast mode
 % Perform the calculation in slow mode
+
+input_vectors = randn(10,3); 
+
 fig_num = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;

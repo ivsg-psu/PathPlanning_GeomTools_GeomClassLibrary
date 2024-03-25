@@ -123,6 +123,33 @@ corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outl
 fig_num = 111;
 figure(fig_num); clf;
 
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2;
@@ -139,6 +166,32 @@ assert(isequal(flag_is_a_circle,1));
 %% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
 fig_num = 222;
 figure(fig_num); clf;
+
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
 
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
@@ -157,6 +210,33 @@ assert(isequal(flag_is_a_circle,0));
 fig_num = 333;
 figure(fig_num); clf;
 
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2;
@@ -173,6 +253,34 @@ assert(isequal(flag_is_a_circle,1));
 %% BASIC call with arc data, forcing circle fit (which is not possible, so throws "bad fit" or flag_is_a_cirlce = -1) using flag_force_circle_fit
 fig_num = 444;
 figure(fig_num); clf;
+
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
@@ -191,6 +299,33 @@ assert(isequal(flag_is_a_circle,-1));
 %% BASIC call with circle data, fitting it with a circle by not specifying station tolerance
 fig_num = 1111;
 figure(fig_num); clf;
+
+rng(383);
+
+
+fig_num = 21;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+% circle
+circle_center = [4 3];
+circle_radius = 2;
+M = 3; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
 inputPoints = corrupted_circle_test_points;
 base_point_index = 1;
@@ -212,6 +347,33 @@ assert(isequal(flag_is_a_circle, 1));
 fig_num = 2222;
 figure(fig_num); clf;
 
+rng(383);
+
+
+fig_num = 21;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+% circle
+circle_center = [4 3];
+circle_radius = 2;
+M = 3; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
 inputPoints = corrupted_circle_test_points;
 base_point_index = 1;
 circleCenter = circle_center;
@@ -230,6 +392,34 @@ assert(isequal(flag_is_a_circle, 1));
 fig_num = 3333;
 figure(fig_num); clf;
 
+rng(383);
+
+
+fig_num = 21;
+figure(fig_num);
+clf;
+hold on;
+axis equal
+grid on;
+
+% circle
+circle_center = [4 3];
+circle_radius = 2;
+M = 3; % 5 points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+
 inputPoints = corrupted_circle_test_points;
 base_point_index = 1;
 circleCenter = circle_center;
@@ -247,6 +437,33 @@ assert(isequal(flag_is_a_circle, 0));
 fig_num = 44444;
 figure(fig_num); clf;
 
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2;
@@ -263,6 +480,32 @@ threshold_to_check_arc = 10;
 fig_num = 44445;
 figure(fig_num); clf;
 
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2+[0.5 0.5];
@@ -278,6 +521,33 @@ threshold_to_check_arc = 10;
 
 
 %% Speed test effect of adding radii range to show this speeds up calculations
+
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2+[0.5 0.5];
@@ -325,7 +595,35 @@ fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTi
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
 
-%% Test of fast implementation mode 
+%% Test of fast implementation mode
+
+rng(383)
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 inputPoints = corrupted_outlieronearc_test_points;
 base_point_index = 1;
 circleCenter = true_circleCenter2;

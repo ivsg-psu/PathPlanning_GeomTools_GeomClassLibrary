@@ -42,6 +42,10 @@ assert(isequal(is_counterClockwise,[-1; 1]))
 
 %% Test of fast mode
 
+points1 = [0 0; 3 3;];
+points2 = [-1 4; 4 4];
+points3 = [0 5; 3 5];
+
 % Perform the calculation in slow mode
 REPS = 1000; minTimeSlow = Inf;
 tic;

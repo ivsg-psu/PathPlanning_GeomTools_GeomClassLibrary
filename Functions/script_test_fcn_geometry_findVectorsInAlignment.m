@@ -188,9 +188,9 @@ assert(isequal(vectorsCloseToRef, inputVectors));
 
 
 %% Basic Example to test if the function works for 4D
-fig_num = 7;
-figure(fig_num);
-clf;
+fig_num = -1;
+% figure(fig_num);
+
 
 inputVectors = [1 1 1 0.5];
 
@@ -216,6 +216,14 @@ assert(isequal(dist_btw_unit_refVectAndInputVec, dist_calculated));
 assert(isequal(vectorsCloseToRef, inputVectors));
 
 %% Testing fast mode
+
+inputVectors = [1 1 1 0.5];
+
+% Reference Vector
+refVector = [0.5 1 1 1];
+
+tolerance = 0.5;
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 1000; minTimeSlow = Inf;

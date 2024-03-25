@@ -109,6 +109,13 @@ assert(isequal(start_angles_in_radians,0));
 
 %% Test of fast mode
 
+Radius = 2;
+points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
+
+points1 = points(1,:);
+points2 = points(3,:);
+points3 = points(2,:);
+
 % Perform the calculation in slow mode
 REPS = 10; minTimeSlow = Inf;
 tic;

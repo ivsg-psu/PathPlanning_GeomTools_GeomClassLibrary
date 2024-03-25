@@ -103,6 +103,9 @@ assert(all(abs(dot_product_sums)<(eps*100)));
 %% Testing fast mode
 % Perform the calculation in slow mode
 fig_num = [];
+
+step = 0.05;
+
 input_vectors = (step:step:1)'.*[3 2 4]; 
 seed_points = [];
 

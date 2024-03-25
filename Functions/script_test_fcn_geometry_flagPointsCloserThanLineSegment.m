@@ -36,6 +36,9 @@ fprintf(1,'\t%.2f\n',point_flags);
 
 %% Test of fast implementation mode 
 
+segment_points = [2 3; 4 5];
+test_points = [1 1.5];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 
@@ -222,7 +225,7 @@ fprintf(1,'Point flags are:\n');
 fprintf(1,'\t%.2f\n',point_flags);
 
 %% Test 3: many vertical points
-fig_num = fig_num + 1;
+fig_num = 21 + 1;
 
 segment_points = [1 -2; 1  5];
 slope = inf;

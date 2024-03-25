@@ -46,6 +46,9 @@ fprintf(1,'\t%.2f\n',point_flags);
 
 %% Test of fast implementation mode 
 
+segment_points = [2 3; 4 5];
+test_points = [1 4];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

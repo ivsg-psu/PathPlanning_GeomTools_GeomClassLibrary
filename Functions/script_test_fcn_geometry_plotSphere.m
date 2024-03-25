@@ -62,6 +62,10 @@ assert(length(XYZ_data{2}(1,:))==3);
 
 %% Test of fast implementation mode 
 
+centers = [1 3 0; 2 4 5];
+radii = [0.4; 1];
+color_vector = [0 1 0];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

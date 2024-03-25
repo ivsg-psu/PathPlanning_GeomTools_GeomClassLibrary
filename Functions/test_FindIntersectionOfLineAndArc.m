@@ -84,7 +84,7 @@ pointE = endPointsCell{2}.lastEndPoint;
 % Location of Arc center
 pointC = endPointsCell{1}.fitParameters(1,1:2);
 
-% plot Arc Center
+% Plot Arc Center
 plot(pointC(1,1), pointC(1,2), 'r.','MarkerSize',30)
 
 % Calculate vector EC
@@ -96,14 +96,21 @@ vectorES = pointS - pointE;
 % vector_magnitude = sum(input_vector.^2,2).^0.5;
 % unitVector_input_vector= input_vector./vector_magnitude;
 
-%plot the vectorEC in GREEN
+% Plot the vectorEC in GREEN
 quiver(pointE(1,1), pointE(1,2), vectorEC(1,1), vectorEC(1,2), 'Color', 'g', 'LineWidth', 4);
 
-%plot the vectorES in BLUE
+% Plot the vectorES in BLUE
 quiver(pointE(1,1), pointE(1,2), vectorES(1,1), vectorES(1,2), 'Color', 'b', 'LineWidth', 4);
 
+% Calculate the unit vector of vectorES
+vectorES_magnitude = sum(vectorES.^2,2).^0.5;
+unit_vectorES = vectorES./vectorES_magnitude;
+
+% Plot the unit orthogonal vector ES (unit_orthogonal_vectorES) in RED
+quiver(pointE(1,1), pointE(1,2), unit_vectorES(1,1), unit_vectorES(1,2), 'Color', 'y', 'LineWidth', 3);
+
 % Calculate unit orthogonal vector of vectorES
-unit_orthogonal_vectorES = fcn_geometry_calcOrthogonalVector(vectorES);
+unit_orthogonal_vectorES = unit_vectorES*[0 1; -1 0];
 
 % Plot the unit orthogonal vector ES (unit_orthogonal_vectorES) in RED
 quiver(pointE(1,1), pointE(1,2), unit_orthogonal_vectorES(1,1), unit_orthogonal_vectorES(1,2), 'Color', 'r', 'LineWidth', 3);
@@ -112,17 +119,43 @@ quiver(pointE(1,1), pointE(1,2), unit_orthogonal_vectorES(1,1), unit_orthogonal_
 % segment by calculating the dot product of VectorEC and unit_orthogonal_vectorES
 dist_btw_pointC_and_pointS = dot(vectorEC, unit_orthogonal_vectorES);
 
-% Radius of the regression  Arc
+% Radius of the regression Arc
 radiusArc = endPointsCell{1}.fitParameters(1,3);
 
 if dist_btw_pointC_and_pointS > radiusArc
     disp('No Intersection')
 end
 
-% One intersection point, if 
+% One intersection point, if the distance between arc center and start
+% point of segment is equal to radius
 if dist_btw_pointC_and_pointS == radiusArc
-    
+    intersectionPoint = vectorES + dot(vectorEC, unit_vectorES)*unit_vectorES;
 end
+
+
+% Two intersection points, if the distance between arc center and start
+% point of segment is less than others
+if dist_btw_pointC_and_pointS < radiusArc
+
+    % Center point of the two intersection points
+    centerPoint_of_intersectionPoints = vectorES + dot(vectorEC, unit_vectorES)*unit_vectorES;
+
+    % Opposite side of right angle triangle: dist_btw_pointC_and_pointS
+    dist_btw_centerPoint_and_pointC = dot(vectorEC, unit_orthogonal_vectorES);
+
+    % Adjacent side of the right angle triangle
+    dist_btw_centerPoint_and_intersectionPoints = (radiusArc^2 - dist_btw_centerPoint_and_pointC^2)^0.5;
+    
+    %
+    intersectionPoint1 = centerPoint_of_intersectionPoints + dist_btw_centerPoint_and_intersectionPoints*unit_vectorES; 
+
+    intersectionPoint2 = centerPoint_of_intersectionPoints - dist_btw_centerPoint_and_intersectionPoints*unit_vectorES; 
+
+    intersectionPoints = [intersectionPoint1; intersectionPoint2]; 
+
+
+end
+
 
 
 

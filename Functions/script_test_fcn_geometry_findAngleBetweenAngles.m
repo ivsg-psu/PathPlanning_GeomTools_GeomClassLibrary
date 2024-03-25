@@ -77,6 +77,13 @@ end
 
 %% Test of fast mode
 
+start_angle_in_radians = 0*pi/180;
+change_in_angle = 90*pi/180;
+end_angle_in_radians = start_angle_in_radians+change_in_angle;
+angles_to_test_in_radians = (start_angle_in_radians:(start_angle_in_radians+2*pi))';
+direction = 1;
+
+
 % Perform the calculation in slow mode
 REPS = 10; minTimeSlow = Inf;
 tic;

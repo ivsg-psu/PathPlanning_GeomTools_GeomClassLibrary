@@ -62,6 +62,8 @@ endPointsMatrix = zeros(numel(sortedHoughSegmentEndPoints)/2, 2);
 endPointsMatrix(1:2:end,:) = sortedHoughSegmentEndPoints(:,1:2);
 endPointsMatrix(2:2:end,:) = sortedHoughSegmentEndPoints(:,3:4);
 
+tolerance = 1; 
+
 [closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEndPoints(endPointsMatrix(1,:), endPointsMatrix(2:end-1,:), endPointsMatrix(end,:), tolerance, 113);
 
 disp(endPointsCell);
@@ -831,7 +833,7 @@ rng(3423)
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
-fig_num = 111;
+fig_num = 1111;
 
 
 % Arc 1 test points
@@ -843,7 +845,7 @@ sigma = 0.02;
 % Fill test data for arc 1
 [test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
 
-fig_num = 112;
+fig_num = 1112;
 corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
     (probability_of_corruption), (magnitude_of_corruption), fig_num);
 
@@ -857,7 +859,7 @@ fig_num = 111;
 test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
 
-fig_num = 112;
+fig_num = 1112;
 corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
     (probability_of_corruption), (magnitude_of_corruption), fig_num);
 
@@ -878,14 +880,13 @@ fig_num = 601;
 regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
-fig_num = 112;
+fig_num = 1112;
 tolerance = [];
 
 [endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortHoughSegments(regression_domains, tolerance, fig_num);
 
 disp(endPointsCell)
-disp(closeEndPointsMatrix)
-disp(dist_btw_close_endPoints)
+
 % The plots would serve the purpose of assertions
 
 %% figure(fig_num)

@@ -28,7 +28,7 @@ z = true_z;
 
 
 true_ABC = fcn_geometry_calcUnitVector([-true_parameters(1) -true_parameters(2) 1]);
-assert(isequal(round(true_parameters,4),round(fitted_parameters,4)));
+assert(isequal(round(true_parameters,4),round(parameters,4)));
 assert(isequal(round(standard_deviation_in_z,4),round(0.00,4)));
 assert(length(z_fit(:,1))==length(points(:,1)));
 assert(isequal(round(true_parameters(3)*true_ABC,1),round(base_point,1)));
@@ -58,6 +58,12 @@ assert(isequal(round(true_parameters,1),round(fitted_parameters,1)));
 assert(isequal(round(true_sigma,1),round(standard_deviation_in_z,1)));
 
 %% Test of fast implementation mode 
+
+rng(1823);
+
+Npoints = 100;
+true_parameters = [ 0.1 0.2 3]';
+points = randn(Npoints,3);
 
 % Perform the calculation in slow mode
 fig_num = [];

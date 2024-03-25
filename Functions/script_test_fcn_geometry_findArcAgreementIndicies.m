@@ -85,6 +85,19 @@ corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_
 fig_num = 111;
 figure(fig_num); clf;
 
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+
 points = twoarc_test_points;
 circleCenter = true_circleCenter;
 circleRadius = true_circleRadius;
@@ -97,6 +110,18 @@ station_tolerance = 0.5;
 %% Example - 2 - BASIC call with arc data, fitting it to source point 55
 fig_num = 222;
 figure(fig_num); clf;
+
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
 
 points = twoarc_test_points;
 circleCenter = true_circleCenter;
@@ -112,6 +137,18 @@ station_tolerance = 0.5;
 fig_num = 333;
 figure(fig_num); clf;
 
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+
 points = twoarc_test_points;
 circleCenter = true_circleCenter;
 circleRadius = true_circleRadius;
@@ -125,6 +162,17 @@ station_tolerance = 2;
 fig_num = 444;
 figure(fig_num); clf;
 
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+
 points = twoarc_test_points;
 circleCenter = true_circleCenter;
 circleRadius = true_circleRadius;
@@ -137,6 +185,18 @@ station_tolerance = 10;
 
 
 %% Test of fast implementation mode 
+
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+
 points = twoarc_test_points;
 circleCenter = true_circleCenter;
 circleRadius = true_circleRadius;
@@ -181,6 +241,27 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 %% ERROR Example - 1 - Show how it works with corrupted data (it still works)
 fig_num = 999;
 figure(fig_num); clf;
+
+seed_points = [2 3; 4 5; 6 3];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+M = 10; % Number of points per meter
+sigma = 0.02;
+
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
+
+% Fill test data - 2 arcs
+twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+
+
 
 points = corrupted_twoarc_test_points;
 circleCenter = true_circleCenter;

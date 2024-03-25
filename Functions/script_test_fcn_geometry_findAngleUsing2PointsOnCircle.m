@@ -359,6 +359,14 @@ fcn_summarize(angles,...
 
 %% Test of fast mode
 
+centers = [0 0; 4 4; 8 10; -6 10];
+radii = [1; 2; 4; 3];
+start_angles = [90; 0; -90; 45]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)]+centers;
+end_angles = [45; 135; 180; 0]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)]+centers;
+cross_products = [-1; 1; -1; 1];
+
 % Perform the calculation in slow mode
 REPS = 10; minTimeSlow = Inf;
 tic;

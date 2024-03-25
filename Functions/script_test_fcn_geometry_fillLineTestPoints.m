@@ -64,6 +64,10 @@ test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 assert(length(test_points(:,1))>length(seed_points(:,1)))
 %% Test of fast mode
 
+seed_points = [2 3 0; 4 5 0; 7 0 2; 9 5 3];
+M = 10;
+sigma = 0.2;
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;

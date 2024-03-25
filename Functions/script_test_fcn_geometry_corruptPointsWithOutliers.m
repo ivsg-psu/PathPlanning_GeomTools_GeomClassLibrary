@@ -92,9 +92,20 @@ assert(isequal(length(test_points(:,1)),length(corrupted_test_points(:,1))));
 
 %% Test of fast mode
 
+seed_points = [2 3 0; 4 5 0; 7 0 2; 9 5 3];
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, []);
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 4;
+
 tic;
 for i=1:REPS
     tstart = tic;

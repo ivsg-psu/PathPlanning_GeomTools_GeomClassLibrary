@@ -18,7 +18,7 @@ data_folder = fullfile("..","Data");
 addpath(data_folder)
 load('PointCloud_Separated_Data_newTarget.mat')
 
-%% Test 1: a basic test, change the index of scan and ring label if needed
+% Test 1: a basic test, change the index of scan and ring label if needed
 idx_scan = 1;
 test_ring = ptCloud_pts_layers_separated_cell{idx_scan}.Ring0;
 inputPoints = test_ring(:,1:3);

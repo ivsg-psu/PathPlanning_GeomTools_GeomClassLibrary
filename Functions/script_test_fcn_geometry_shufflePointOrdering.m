@@ -22,11 +22,12 @@ test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 shuffled_points = fcn_geometry_shufflePointOrdering(test_points, (fig_num));
 
 %% Test of fast mode
-% Set tolerances
-transverse_tolerance = 0.2;
-station_tolerance = 1;
 
+seed_points = [2 3; 4 5; 3 2];
+M = 10;
+sigma = 0.02;
 
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
 
 % Perform the calculation in slow mode
 REPS = 1000; minTimeSlow = Inf;

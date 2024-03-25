@@ -18,7 +18,7 @@ rng(343)
 
 fig_num = 112;
 
-% Line test points
+    % Line test points
 seed_points = [1 2; 2 4; 4 5];
 M = 10;
 sigma = 0.02;

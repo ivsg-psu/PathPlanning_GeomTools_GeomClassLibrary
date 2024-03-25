@@ -40,6 +40,28 @@ domains= fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tol
 
 
 %% Test 2: a basic test of line segment fitting, noisy points
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 fig_num = 2;
 figure(fig_num);
 clf;
@@ -51,6 +73,28 @@ points_required_for_agreement = [];
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 %% Test 3: a basic test of LINE fitting, noisy points, showing effect of station_tolerance setting
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 fig_num = 3;
 figure(fig_num);
 clf;
@@ -62,6 +106,28 @@ points_required_for_agreement = [];
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
 
 %% Test 4: a basic test of line segment fitting, noisy points
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 fig_num = 4;
 figure(fig_num);
 clf;
@@ -73,6 +139,28 @@ points_required_for_agreement = 20;
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 %% Test 5: confirming that it does not plot if figure is off
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 fig_num = 5;
 
 transverse_tolerance = 0.2;
@@ -84,6 +172,28 @@ domains = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_t
 fcn_geometry_plotFitDomains(domains, fig_num);
 
 %% Test 6: show get empty domain if points for agreement is too high
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 fig_num = 6;
 figure(fig_num);
 clf;
@@ -96,6 +206,28 @@ domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_to
 
 
 %% Test of fast mode
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 8 0; 9 3]; 
+M = 10;
+sigma = 0.05;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 % Set values for testing
 transverse_tolerance = 0.2;
 station_tolerance = 1;

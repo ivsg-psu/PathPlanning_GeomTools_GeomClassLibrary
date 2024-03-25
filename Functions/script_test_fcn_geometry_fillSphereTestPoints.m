@@ -36,6 +36,11 @@ assert(length(test_points(:,1))==N_points);
 
 %% Speed test
 
+N_points = 100;
+sphere_center = [6 2 0];
+sphere_radius = 1;
+sigma = 0.02;
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;

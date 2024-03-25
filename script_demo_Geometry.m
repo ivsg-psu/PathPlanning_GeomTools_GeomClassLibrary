@@ -14,9 +14,9 @@
 % 
 % Additional contributers include:
 % 2016-2018 - Seth Tau 
-% 2023-2024 - Aneesh Batchu
+% 2023 - Aneesh Batchu
 % 2024 - Xinyu Cao
-% 2024 - Aneesh Batchu
+
 
 
 
@@ -46,6 +46,9 @@
 % 
 % update the README.md file
 % 
+% 2023_12_28 - Aneesh Batchu 
+%  -- updated Max speed options in all the functions
+%
 % Fast mode updated: go through all the functions and 
 %  -- make sure they all have fast mode code flags at top, namely the code
 %        %% Debugging and Input checks

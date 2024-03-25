@@ -66,6 +66,9 @@ dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
 
 %% Test of fast implementation mode 
 
+pt1 = rand(5,3);
+pt2 = rand(5,3);
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

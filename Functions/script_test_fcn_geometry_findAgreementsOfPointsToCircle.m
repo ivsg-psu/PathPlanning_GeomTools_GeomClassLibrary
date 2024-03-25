@@ -120,6 +120,34 @@ corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outl
 
 
 %% Test 1: a basic test of circle fitting
+
+rng(383);
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+
 fig_num = 1;
 figure(fig_num); clf;
 
@@ -133,6 +161,36 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleC
 
 
 %% Test of fast mode
+
+% 1 outlier arc
+seed_points = [6 6; 9 3; 6 0];
+[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+trueParameters = [true_circleCenter true_circleRadius];
+
+M = 8; % Number of points per meter
+sigma = 0.02;
+
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+figure(234);
+clf;
+hold on;
+grid on;
+grid minor;
+axis equal;
+
+corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (234));
+
+points = corrupted_outlieronearc_test_points;
+circleCenter = true_circleCenter;
+circleRadius = true_circleRadius;
+
+
 % Set inputs to a "normal" mode
 base_point_index = 1;
 end_point = [9 4];

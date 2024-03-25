@@ -17,6 +17,10 @@ assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
 
 %% Test of fast implementation mode 
 
+centers = [0 0];
+radii = 1;
+points = [2 3];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

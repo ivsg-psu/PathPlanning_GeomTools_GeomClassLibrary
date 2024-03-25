@@ -55,7 +55,24 @@ fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(cir
 fig_num = 2;
 figure(fig_num);
 clf;
-hold on;
+hold on;% circle
+
+circle_center = [3 4];
+circle_radius = 2;
+M = 50; % points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), -1);
+
+
 
 [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, fig_num);
 
@@ -73,6 +90,14 @@ fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(cir
 %% Test of fast mode
 % Perform the calculation in slow mode
 REPS = 1000; minTimeSlow = Inf;
+
+circle_center = [3 4];
+circle_radius = 2;
+M = 50; % points per meter
+sigma = 0.02;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+
 tic;
 for i=1:REPS
     tstart = tic;

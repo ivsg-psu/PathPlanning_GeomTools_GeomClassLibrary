@@ -78,8 +78,20 @@ fig_num = 601;
 regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
+
+
 fig_num = fig_nuM;
-[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortHoughSegments(regression_domains, [], fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortHoughSegments(regression_domains, 5, fig_num);
+
+% endPointsMatrix = zeros(numel(sortedHoughSegmentEndPoints)/2, 2);
+% 
+% endPointsMatrix(1:2:end,:) = sortedHoughSegmentEndPoints(:,1:2);
+% endPointsMatrix(2:2:end,:) = sortedHoughSegmentEndPoints(:,3:4);
+% 
+% tolerance = 5; 
+% 
+% [closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEndPoints(endPointsMatrix(1,:), endPointsMatrix(2:end-1,:), endPointsMatrix(end,:), tolerance, fig_num);
+% 
 
 
 curveStartPoint = sortedHoughSegmentEndPoints(1,1:2);
@@ -206,7 +218,17 @@ fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 % [endPointsCell, closeEndPointPairs, distance_btw_endpoints] = fcn_geometry_findBreakpoints(regression_domains, tolerance, fig_num);
 
 fig_num = fig_nuM;
-[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortHoughSegments(regression_domains,[], fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortHoughSegments(regression_domains,5, fig_num);
+
+% endPointsMatrix = zeros(numel(sortedHoughSegmentEndPoints)/2, 2);
+% 
+% endPointsMatrix(1:2:end,:) = sortedHoughSegmentEndPoints(:,1:2);
+% endPointsMatrix(2:2:end,:) = sortedHoughSegmentEndPoints(:,3:4);
+% 
+% tolerance = 1; 
+% 
+% [closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEndPoints(endPointsMatrix(1,:), endPointsMatrix(2:end-1,:), endPointsMatrix(end,:), tolerance, fig_num);
+% 
 
 
 curveStartPoint = sortedHoughSegmentEndPoints(1,1:2);

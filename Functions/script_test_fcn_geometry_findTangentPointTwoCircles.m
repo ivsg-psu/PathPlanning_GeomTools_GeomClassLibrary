@@ -37,6 +37,14 @@ assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
+
+centers_start = [1 1];
+centers_end   = [3 1];
+radii_start   = [0.5]; %#ok<*NBRAK>
+radii_end     = [0.3];
+cross_products_start = [ 1];
+cross_products_end   = [-1];
+
 for i=1:REPS
     tstart = tic;
     [...

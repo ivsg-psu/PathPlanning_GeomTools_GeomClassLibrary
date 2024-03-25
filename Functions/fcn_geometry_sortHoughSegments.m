@@ -144,37 +144,37 @@ endPoints.fitParameters = nan;
 endPointsCellArray = cell(1,N_houghDomains);
 
 % This loop saves the first and last points of each fit domain as the first
-% and last break points in endPointsCell cell array. This cell array also
+% and last end points in endPointsCell cell array. This cell array also
 % stores the fit type and parameters
 
 endPointsMatrix = zeros(2*N_houghDomains, 2);
 
 for i = 1:N_houghDomains
 
-    % Sort the points in domain of each Hough segment
+    % Sort the points in domain of each Hough segment along the x-direction
     % [sortedHoughSegmentDomain_x, sortedHoughSegmentDomainIndices] = sort(domains{i}.points_in_domain(:,1));
      [~, sortedHoughSegmentDomainIndices] = sort(domains{i}.points_in_domain(:,1));
+   
+    sortedHoughSegmentDomain_in_x_direction = domains{i}.points_in_domain(sortedHoughSegmentDomainIndices,:);
     
-    sortedHoughSegmentDomain = domains{i}.points_in_domain(sortedHoughSegmentDomainIndices,:);
-    
-    % % For debugging: delete this conditional statement debegguing
+    % % For debugging: delete this conditional statement after debegguing
     % if 1 ~= max(sortedHoughSegmentDomain_x == sortedHoughSegmentDomain(:,1))
     %     error('The hough segment domain is not sorted. The first and the last point of the Hough segment are wrong')
     % end
+ 
+        endPointsCellArray{i} = endPoints;
+        % Each Hough segment domain is sorted to determine the first and last
+        % points.
+        endPointsCellArray{i}.firstEndPoint = sortedHoughSegmentDomain_in_x_direction(1,:);
+        endPointsCellArray{i}.lastEndPoint = sortedHoughSegmentDomain_in_x_direction(end,:);
+        
+        endPointsCellArray{i}.fitType = domains{i}.best_fit_type;
+        endPointsCellArray{i}.fitParameters = domains{i}.best_fit_parameters;
 
-    endPointsCellArray{i} = endPoints;
-    % Each Hough segment domain is sorted to determine the first and last
-    % points. 
-    endPointsCellArray{i}.firstEndPoint = sortedHoughSegmentDomain(1,:); 
-    endPointsCellArray{i}.lastEndPoint = sortedHoughSegmentDomain(end,:);
-    endPointsCellArray{i}.fitType = domains{i}.best_fit_type;
-    endPointsCellArray{i}.fitParameters = domains{i}.best_fit_parameters;
 
-   
-    % Saving the break points in an array to find the closest break points
-    endPointsMatrix(2*(i-1)+1,:) = endPointsCellArray{i}.firstEndPoint;
-    endPointsMatrix(2*i,:) = endPointsCellArray{i}.lastEndPoint;
-
+        % Saving the break points in an array to find the closest break points
+        endPointsMatrix(2*(i-1)+1,:) = endPointsCellArray{i}.firstEndPoint;
+        endPointsMatrix(2*i,:) = endPointsCellArray{i}.lastEndPoint;
 end
 
 % find distance between the adjacent (close) end points Ex: distance

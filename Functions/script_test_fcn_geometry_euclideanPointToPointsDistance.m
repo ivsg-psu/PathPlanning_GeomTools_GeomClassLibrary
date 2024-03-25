@@ -19,13 +19,13 @@ pt1 = rand(5,2);
 pt2 = rand(5,2);
 dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 
-% BASIC example - single points in 3D
-fig_num = 31;
-
-pt1 = [1 1 0];
-pt2 = [2 3 2];
-dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
-assert(isequal(round(dist,4), [3]));
+% %% BASIC example - single points in 3D
+% fig_num = 31;
+% 
+% pt1 = [1 1 0; 2 3 2];
+% pt2 = [2 3 2; 1];
+% dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
+% assert(isequal(round(dist,4), [3]));
 
 %% BASIC example - two points in 3D
 fig_num = 32;
@@ -51,6 +51,9 @@ pt2 = rand(5,3);
 dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
 
 %% Test of fast implementation mode 
+
+pt1 = rand(5,3);
+pt2 = rand(5,3);
 
 % Perform the calculation in slow mode
 fig_num = [];

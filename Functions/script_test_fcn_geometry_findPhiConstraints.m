@@ -69,6 +69,10 @@ fprintf('\t %.2f \t %.2f\n', ...
 
 %% Test of fast implementation mode 
 
+p_apex = [0 0];
+vertex_1 = [1  0];
+vertex_2 = [-1 1];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 
@@ -124,6 +128,10 @@ end
 %% Simple rotation test to check for unknown items
 
 fig_num = fig_num + 1;
+
+p_apex =   [0 0;  2                      0; 0 -1; -1 0];
+vertex_1 = [1  0; 2+1/(2^0.5)  -1/(2^0.5) ; -1 -1; -2 0];
+vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
 
 angles = 0:0.01:2*pi;
 for i_angle = 1:length(angles)

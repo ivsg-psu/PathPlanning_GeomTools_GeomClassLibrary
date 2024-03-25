@@ -45,6 +45,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 fig_num = 2;
 figure(fig_num); clf;
 
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = 0 * pi/180;
 end_angle_in_radians = -90 * pi/180;
 degree_step = -1;
@@ -60,7 +62,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 fig_num = 3;
 figure(fig_num); clf;
 
-
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = -90 * pi/180;
 end_angle_in_radians   =  90 * pi/180;
 degree_step = 1;
@@ -77,6 +80,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 fig_num = 4;
 figure(fig_num); clf;
 
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians =  90 * pi/180;
 end_angle_in_radians   =  (-90 + 360) * pi/180;
 degree_step = 1;
@@ -92,6 +97,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 fig_num = 5;
 figure(fig_num); clf;
 
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = -90 * pi/180;
 end_angle_in_radians   =  90 * pi/180;
 degree_step = 30;
@@ -105,6 +112,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 
 %% BASIC example - show that can calculate results without a figure
 
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = -90 * pi/180;
 end_angle_in_radians   =  90 * pi/180;
 degree_step = 30;
@@ -118,6 +127,8 @@ domain_box = fcn_geometry_domainBoxByType(...
 
 %% Speed test
 % Set defaults
+circleCenter = [1 3];
+circleRadius = 2; 
 start_angle_in_radians = -90 * pi/180;
 end_angle_in_radians   =  90 * pi/180;
 degree_step = 30;

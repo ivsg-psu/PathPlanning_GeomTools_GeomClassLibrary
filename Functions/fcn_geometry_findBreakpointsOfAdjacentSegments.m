@@ -48,6 +48,9 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 % -- wrote the code - Aneesh Batchu
 % 2024_03_11 
 % -- Functionalized the code - Aneesh Batchu
+% 2024_03_14
+% -- Replaced this function "fcn_geometry_findIntersectionOfSegments" with
+% "fcn_Path_findProjectionHitOntoPath"
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -177,7 +180,7 @@ if flag_do_plots
     grid minor
     box on
     hold on
-    plot(plotPoints(:,1), plotPoints(:,2), '--', 'LineWidth',5, 'Color', [1 1 0], 'DisplayName','Fitted Curve');
+    plot(plotPoints(:,1), plotPoints(:,2), '-', 'LineWidth',2, 'Color', [0 1 0], 'DisplayName','Fitted Curve');
     plot(plotPoints(:,1), plotPoints(:,2), '.', 'MarkerSize',40, 'Color', [0 1 0],'DisplayName','Intersection Points');
 end
 

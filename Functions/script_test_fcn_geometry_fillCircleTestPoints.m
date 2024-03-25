@@ -23,6 +23,11 @@ test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M,
 
 %% Speed test
 
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;

@@ -34,6 +34,27 @@ test_points = fcn_geometry_shufflePointOrdering(test_points);
 fig_num = 1;
 figure(fig_num); clf;
 
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 base_point_index = 1;
 base_point = test_points(base_point_index,:);
 end_point = [4 5];
@@ -47,6 +68,27 @@ station_tolerance = 2;
 fig_num = 2;
 figure(fig_num); clf;
 
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 base_point_index = [2 3];
 end_point = [4 5];
 unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,-1);
@@ -58,6 +100,27 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_point
 %% Test 3: a basic test of line segment fitting, showing unit vector effect
 fig_num = 3;
 figure(fig_num); clf;
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
 
 base_point_index = [2 3];
 end_point = [3 3];
@@ -73,6 +136,27 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_point
 fig_num = 4;
 figure(fig_num); clf;
 
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 base_point_index = [2 3];
 end_point = [9 4];
 unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,-1);
@@ -84,6 +168,27 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_point
 %% Test 5: a basic test of line segment fitting, showing transverse_tolerance effect
 fig_num = 5;
 figure(fig_num); clf;
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
 
 base_point_index = [2 3];
 end_point = [9 4];
@@ -99,6 +204,27 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_point
 fig_num = 6;
 figure(fig_num); clf;
 
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 base_point_index = [2 3];
 end_point = [9 4];
 unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,-1);
@@ -110,6 +236,28 @@ agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_point
 
 
 %% Test of fast mode
+
+rng(383);
+
+% Fill test data - 3 segments
+seed_points = [2 3; 4 5; 7 0; 9 5]; 
+M = 10;
+sigma = 0.2;
+
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 4;
+
+test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption));
+
+
+% Shuffle points?
+test_points = fcn_geometry_shufflePointOrdering(test_points);
+
 % Set inputs to a "normal" mode
 base_point_index = 1;
 end_point = [9 4];

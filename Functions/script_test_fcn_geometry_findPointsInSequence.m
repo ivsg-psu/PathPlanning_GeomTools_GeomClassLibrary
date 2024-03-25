@@ -34,9 +34,9 @@ sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_poin
 
 %% Example - 2 - fast implementation mode
 
-inputPoints = test_points;
-transverse_tolerance = 0.1;
-station_tolerance = 0.1;
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
 
 % Perform the calculation in slow mode
 REPS = 10; minTimeSlow = Inf;
@@ -102,6 +102,31 @@ sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_poin
 
 %% Example - 3 - fast implementation mode
 fig_num = 333;
+
+input_distances = [
+    0
+    0.188896643435862
+    0.281186645032550
+    0.472304093692704
+    0.571973834533390
+    0.768818358699212
+    0.862778494044884
+    0.961593083491137
+    1.061653207994030
+    1.161395025569664
+    10.339478530050306
+    10.528375173486166
+    10.620665175082857
+    10.811782623743010
+    10.911452364583695
+    11.108296888749514
+    11.202257024095186
+    11.301071613541442
+    11.401131738044334
+    11.500873555619966];
+
+base_point_index = 10;
+station_tolerance = 0.1;
 
 % Perform the calculation in slow mode
 REPS = 10; minTimeSlow = Inf; 

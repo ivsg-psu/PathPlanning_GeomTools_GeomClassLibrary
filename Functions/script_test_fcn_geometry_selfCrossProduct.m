@@ -34,6 +34,8 @@ path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
 
 %% Test of fast implementation mode 
 
+path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf; 

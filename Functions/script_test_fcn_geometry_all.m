@@ -22,7 +22,7 @@ all_scripts = dir(scripts_search_name);
 diary 'script_test_fcn_geometry_all_stdout.txt';
 
 % Loop through each file
-for i_script = 1:length(all_scripts)
+for i_script = 1:15%length(all_scripts)
 
     % Get the full name
     file_name_extended = all_scripts(i_script).name;

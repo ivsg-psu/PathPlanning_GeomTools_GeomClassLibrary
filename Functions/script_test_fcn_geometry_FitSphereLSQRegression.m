@@ -168,13 +168,16 @@ fprintf('Actual sigma (m)   : %.4f\n',std(errors));
 % is a struct containing two fields
 % rawdata_selected.GPS_SparkFun_Temp_ENU_selected and
 % rawdata_selected.Lidar_pointcloud_cell_selected
-load('GPSandLidar_Data.mat','rawdata_selected');
+% load('GPSandLidar_Data.mat','rawdata_selected');
 
 %% Grab the GPS and Lidar Data
-GPS_SparkFun_Temp_ENU = rawdata_selected.GPS_SparkFun_Temp_ENU_selected;
-Lidar_pointcloud_cell = rawdata_selected.Lidar_pointcloud_cell_selected;
 
-%% Create Fake PointCloud Data
+load('GPSandLidar_Data.mat','rawdata_selected');
+
+GPS_SparkFun_Temp_ENU = rawdata_selected.GPS_SparkFun_Temp_ENU_selected;
+% Lidar_pointcloud_cell = rawdata_selected.Lidar_pointcloud_cell_selected;
+
+% Create Fake PointCloud Data
 N_fake_points = 20;
 thetavec = linspace(0,pi,N_fake_points).';
 phivec = linspace(0,2*pi,2*N_fake_points).';
@@ -212,7 +215,8 @@ for n_gps_idxs = gps_select_range
     fake_PointCloud_cell{n_gps_idxs,1} = [XYZ_array_with_noise,Intensity_fake];
 end
 
-%% View fake point cloud data
+% View fake point cloud data
+
 Lidar_origin = mean(GPS_SparkFun_Temp_ENU,1);
 x_range = [Lidar_origin(1)-1.5, Lidar_origin(1)+1.5];
 y_range = [Lidar_origin(2)-1.5, Lidar_origin(2)+1.5];
@@ -231,7 +235,8 @@ for i_scan = gps_select_range
     end
 end
 
-%% Fit Sphere Target with the fake pointcloud data
+% Fit Sphere Target with the fake pointcloud data
+
 clear C_array R_array E_ave_array pointCloud_space_cell
 
 for idx_fit = 1:N_data
@@ -254,7 +259,8 @@ for idx_fit = 1:N_data
     end
 end
 
-%% Compute errors and visualize result
+% Compute errors and visualize result
+
 C_sphere_actual = GPS_SparkFun_Temp_ENU(gps_select_range,:);
 % Compute the offsets between the actual sphere center and the fitting
 % center
