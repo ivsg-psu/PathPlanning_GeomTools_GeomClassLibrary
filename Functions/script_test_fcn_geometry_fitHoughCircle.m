@@ -1033,7 +1033,7 @@ fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
-fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
+% fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
 
 %% Test using flag_use_permutations for N-point setting
 % This specifies the number of points to use as N points. This should only
@@ -1086,7 +1086,7 @@ fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
-fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
+% fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
 
 % Now show how it works with "clean" points
 fig_num = 66;

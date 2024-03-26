@@ -151,13 +151,11 @@ endPointsMatrix = zeros(2*N_houghDomains, 2);
 
 for i = 1:N_houghDomains
 
-    % Sort the first and last point of the "points in domain" of each Hough segment along the x-direction
-    
-    endPoints_of_domain = [domains{i}.points_in_domain(1,:);domains{i}.points_in_domain(end,:)];
+    % Sort the points in domain of each Hough segment along the x-direction
+    % [sortedHoughSegmentDomain_x, sortedHoughSegmentDomainIndices] = sort(domains{i}.points_in_domain(:,1));
+     [~, sortedHoughSegmentDomainIndices] = sort(domains{i}.points_in_domain(:,1));
    
-    [~, sortedEndPointsIndices_in_x_direction] = sort(endPoints_of_domain(:,1));
-
-    sortedEndPoints_in_x_direction = endPoints_of_domain(sortedEndPointsIndices_in_x_direction,:);
+    sortedHoughSegmentDomain_in_x_direction = domains{i}.points_in_domain(sortedHoughSegmentDomainIndices,:);
     
     % % For debugging: delete this conditional statement after debegguing
     % if 1 ~= max(sortedHoughSegmentDomain_x == sortedHoughSegmentDomain(:,1))
@@ -167,8 +165,8 @@ for i = 1:N_houghDomains
         endPointsCellArray{i} = endPoints;
         % Each Hough segment domain is sorted to determine the first and last
         % points.
-        endPointsCellArray{i}.firstEndPoint = sortedEndPoints_in_x_direction(1,:);
-        endPointsCellArray{i}.lastEndPoint = sortedEndPoints_in_x_direction(end,:);
+        endPointsCellArray{i}.firstEndPoint = sortedHoughSegmentDomain_in_x_direction(1,:);
+        endPointsCellArray{i}.lastEndPoint = sortedHoughSegmentDomain_in_x_direction(end,:);
         
         endPointsCellArray{i}.fitType = domains{i}.best_fit_type;
         endPointsCellArray{i}.fitParameters = domains{i}.best_fit_parameters;

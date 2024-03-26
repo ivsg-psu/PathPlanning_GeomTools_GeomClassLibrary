@@ -212,6 +212,28 @@ sigma = 0.02;
 
 onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
 
+start_vector = arc_seed_points(1,:)-arc_true_circleCenter;
+arc_true_start_angle_in_radians = atan2(start_vector(2),start_vector(1));
+end_vector = arc_seed_points(end,:)-arc_true_circleCenter;
+arc_true_end_angle_in_radians = atan2(end_vector(2),end_vector(1));
+
+transverse_tolerance = 0.1;
+station_tolerance = 1;
+points_required_for_agreement = 20;
+flag_force_circle_fit = 0;
+expected_radii_range = [1 10];
+flag_find_only_best_agreement = [];
+flag_use_permutations = [];
+
+% Find all the domains
+fig_num = 234;
+figure(fig_num); clf;
+inputPoints = onearc_test_points;
+domains_onearc_test_points  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
+
 % Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -270,6 +292,41 @@ fcn_INTERNAL_printResults('Regression errors', params)
 
 
 %% Basic call with circle data
+
+% Fill circle data
+% circle
+circle_center = [4 3];
+circle_radius = 2;
+M = 3; % 5 points per meter
+sigma = 0.02;
+fig_num = -1;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+inputPoints = corrupted_circle_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = [];
+points_required_for_agreement = [];
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_find_only_best_agreement = [];
+flag_use_permutations = [];
+
+
+domains_corrupted_circle_test_points  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
+
 fig_num = 3;
 figure(fig_num);
 clf;
@@ -295,6 +352,40 @@ fcn_INTERNAL_printResults('Regression errors', params)
 
 
 %% Test of fast mode
+
+% Fill circle data
+% circle
+circle_center = [4 3];
+circle_radius = 2;
+M = 3; % 5 points per meter
+sigma = 0.02;
+fig_num = -1;
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
+
+% Add outliers?
+% Corrupt the results
+probability_of_corruption = 0.3;
+magnitude_of_corruption = 1;
+
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+
+inputPoints = corrupted_circle_test_points;
+transverse_tolerance = 0.1;
+station_tolerance = [];
+points_required_for_agreement = [];
+flag_force_circle_fit = [];
+expected_radii_range = [];
+flag_find_only_best_agreement = [];
+flag_use_permutations = [];
+
+
+domains_corrupted_circle_test_points  = ...
+fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;
@@ -302,8 +393,8 @@ tic;
 for i=1:REPS
     tstart = tic;
 
-    regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, fig_num); 
+   regression_domain  =  ...
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
 
     
     telapsed = toc(tstart);
@@ -319,7 +410,7 @@ for i=1:REPS
     tstart = tic;
 
     regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
