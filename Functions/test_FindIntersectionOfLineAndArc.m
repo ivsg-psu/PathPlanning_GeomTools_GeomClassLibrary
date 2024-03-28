@@ -52,44 +52,44 @@ close all
 
 %%  In this case, one arc and one line have been used as the test data. (Two Intersection points)
 
-% Fill data points with lines and arcs
-rng(3423)
+% % Fill data points with lines and arcs
+% rng(3423)
+% 
+% probability_of_corruption = 0.1;
+% magnitude_of_corruption = 3;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% 
+% % Arc 1 test points
+% seed_points = [2 3; 4 5; 6 3];
+% % seed_points = [4 0; 0 4; -4 0];
+% M = 10; % Points per meter
+% sigma = 0.02;
+% 
+% % Fill test data for arc 1
+% [test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+% 
+% fig_num = 112;
+% corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
+% 
+% % Line 1 test points
+% seed_points = [5 4; 8 3];
+% M = 10;
+% sigma = 0.02;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% % Fill test data for line 1
+% test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+% 
+% 
+% fig_num = 112;
+% corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
 
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 3;
-
-% fig_num = 111;
-fig_num = -1;
-
-% Arc 1 test points
-seed_points = [2 3; 4 5; 6 3];
-% seed_points = [4 0; 0 4; -4 0];
-M = 10; % Points per meter
-sigma = 0.02;
-
-% Fill test data for arc 1
-[test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
-
-fig_num = 112;
-corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
-
-% Line 1 test points
-seed_points = [5 4; 8 3];
-M = 10;
-sigma = 0.02;
-
-% fig_num = 111;
-fig_num = -1;
-% Fill test data for line 1
-test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-fig_num = 112;
-corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
-
-%%
+%% In this case, one arc and one line have been used as the test data. (Two Intersection points)
 
 % % Fill data points with lines and arcs
 % rng(3423)
@@ -130,6 +130,127 @@ corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points
 %     (probability_of_corruption), (magnitude_of_corruption), fig_num);
 
 
+%% In this case, one arc and one line have been used as the test data. (One Intersection point)
+
+% % Fill data points with lines and arcs
+% rng(3423)
+% 
+% probability_of_corruption = 0.1;
+% magnitude_of_corruption = 3;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% 
+% % Arc 1 test points
+% seed_points = [2 3; 4 5; 6 3];
+% % seed_points = [2 3; 4 5; 6 3];
+% % seed_points = [4 0; 0 4; -4 0];
+% M = 10; % Points per meter
+% sigma = 0.02;
+% 
+% % Fill test data for arc 1
+% [test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+% 
+% fig_num = 112;
+% corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
+% 
+% % Line 1 test points
+% seed_points = [7 4; 9 4];
+% M = 10;
+% sigma = 0.02;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% % Fill test data for line 1
+% test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+% 
+% 
+% fig_num = 112;
+% corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
+% 
+
+% %% In this case, one arc and one line have been used as the test data. (Two Intersection points)
+% 
+% % Fill data points with lines and arcs
+% rng(3423)
+% 
+% probability_of_corruption = 0.1;
+% magnitude_of_corruption = 3;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% 
+% % Arc 1 test points
+% seed_points = [2 3; 4 5; 6 3];
+% % seed_points = [2 3; 4 5; 6 3];
+% % seed_points = [4 0; 0 4; -4 0];
+% M = 10; % Points per meter
+% sigma = 0.02;
+% 
+% % Fill test data for arc 1
+% [test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+% 
+% fig_num = 112;
+% corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
+% 
+% % Line 1 test points
+% seed_points = [4 5; 7 5];
+% M = 10;
+% sigma = 0.02;
+% 
+% % fig_num = 111;
+% fig_num = -1;
+% % Fill test data for line 1
+% test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+% 
+% 
+% fig_num = 112;
+% corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
+%     (probability_of_corruption), (magnitude_of_corruption), fig_num);
+
+%% In this case, one arc and one line have been used as the test data. (One Intersection points)
+
+% Fill data points with lines and arcs
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% fig_num = 111;
+fig_num = -1;
+
+% Arc 1 test points
+seed_points = [2 3; 4 5; 6 3];
+% seed_points = [2 3; 4 5; 6 3];
+% seed_points = [4 0; 0 4; -4 0];
+M = 10; % Points per meter
+sigma = 0.02;
+
+% Fill test data for arc 1
+[test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+
+fig_num = 112;
+corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
+    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+
+% Line 1 test points
+seed_points = [4 1; 7 1];
+M = 10;
+sigma = 0.02;
+
+% fig_num = 111;
+fig_num = -1;
+% Fill test data for line 1
+test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+fig_num = 112;
+corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
+    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+
 % Hough Segmentation
 % fig_num = 501;
 fig_num = -1;
@@ -149,7 +270,7 @@ regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
 fig_num = 112;
 tolerance = [];
 
-[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortHoughSegments(regression_domains, tolerance, fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, fig_num);
 
 
 hold on 
@@ -205,18 +326,19 @@ if dist_btw_pointC_and_pointS > radiusArc
     disp('No Intersection')
 end
 
+tole = 0.1;
 % One intersection point, if the distance between arc center and start
 % point of segment is equal to radius
-if dist_btw_pointC_and_pointS == radiusArc
+if dist_btw_pointC_and_pointS <= radiusArc + tole && dist_btw_pointC_and_pointS >= radiusArc - tole
     intersectionPoints = pointE + dot(vectorEC, unit_vectorES)*unit_vectorES;
     disp(intersectionPoints)
-    plot(intersectionPoints(1,1), intersectionPoints(1,2), '.', 'Color', 'b', 'MarkerSize',30)
+    plot(intersectionPoints(1,1), intersectionPoints(1,2), '.', 'Color', 'c', 'MarkerSize',30)
 end
 
 
 % Two intersection points, if the distance between arc center and start
 % point of segment is less than others
-if dist_btw_pointC_and_pointS < radiusArc
+if dist_btw_pointC_and_pointS < radiusArc - tole
 
     % Center point of the two intersection points
     % centerPoint_of_intersectionPoints = vectorES + dot(vectorEC, unit_vectorES)*unit_vectorES;
@@ -247,9 +369,9 @@ distance_btw_interesectionPoints_center = sum([(intersectionPoints(:,1) - pointC
 verifyThis = distance_btw_interesectionPoints_center - radiusArc.*ones(size(distance_btw_interesectionPoints_center,1),1);
 
 if (verifyThis < 0.0000001)
-    disp('Points Verified')
+    disp('Intersection Points are Verified')
 end
 
-
+% sum([(centerPoint_of_intersectionPoints(:,1) - pointC(:,1)).^2, (centerPoint_of_intersectionPoints(:,2) - pointC(:,2)).^2],2).^0.5;
 
 
