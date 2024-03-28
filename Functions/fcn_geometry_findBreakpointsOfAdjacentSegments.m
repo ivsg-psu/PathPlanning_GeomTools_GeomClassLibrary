@@ -16,8 +16,9 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 %
 % curveEndPoint: The end point of the curve
 %
-% sortedHoughSegmentEndPoints: The endpoints of the sorted Hough Segments
-% "or" the second output of "fcn_geometry_sortHoughSegments" function
+% sortedHoughSegmentEndPoints: The endpoints of the sorted Regression
+% Domains "or" the second output of "fcn_geometry_sortRegressionDomains"
+% function
 %
 % (OPTIONAL INPUTS)
 % 
