@@ -1,29 +1,33 @@
-function [test_points, true_circle_centers, true_circle_radii] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, varargin)
-% fcn_geometry_fillArcTestPoints
-% given N seed_points, with N>=3, creates test_points that follow arcs
-% consisting of M points per unit distance, by fitting circles between
-% consecutive pairs of 3 points. The location of the points on the arcs
-% follows a radius that is corrupted by perturbations randomly, with
-% perturbations normally distributed about the nominal radius with variance
-% sigma.
+function [test_points, circleCenters, startPointsOfArcs] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
+%% fcn_geometry_fillArcSequenceTestPoints
+% given a Ax2 matrix containing [curvature station_length] in each row,
+% where A are the number of interconnected arcs to form. This function then
+% creates a sequence of test points that follows each respective arc for
+% the specified station length, in sequence
 %
-% [test_points] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma)
+% [test_points] = fcn_geometry_fillArcSequenceTestPoints(seed_points, M, sigma)
 %
 % INPUTS:
-%      seed_points: a Nx2 vector where N is the number of points, but at
-%      least 2.
+%      arc_pattern: a Ax2 matrix containing [curvature station_length] in
+%      each row, where A is the number of arcs.
 %
 %      M: the number of test points to generate per unit
 %      distance.
 %
 %      sigma: athe standard deviation in points
 %
+%      (OPTIONAL INPUTS)
+%
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
+%
 % OUTPUTS:
 %
 %      test_points: a list of test points used to test regression fitting
 %
-%      true_circle_centers, true_circle_radii: the true values of the
-%      circle equations used to fill the points
+%      circleCenters, startPointsOfArcs: the [x y] location of each circle
+%      center, and [x y] location where each arc starts.
 % 
 % DEPENDENCIES:
 %
@@ -34,21 +38,16 @@ function [test_points, true_circle_centers, true_circle_radii] = fcn_geometry_fi
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fillArcTestPoints
+% See the script: script_test_fcn_geometry_fillArcSequenceTestPoints
 % for a full test suite.
 %
-% This function was written on 2023_12_17 by S. Brennan
+% This function was written on 2024_03_31 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2023_12_17 by S. Brennan 
-% -- wrote the code using fcn_geometry_fillLineTestPoints as starter
-% 2024_01_08 by S. Brennan
-% -- edited comments for correctness
-% -- added fast mode and environmental variables for debugging
-% 2024_03_31 by S. Brennan
-% -- fixed bug where zoom was not set correctly
-% -- fixed bug where last point is sometimes not set
+% 2024_03_31 - S. Brennan
+% -- wrote the code
+
 
 %% Debugging and Input checks
 
@@ -102,7 +101,7 @@ if (0==flag_max_speed)
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
-            seed_points, '2column_of_numbers',[2 3]);
+            arc_pattern, '2column_of_numbers');
 
     end
 end
@@ -129,73 +128,86 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Solve for the circle
-N_segments = length(seed_points(:,1)) -2;
+N_segments = length(arc_pattern(:,1));
 
-% Find circle center and radius for each set of 3 points
-[circleCenter, circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points,-1);
+% Find radius and arc angles for each input
+circleRadius = 1./arc_pattern(:,1);
 
 % Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), -1);
+is_counterClockwise = 2*(circleRadius>0)-1;
 
-true_circle_centers = circleCenter;
-true_circle_radii   = circleRadius;
+% Save the circle centers that we encounter
+circleCenters = nan(N_segments,2);
+startPointsOfArcs = nan(N_segments,2);
 
-test_points = [];
+current_angle = 0;
+current_position = [0 0];
+test_points = current_position;
 for ith_point = 1:N_segments
-    projection_to_first_point = seed_points(ith_point,:) - circleCenter(ith_point,:);
-    projection_to_second_point = seed_points(ith_point+1,:) - circleCenter(ith_point,:);
-    projection_to_third_point = seed_points(ith_point+2,:) - circleCenter(ith_point,:);
+    startPointsOfArcs(ith_point,:) = current_position;
+    total_arc_length = arc_pattern(ith_point,2);
 
-    unit_project_to_first_point = fcn_geometry_calcUnitVector(projection_to_first_point,-1);
-    unit_project_to_second_point = fcn_geometry_calcUnitVector(projection_to_second_point,-1);
-    unit_project_to_third_point = fcn_geometry_calcUnitVector(projection_to_third_point,-1);
+    % Find current radius
+    current_radius = abs(circleRadius(ith_point));
 
-    dot_product1_to_2 = sum(unit_project_to_first_point.*unit_project_to_second_point,2);
-    dot_product2_to_3 = sum(unit_project_to_second_point.*unit_project_to_third_point,2);
-    
-    dot_angle1_to_2_magnitude = acos(dot_product1_to_2);
-    dot_angle2_to_3_magnitude = acos(dot_product2_to_3);
+    % Find the circle center
+    if ~isinf(current_radius)
+        current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 is_counterClockwise(ith_point,1); -is_counterClockwise(ith_point,1) 0];
+        circleCenters(ith_point,:) = current_circle_center;
 
+        % Find the number points
+        projection_distances = (0:(1/M):total_arc_length)';
 
-    if ith_point<N_segments
-        cross_angle = is_counterClockwise(ith_point)*dot_angle1_to_2_magnitude;
+        N_points = length(projection_distances);
+
+        % Convert from distances to angles, and then angles to points
+        angles = current_angle + is_counterClockwise(ith_point)*projection_distances./current_radius;
+        if 1==is_counterClockwise(ith_point,1)
+            unit_radial_vectors = [cos(angles-pi/2) sin(angles-pi/2)];
+        else
+            unit_radial_vectors = [cos(angles+pi/2) sin(angles+pi/2)];
+        end
+        orthogonal_distances = randn(N_points,1)*sigma + ones(N_points,1)*current_radius;
+        perturbed_points = ones(N_points,1)*current_circle_center + orthogonal_distances.*unit_radial_vectors;
+
+        % Repeat for the last point, which may not be included in the list
+        % above, and should also NOT have any noise added
+        final_angle = current_angle + is_counterClockwise(ith_point)*total_arc_length./current_radius;
+        if 1==is_counterClockwise(ith_point,1)
+            unit_radial_vectors = [cos(final_angle-pi/2) sin(final_angle-pi/2)];
+        else
+            unit_radial_vectors = [cos(final_angle+pi/2) sin(final_angle+pi/2)];
+        end
+        final_point = current_circle_center + current_radius.*unit_radial_vectors;
     else
-        cross_angle = is_counterClockwise(ith_point)*(dot_angle1_to_2_magnitude + dot_angle2_to_3_magnitude);
-    end
-
-    angle_start = atan2(unit_project_to_first_point(1,2),unit_project_to_first_point(1,1));
-    % angle_end = angle_start + cross_angle;
-    total_arc_length = abs(cross_angle)*circleRadius(ith_point); % The arc distance
-
-    % Find the number points
-    projection_distances = (0:(1/M):total_arc_length)';
-    if projection_distances(end)~=total_arc_length
-        projection_distances = [projection_distances; total_arc_length]; %#ok<AGROW>
-    end
-    N_points = length(projection_distances);
-
-    % Convert to angles, and then to points
-    angles = angle_start + sign(cross_angle)*projection_distances./circleRadius(ith_point);
-    unit_radial_vectors = [cos(angles) sin(angles)];
-    orthogonal_distances = randn(N_points,1)*sigma + ones(N_points,1)*circleRadius(ith_point);
-    perturbed_points = ones(N_points,1)*circleCenter(ith_point,:) + orthogonal_distances.*unit_radial_vectors;
-
-    if flag_do_debug
-        figure(debug_fig_num);
-        hold on;
-        grid on;
-        axis equal
-
-        plot(circleCenter(ith_point,1), circleCenter(ith_point,2), 'r+','MarkerSize',30);
-        plot(seed_points(ith_point,1), seed_points(ith_point,2), 'g.','MarkerSize',20);
-        plot(seed_points(ith_point+1,1), seed_points(ith_point+1,2), 'b.','MarkerSize',20);
-        plot(seed_points(ith_point+2,1), seed_points(ith_point+2,2), 'r.','MarkerSize',20);
-
-        plot(perturbed_points(:,1), perturbed_points(:,2), 'k.','MarkerSize',20);
+        circleCenters(ith_point,:) = [nan nan];
+        projection_distances = (0:(1/M):total_arc_length)';
+        N_points = length(projection_distances);
+        unit_tangential_vector = [cos(current_angle) sin(current_angle)];
+        unit_radial_vector = [cos(current_angle+pi/2) sin(current_angle+pi/2)];
+        orthogonal_distances = randn(N_points,1)*sigma;
+        perturbed_points = current_position + projection_distances*unit_tangential_vector + orthogonal_distances.*unit_radial_vector;
+        final_point = current_position + total_arc_length.*unit_tangential_vector;
     end
 
     % Convert to test points
     test_points = [test_points; perturbed_points]; %#ok<AGROW>
+
+    % Save where we are for the next loop
+    current_angle = current_angle + is_counterClockwise(ith_point)*total_arc_length./current_radius;
+    current_position = final_point;
+
+    if flag_do_debug
+        figure(34345);
+        hold on;
+        grid on;
+        axis equal
+
+        plot(startPointsOfArcs(:,1), startPointsOfArcs(:,2), 'g.','MarkerSize',30);
+        plot(circleCenters(ith_point,1), circleCenters(ith_point,2), 'r+','MarkerSize',30);
+        plot(test_points(:,1), test_points(:,2), 'k.','MarkerSize',20);
+    end
+
 end
 
 
@@ -223,14 +235,11 @@ if flag_do_plots
     hold on;
     grid on;
 
-    % Plot the input points
-    plot(seed_points(:,1),seed_points(:,2),'r.','MarkerSize',20);
-    
     % Plot the results
     plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
 
     % Plot the circle centers
-    plot(true_circle_centers(:,1), true_circle_centers(:,2), 'r+','MarkerSize',30);
+    plot(circleCenters(:,1), circleCenters(:,2), 'r+','MarkerSize',30);
 
     % Make axis slightly larger?
     if flag_rescale_axis
