@@ -1,8 +1,5 @@
 function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, varargin)
-
-%[regression_fit_arc_center_and_radius_and_angles, domain_box, radial_errors, standard_deviation]  =  ...
-%    fcn_geometry_fitArcRegressionFromHoughFit(source_points, associated_points_in_domain, varargin)
-% fcn_geometry_fitArcRegressionFromHoughFit
+%% fcn_geometry_fitArcRegressionFromHoughFit
 % Given a domain containing a set of points that are matched to an arc via
 % a Hough vote, finds the arc regression fit and domain box.
 % 
@@ -241,7 +238,14 @@ regression_domain.best_fit_3_sigma_box = domain_box_3_sigma;
 if isempty(best_fit_domain_box_projection_distance)
     regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
 else
-    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles,  best_fit_domain_box_projection_distance,-1);
+    additional_arc_radians = best_fit_domain_box_projection_distance/circleRadius;
+    if end_angle_in_radians>start_angle_in_radians
+        direction_of_angles = 1;
+    else
+        direction_of_angles = -1;
+    end
+    angles_padded = [start_angle_in_radians - direction_of_angles*additional_arc_radians; angles; end_angle_in_radians + direction_of_angles*additional_arc_radians];
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance,-1);
 end
 
 

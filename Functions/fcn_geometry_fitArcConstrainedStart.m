@@ -177,7 +177,14 @@ arcCenter = local_arcCenter*[cos(initial_rotation) sin(initial_rotation); -sin(i
 test_points = [input_points(1:2,:); input_points(end,:)];
 angles = atan2((test_points(:,2) - arcCenter(1,2)),(test_points(:,1) - arcCenter(1,1)));
 [~, arcLength, ~, ~, ~]  = fcn_geometry_arcAngleFrom3Points([cos(angles(1,1)) sin(angles(1,1))], [cos(angles(2,1)) sin(angles(2,1))], [cos(angles(end,1)) sin(angles(end,1))] );
-arcLength = abs(arcLength);
+
+if isnan(arcLength)
+    flag_is_a_line = 1;
+    arcLength = sum((input_points(1,:) - input_points(end,:)).^2,2).^0.5;
+else
+    flag_is_a_line = 0;
+    arcLength = abs(arcLength);
+end
 
 
 
@@ -223,20 +230,26 @@ if flag_do_plots
     plot(input_points(:,1),input_points(:,2),'.','MarkerSize',20,'Color',current_color);
 
     % Plot the fit
-    plot(arcCenter(:,1),arcCenter(:,2),'+','Color','b','MarkerSize',40);
+    if flag_is_a_line==0
+        plot(arcCenter(:,1),arcCenter(:,2),'+','Color','b','MarkerSize',40);
 
-    angles = atan2((input_points(:,2) - arcCenter(1,2)),(input_points(:,1) - arcCenter(1,1)));
-    [~, plotting_arcLength, ~, ~, start_angles_in_radians]  = fcn_geometry_arcAngleFrom3Points([cos(angles(1,1)) sin(angles(1,1))], [cos(angles(2,1)) sin(angles(2,1))], [cos(angles(end,1)) sin(angles(end,1))] );
 
-    max_angle = start_angles_in_radians+plotting_arcLength;
+        angles = atan2((input_points(:,2) - arcCenter(1,2)),(input_points(:,1) - arcCenter(1,1)));
+        [~, plotting_arcLength, ~, ~, start_angles_in_radians]  = fcn_geometry_arcAngleFrom3Points([cos(angles(1,1)) sin(angles(1,1))], [cos(angles(2,1)) sin(angles(2,1))], [cos(angles(end,1)) sin(angles(end,1))] );
 
-    if plotting_arcLength>0
-        angle_sweep = [(start_angles_in_radians:1*pi/180:(start_angles_in_radians+plotting_arcLength))'; max_angle];
+        max_angle = start_angles_in_radians+plotting_arcLength;
+
+        angle_step_radians = min((1*pi/180),abs(plotting_arcLength)/10);
+        if plotting_arcLength>0
+            angle_sweep = [(start_angles_in_radians:angle_step_radians:(start_angles_in_radians+plotting_arcLength))'; max_angle];
+        else
+            angle_sweep = [(start_angles_in_radians:-1*angle_step_radians:(start_angles_in_radians+plotting_arcLength))'; max_angle];
+        end
+        fitted_points = abs(x0)*[cos(angle_sweep) sin(angle_sweep)] + arcCenter;
+        plot(fitted_points(:,1),fitted_points(:,2),'-','MarkerSize',40,'Color',[0 0 1],'LineWidth',3);
     else
-        angle_sweep = [(start_angles_in_radians:-1*pi/180:(start_angles_in_radians+plotting_arcLength))'; max_angle];
+        warning('Plotting method for linear fit not yet finished!');
     end
-    fitted_points = abs(x0)*[cos(angle_sweep) sin(angle_sweep)] + arcCenter;
-    plot(fitted_points(:,1),fitted_points(:,2),'-','MarkerSize',40,'Color',[0 0 1],'LineWidth',3);
 
     % Make axis slightly larger?
     if flag_rescale_axis
