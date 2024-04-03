@@ -1,4 +1,4 @@
-function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)   
+function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 % fcn_geometry_domainBoxByType -  generates the domain box given a
 % particular type of domain. NOTE: the inputs change depending on the type
 % of domain used.
@@ -24,7 +24,7 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %                (fig_num))
 %
 %      (OPTIONAL INPUTS)
-% 
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -93,10 +93,10 @@ end
 
 if (0==flag_max_speed)
     if flag_check_inputs
-        switch type_of_domain, ...
+        switch type_of_domain
             case 'arc'
-            % Are there the right number of inputs?
-            narginchk(5,6);
+                % Are there the right number of inputs?
+                narginchk(5,6);
             otherwise
                 error('Unknown domain type given: %s',type_of_domain);
         end
@@ -114,33 +114,30 @@ switch type_of_domain
         error('Unknown domain type given: %s',type_of_domain);
 end
 
-if (0==flag_max_speed)
-    if flag_check_inputs
-        switch type_of_domain, ...
-            case 'arc'
-            % Check the circleCenter input
-            fcn_DebugTools_checkInputsToFunctions(...
-                circleCenter, '2column_of_numbers',1);
-
-            % Use number of radii to calculate the number of centers
-            Ncircles = length(circleCenter(:,1));
-
-            % Check the circleRadius input
-            fcn_DebugTools_checkInputsToFunctions(...
-                circleRadius, '1column_of_numbers',1);
-
-            % Check the angles input
-            fcn_DebugTools_checkInputsToFunctions(...
-                angles, '1column_of_numbers');
-
-            % Check the distance_from_circle_to_boundary input
-            fcn_DebugTools_checkInputsToFunctions(...
-                distance_from_circle_to_boundary, '1column_of_numbers',1);
-            otherwise
-                error('Unknown domain type given: %s',type_of_domain);
-        end
-    end
-end
+% if (0==flag_max_speed)
+%     if flag_check_inputs
+%         switch type_of_domain, ...
+%             case 'arc'
+%             % Check the circleCenter input
+%             fcn_DebugTools_checkInputsToFunctions(...
+%                 circleCenter, '2column_of_numbers',1);
+%
+%             % Check the circleRadius input
+%             fcn_DebugTools_checkInputsToFunctions(...
+%                 circleRadius, '1column_of_numbers',1);
+%
+%             % Check the angles input
+%             fcn_DebugTools_checkInputsToFunctions(...
+%                 angles, '1column_of_numbers');
+%
+%             % Check the distance_from_circle_to_boundary input
+%             fcn_DebugTools_checkInputsToFunctions(...
+%                 distance_from_circle_to_boundary, '1column_of_numbers',1);
+%             otherwise
+%                 error('Unknown domain type given: %s',type_of_domain);
+%         end
+%     end
+% end
 
 % Does user want to specify the figure?
 flag_do_plot = 0;
@@ -165,7 +162,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch type_of_domain
     case {'arc'}
-        
+
         inner_radius = max(0,(circleRadius - distance_from_circle_to_boundary));
         outer_radius = circleRadius + distance_from_circle_to_boundary;
         inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
@@ -179,14 +176,14 @@ domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCo
 
 %% Plot results?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
+%   _____       _
+%  |  __ \     | |
+%  | |  | | ___| |__  _   _  __ _
 %  | |  | |/ _ \ '_ \| | | |/ _` |
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
 %                            __/ |
-%                           |___/ 
+%                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plot
@@ -220,5 +217,5 @@ if flag_do_plot
 end
 
 if flag_do_debug
-    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file); 
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
 end

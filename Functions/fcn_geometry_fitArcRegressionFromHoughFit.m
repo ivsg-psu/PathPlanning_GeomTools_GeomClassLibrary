@@ -7,14 +7,20 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % a Hough vote, finds the arc regression fit and domain box.
 % 
 % Format: 
-% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, (fig_num))
+% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, (best_fit_domain_box_projection_distance), (fig_num))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
 %      fitting. See fcn_geometry_fillEmptyDomainStructure for details.
 %
 %      (OPTIONAL INPUTS)
-% 
+%
+%      best_fit_domain_box_projection_distance: the distance from the curve
+%      fit, in the transverse direction, to project in both the positive
+%      and negative directions to produce the best_fit_domain_box. If left
+%      empty, defaults to 2 standard deviations to thus give a box that is
+%      +/- 2 sigma.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -45,6 +51,8 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % -- wrote the code
 % 2024_01_18 - S Brennan
 % -- changed to domain inputs and outputs
+% 2024_04_02 - S Brennan
+% -- added best_fit_domain_box_projection_distance as an input option
 
 %% Debugging and Input checks
 
@@ -52,7 +60,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -71,7 +79,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -93,7 +101,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(1,3);
 
         % % Check the source_points input to be length exactly equal to 3
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -106,10 +114,19 @@ if 0==flag_max_speed
     end
 end
 
+% Does user want to specify best_fit_domain_box_projection_distance?
+best_fit_domain_box_projection_distance = [];
+if (2<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        best_fit_domain_box_projection_distance = temp;
+    end
+end
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if  (0==flag_max_speed) && (2<= nargin)
+if  (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -185,8 +202,10 @@ else
         fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
 
     % Check the direction. If direction is not aligned with the input regression direction, flip it
-    degree_step = 1;
-    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
+    degree_step = min(1,(end_angle_in_radians-start_angle_in_radians)*1/10*180/pi);
+    % is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
+    is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(associated_points_in_domain, circleCenter, -1);
+
     if is_counterClockwise~=1
         degree_step = -1*degree_step;
         temp = start_angle_in_radians;
@@ -203,7 +222,10 @@ end
 % Create a domain by doing a range of angles across inner and
 % outer arc that spans the test area
 
-angles = (start_angle_in_radians:degree_step*pi/180:end_angle_in_radians)';
+% angles = (start_angle_in_radians:degree_step*pi/180:end_angle_in_radians)';
+
+N_points = ceil(abs(end_angle_in_radians - start_angle_in_radians)/abs(degree_step*pi/180));
+angles = linspace(start_angle_in_radians, end_angle_in_radians,N_points)';
 
 % Calculate the domain boxes
 std_dev_orthogonal_distance = standard_deviation;
@@ -216,7 +238,11 @@ domain_box_3_sigma = fcn_geometry_domainBoxByType('arc', circleCenter, circleRad
 regression_domain.best_fit_1_sigma_box = domain_box_1_sigma;
 regression_domain.best_fit_2_sigma_box = domain_box_2_sigma;
 regression_domain.best_fit_3_sigma_box = domain_box_3_sigma;
-regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
+if isempty(best_fit_domain_box_projection_distance)
+    regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
+else
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles,  best_fit_domain_box_projection_distance,-1);
+end
 
 
 %% Plot the results (for debugging)?
@@ -254,7 +280,7 @@ if flag_do_plots
 
     % Plot the fits    
     ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); %#ok<NASGU>
+    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); 
       
     
     if flag_do_debug
@@ -265,7 +291,7 @@ if flag_do_plots
     end
 
     % Plot the associated_points_in_domain
-    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',40,'Color',current_color);
+    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',5,'Color',current_color);
 
     % Plot the domains
     fcn_geometry_plotFitDomains(regression_domain, fig_num);

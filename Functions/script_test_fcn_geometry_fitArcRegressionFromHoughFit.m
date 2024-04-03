@@ -1,9 +1,11 @@
-% script_test_fcn_geometry_fitArcRegressionFromHoughFit
+%% script_test_fcn_geometry_fitArcRegressionFromHoughFit
 % Exercises the function: fcn_geometry_fitArcRegressionFromHoughFit
 
 % Revision history:
 % 2024_01_09 - S. Brennan
 % -- wrote the code
+% 2024_04_02 - S Brennan
+% -- added best_fit_domain_box_projection_distance as an input option
 
 close all;
 clc;
@@ -178,9 +180,9 @@ fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
 
-
+best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_onearc_test_points{1}, fig_num);
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_onearc_test_points{1}, best_fit_domain_box_projection_distance, fig_num);
 
 true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
@@ -272,8 +274,9 @@ figure(fig_num);
 clf;
 hold on;
 
+best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
 
 true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
@@ -332,8 +335,9 @@ figure(fig_num);
 clf;
 hold on;
 
+best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
 
 true_params = circle_true_parameters(1,1:3);
 fprintf(1,'\n\nResults of circle regression fitting:\n')
@@ -386,6 +390,8 @@ domains_corrupted_circle_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
+best_fit_domain_box_projection_distance = [];
+
 % Perform the calculation in slow mode
 fig_num = [];
 REPS = 100; minTimeSlow = Inf;
@@ -394,7 +400,7 @@ for i=1:REPS
     tstart = tic;
 
    regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
 
     
     telapsed = toc(tstart);
@@ -410,7 +416,7 @@ for i=1:REPS
     tstart = tic;
 
     regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);

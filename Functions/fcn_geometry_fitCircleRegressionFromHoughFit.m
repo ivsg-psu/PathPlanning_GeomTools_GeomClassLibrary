@@ -138,6 +138,236 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% % Call a one-step circle fitting method
+% [circleCenter, circleRadius] = fcn_INTERNAL_calc_Circle(associated_points_in_domain);
+
+% Circle fit using Taubin's method
+[circleCenter, circleRadius] = CircleFitByTaubin(associated_points_in_domain(:,1:2));
+
+regression_fit_circle_center_and_radius = [circleCenter circleRadius];
+
+% Find errors
+radial_distances = sum((associated_points_in_domain-circleCenter).^2,2).^0.5;
+radial_errors = radial_distances - circleRadius;
+standard_deviation = std(radial_errors);
+
+% Define the domain width
+sigma_multiplier = 2;
+max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
+
+% Create a domain by doing a large range of angles across an inner and
+% outer arc that spans the test area
+angles = (0:1:360)'*pi/180;
+inner_radius = max(0,(circleRadius - max_orthogonal_distance));
+outer_radius = circleRadius + max_orthogonal_distance;
+inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
+outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
+domain_box = [inner_arc; flipud(outer_arc)];
+
+
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if flag_do_plots
+
+    % Plot the results in point space
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end        
+
+    hold on;
+    grid on;
+    title('Regression fit of circle data');
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+    
+      
+    % Plot the inputs: the source_points and associated_points_in_domain 
+    plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
+    plot(source_points(2,1),source_points(2,2),'b.','MarkerSize',30);
+    plot(source_points(3,1),source_points(3,2),'r.','MarkerSize',30);
+    h_plot = plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',10);
+    current_color = get(h_plot,'Color');
+
+    % Plot the circle fit
+    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
+    plot(circleCenter(1,1),circleCenter(1,2),'b+','MarkerSize',30);
+
+    % Plot the domain
+    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
+
+end % Ends check if plotting
+
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+end
+
+end % Ends main function
+
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+%% 
+function [circleCenter, circleRadius] = fcn_INTERNAL_calc_Circle(associated_points_in_domain)
+% Below uses method from:
+% https://dtcenter.org/sites/default/files/community-code/met/docs/write-ups/circle_fit.pdf
+
+mean_point = mean(associated_points_in_domain,1);
+uv_points = associated_points_in_domain - mean_point;
+
+Suu  = sum(uv_points(:,1).^2,1);
+Suv  = sum(uv_points(:,1).*uv_points(:,2),1);
+Svv  = sum(uv_points(:,2).^2,1);
+Suuu = sum(uv_points(:,1).^3,1);
+Svvv = sum(uv_points(:,2).^3,1);
+Suuv = sum(uv_points(:,1).^2.*uv_points(:,2),1);
+Suvv = sum(uv_points(:,1).*uv_points(:,2).^2,1);
+
+A = [Suu Suv; Suv Svv];
+b = 1/2*[Suuu+Suvv; Svvv+Suuv];
+solution = A\b;
+
+circleCenter = solution' + mean_point;
+alpha = sum(solution.^2,1) + (Suu+Svv)/length(uv_points(:,1));
+circleRadius = alpha^0.5;
+end % Ends function
+
+
+%%
+% The following is Taubin's method of circle fitting, obtained from:
+
+
+% https://www.mathworks.com/matlabcentral/fileexchange/22678-circle-fit-taubin-method?s_tid=prof_contriblnk
+% This is a robust and accurate circle fit. It works well even if data
+% points are observed only within a small arc. This circle fit was proposed
+% by G. Taubin in article "Estimation Of Planar Curves, Surfaces And
+% Nonplanar Space Curves Defined By Implicit Equations, With Applications
+% To Edge And Range Image Segmentation", IEEE Trans. PAMI, Vol. 13, pages
+% 1115-1138, (1991). It is more stable than the simple Circle Fit by Kasa
+% (files
+% #5557 and #22642) and slightly faster than Circle Fit by Pratt (file
+% #22643).
+function [circleCenter, circleRadius] = CircleFitByTaubin(XY)
+%--------------------------------------------------------------------------
+%  
+%     Circle fit by Taubin
+%      G. Taubin, "Estimation Of Planar Curves, Surfaces And Nonplanar
+%                  Space Curves Defined By Implicit Equations, With 
+%                  Applications To Edge And Range Image Segmentation",
+%      IEEE Trans. PAMI, Vol. 13, pages 1115-1138, (1991)
+%
+%     Input:  XY(n,2) is the array of coordinates of n points x(i)=XY(i,1), y(i)=XY(i,2)
+%
+%     Output: Par = [a b R] is the fitting circle:
+%                           center (a,b) and radius R
+%
+%     Note: this fit does not use built-in matrix functions (except "mean"),
+%           so it can be easily programmed in any programming language
+%
+%--------------------------------------------------------------------------
+n = size(XY,1);      % number of data points
+centroid = mean(XY);   % the centroid of the data set
+%     computing moments (note: all moments will be normed, i.e. divided by n)
+Mxx = 0; Myy = 0; Mxy = 0; Mxz = 0; Myz = 0; Mzz = 0;
+for i=1:n
+    Xi = XY(i,1) - centroid(1);  %  centering data
+    Yi = XY(i,2) - centroid(2);  %  centering data
+    Zi = Xi*Xi + Yi*Yi;
+    Mxy = Mxy + Xi*Yi;
+    Mxx = Mxx + Xi*Xi;
+    Myy = Myy + Yi*Yi;
+    Mxz = Mxz + Xi*Zi;
+    Myz = Myz + Yi*Zi;
+    Mzz = Mzz + Zi*Zi;
+end
+
+% Normalize
+Mxx = Mxx/n;
+Myy = Myy/n;
+Mxy = Mxy/n;
+Mxz = Mxz/n;
+Myz = Myz/n;
+Mzz = Mzz/n;
+
+
+%    computing the coefficients of the characteristic polynomial
+Mz = Mxx + Myy;
+Cov_xy = Mxx*Myy - Mxy*Mxy;
+A3 = 4*Mz;
+A2 = -3*Mz*Mz - Mzz;
+A1 = Mzz*Mz + 4*Cov_xy*Mz - Mxz*Mxz - Myz*Myz - Mz*Mz*Mz;
+A0 = Mxz*Mxz*Myy + Myz*Myz*Mxx - Mzz*Cov_xy - 2*Mxz*Myz*Mxy + Mz*Mz*Cov_xy;
+A22 = A2 + A2;
+A33 = A3 + A3 + A3;
+xnew = 0;
+ynew = 1e+20;
+epsilon = 1e-12;
+IterMax = 20;
+% Newton's method starting at x=0
+for iter=1:IterMax
+    yold = ynew;
+    ynew = A0 + xnew*(A1 + xnew*(A2 + xnew*A3));
+    if abs(ynew) > abs(yold)
+       disp('Newton-Taubin goes wrong direction: |ynew| > |yold|');
+       xnew = 0;
+       break;
+    end
+    Dy = A1 + xnew*(A22 + xnew*A33);
+    xold = xnew;
+    xnew = xold - ynew/Dy;
+    if (abs((xnew-xold)/xnew) < epsilon), break, end
+    if (iter >= IterMax)
+        disp('Newton-Taubin will not converge');
+        xnew = 0;
+    end
+    if (xnew<0.)
+        fprintf(1,'Newton-Taubin negative root:  x=%f\n',xnew);
+        xnew = 0;
+    end
+end
+%  computing the circle parameters
+DET = xnew*xnew - xnew*Mz + Cov_xy;
+Center = [Mxz*(Myy-xnew)-Myz*Mxy , Myz*(Mxx-xnew)-Mxz*Mxy]/DET/2;
+Par = [Center+centroid , sqrt(Center*Center'+Mz)];
+circleCenter = Par(1,1:2);
+circleRadius = Par(1,3);
+end    %    CircleFitByTaubin
+
+
+%% 
+
 % The following is wrong - not sure why?!
 % The original (wrong) solution approach is based on the formula for a circle:
 % 
@@ -235,122 +465,4 @@ end
 % circleRadius = mean(radial_distances);
 % radial_errors = radial_distances - circleRadius;
 % standard_deviation = std(radial_errors);
-
-
-% Below uses method from:
-% https://dtcenter.org/sites/default/files/community-code/met/docs/write-ups/circle_fit.pdf
-
-mean_point = mean(associated_points_in_domain,1);
-uv_points = associated_points_in_domain - mean_point;
-
-Suu  = sum(uv_points(:,1).^2,1);
-Suv  = sum(uv_points(:,1).*uv_points(:,2),1);
-Svv  = sum(uv_points(:,2).^2,1);
-Suuu = sum(uv_points(:,1).^3,1);
-Svvv = sum(uv_points(:,2).^3,1);
-Suuv = sum(uv_points(:,1).^2.*uv_points(:,2),1);
-Suvv = sum(uv_points(:,1).*uv_points(:,2).^2,1);
-
-A = [Suu Suv; Suv Svv];
-b = 1/2*[Suuu+Suvv; Svvv+Suuv];
-solution = A\b;
-
-circleCenter = solution' + mean_point;
-alpha = sum(solution.^2,1) + (Suu+Svv)/length(uv_points(:,1));
-circleRadius = alpha^0.5;
-regression_fit_circle_center_and_radius = [circleCenter circleRadius];
-
-% Find errors
-radial_distances = sum((associated_points_in_domain-circleCenter).^2,2).^0.5;
-radial_errors = radial_distances - circleRadius;
-standard_deviation = std(radial_errors);
-
-% Define the domain width
-sigma_multiplier = 2;
-max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
-
-% Create a domain by doing a large range of angles across an inner and
-% outer arc that spans the test area
-angles = (0:1:360)'*pi/180;
-inner_radius = max(0,(circleRadius - max_orthogonal_distance));
-outer_radius = circleRadius + max_orthogonal_distance;
-inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
-outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
-domain_box = [inner_arc; flipud(outer_arc)];
-
-
-%% Plot the results (for debugging)?
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
-%  | |  | |/ _ \ '_ \| | | |/ _` |
-%  | |__| |  __/ |_) | |_| | (_| |
-%  |_____/ \___|_.__/ \__,_|\__, |
-%                            __/ |
-%                           |___/ 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if flag_do_plots
-
-    % Plot the results in point space
-    temp_h = figure(fig_num);
-    flag_rescale_axis = 0;
-    if isempty(get(temp_h,'Children'))
-        flag_rescale_axis = 1;
-    end        
-
-    hold on;
-    grid on;
-    title('Regression fit of circle data');
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
-    
-      
-    % Plot the inputs: the source_points and associated_points_in_domain 
-    plot(source_points(1,1),source_points(1,2),'g.','MarkerSize',30);
-    plot(source_points(2,1),source_points(2,2),'b.','MarkerSize',30);
-    plot(source_points(3,1),source_points(3,2),'r.','MarkerSize',30);
-    h_plot = plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',10);
-    current_color = get(h_plot,'Color');
-
-    % Plot the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
-    plot(circleCenter(1,1),circleCenter(1,2),'b+','MarkerSize',30);
-
-    % Plot the domain
-    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-    plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
-
-    % Make axis slightly larger?
-    if flag_rescale_axis
-        temp = axis;
-        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-    end
-
-
-end % Ends check if plotting
-
-if flag_do_debug
-    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
-end
-
-end % Ends main function
-
-
-%% Functions follow
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   ______                _   _
-%  |  ____|              | | (_)
-%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
-%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
-%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
-%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
-%
-% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-
 

@@ -167,9 +167,9 @@ if flag_do_plots
         end
 
         if ~any(isnan(domain_to_plot.best_fit_parameters))
-            % Plot the points
-            domainPoints = domain_to_plot.points_in_domain;
-            plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',20, 'Color',current_color);
+            % % Plot the points
+            % domainPoints = domain_to_plot.points_in_domain;
+            % plot(domainPoints(:,1), domainPoints(:,2), '.','MarkerSize',1, 'Color',current_color);
 
             % Plot the domain shape
             domainShape = domain_to_plot.best_fit_domain_box;

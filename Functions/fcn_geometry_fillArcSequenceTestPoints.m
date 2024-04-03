@@ -1,4 +1,4 @@
-function [test_points, circleCenters, startPointsOfArcs] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
+function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
 %% fcn_geometry_fillArcSequenceTestPoints
 % given a Ax2 matrix containing [curvature station_length] in each row,
 % where A are the number of interconnected arcs to form. This function then
@@ -26,8 +26,12 @@ function [test_points, circleCenters, startPointsOfArcs] = fcn_geometry_fillArcS
 %
 %      test_points: a list of test points used to test regression fitting
 %
-%      circleCenters, startPointsOfArcs: the [x y] location of each circle
-%      center, and [x y] location where each arc starts.
+%      circleCenters: the [x y] location of each circle
+%      center
+% 
+%      trueStartPointsOfArcs: the true (not noise injected) [x y] location where each arc starts.
+%
+%      arcStartIndicies: the indicies where each segment started
 % 
 % DEPENDENCIES:
 %
@@ -138,22 +142,24 @@ is_counterClockwise = 2*(circleRadius>0)-1;
 
 % Save the circle centers that we encounter
 circleCenters = nan(N_segments,2);
-startPointsOfArcs = nan(N_segments,2);
+trueStartPointsOfArcs = nan(N_segments,2);
+arcStartIndicies = nan(N_segments,1);
 
 current_angle = 0;
 current_position = [0 0];
 test_points = current_position;
-for ith_point = 1:N_segments
-    startPointsOfArcs(ith_point,:) = current_position;
-    total_arc_length = arc_pattern(ith_point,2);
+for ith_segment = 1:N_segments
+    trueStartPointsOfArcs(ith_segment,:) = current_position;
+    arcStartIndicies(ith_segment) = length(test_points(:,1));
+    total_arc_length = arc_pattern(ith_segment,2);
 
     % Find current radius
-    current_radius = abs(circleRadius(ith_point));
+    current_radius = abs(circleRadius(ith_segment));
 
     % Find the circle center
     if ~isinf(current_radius)
-        current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 is_counterClockwise(ith_point,1); -is_counterClockwise(ith_point,1) 0];
-        circleCenters(ith_point,:) = current_circle_center;
+        current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 is_counterClockwise(ith_segment,1); -is_counterClockwise(ith_segment,1) 0];
+        circleCenters(ith_segment,:) = current_circle_center;
 
         % Find the number points
         projection_distances = (0:(1/M):total_arc_length)';
@@ -161,8 +167,8 @@ for ith_point = 1:N_segments
         N_points = length(projection_distances);
 
         % Convert from distances to angles, and then angles to points
-        angles = current_angle + is_counterClockwise(ith_point)*projection_distances./current_radius;
-        if 1==is_counterClockwise(ith_point,1)
+        angles = current_angle + is_counterClockwise(ith_segment)*projection_distances./current_radius;
+        if 1==is_counterClockwise(ith_segment,1)
             unit_radial_vectors = [cos(angles-pi/2) sin(angles-pi/2)];
         else
             unit_radial_vectors = [cos(angles+pi/2) sin(angles+pi/2)];
@@ -172,15 +178,15 @@ for ith_point = 1:N_segments
 
         % Repeat for the last point, which may not be included in the list
         % above, and should also NOT have any noise added
-        final_angle = current_angle + is_counterClockwise(ith_point)*total_arc_length./current_radius;
-        if 1==is_counterClockwise(ith_point,1)
+        final_angle = current_angle + is_counterClockwise(ith_segment)*total_arc_length./current_radius;
+        if 1==is_counterClockwise(ith_segment,1)
             unit_radial_vectors = [cos(final_angle-pi/2) sin(final_angle-pi/2)];
         else
             unit_radial_vectors = [cos(final_angle+pi/2) sin(final_angle+pi/2)];
         end
         final_point = current_circle_center + current_radius.*unit_radial_vectors;
     else
-        circleCenters(ith_point,:) = [nan nan];
+        circleCenters(ith_segment,:) = [nan nan];
         projection_distances = (0:(1/M):total_arc_length)';
         N_points = length(projection_distances);
         unit_tangential_vector = [cos(current_angle) sin(current_angle)];
@@ -194,7 +200,7 @@ for ith_point = 1:N_segments
     test_points = [test_points; perturbed_points]; %#ok<AGROW>
 
     % Save where we are for the next loop
-    current_angle = current_angle + is_counterClockwise(ith_point)*total_arc_length./current_radius;
+    current_angle = current_angle + is_counterClockwise(ith_segment)*total_arc_length./current_radius;
     current_position = final_point;
 
     if flag_do_debug
@@ -203,8 +209,8 @@ for ith_point = 1:N_segments
         grid on;
         axis equal
 
-        plot(startPointsOfArcs(:,1), startPointsOfArcs(:,2), 'g.','MarkerSize',30);
-        plot(circleCenters(ith_point,1), circleCenters(ith_point,2), 'r+','MarkerSize',30);
+        plot(trueStartPointsOfArcs(:,1), trueStartPointsOfArcs(:,2), 'g.','MarkerSize',30);
+        plot(circleCenters(ith_segment,1), circleCenters(ith_segment,2), 'r+','MarkerSize',30);
         plot(test_points(:,1), test_points(:,2), 'k.','MarkerSize',20);
     end
 
@@ -228,18 +234,38 @@ if flag_do_plots
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
-    end    
-
-    
+    end       
     axis equal;
     hold on;
     grid on;
 
-    % Plot the results
-    plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
+    % Get the color ordering?
+    try
+        color_ordering = orderedcolors('gem12');
+    catch
+        color_ordering = colororder;
+    end
+
+    N_colors = length(color_ordering(:,1));
+
 
     % Plot the circle centers
     plot(circleCenters(:,1), circleCenters(:,2), 'r+','MarkerSize',30);
+
+    % Plot the results
+    plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
+
+    % Plot the segments in different colors
+    for ith_row = 1:length(arc_pattern(:,1))
+        current_color = color_ordering(mod(ith_row,N_colors)+1,:);
+        plot(trueStartPointsOfArcs(ith_row,1),trueStartPointsOfArcs(ith_row,2),'.','MarkerSize',50,'Color',current_color);
+        if ith_row < length(arc_pattern(:,1))
+            range = (arcStartIndicies(ith_row):arcStartIndicies(ith_row+1));
+        else
+            range = (arcStartIndicies(ith_row):length(test_points(:,1)));
+        end
+        plot(test_points(range,1),test_points(range,2),'o','MarkerSize',5,'Color',current_color);
+    end
 
     % Make axis slightly larger?
     if flag_rescale_axis

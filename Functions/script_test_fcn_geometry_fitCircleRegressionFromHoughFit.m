@@ -85,6 +85,32 @@ fprintf(1,'Actual circle radius (meters): %.4f \n',circle_radius);
 fprintf(1,'Fitted circle radius (meters): %.4f \n',regression_fit_circle(1,3));
 fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(circle_radius - regression_fit_circle(1,3)));
 
+%% A hard fit
+fig_num = 3;
+figure(fig_num);
+clf;
+hold on;
+
+circle_test_points = [...
+                   0                   0
+   0.000000000000001   0.012980275303825
+   0.100117699445898  -0.023373026069248
+   0.199844978552043   0.016168299165393
+   0.299655878698017   0.024439722000320
+   0.399635135918242   0.020907509376379
+   0.499661615686380   0.017699392846101
+   0.599574845870237   0.020167912559945
+   0.699981932752872   0.008683329947942
+   0.799629236569253   0.019931946346766
+   0.900223900998793   0.008529604069050
+   0.998731853352484   0.042011238755425
+   1.100325409544736   0.014260164651219
+   1.197469930495013   0.066122973520127
+   1.300222611467405   0.024754636272782];
+
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
+
+
 
 
 %% Test of fast mode

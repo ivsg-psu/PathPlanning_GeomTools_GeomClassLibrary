@@ -271,8 +271,9 @@ switch best_fit_type
 
     case {'Hough circle','Hough arc'}
         % Check circle fitting
+        best_fit_domain_box_projection_distance = [];
         regression_domain = ...
-            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, -1);
+            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, best_fit_domain_box_projection_distance, -1);
 
     otherwise
         error('Unknown fit type detected - unable to continue!: %s', best_fit_type);
