@@ -15,6 +15,78 @@
 clc
 close all
 
+%%
+
+rng(343)
+
+fig_num = 115;
+
+% Line 1 test points
+seed_points = [1 2; 3.2 2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+
+
+% Line 2 test points
+seed_points = [3.5 2; 6 2];
+M = 10;
+sigma = 0.02;
+
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+    
+testpoints = [test_points_LineSegment1; test_points_LineSegment2];
+
+% Corrupt the points
+fig_num = 116;
+% fig_NuM = fig_num;
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
+    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+
+% Hough Segmentation
+% fig_num = 701;
+fig_num = -1;
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 0.2; % Units are meters. 
+threshold_max_points = 5;
+input_points = corrupted_testpoints;
+
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+
+fig_num = 601;
+% fig_num = -1;
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+fig_nuM = fig_num+2;
+fcn_geometry_plotFitDomains(regression_domains, fig_nuM);
+
+fig_num = fig_nuM;
+[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(regression_domains, 5, -1);
+
+tolerance = 1;
+
+endPointsMatrix = zeros(numel(sortedHoughSegmentEndPoints)/2, 2);
+
+endPointsMatrix(1:2:end,:) = sortedHoughSegmentEndPoints(:,1:2);
+endPointsMatrix(2:2:end,:) = sortedHoughSegmentEndPoints(:,3:4);
+
+[closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEndPoints(endPointsMatrix(1,:), endPointsMatrix(2:end-1,:), endPointsMatrix(end,:), tolerance, fig_num);
+
+curveStartPoint = sortedHoughSegmentEndPoints(1,1:2);
+curveEndPoint = sortedHoughSegmentEndPoints(end,3:4);
+
+intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(curveStartPoint, sortedHoughSegmentEndPoints, curveEndPoint, fig_num);
+
+[verifyIntersectionBool, LHs, RHs] = fcn_geometry_verifyIntersectionPoint(endPointsCell, intersectionPoints);
+
+disp(LHs)
+disp(RHs)
+disp(verifyIntersectionBool)
+
 %% Advanced test 1: Multiple segments were used to create a path 
 
 rng(343)
