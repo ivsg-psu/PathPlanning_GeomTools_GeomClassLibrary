@@ -1,5 +1,5 @@
 function [x_spiral,y_spiral] = fcn_geometry_fitSpiralFromLineToArc(s, l0, h0, x0, y0, K0, KF, varargin)
-%% fcn_ParseXODR_extractXYfromSTSpiral
+%% fcn_geometry_fitSpiralFromLineToArc
 % Determines the X,Y coordinates along a segment of a road defined
 % as a "spiral" segment in the XODR standard. The spiral is plotted if a
 % figure number is provided.
@@ -17,7 +17,7 @@ function [x_spiral,y_spiral] = fcn_geometry_fitSpiralFromLineToArc(s, l0, h0, x0
 %
 % FORMAT: 
 %
-%       [x_arc,y_arc] = fcn_ParseXODR_extractXYfromSTSpiral(s,h0,x0,y0,K0,{fig_num})
+%       [x_arc,y_arc] = fcn_geometry_fitSpiralFromLineToArc(s,h0,x0,y0,K0,{fig_num})
 %
 % INPUTS:
 %
@@ -62,7 +62,7 @@ function [x_spiral,y_spiral] = fcn_geometry_fitSpiralFromLineToArc(s, l0, h0, x0
 %
 % EXAMPLES:
 %      
-%       See the script: script_test_fcn_ParseXODR_extractXYfromSTSpiral.m for
+%       See the script: script_test_fcn_geometry_fitSpiralFromLineToArc.m for
 %       a full test suite.
 %
 % This function was originally written by C. Beal (cbeal@bucknell.edu) as

@@ -12,9 +12,14 @@ figure(fig_num);
 clf;
 
 rng(1); % Fix the random number, for debugging
+
+% arc_pattern has [1/R and L] for each segment as a row
 arc_pattern = [...
     1/20, 15; 
-    0 20];
+    0 20;
+    -1/5 10; 
+    1/15 40; 
+    -1/10 30];
 
 M = 10;
 sigma = 0.02;
@@ -76,13 +81,45 @@ Ndomains = length(domain_points_forward);
 domain_indicies_matrix_forward = cell2mat(domain_endIndicies_forward)';
 domain_indicies_matrix_backward = flipud(cell2mat(domain_endIndicies_backward)');
 
-for ith_foward_index = 1:Ndomains
+probable_arc_boundary_indicies = round(mean([domain_indicies_matrix_forward domain_indicies_matrix_backward],2));
 
-    % Find non_overlapping indicies
-    non_overlapping_indicies =  (domain_indicies_matrix_forward(ith_foward_index):domain_indicies_matrix_backward(ith_foward_index+1))';
-    
- URHERE
+% Plot results?
+
+% Get the color ordering?
+try
+    color_ordering = orderedcolors('gem12');
+catch
+    color_ordering = colororder;
 end
+N_colors = length(color_ordering(:,1));
+
+
+
+% Add vertical lines to indicate where the segments are TRUELY changing
+figure(subplot_fig_num);
+subplot(2,2,3);
+for ith_start = 1:length(probable_arc_boundary_indicies)
+    current_color = color_ordering(mod(ith_start,N_colors)+1,:);
+    plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
+end
+
+figure(subplot_fig_num);
+subplot(2,2,4);
+
+% Plot the groups of points
+for ith_plot = 1:length(probable_arc_boundary_indicies)-1
+    current_color = color_ordering(mod(ith_plot,N_colors)+1,:);
+    index_range = probable_arc_boundary_indicies(ith_plot):probable_arc_boundary_indicies(ith_plot+1);
+    plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
+end
+
+% for ith_foward_index = 1:Ndomains
+% 
+% 
+%     % Find non_overlapping indicies
+%     % non_overlapping_indicies =  (domain_indicies_matrix_forward(ith_foward_index):domain_indicies_matrix_backward(ith_foward_index+1))';
+% 
+% end
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,7 +220,7 @@ xlabel('Number of points');
 ylabel('Percentage inside');
 
 % Plot a bar going across at 100%
-plot((1:NtestPoints)',ones(NtestPoints,1),'k-');
+plot((1:NtestPoints)',ones(NtestPoints,1),'k-','LineWidth',5);
 
 % Create placeholder points to show progress
 h_plotPercentage = plot((1:NtestPoints)',percentage_of_fits,'.');
@@ -194,7 +231,7 @@ grid on;
 figure(subplot_fig_num);
 subplot(2,2,3);
 for ith_start = 1:length(arcStartIndicies)
-    plot([arcStartIndicies(ith_start) arcStartIndicies(ith_start)],[-0.1 1.1],'k-');
+    plot([arcStartIndicies(ith_start) arcStartIndicies(ith_start)],[-0.1 1.1],'k-','LineWidth',5);
 end
 
 figure_handles(1) = h_plotPoints;
