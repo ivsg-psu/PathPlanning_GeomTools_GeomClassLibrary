@@ -1,5 +1,5 @@
 function unit_vectors = fcn_geometry_calcUnitVector(input_vectors, varargin)
-% fcn_geometry_calcUnitVector
+%% fcn_geometry_calcUnitVector
 % Finds the unit vectors associated with a list of input vectors
 %
 % Format: 
