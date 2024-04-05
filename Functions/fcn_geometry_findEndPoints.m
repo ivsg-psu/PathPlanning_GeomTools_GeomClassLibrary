@@ -169,7 +169,8 @@ if flag_do_plots
     figure(fig_num)
 
 % Plotting the close break point pairs
-plot(reshaped_endPointsMatrix(:,1), reshaped_endPointsMatrix(:,2), 'xg', 'MarkerSize',20, 'DisplayName','End Points within Tolerance', 'LineWidth',2);
+plot(reshaped_endPointsMatrix(:,1), reshaped_endPointsMatrix(:,2), '.g', 'MarkerSize',30, 'DisplayName','End Points within Tolerance', 'LineWidth',2);
+plot(reshaped_endPointsMatrix(:,1), reshaped_endPointsMatrix(:,2), 'or', 'MarkerSize',20, 'LineWidth',4,  'DisplayName','End Points within Tolerance');
 xlabel('X');
 ylabel('Y');
 grid on;

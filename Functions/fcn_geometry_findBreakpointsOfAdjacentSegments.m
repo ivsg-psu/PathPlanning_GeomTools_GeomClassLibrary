@@ -171,6 +171,7 @@ end
 if flag_do_plots
 
     plotPoints = [curveStartPoint; intersectionPoints; curveEndPoint];
+    
 
     % figure(fig_debugging)
     % hold on
@@ -182,7 +183,8 @@ if flag_do_plots
     box on
     hold on
     plot(plotPoints(:,1), plotPoints(:,2), '-', 'LineWidth',2, 'Color', [0 1 0], 'DisplayName','Fitted Curve');
-    plot(plotPoints(:,1), plotPoints(:,2), '.', 'MarkerSize',40, 'Color', [0 1 0],'DisplayName','Intersection Points');
+    plot(intersectionPoints(:,1), intersectionPoints(:,2), '.', 'MarkerSize',40, 'Color', [1 0 0],'DisplayName','Intersection Points');
+    plot(intersectionPoints(:,1), intersectionPoints(:,2), 'o', 'MarkerSize',30, 'LineWidth', 4, 'Color', [0 1 1],'DisplayName','Intersection Points');
 end
 
 if flag_do_debug

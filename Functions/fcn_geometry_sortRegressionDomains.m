@@ -247,8 +247,11 @@ if flag_do_plots
     hold on
     plot(sortedHoughSegmentEndPoints(:,3), sortedHoughSegmentEndPoints(:,4), '.b', 'MarkerSize',20, 'DisplayName','Last Points');
     if ~isempty(closeEndPointsMatrix)
-        plot(closeEndPointsMatrix(2:end-1,1), closeEndPointsMatrix(2:end-1,2), 'xg', 'MarkerSize',20, 'DisplayName','End Points within Tolerance','LineWidth',2);
+        plot(closeEndPointsMatrix(2:end-1,1), closeEndPointsMatrix(2:end-1,2), '.g', 'MarkerSize',30, 'DisplayName','End Points within Tolerance','LineWidth',2);
+        plot(closeEndPointsMatrix(2:end-1,1), closeEndPointsMatrix(2:end-1,2), 'or', 'MarkerSize',20, 'DisplayName','End Points within Tolerance','LineWidth',4);
     end
+
+    
     % legend('Empty Points', 'Points', 'First Points', 'Last Points', 'End Points within Tolerance');
     xlabel('X');
     ylabel('Y');
