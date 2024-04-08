@@ -49,8 +49,10 @@ L0 = 2;
 s  = (0:0.01:1)'*L0; 
 Kf = 1; % Radius of 1
 
-% Call the function
+% Call the function fcn_geometry_extractXYfromSTSpiral to predict the
+% spiral and calculate the offsets
 [x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(fig_num));
+
 
 % Find the center of the circle tangent at the end of the spiral
 % Find the unit vector (need to do this analytically!)
@@ -65,6 +67,13 @@ plot(circle_center(:,1),circle_center(:,2),'r+');
 angles = (0:1:360)'*pi/180;
 XY_circle = (1/Kf)*[cos(angles) sin(angles)] + circle_center;
 plot(XY_circle(:,1),XY_circle(:,2),'r-');
+
+% Call the function with no inputs to force a re-calculation of all spiral
+% fits
+fcn_geometry_findUnitSpiralGivenUnitOffset([],234);
+
+% Now find the offset
+[x_spiral,y_spiral] = fcn_geometry_findUnitSpiralGivenUnitOffset(0.1, fig_num);
 
 %% SCALING Test - show that get exactly the same result if using nondimensional equivalent
 
