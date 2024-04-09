@@ -153,6 +153,7 @@ end
 %% Convert circle into unit circle
 
 %% Find the solution to the unit circle
+[spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGivenUnitOffset(unitCircle_y_offset, -1);
 
 %% Transform results out of unit circle
 

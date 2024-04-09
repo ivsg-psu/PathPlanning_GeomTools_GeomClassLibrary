@@ -19,7 +19,7 @@ arc_pattern = [...
     0 20;
     -1/5 10; 
     1/15 40; 
-    -1/10 30];
+    -1/10 20];
 
 M = 10;
 sigma = 0.02;
@@ -95,7 +95,7 @@ N_colors = length(color_ordering(:,1));
 
 
 
-% Add vertical lines to indicate where the segments are TRUELY changing
+% Add vertical lines to indicate where the segments are TRULY changing
 figure(subplot_fig_num);
 subplot(2,2,3);
 for ith_start = 1:length(probable_arc_boundary_indicies)

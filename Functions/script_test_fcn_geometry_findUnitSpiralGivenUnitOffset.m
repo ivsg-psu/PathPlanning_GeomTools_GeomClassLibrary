@@ -14,32 +14,7 @@ fig_num = 1;
 figure(fig_num); clf;
 hold on;
 
-% Fill in the necessary parameters
-% INPUTS:
-%
-%       s: a vector of station coordinates along the arc path at which to
-%         compute the x,y coordinates. s is assumed to start at zero.
-% 
-%       l0: a scalar parameter denoting the maximum extent of the spiral, in
-%         station coordinates, relative to s = 0
-%
-%       h0: a scalar parameter denoting the heading of the arc at the
-%         s = 0 point 
-% 
-%       x0: a scalar parameter denoting the x-coordinate of the arc at
-%         the s = 0 point 
-%  
-%       y0: a scalar parameter denoting the y-coordinate of the arc at
-%         the s = 0 point 
-% 
-%       K0: a scalar parameter denoting the initial curvature of the arc at
-%       the s = 0 point
-% 
-%       KF: a scalar parameter denoting the curvature of the spiral at
-%         the s = l0 point
-
 % UNIT CIRCLE ANALYSIS
-% Dimensioned form
 h0 = 0;
 x0 = 0;
 y0 = 0;
@@ -50,8 +25,8 @@ s  = (0:0.01:1)'*L0;
 Kf = 1; % Radius of 1
 
 % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
-% spiral and calculate the offsets
-[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(fig_num));
+% spiral and calculate the offsets, plotting the results
+fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(fig_num));
 
 
 % Find the center of the circle tangent at the end of the spiral
@@ -60,422 +35,35 @@ s_tangent = [0.999999 1]'*L0;
 [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,L0,h0,x0,y0,K0,Kf);
 unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
 unit_orthogonal = unit_tangent*[0 1; -1 0];
-circle_center = (1/Kf)*unit_orthogonal + [x_tangent(end) y_tangent(end)];
-plot(circle_center(:,1),circle_center(:,2),'r+');
+calculated_circle_center = (1/Kf)*unit_orthogonal + [x_tangent(end) y_tangent(end)];
+y_offset      = calculated_circle_center(1,2) - (1/Kf);
+
+% Plot the circle's center
+plot(calculated_circle_center(:,1),calculated_circle_center(:,2),'r+');
 
 % Plot the circle
 angles = (0:1:360)'*pi/180;
-XY_circle = (1/Kf)*[cos(angles) sin(angles)] + circle_center;
+XY_circle = (1/Kf)*[cos(angles) sin(angles)] + calculated_circle_center;
 plot(XY_circle(:,1),XY_circle(:,2),'r-');
 
 % Call the function with no inputs to force a re-calculation of all spiral
-% fits
-fcn_geometry_findUnitSpiralGivenUnitOffset([],234);
+% fits. NOTE: NOT YET DONE CODING
+% fcn_geometry_findUnitSpiralGivenUnitOffset([],234);
 
 % Now find the offset
-[x_spiral,y_spiral] = fcn_geometry_findUnitSpiralGivenUnitOffset(0.1, fig_num);
-
-%% SCALING Test - show that get exactly the same result if using nondimensional equivalent
-
-% ANY CIRCLE ANALYSIS
-% Dimensionless form
-h0 = 0;
-x0 = 0;
-y0 = 0;
-K0 = 0;
-
-% Given
-Kf = 1/50; % Radius of 5 
-
-% Find dimensionless forms that make any circle EQUAL to the unit circle
-% (in other words, any circle of radius 1/Kf)
-
-L0_dimensionless = L0*Kf;
-s_dimensionless  = s*Kf; 
-
-% Call the function
-[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0_dimensionless,h0,x0,y0,K0,Kf,(fig_num));
-
-
-
-%% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(arcLength(:,1))==1);
-assert(length(arcLength(1,:))==1);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
-assert(max(radial_fitting_error)<0.001);
-
-
-%% BASIC test - perfect fit, perfectly oriented, not at origin
-fig_num = 2;
-figure(fig_num); clf;
-
-
-arc_radius = 2;
-arc_center = [2 0];
-angles = [0.1; pi/4; .7*pi];
-
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+[spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGivenUnitOffset(y_offset, fig_num);
 
 % Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(arcLength(:,1))==1);
-assert(length(arcLength(1,:))==1);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
+assert(length(spiralLength(:,1))==1);
+assert(length(spiralLength(1,:))==1);
+assert(length(spiralEndAngleInRadians(:,1))==1);
+assert(length(spiralEndAngleInRadians(1,:))==1);
 
 % Check values
-assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
-assert(max(radial_fitting_error)<0.001);
+assert(isequal(round(spiralLength,6),round(L0,6)));
 
-%% BASIC test - perfect fit, perfectly oriented, negative
-fig_num = 3;
-figure(fig_num); clf;
 
-arc_radius = 2;
-arc_center = -[2 0];
-angles = [0; pi/6; pi/4];
 
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-assert(max(radial_fitting_error)<0.001);
-
-%% BASIC test - perfect fit, perfectly oriented, negative and noisy
-fig_num = 4;
-figure(fig_num); clf;
-rng(4747);
-
-arc_radius = 2;
-arc_center = -[2 0];
-angles = [0; pi/6; pi/4];
-
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0.05;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-assert(abs(arc_true_circleRadius - fitted_radius)<(0.001+6*sigma));
-center_error = sum((arc_true_circleCenter - fitted_arcCenter).^2,2).^0.5;
-assert(center_error<(0.001+6*sigma));
-assert(max(radial_fitting_error)<(0.001+6*sigma));
-
-%% BASIC test - perfect fit, perfectly oriented, negative and noisy with outliers
-fig_num = 5;
-figure(fig_num); clf;
-%rng(4747);
-
-arc_radius = 2;
-arc_center = -[2 0];
-angles = [0; pi/6; pi/2];
-
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-[~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0.05;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-% assert(abs(arc_true_circleRadius - fitted_radius)<(0.001+6*sigma));
-% center_error = sum((arc_true_circleCenter - fitted_arcCenter).^2,2).^0.5;
-% assert(center_error<(0.001+6*sigma));
-% assert(max(radial_fitting_error)<(0.001+6*sigma));
-
-%% BASIC test - perfect fit, misaligned
-fig_num = 6;
-figure(fig_num); clf;
-
-arc_radius = 2;
-arc_center = [2 0];
-angles = [0; pi/4; pi/3]; % angles relative to vertical
-
-initial_rotation = pi/4;
-initial_offset = [2 3];
-
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-% Move the seed points
-arc_seed_points = arc_seed_points*[cos(initial_rotation) sin(initial_rotation); -sin(initial_rotation) cos(initial_rotation)] + initial_offset;
-
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (fig_num));
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-assert(max(radial_fitting_error)<0.001);
-
-%% BASIC test - perfect fit, perfectly oriented, negative and noisy 
-fig_num = 7;
-figure(fig_num); clf;
-%rng(4747);
-
-arc_radius = 2;
-arc_center = -[2 0];
-angles = [0; pi/6; pi/2];
-
-initial_rotation = pi/4;
-initial_offset = [2 3];
-
-% Calculate locations of test points
-if arc_center(1,1)<0
-    arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-else
-    arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-end
-
-% Move the seed points
-arc_seed_points = arc_seed_points*[cos(initial_rotation) sin(initial_rotation); -sin(initial_rotation) cos(initial_rotation)] + initial_offset;
-
-[~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 20; % Number of points per meter
-sigma = 0.05;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.0;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Find the arc fit
-
-inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (fig_num));
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-%% BASIC test - LINE fit
-fig_num = 8;
-figure(fig_num); clf;
-
-% arc_radius = 2;
-% arc_center = [2 0];
-% angles = [0; pi/4; pi/2]; % angles relative to vertical
-% 
-% % Calculate locations of test points
-% if arc_center(1,1)<0
-%     arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-% else
-%     arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-% end
-% 
-% [arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-% 
-% M = 20; % Number of points per meter
-% sigma = 0;
-% 
-% onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
-% 
-% % Add outliers?
-% % Corrupt the results
-% probability_of_corruption = 0;
-% magnitude_of_corruption = 1;
-% 
-% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-seed_points = [0 0; 0 5];
-M = 10;
-sigma = 0.02;
-
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
-
-% Find the arc fit
-
-inputPoints = test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
-axis([-5 5 -1 6]);
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(arcLength(:,1))==1);
-assert(length(arcLength(1,:))==1);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-% assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-% assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-% assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
-% assert(max(radial_fitting_error)<0.001);
 
 %% Test of fast mode
 % 
