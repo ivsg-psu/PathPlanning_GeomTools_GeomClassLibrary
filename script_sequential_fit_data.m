@@ -14,12 +14,16 @@ clf;
 rng(1); % Fix the random number, for debugging
 
 % arc_pattern has [1/R and L] for each segment as a row
+% arc_pattern = [...
+%     1/20, 15; 
+%     0 20;
+%     -1/5 10; 
+%     1/15 40; 
+%     -1/10 20];
+
 arc_pattern = [...
     1/20, 15; 
-    0 20;
-    -1/5 10; 
-    1/15 40; 
-    -1/10 20];
+    0 20];
 
 M = 10;
 sigma = 0.02;
@@ -54,16 +58,16 @@ animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndic
 % Perform the fit forwards
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 0;
-[domain_points_forward, domain_shapes_forward, domain_endIndicies_forward, domain_parameters_forward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+[domain_points_forward, domain_shapes_forward, domain_endIndicies_forward, domain_parameters_forward, domain_bestFitType_forward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Perform the fit backwards
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 1;
-[domain_points_backward, domain_shapes_backward, domain_endIndicies_backward, domain_parameters_backward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+[domain_points_backward, domain_shapes_backward, domain_endIndicies_backward, domain_parameters_backward, domain_bestFitType_backward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Compare lengths and parameters
-% First, make absolutely sure that the fits found in the forward direction
-% match the same number of fits in the backward direction
+% First, make absolutely sure that the number of fits found in the forward
+% direction match the same number of fits in the backward direction
 if length(domain_points_forward)~=length(domain_points_backward)
     warning('on','backtrace');
     warning('An error will be thrown at this code location as the fits were directionally different.');
@@ -112,6 +116,41 @@ for ith_plot = 1:length(probable_arc_boundary_indicies)-1
     index_range = probable_arc_boundary_indicies(ith_plot):probable_arc_boundary_indicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
+
+
+%% Check for arcs that are really lines
+%            'Regression arc' - 
+%
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_this_is_a_circle
+%               ] 
+URHERE
+for ith_domain = 1:length(domain_parameters)
+    if strcmp(domain_bestFitType{ith_domain},'Regression arc')
+        % Find the arc's height. See diagram here, for example:
+        % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
+        angle_sweep_radians = diff(domain_parameters{ith_domain}(4:5));
+        half_angle = abs(angle_sweep_radians)/2;
+        fit_radius = domain_parameters{ith_domain}(3);
+        arc_height = fit_radius*(1-cos(half_angle));
+
+        % It's probably a line if the arc almost fits within the fitting
+        % tolerance
+        if arc_height < 3*fitting_tolerance
+            % This is a line - redo the fit with a line
+            Hough_domain.points_in_domain = current_points_in_domain;
+            Hough_domain.best_fit_source_indicies = [1 2 length(current_points_in_domain(:,1))];
+            [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, -1);
+
+        end
+        
+    end
+end
+
 
 % for ith_foward_index = 1:Ndomains
 % 
@@ -240,7 +279,7 @@ figure_handles(3) = h_plotDomainShape;
 
 end % ends fcn_INTERNAL_setupSubplots
 
-function [domain_points, domain_shapes, domain_endIndicies, domain_parameters] = fcn_geometry_fitSequentialArcs(test_points, varargin)
+function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, varargin)
 %% fcn_geometry_fitSequentialArcs
 % Given a set of XY data, attempts to fit the data in sequential order with
 % an arc until the points in the fit fall outside of a fitting tolerance.
@@ -257,10 +296,10 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters] =
 % approximate XY data as a sequence of joined arcs and lines.
 % 
 % Format: 
-% [radius, arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitSequentialArcs(input_points, (initial_rotation), (initial_offset), (fig_num))
+% [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (animation_figure_handles),(fig_num))
 %
 % INPUTS:
-%      input_points: an [Nx2] matrix of N different [x y] points assumed to
+%      points_to_fit: an [Nx2] matrix of N different [x y] points assumed to
 %      be in sequence. Note: the function may break, particularly in the
 %      calculation of the arcLength, if the points are not in sequence
 %
@@ -297,6 +336,10 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters] =
 %      domain_endIndicies: the indicies that indicate the end of each
 %      domain, of length N+1 where N is the number of domains (the +1 is
 %      because the indicies include the start and end indicies)
+%
+%      domain_parameters: the parameters for each of the arc fits
+%
+%      domain_bestFitType: the label of the best fit type (all are arcs)
 %
 %
 % DEPENDENCIES:
@@ -418,7 +461,7 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-NtestPoints = length(test_points(:,1));
+NtestPoints = length(points_to_fit(:,1));
 Ndomains = 1;
 
 % Prep for animations?
@@ -462,7 +505,7 @@ end
 percentage_of_fits = nan(NtestPoints,1);
 Hough_domain.best_fit_type    = 'Hough arc';
 Hough_domain.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicates this is an arc
-empty_data = nan*test_points;
+empty_data = nan*points_to_fit;
 domain_endIndicies{Ndomains} = current_segment_start_index;
 
 
@@ -479,8 +522,8 @@ while 1==flag_keep_going
     flag_update_plots = (0==mod(current_point_index,plotting_increment_interval));
     
     % Grab the points in current domain
-    current_points_in_domain = test_points(current_segment_start_index:direction_of_fit:current_point_index,1:2);
-    test_points_for_domain = test_points(current_segment_start_index:direction_of_fit:absolute_end_index,:);
+    current_points_in_domain = points_to_fit(current_segment_start_index:direction_of_fit:current_point_index,1:2);
+    test_points_for_domain = points_to_fit(current_segment_start_index:direction_of_fit:absolute_end_index,:);
 
     % Perform the regression fit of the arc
     Hough_domain.points_in_domain = current_points_in_domain;
@@ -515,6 +558,7 @@ while 1==flag_keep_going
         domain_points{Ndomains} = current_points_in_domain; %#ok<AGROW>
         domain_shapes{Ndomains} = regression_domain.best_fit_domain_box; %#ok<AGROW>
         domain_parameters{Ndomains} = regression_domain.best_fit_parameters; %#ok<AGROW>
+        domain_bestFitType{Ndomains} = regression_domain.best_fit_type; %#ok<AGROW>
 
         % Set up for next loop
         Ndomains = Ndomains + 1;        
@@ -538,7 +582,7 @@ while 1==flag_keep_going
     if flag_fit_backwards
         flag_keep_going =  current_point_index > 1;
     else
-        flag_keep_going =  current_point_index < length(test_points(:,1));
+        flag_keep_going =  current_point_index < length(points_to_fit(:,1));
     end
 
     pause(0.01)
@@ -555,6 +599,9 @@ end
 domain_endIndicies{Ndomains+1} = current_point_index;
 domain_points{Ndomains} = current_points_in_domain;
 domain_shapes{Ndomains} = regression_domain.best_fit_domain_box;
+domain_parameters{Ndomains} = regression_domain.best_fit_parameters; 
+domain_bestFitType{Ndomains} = regression_domain.best_fit_type; 
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -608,12 +655,20 @@ if flag_do_plots
     ylabel('Y [meters]');
 
     % Plot the original data
-    plot(test_points(:,1),test_points(:,2),'.','Color',[0 0 0],'MarkerSize',5);
+    plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
     % Plot the domain points
     for ith_domain = 1:length(domain_points)
-        current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
-
+        if isempty(domain_bestFitType{ith_domain})
+            current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
+        else
+            switch domain_bestFitType{ith_domain}
+                case 'Regression arc'  % Arcs are red
+                    current_color = [1 0 0];
+                otherwise
+                    current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
+            end
+        end
         current_domain_points = domain_points{ith_domain};
         current_domain_shape  = domain_shapes{ith_domain};
         plot(current_domain_points(:,1),current_domain_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
