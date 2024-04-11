@@ -8,7 +8,6 @@
 % -- Started the script
 
 %% clear workspace
-clc
 close all
 
 %% In this case, one arc and one line have been used as the test data. (No Intersection)
@@ -264,7 +263,7 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 fig_num = 601;
 % fig_num = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
 % fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
 fig_num = 112;

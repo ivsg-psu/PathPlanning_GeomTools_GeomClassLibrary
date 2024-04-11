@@ -2,102 +2,74 @@
 % Exercises the function: fcn_geometry_fitLinearRegressionFromHoughFit
 
 % Revision history:
-% 2023_12_15
+% 2023_12_15 - S. Brennan
 % -- wrote the code
+% 2024_04_11 - S. Brennan
+% -- added assertion testing
 
 close all;
-clc;
-
-%% Fill test data 
-fig_num = 9999;
-figure(fig_num); clf;
-
-% Fill in points
-seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
-M = 10;
-sigma = 0.02;
-
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-% Corrupt the results with outliers
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 4; % 4 times the y-range
-
-corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Shuffle points?
-shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
-
-% Demo Hough line fitting
-
-transverse_tolerance = 0.05;
-station_tolerance = 2;
-points_required_for_agreement = 20;
-
-domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
-
-
-
-% Demo Hough line segment fitting
-
-transverse_tolerance = 0.1;
-station_tolerance = 0.4;
-points_required_for_agreement = 20;
-
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
 
 %% Basic call - line fitting
 
-fig_num = 9999;
-figure(fig_num); clf;
-
-% Fill in points
-seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
-M = 10;
-sigma = 0.02;
-
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-% Corrupt the results with outliers
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 4; % 4 times the y-range
-
-corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Shuffle points?
-shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
-
-% Demo Hough line fitting
-
-transverse_tolerance = 0.05;
-station_tolerance = 2;
-points_required_for_agreement = 20;
-
-domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
-
 fig_num = 1;
 figure(fig_num);
 clf;
-hold on;
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, fig_num);
+% Fill in points
+seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
+M = 10;
+sigma = 0.02;
+
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
+
+
+% Corrupt the results with outliers
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+% Shuffle points?
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+% Use Hough line fitting to separate inliners and outliers
+transverse_tolerance = 0.05;
+station_tolerance = 2;
+points_required_for_agreement = 20;
+
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
+
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_line_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
+
 
 %% Show no figure is generated
 
-fig_num = 9999;
-figure(fig_num); clf;
-
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
 M = 10;
 sigma = 0.02;
 
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Corrupt the results with outliers
@@ -105,75 +77,51 @@ probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Shuffle points?
 shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
 
-% Demo Hough line fitting
-
+% Use Hough line fitting to separate inliners and outliers
 transverse_tolerance = 0.05;
 station_tolerance = 2;
 points_required_for_agreement = 20;
 
-domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
 regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1});
 
-%% Now plot the results?
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_line_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
-fig_num = 9999;
-figure(fig_num); clf;
+%% Now plot the results
 
-% Fill in points
-seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
-M = 10;
-sigma = 0.02;
-
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-% Corrupt the results with outliers
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 4; % 4 times the y-range
-
-corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Shuffle points?
-shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
-
-% Demo Hough line fitting
-
-transverse_tolerance = 0.05;
-station_tolerance = 2;
-points_required_for_agreement = 20;
-
-domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
-
-
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1});
-
-
-fig_num = 11;
+fig_num = 2;
 figure(fig_num);
 clf;
 hold on;
 
-fcn_geometry_plotFitDomains(regression_domain, fig_num);
-
-%% Vertical line fit
-
-fig_num = 9999;
-figure(fig_num); clf;
-
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
 M = 10;
 sigma = 0.02;
 
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Corrupt the results with outliers
@@ -181,24 +129,90 @@ probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Shuffle points?
 shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
 
-% Demo Hough line fitting
+% Use Hough line fitting to separate inliners and outliers
 
 transverse_tolerance = 0.05;
 station_tolerance = 2;
 points_required_for_agreement = 20;
 
-domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
-fig_num = 111;
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_line_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
+
+
+%% Vertical line fit
+
+fig_num = 3;
 figure(fig_num); clf;
 
-[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{3}, fig_num);
+% Fill in points
+seed_points = [2 3; 2 15];
+M = 10;
+sigma = 0.02;
+
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
+
+
+% Corrupt the results with outliers
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+% Shuffle points?
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+% Use Hough line fitting to separate inliners and outliers
+
+transverse_tolerance = 0.05;
+station_tolerance = 2;
+points_required_for_agreement = 20;
+
+domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
+
+
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_line_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
 fprintf(1,'\n\nFitting results: \n');
 fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
@@ -206,16 +220,17 @@ fprintf(1,'Measured standard deviation in fit, transverse direction (total least
 
 %% Basic call - segment fitting
 
-%% Fill test data 
-fig_num = 9999;
-figure(fig_num); clf;
+% Fill test data 
+fig_num = 4;
+figure(fig_num);
+clf;
 
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
 M = 10;
 sigma = 0.02;
 
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Corrupt the results with outliers
@@ -223,7 +238,7 @@ probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Shuffle points?
 shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
@@ -234,28 +249,93 @@ transverse_tolerance = 0.1;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
+
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], fig_num);
+
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_segment_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
+
+%% Test the best_fit_domain_box_projection_distance input
+
+% Fill test data 
+fig_num = 5;
+figure(fig_num);
+clf;
+
+% Fill in points
+seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
+M = 10;
+sigma = 0.02;
+
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
-fig_num = 1;
+% Corrupt the results with outliers
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 4; % 4 times the y-range
+
+corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+% Shuffle points?
+shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
+
+% Demo Hough line segment fitting
+
+transverse_tolerance = 0.1;
+station_tolerance = 0.4;
+points_required_for_agreement = 20;
+
+domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
+
+best_fit_domain_box_projection_distance = 2; % A HUGE number
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, best_fit_domain_box_projection_distance, fig_num);
+
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_segment_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
+
+%% Fill test data 
+
+fig_num = 6;
 figure(fig_num);
 clf;
 hold on;
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, fig_num);
-
-%% Show no figure is generated
-
-%% Fill test data 
-fig_num = 9999;
-figure(fig_num); clf;
-
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
 M = 10;
 sigma = 0.02;
 
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Corrupt the results with outliers
@@ -263,7 +343,7 @@ probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Shuffle points?
 shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
@@ -274,105 +354,36 @@ transverse_tolerance = 0.1;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], fig_num);
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1});
-
-%% Now plot the results?
-
-%% Fill test data 
-fig_num = 9999;
-figure(fig_num); clf;
-
-% Fill in points
-seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
-M = 10;
-sigma = 0.02;
-
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-% Corrupt the results with outliers
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 4; % 4 times the y-range
-
-corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Shuffle points?
-shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
-
-% Demo Hough line segment fitting
-
-transverse_tolerance = 0.1;
-station_tolerance = 0.4;
-points_required_for_agreement = 20;
-
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
-
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1});
-
-fig_num = 11;
-figure(fig_num);
-clf;
-hold on;
-
-fcn_geometry_plotFitDomains(regression_domain, fig_num);
-
-%% Vertical line fit
-
-fig_num = 9999;
-figure(fig_num); clf;
-
-% Fill in points
-seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
-M = 10;
-sigma = 0.02;
-
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
-
-
-% Corrupt the results with outliers
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 4; % 4 times the y-range
-
-corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Shuffle points?
-shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
-
-% Demo Hough line segment fitting
-
-transverse_tolerance = 0.1;
-station_tolerance = 0.4;
-points_required_for_agreement = 20;
-
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
-
-fig_num = 111;
-figure(fig_num); clf;
-
-[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
-
-fprintf(1,'\n\nFitting results: \n');
-fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
-fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
-
+% Check the output type and size
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(isequal(regression_domain.points_in_domain,domains_segment_fitting{1}.points_in_domain));
+assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+assert(issimplified(regression_domain.best_fit_domain_box));
+assert(issimplified(regression_domain.best_fit_1_sigma_box));
+assert(issimplified(regression_domain.best_fit_2_sigma_box));
+assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
 
 %% Test of fast mode
 
-fig_num = 9999;
-figure(fig_num); clf;
-
 % Fill in points
 seed_points = [2 3; 4 5; 7 0; 9 5; 9 0];
 M = 10;
 sigma = 0.02;
 
-line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Corrupt the results with outliers
@@ -380,7 +391,7 @@ probability_of_corruption = 0.2;
 magnitude_of_corruption = 4; % 4 times the y-range
 
 corrupted_line_test_points = fcn_geometry_corruptPointsWithOutliers(line_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
 
 % Shuffle points?
 shuffled_corrupted_line_test_points = fcn_geometry_shufflePointOrdering(corrupted_line_test_points);
@@ -391,7 +402,7 @@ transverse_tolerance = 0.1;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
-domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
 % Perform the calculation in slow mode
@@ -400,7 +411,7 @@ REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], fig_num);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -412,7 +423,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

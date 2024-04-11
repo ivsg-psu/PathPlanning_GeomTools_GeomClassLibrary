@@ -7,7 +7,6 @@
 
 
 close all;
-clc;
 
 
 %% Test 1: a basic test in 2D

@@ -10,7 +10,6 @@
 
 %% Set up the workspace
 
-clc
 close all
 
 %% Examples for basic path operations and function testing

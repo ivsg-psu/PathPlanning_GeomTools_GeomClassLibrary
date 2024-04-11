@@ -27,18 +27,27 @@
 % -- switched to using environment settings for checking input parameters
 % 2024_03_14 - sbrennan@psu.edu
 % -- updated the Path library dependence to the new function
+% 2024_04_11 - sbrennan@psu.edu
+% -- add lines and segments to domainBoxByType
+% -- used domainBoxByType call in fcn_geometry_fitLinearRegressionFromHoughFit
+% -- went through all the scripts and removeed all clc commands
 
 
 %% To-do items
+% 2024_04_11 - S. Brennan
+% -- Need to speed up testing scripts
+% -- Need to remove long data prints in test scripts
+% -- Need to fix domain bug in circle regressionw where the issimplified
+% test fails. This is because, in the circle regression, the domain box is
+% overlapping itself. This should not be allowed.
+% -- create method to remove overlapping domains within Hough fitting (see bug
+% above)
 %
 % 2024_03_14 - S. Brennan
 % -- need to update the intersection calculation to use the Path
 % library function, NOT the geometry library version
 %
-% create method to remove overlapping domains
 %
-% add lines and segments to domainBoxByType
-% 
 % make sure all functions have at least one straighforward test case in
 % this main code
 %
@@ -838,7 +847,7 @@ domains = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transve
 fig_num = 111111; % Reuse the previous figure number if you want to overlay
 figure(fig_num);clf;
 
-[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains{1}, fig_num);
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains{1}, [], fig_num);
 fprintf(1,'\n\nFitting results: \n');
 fprintf(1,'Expected standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',sigma);
 fprintf(1,'Measured standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);

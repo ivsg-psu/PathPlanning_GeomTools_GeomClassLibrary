@@ -8,7 +8,6 @@
 % -- added best_fit_domain_box_projection_distance as an input option
 
 close all;
-clc;
 
 
 %% Filling test data for arcs

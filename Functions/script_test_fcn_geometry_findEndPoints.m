@@ -14,7 +14,6 @@
 
 
 %% Clear workspace
-clc
 close all
 
 %% Two line segments: The ending point of a line segment is joined to the starting point of the other line segment 
@@ -877,7 +876,7 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 fig_num = 601;
 % fig_num = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
 fig_num = 1112;

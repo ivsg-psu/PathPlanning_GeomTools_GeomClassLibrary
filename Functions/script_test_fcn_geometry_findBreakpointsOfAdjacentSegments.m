@@ -12,7 +12,6 @@
 
 %% Clear workspace
 
-clc
 close all
 
 %%
@@ -60,7 +59,7 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 fig_num = 601;
 % fig_num = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
 fig_nuM = fig_num+2;
 fcn_geometry_plotFitDomains(regression_domains, fig_nuM);
 
@@ -147,7 +146,7 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 fig_num = 601;
 % fig_num = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
 
@@ -282,7 +281,7 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 % fig_num = 602;
 fig_num = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
 fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
 
 % fig_num = fig_nuM;

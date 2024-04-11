@@ -9,7 +9,6 @@
 
 %% Set up the workspace
 close all
-clc
 
 %% Load Data: Use the rawdata_lidar.mat in the Data folder to start, 
 % the loaded data is a struct containing two fields

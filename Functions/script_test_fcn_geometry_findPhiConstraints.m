@@ -11,7 +11,6 @@
 %  -- edits for input checking, prep for geometry library
 
 close all;
-clc;
 
 fig_num = 0;
 

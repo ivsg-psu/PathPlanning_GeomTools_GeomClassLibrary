@@ -12,7 +12,6 @@
 
 
 %% Clear Workspace
-clc
 close all
 
 %% Basic Example to test if the input vectors are exactly the same as reference vector

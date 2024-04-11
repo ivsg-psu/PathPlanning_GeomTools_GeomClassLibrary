@@ -5,7 +5,6 @@
 % -- wrote the code
 
 close all;
-clc;
 
 
 %% Test 1: a basic test

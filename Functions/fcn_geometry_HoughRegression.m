@@ -4,7 +4,7 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % fitting on each domain.
 %
 % Format: 
-% domains = fcn_geometry_HoughRegression(Hough_domains, (fig_num))
+% domains = fcn_geometry_HoughRegression(Hough_domains, (transverse_tolerance), (fig_num))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -12,6 +12,12 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 %
 %      (OPTIONAL INPUTS)
 % 
+%      transverse_tolerance: the distance from the curve fit, in the
+%      transverse direction, to project in both the positive and negative
+%      directions to produce the best_fit_domain_box. If left empty,
+%      defaults to 2 standard deviations to thus give a box that is +/- 2
+%      sigma.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -49,7 +55,7 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -90,7 +96,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(1,3);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -108,10 +114,19 @@ if 0==flag_max_speed
     end
 end
 
+% Does user want to specify best_fit_domain_box_projection_distance?
+transverse_tolerance = [];
+if (2<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        transverse_tolerance = temp;
+    end
+end
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (2<= nargin)
+if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -141,7 +156,7 @@ if N_Hough_domains > 0
     % Perform regression fit on best-fit Hough values
     regression_domains = cell(N_Hough_domains+1,1);
     for ith_domain = 1:N_Hough_domains
-        regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domains{ith_domain});
+        regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domains{ith_domain}, transverse_tolerance);
         regression_domains{ith_domain} = regression_domain;
     end
 end
@@ -259,7 +274,7 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-function regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domain)
+function regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domain, transverse_tolerance)
 
 best_fit_type = Hough_domain.best_fit_type;
 
@@ -267,13 +282,12 @@ best_fit_type = Hough_domain.best_fit_type;
 switch best_fit_type
     case {'Hough line','Hough segment'}
         % Check line fitting
-        regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, -1);
+        regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
 
     case {'Hough circle','Hough arc'}
         % Check circle fitting
-        best_fit_domain_box_projection_distance = [];
         regression_domain = ...
-            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, best_fit_domain_box_projection_distance, -1);
+            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
 
     otherwise
         error('Unknown fit type detected - unable to continue!: %s', best_fit_type);

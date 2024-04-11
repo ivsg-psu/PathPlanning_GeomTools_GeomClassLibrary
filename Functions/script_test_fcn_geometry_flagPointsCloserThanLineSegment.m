@@ -4,7 +4,6 @@
 % 2020_06_25 - wrote the code
 %
 close all;
-clc;
 
 
 

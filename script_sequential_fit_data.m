@@ -118,40 +118,6 @@ for ith_plot = 1:length(probable_arc_boundary_indicies)-1
 end
 
 
-%% Check for arcs that are really lines
-%            'Regression arc' - 
-%
-%               [circleCenter_x.
-%                circleCenter_y,
-%                radius,
-%                start_angle_in_radians, 
-%                end_angle_in_radians,
-%                flag_this_is_a_circle
-%               ] 
-URHERE
-for ith_domain = 1:length(domain_parameters)
-    if strcmp(domain_bestFitType{ith_domain},'Regression arc')
-        % Find the arc's height. See diagram here, for example:
-        % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
-        angle_sweep_radians = diff(domain_parameters{ith_domain}(4:5));
-        half_angle = abs(angle_sweep_radians)/2;
-        fit_radius = domain_parameters{ith_domain}(3);
-        arc_height = fit_radius*(1-cos(half_angle));
-
-        % It's probably a line if the arc almost fits within the fitting
-        % tolerance
-        if arc_height < 3*fitting_tolerance
-            % This is a line - redo the fit with a line
-            Hough_domain.points_in_domain = current_points_in_domain;
-            Hough_domain.best_fit_source_indicies = [1 2 length(current_points_in_domain(:,1))];
-            [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, -1);
-
-        end
-        
-    end
-end
-
-
 % for ith_foward_index = 1:Ndomains
 % 
 % 
@@ -602,6 +568,47 @@ domain_shapes{Ndomains} = regression_domain.best_fit_domain_box;
 domain_parameters{Ndomains} = regression_domain.best_fit_parameters; 
 domain_bestFitType{Ndomains} = regression_domain.best_fit_type; 
 
+%% Check for arcs that are really lines
+%            'Regression arc' - 
+%
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_this_is_a_circle
+%               ] 
+
+for ith_domain = 1:length(domain_parameters)
+    if strcmp(domain_bestFitType{ith_domain},'Regression arc')
+        % Find the arc's height. See diagram here, for example:
+        % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
+        angle_sweep_radians = diff(domain_parameters{ith_domain}(4:5));
+        half_angle = abs(angle_sweep_radians)/2;
+        fit_radius = domain_parameters{ith_domain}(3);
+        arc_height = fit_radius*(1-cos(half_angle));
+
+        % It's probably a line if the arc almost fits within the box
+        % created by the fitting tolerance. The height of that box is
+        % 2*tolerance. However, the first and last points may be very
+        % slightly outside this, and so we make the height 3 times the
+        % tolerance.
+        if arc_height < 3*fitting_tolerance
+            % This is a line - redo the fit with a line
+            Hough_domain.points_in_domain = domain_points{ith_domain};
+            Hough_domain.best_fit_source_indicies = [1 length(domain_points{ith_domain}(:,1))];
+            Hough_domain.best_fit_type = 'Hough segment';
+            regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance, -1);
+            
+            % Update the data with the regression fit
+            domain_shapes{ith_domain} = regression_domain.best_fit_domain_box; 
+            domain_parameters{ith_domain} = regression_domain.best_fit_parameters; 
+            domain_bestFitType{ith_domain} = regression_domain.best_fit_type; 
+
+        end
+        
+    end
+end
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -665,6 +672,8 @@ if flag_do_plots
             switch domain_bestFitType{ith_domain}
                 case 'Regression arc'  % Arcs are red
                     current_color = [1 0 0];
+                case {'Vector regression segment fit'} % Line fits are blue
+                    current_color = [0 0 1];
                 otherwise
                     current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
             end

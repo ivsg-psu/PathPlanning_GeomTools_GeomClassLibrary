@@ -5,7 +5,7 @@
 % -- wrote the code
 
 close all;
-clc;
+
 
 
 %% Test 1: a basic test with just 2 points, few outliers

@@ -5,7 +5,6 @@
 % -- wrote the code
 
 close all;
-clc;
 
 
 %% Test 1: a basic test with 4 points, producing 2 arcs that are similar

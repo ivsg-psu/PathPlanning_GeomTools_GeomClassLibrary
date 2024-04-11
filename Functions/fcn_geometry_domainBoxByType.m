@@ -23,6 +23,15 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %                circleCenter, circleRadius, angles, distance_from_circle_to_boundary,
 %                (fig_num))
 %
+%          'line' or 'segment': produces a line type bounding box. This is
+%          a box bound that includes + and - distances about the line or
+%          segment including around the start/end locations
+%
+%                domain_box = fcn_geometry_domainBoxByType(...
+%                'line',...
+%                unit_line_projection_vector, base_point_on_line, [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], distance_from_line_to_boundary,
+%                (fig_num))
+%
 %      (OPTIONAL INPUTS)
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
@@ -95,7 +104,10 @@ if (0==flag_max_speed)
     if flag_check_inputs
         switch type_of_domain
             case 'arc'
-                % Are there the right number of inputs?
+                % Are there the right number of inputs for an arc?
+                narginchk(5,6);
+            case {'line', 'segment'}
+                % Are there the right number of inputs for a line or segment?
                 narginchk(5,6);
             otherwise
                 error('Unknown domain type given: %s',type_of_domain);
@@ -110,6 +122,12 @@ switch type_of_domain
         circleRadius            = varargin{2};
         angles                  = varargin{3};
         distance_from_circle_to_boundary = varargin{4};
+    case {'line', 'segment'}
+        unit_line_projection_vector = varargin{1};
+        base_point_on_line          = varargin{2};
+        transverse_distance_range   = varargin{3};
+        distance_from_line_to_boundary = varargin{4};
+
     otherwise
         error('Unknown domain type given: %s',type_of_domain);
 end
@@ -168,6 +186,31 @@ switch type_of_domain
         inner_arc = inner_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
         outer_arc = outer_radius*[cos(angles) sin(angles)] + ones(length(angles(:,1)),1)*circleCenter;
         domain_box = [inner_arc; flipud(outer_arc)];
+    case {'line', 'segment'}
+        % Find the orthogonal vector
+        unit_converted_orthogonal_vector = unit_line_projection_vector*[0 1; -1 0];
+
+        % Make sure the min and max transverse distances are correctly
+        % signed
+        if transverse_distance_range(1)<=transverse_distance_range(2)
+            min_transverse_distance = transverse_distance_range(1);
+            max_transverse_distance = transverse_distance_range(2);            
+        else
+            min_transverse_distance = transverse_distance_range(2);
+            max_transverse_distance = transverse_distance_range(1);            
+        end
+
+        min_box_point = base_point_on_line + (min_transverse_distance - distance_from_line_to_boundary)*unit_line_projection_vector;
+        max_box_point = base_point_on_line + (max_transverse_distance + distance_from_line_to_boundary)*unit_line_projection_vector;
+
+        domain_box = ...
+            [...
+            min_box_point - distance_from_line_to_boundary*unit_converted_orthogonal_vector;
+            max_box_point - distance_from_line_to_boundary*unit_converted_orthogonal_vector;
+            max_box_point + distance_from_line_to_boundary*unit_converted_orthogonal_vector;
+            min_box_point + distance_from_line_to_boundary*unit_converted_orthogonal_vector;
+            ];
+
     otherwise
         error('Unknown domain type given: %s',type_of_domain)
 end

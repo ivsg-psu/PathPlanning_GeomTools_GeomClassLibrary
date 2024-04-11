@@ -148,7 +148,7 @@ for time_iteration = 1:length(ptCloud_pts_layers_separated_cell)
 
                 % Check the regression fit
                 fig_num = 20;
-                regression_domains = fcn_geometry_HoughRegression(Hough_domains, -1);
+                regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], -1);
 
                 % Save best fit results
                 Regression_domains_to_keep{ith_ring} = Hough_domains{1};

@@ -6,7 +6,6 @@
 % -- wrote the code
 
 close all;
-clc;
 
 %% Fill in test data
 rng(383);

@@ -6,8 +6,6 @@
 % -- Wrote the code via mods to fcn_geometry_flagPointsCloserToOriginThanLineSegment
 
 close all;
-clc;
-
 
 
 %% Test 1: a basic test (FAIL)

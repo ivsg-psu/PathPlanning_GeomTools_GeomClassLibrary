@@ -9,7 +9,6 @@
 
 %% Set up the workspace
 close all
-clc
 
 %% Basic example
 fig_num = 1;

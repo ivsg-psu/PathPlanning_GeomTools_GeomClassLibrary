@@ -6,7 +6,6 @@
 % -- wrote the code
 
 close all;
-clc;
 
 %% Fill in some test data
 % This takes a while - it's generated from the test script for Hough

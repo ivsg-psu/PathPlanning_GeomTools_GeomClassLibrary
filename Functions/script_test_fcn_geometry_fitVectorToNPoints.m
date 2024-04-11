@@ -6,7 +6,6 @@
 % -- revised from fcn_geometry_fitSlopeInterceptNPoints
 %
 close all;
-clc;
 
 
 %% Test 1: a basic test

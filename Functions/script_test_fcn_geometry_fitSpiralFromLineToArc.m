@@ -8,7 +8,6 @@
 close all;
 
 
-
 %% BASIC test - perfect fit, perfectly oriented
 fig_num = 1;
 figure(fig_num); clf;

@@ -7,7 +7,7 @@
 % -- revised name to fcn_geometry_fitSlopeInterceptNPoints
 
 close all;
-clc;
+
 fig_num = 1;
 
 %% Test 1: a basic test
