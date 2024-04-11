@@ -1,7 +1,7 @@
 function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, varargin)
-% fcn_geometry_fitLinearRegressionFromHoughFit Given a domain containting a
-% set of points that are matched via a Hough vote, finds the regression fit
-% vector and domain box. 
+%% fcn_geometry_fitLinearRegressionFromHoughFit 
+% Given a domain containting a set of points that are matched via a Hough
+% vote, finds the regression fit vector and domain box.
 % 
 % NOTE: the vector fit is not the same as a least-squares linear
 % regression, which minimizes sum-of-squares of the VERTICAL errors between

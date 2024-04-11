@@ -28,7 +28,7 @@ arc_pattern = [...
 M = 10;
 sigma = 0.02;
 
-[test_points, ~, ~, arcStartIndicies] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
+[test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
 % Add noise?
 if 1==0
@@ -53,7 +53,7 @@ end
 
 % Initialize the subplots
 subplot_fig_num = fig_num*100;
-animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndicies, subplot_fig_num);
+animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, trueArcStartIndicies, trueNamedCurveTypes, subplot_fig_num);
 
 % Perform the fit forwards
 fitting_tolerance = 0.1; % Units are meters
@@ -66,65 +66,75 @@ flag_fit_backwards = 1;
 [domain_points_backward, domain_shapes_backward, domain_endIndicies_backward, domain_parameters_backward, domain_bestFitType_backward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Compare lengths and parameters
+
+Ndomains = length(domain_points_forward);
+
 % First, make absolutely sure that the number of fits found in the forward
 % direction match the same number of fits in the backward direction
-if length(domain_points_forward)~=length(domain_points_backward)
+if length(domain_points_backward)~=Ndomains
     warning('on','backtrace');
     warning('An error will be thrown at this code location as the fits were directionally different.');
     error('Found different numbers of domains of fit in forward/backward directions. Code is not able to handle this yet!');
 end
 
-% Compare the fits
-% [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, Hough_flag_this_is_a_circle]
-figure(37373);
-clf; 
-hold on;
-grid on;
-
-Ndomains = length(domain_points_forward);
-domain_indicies_matrix_forward = cell2mat(domain_endIndicies_forward)';
-domain_indicies_matrix_backward = flipud(cell2mat(domain_endIndicies_backward)');
-
-probable_arc_boundary_indicies = round(mean([domain_indicies_matrix_forward domain_indicies_matrix_backward],2));
-
-% Plot results?
-
-% Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
+for ith_domain = 1:Ndomains
+    if ~strcmp(domain_bestFitType_forward{ith_domain},domain_bestFitType_backward{ith_domain})
+        warning('on','backtrace');
+        warning('An error will be thrown at this code location as the fits were found to be geometrically different.');
+        error('Found different geometries as the best fit for the same regions when comparing forward/backward directions. Code is not able to handle this yet!');
+    end
 end
-N_colors = length(color_ordering(:,1));
 
 
+% Find the probable fit
+probable_arc_boundary_indicies = round(mean([domain_indicies_matrix_forward domain_indicies_matrix_backward],2));
+% probable_arc_boundary_indicies = probable_arc_boundary_indicies(1:end-1,:);
 
-% Add vertical lines to indicate where the segments are TRULY changing
+% Print the results
+
+fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit number:'),20));
+for ith_fit = 1:Ndomains
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',ith_fit),10));
+end
+fprintf(1,'\n');
+
+fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('True start index:'),20));
+for ith_fit = 1:Ndomains
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',trueArcStartIndicies(ith_fit)),10));
+end
+fprintf(1,'\n');
+
+fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit start index:'),20));
+for ith_fit = 1:Ndomains
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',probable_arc_boundary_indicies(ith_fit)),10));
+end
+fprintf(1,'\n');
+
+% Add vertical lines to indicate where the segments were identified as
+% changing
 figure(subplot_fig_num);
 subplot(2,2,3);
-for ith_start = 1:length(probable_arc_boundary_indicies)
-    current_color = color_ordering(mod(ith_start,N_colors)+1,:);
+for ith_start = 1:Ndomains
+    
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_start,domain_bestFitType_forward{ith_start},-1);
+
     plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
 end
 
 figure(subplot_fig_num);
 subplot(2,2,4);
 
-% Plot the groups of points
-for ith_plot = 1:length(probable_arc_boundary_indicies)-1
-    current_color = color_ordering(mod(ith_plot,N_colors)+1,:);
+% Plot the fitted groups of points. If any of the points are mis-labeled,
+% there will be one color incorrectly on top of another, for example a red
+% point on top of a blue underlying point.
+for ith_plot = 1:Ndomains
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,domain_bestFitType_forward{ith_plot},-1);
     index_range = probable_arc_boundary_indicies(ith_plot):probable_arc_boundary_indicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
+%% Check if spirals are needed
 
-% for ith_foward_index = 1:Ndomains
-% 
-% 
-%     % Find non_overlapping indicies
-%     % non_overlapping_indicies =  (domain_indicies_matrix_forward(ith_foward_index):domain_indicies_matrix_backward(ith_foward_index+1))';
-% 
-% end
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,16 +149,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_setupSubplots
-function figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndicies, subplot_fig_num)
+function figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndicies, namedCurveTypes, subplot_fig_num)
 
-
-% Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-N_colors = length(color_ordering(:,1));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CREATE TEST POINTS
@@ -164,7 +166,7 @@ ylabel('Y [meters]');
 % Plot the groups of points
 modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
 for ith_plot = 1:length(arcStartIndicies(:,1))
-    current_color = color_ordering(mod(ith_plot,N_colors)+1,:);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
     index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
@@ -208,7 +210,7 @@ Hough_domain.best_fit_source_indicies = [1 2 NtestPoints];
 regression_domain  =  ...
     fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, 0.1, -1);
 domainShape = regression_domain.best_fit_domain_box;
-current_color = color_ordering(mod(1,N_colors)+1,:);
+current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
 h_plotDomainShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
 % Plot the "hit" points within the fit
@@ -243,6 +245,22 @@ figure_handles(1) = h_plotPoints;
 figure_handles(2) = h_plotPercentage;
 figure_handles(3) = h_plotDomainShape;
 
+subplot(2,2,4);
+hold on;
+grid on;
+axis equal;
+xlabel('X [meters]');
+ylabel('Y [meters]');
+
+% Plot the groups of points
+modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
+for ith_plot = 1:length(arcStartIndicies(:,1))
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
+    plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',30);
+end
+
+
 end % ends fcn_INTERNAL_setupSubplots
 
 function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, varargin)
@@ -260,6 +278,13 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, d
 % point sequence is reached, the function returns information about each of
 % the domains where an arc fit was found. The results are useful to quickly
 % approximate XY data as a sequence of joined arcs and lines.
+%
+% A flag option allows the search to proceed either from first point to end
+% point (default) or from last point to first point. If proceeding from the
+% last point as the starting point, the outputs are rearranged so that the
+% domains and respective indicies are ordered from first point to last
+% point, allowing easy comparison to results obtained from fitting in the
+% typical first-point as starting piont.
 % 
 % Format: 
 % [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (animation_figure_handles),(fig_num))
@@ -434,16 +459,7 @@ Ndomains = 1;
 if flag_do_animations
     h_plotPoints      = animation_figure_handles(1);
     h_plotPercentage  = animation_figure_handles(2);
-    h_plotDomainShape = animation_figure_handles(3);
-
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-    N_colors = length(color_ordering(:,1));
-        
+    h_plotDomainShape = animation_figure_handles(3);       
 end
 
 % Set the fit direction
@@ -535,7 +551,7 @@ while 1==flag_keep_going
             % Set up plots for next round
             subplot(2,2,2)
             domainShape = regression_domain.best_fit_domain_box;
-            current_color = color_ordering(mod(Ndomains,N_colors)+1,:);
+            current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,regression_domain.best_fit_type,-1);
             h_plotDomainShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
             % Add vertical lines to indicate where the segments are changing
@@ -554,19 +570,44 @@ while 1==flag_keep_going
     pause(0.01)
 end
 
-if flag_do_animations
-    % Add vertical lines to first indicate where the segments are changing
-    subplot(2,2,3);
-    current_color = color_ordering(mod(Ndomains,N_colors)+1,:);
-    plot([absolute_start_index absolute_start_index],[-0.1 1.1],'-','Color',current_color);
-end
-
 % Save last results
 domain_endIndicies{Ndomains+1} = current_point_index;
 domain_points{Ndomains} = current_points_in_domain;
 domain_shapes{Ndomains} = regression_domain.best_fit_domain_box;
 domain_parameters{Ndomains} = regression_domain.best_fit_parameters; 
 domain_bestFitType{Ndomains} = regression_domain.best_fit_type; 
+
+if flag_do_animations
+    % Add vertical lines to first indicate where the segments are changing
+    subplot(2,2,3);
+    current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,domain_bestFitType{Ndomains},-1);
+    plot([absolute_start_index absolute_start_index],[-0.1 1.1],'-','Color',current_color);
+end
+
+% Rearrange outputs if fitting in backwards order so that the outputs
+% correspond to the first points in the first indicies and last points in
+% the last indicies.
+if flag_fit_backwards
+    % The indicies have Ndomains+1 in length
+    temp_domain_endIndicies = domain_endIndicies;
+    Nindicies = Ndomains+1;
+    for ith_index = 1:Nindicies
+        domain_endIndicies{ith_index} = temp_domain_endIndicies{Nindicies+1-ith_index};
+    end
+
+    % These inputs all have Ndomains in length
+    temp_domain_points      = domain_points;
+    temp_domain_shapes      = domain_shapes;
+    temp_domain_parameters  = domain_parameters;
+    temp_domain_bestFitType = domain_bestFitType;
+    for ith_domain = 1:Ndomains
+        domain_points{ith_domain}      = temp_domain_points{Ndomains+1-ith_domain};
+        domain_shapes{ith_domain}      = temp_domain_shapes{Ndomains+1-ith_domain};
+        domain_parameters{ith_domain}  = temp_domain_parameters{Ndomains+1-ith_domain};
+        domain_bestFitType{ith_domain} = temp_domain_bestFitType{Ndomains+1-ith_domain};
+    end
+
+end
 
 %% Check for arcs that are really lines
 %            'Regression arc' - 
@@ -623,17 +664,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-  
-
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     if flag_do_animations
         % Plot the results in the subplot
         flag_rescale_axis = 0;
@@ -665,19 +695,8 @@ if flag_do_plots
     plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
     % Plot the domain points
-    for ith_domain = 1:length(domain_points)
-        if isempty(domain_bestFitType{ith_domain})
-            current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
-        else
-            switch domain_bestFitType{ith_domain}
-                case 'Regression arc'  % Arcs are red
-                    current_color = [1 0 0];
-                case {'Vector regression segment fit'} % Line fits are blue
-                    current_color = [0 0 1];
-                otherwise
-                    current_color = color_ordering(mod(ith_domain*direction_of_fit,N_colors)+1,:);
-            end
-        end
+    for ith_domain = 1:length(domain_points)        
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,domain_bestFitType{ith_domain},-1);
         current_domain_points = domain_points{ith_domain};
         current_domain_shape  = domain_shapes{ith_domain};
         plot(current_domain_points(:,1),current_domain_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);

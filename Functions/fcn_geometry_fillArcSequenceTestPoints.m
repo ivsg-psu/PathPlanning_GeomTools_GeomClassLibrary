@@ -1,4 +1,4 @@
-function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
+function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
 %% fcn_geometry_fillArcSequenceTestPoints
 % given a Ax2 matrix containing [curvature station_length] in each row,
 % where A are the number of interconnected arcs to form. This function then
@@ -32,6 +32,13 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies] =
 %      trueStartPointsOfArcs: the true (not noise injected) [x y] location where each arc starts.
 %
 %      arcStartIndicies: the indicies where each segment started
+%
+%      namedCurveTypes: a cell array of names indicating the type of curve
+%      for each test point sequence. Names include:
+%
+%           'line': for line segments
+%
+%           'arc': for arc segments
 % 
 % DEPENDENCIES:
 %
@@ -158,6 +165,7 @@ for ith_segment = 1:N_segments
 
     % Find the circle center
     if ~isinf(current_radius)
+        namedCurveTypes{ith_segment} = 'arc';
         current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 is_counterClockwise(ith_segment,1); -is_counterClockwise(ith_segment,1) 0];
         circleCenters(ith_segment,:) = current_circle_center;
 
@@ -186,6 +194,7 @@ for ith_segment = 1:N_segments
         end
         final_point = current_circle_center + current_radius.*unit_radial_vectors;
     else
+        namedCurveTypes{ith_segment} = 'line';
         circleCenters(ith_segment,:) = [nan nan];
         projection_distances = (0:(1/M):total_arc_length)';
         N_points = length(projection_distances);
