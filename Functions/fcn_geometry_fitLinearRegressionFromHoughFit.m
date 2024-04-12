@@ -273,11 +273,11 @@ unit_converted_orthogonal_vector = unit_converted_projection_vector*[0 1; -1 0];
 % product to create a new base point
 projection_to_lowest_point = sorted_points_in_domain(1,:) - base_point_on_line;
 transverse_distance_to_lowest_point = sum(projection_to_lowest_point.*unit_converted_projection_vector,2);
-min_regression_point = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_projection_vector;
+% min_regression_point = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_projection_vector;
 
 projection_to_highest_point = sorted_points_in_domain(end,:) - base_point_on_line;
 transverse_distance_to_highest_point = sum(projection_to_highest_point.*unit_converted_projection_vector,2);
-max_regression_point = base_point_on_line + transverse_distance_to_highest_point*unit_converted_projection_vector;
+% max_regression_point = base_point_on_line + transverse_distance_to_highest_point*unit_converted_projection_vector;
 
 % Find the transverse distances and standard deviations of
 % transverse distances
@@ -330,63 +330,6 @@ else
         [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], ...
         best_fit_domain_box_projection_distance, -1);
 end
-%
-% N_sigmas = 1;
-% domain_box_1_sigma = ...
-%     [...
-%     min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     ];
-% 
-% N_sigmas = 2;
-% domain_box_2_sigma = ...
-%     [...
-%     min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     ];
-% 
-% N_sigmas = 3;
-% domain_box_3_sigma = ...
-%     [...
-%     min_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point - N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     max_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     min_regression_point + N_sigmas*sigma_orthogonal_distance*unit_converted_orthogonal_vector;
-%     ];
-% 
-% regression_domain.best_fit_1_sigma_box = polyshape(domain_box_1_sigma(:,1),domain_box_1_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
-% regression_domain.best_fit_2_sigma_box = polyshape(domain_box_2_sigma(:,1),domain_box_2_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
-% regression_domain.best_fit_3_sigma_box = polyshape(domain_box_3_sigma(:,1),domain_box_3_sigma(:,2),'Simplify',false,'KeepCollinearPoints',true);
-% 
-% if isempty(best_fit_domain_box_projection_distance)
-%     regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
-% else
-% 
-%     if transverse_distance_to_lowest_point<=transverse_distance_to_highest_point
-%         min_box_point = base_point_on_line + (transverse_distance_to_lowest_point - best_fit_domain_box_projection_distance)*unit_converted_projection_vector;
-%         max_box_point = base_point_on_line + (transverse_distance_to_lowest_point + best_fit_domain_box_projection_distance)*unit_converted_projection_vector;
-%     else
-%         min_box_point = base_point_on_line + (transverse_distance_to_lowest_point + best_fit_domain_box_projection_distance)*unit_converted_projection_vector;
-%         max_box_point = base_point_on_line + (transverse_distance_to_lowest_point - best_fit_domain_box_projection_distance)*unit_converted_projection_vector;
-%     end
-% 
-%     domain_box_best_fit_domain = ...
-%         [...
-%         min_box_point - best_fit_domain_box_projection_distance*unit_converted_orthogonal_vector;
-%         max_box_point - best_fit_domain_box_projection_distance*unit_converted_orthogonal_vector;
-%         max_box_point + best_fit_domain_box_projection_distance*unit_converted_orthogonal_vector;
-%         min_box_point + best_fit_domain_box_projection_distance*unit_converted_orthogonal_vector;
-%         ];
-%     % regression_domain.best_fit_domain_box  = domain_box_best_fit_domain; % fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance,-1);
-%     regression_domain.best_fit_domain_box = polyshape(domain_box_best_fit_domain(:,1),domain_box_best_fit_domain(:,2),'Simplify',false,'KeepCollinearPoints',true);
-% 
-% end
-
-
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

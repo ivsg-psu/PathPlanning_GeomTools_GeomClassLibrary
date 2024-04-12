@@ -87,6 +87,8 @@ end
 
 
 % Find the probable fit
+domain_indicies_matrix_forward = cell2mat(domain_endIndicies_forward)';
+domain_indicies_matrix_backward = cell2mat(domain_endIndicies_backward)';
 probable_arc_boundary_indicies = round(mean([domain_indicies_matrix_forward domain_indicies_matrix_backward],2));
 % probable_arc_boundary_indicies = probable_arc_boundary_indicies(1:end-1,:);
 
@@ -133,7 +135,12 @@ for ith_plot = 1:Ndomains
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
-%% Check if spirals are needed
+%% Check if spirals are needed by checking the lateral offset between segments
+for ith_domain = 1:Ndomains-1
+    offset_forward  = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType_forward,domain_parameters_forward, fitting_tolerance);
+    offset_backward = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType_backward,domain_parameters_backward, fitting_tolerance);
+
+end
 
 
 %% Functions follow
@@ -147,6 +154,40 @@ end
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+%% fcn_geometry_joinGeometricCurves
+function revised_domain_parameters = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType, domain_parameters, threshold)
+current_fit_type = domain_bestFitType{ith_domain};
+next_fit_type    = domain_bestFitType{ith_domain+1};
+
+revised_domain_parameters = domain_parameters;
+
+if strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Regression arc')
+    error('Joining arcs to arcs is not yet implemented');
+elseif strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Vector regression segment fit')
+    error('Joining line segements to line segments is not yet implemented');
+elseif (strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Vector regression segment fit')) || (strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Regression arc'))
+    % This is a connection that is an arc to line or line to arc 
+
+    % find which index is which
+    if strcmp(current_fit_type,'Regression arc')
+        line_index = ith_domain+1;
+        arc_index  = ith_domain;
+        flag_arc_is_first = 1;
+    else
+        line_index = ith_domain;
+        arc_index  = ith_domain+1;
+        flag_arc_is_first = 0;
+    end
+
+    [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLineToArc(domain_parameters{line_index}, domain_parameters{arc_index},flag_arc_is_first);
+    
+else
+    error('unrecognized pattern encountered! Exiting.')
+end
+end % Ends fcn_geometry_joinGeometricCurves
+
+
 
 %% fcn_INTERNAL_setupSubplots
 function figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndicies, namedCurveTypes, subplot_fig_num)

@@ -39,7 +39,8 @@ function [...
 %      where sectors end
 %
 %      cross_product_direction: an [N x 1] vector denoting the cross product
-%      direction to follow from input point to output point
+%      direction to follow from input point to output point, either 1 or -1
+%      for each row.
 %
 %      (OPTIONAL INPUTS)
 %

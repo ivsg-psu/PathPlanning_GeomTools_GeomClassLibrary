@@ -704,8 +704,10 @@ for ith_domain = 1:N_domains
     start_angle = best_fit_start_angle_in_radians{ith_domain};
     end_angle   = best_fit_end_angle_in_radians{ith_domain};
     angle_step_in_radians = 1*pi/180;
+    flag_arc_is_counterclockwise = 1;
     if start_angle>end_angle
         angle_step_in_radians = angle_step_in_radians*-1;
+        flag_arc_is_counterclockwise = 0;
     end
     angles = (start_angle:angle_step_in_radians:end_angle)';
 
@@ -715,7 +717,7 @@ for ith_domain = 1:N_domains
     if flag_this_is_a_circle
         best_fit_parameters= [circleCenter circleRadius];
     else
-        best_fit_parameters= [circleCenter circleRadius start_angle end_angle flag_this_is_a_circle];
+        best_fit_parameters= [circleCenter circleRadius start_angle end_angle flag_this_is_a_circle flag_arc_is_counterclockwise];
     end
 
     %% Save results into the domain structure

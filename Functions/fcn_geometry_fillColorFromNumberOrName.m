@@ -172,9 +172,10 @@ else
     switch lower(string_identifier)
         case {'arc','regression arc'}  % Arcs are red
             color_vector = [1 0 0];
-        case {'line','vector regression segment fit'} % Line fits are blue
+        case {'line','segment','vector regression segment fit'} % Line fits are blue
             color_vector = [0 0 1];
         otherwise
+            warning('on','backtrace');
             warning('Unrecognized plot color string: %s. Reverting to default.', string_identifier);
             color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
     end

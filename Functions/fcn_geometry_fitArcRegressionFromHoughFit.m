@@ -149,6 +149,7 @@ regression_domain = fcn_geometry_fillEmptyDomainStructure;
 best_fit_type            = Hough_domain.best_fit_type;
 points_in_domain         = Hough_domain.points_in_domain;
 Hough_best_fit_source_indicies = Hough_domain.best_fit_source_indicies;
+% flag_arc_is_counterclockwise = Hough_domain.best_fit_parameters(1,7);
 
 % Check to make sure we have a Hough fit input
 switch best_fit_type
@@ -201,9 +202,9 @@ else
     % Check the direction. If direction is not aligned with the input regression direction, flip it
     degree_step = min(1,(end_angle_in_radians-start_angle_in_radians)*1/10*180/pi);
     % is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
-    is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(associated_points_in_domain, circleCenter, -1);
+    flag_arc_is_counterclockwise = fcn_geometry_arcDirectionFromCircleCenter(associated_points_in_domain, circleCenter, -1);
 
-    if is_counterClockwise~=1
+    if flag_arc_is_counterclockwise~=1
         degree_step = -1*degree_step;
         temp = start_angle_in_radians;
         start_angle_in_radians = end_angle_in_radians;
@@ -211,15 +212,13 @@ else
     end
 
     % Fill in the results
-    regression_fit_arc_center_and_radius_and_angles_and_flag = [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, Hough_flag_this_is_a_circle];
+    regression_fit_arc_center_and_radius_and_angles_and_flag = [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, Hough_flag_this_is_a_circle, flag_arc_is_counterclockwise];
     regression_domain.best_fit_parameters = regression_fit_arc_center_and_radius_and_angles_and_flag;
 end
 
 %% Calculate the domain boxes
 % Create a domain by doing a range of angles across inner and
 % outer arc that spans the test area
-
-% angles = (start_angle_in_radians:degree_step*pi/180:end_angle_in_radians)';
 
 N_points = ceil(abs(end_angle_in_radians - start_angle_in_radians)/abs(degree_step*pi/180));
 angles = linspace(start_angle_in_radians, end_angle_in_radians,N_points)';

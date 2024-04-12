@@ -1189,10 +1189,10 @@ fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'True parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
-fprintf(1,'Slow parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',slowdomains{1}.best_fit_parameters(1),slowdomains{1}.best_fit_parameters(2),slowdomains{1}.best_fit_parameters(3));
+% fprintf(1,'Slow parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',slowdomains{1}.best_fit_parameters(1),slowdomains{1}.best_fit_parameters(2),slowdomains{1}.best_fit_parameters(3));
 fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
-fprintf(1,'Fast parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',fastdomains{1}.best_fit_parameters(1),fastdomains{1}.best_fit_parameters(2),fastdomains{1}.best_fit_parameters(3));
+% fprintf(1,'Fast parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',fastdomains{1}.best_fit_parameters(1),fastdomains{1}.best_fit_parameters(2),fastdomains{1}.best_fit_parameters(3));
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 

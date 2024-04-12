@@ -87,6 +87,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                start_angle_in_radians, 
 %                end_angle_in_radians,
 %                flag_this_is_a_circle
+%                flag_arc_is_counterclockwise
 %               ] 
 %
 %            'Vector regression line fit' - 
@@ -120,6 +121,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                start_angle_in_radians, 
 %                end_angle_in_radians,
 %                flag_this_is_a_circle
+%                flag_arc_is_counterclockwise
 %               ] 
 %
 %            

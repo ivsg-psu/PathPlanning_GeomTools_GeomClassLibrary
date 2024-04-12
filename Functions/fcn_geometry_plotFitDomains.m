@@ -250,24 +250,10 @@ if flag_do_plots
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
                 case {'Hough circle','Regression circle'}
-                    %            'Hough circle' -
-                    %               [circleCenter_x.
-                    %                circleCenter_y,
-                    %                radius]
-                    %
-                    %            'Hough arc' -
-                    %
-                    %               [circleCenter_x.
-                    %                circleCenter_y,
-                    %                radius,
-                    %                start_angle_in_radians,
-                    %                end_angle_in_radians,
-                    %                flag_this_is_a_circle
-                    %               ]
 
                     % Plot the best-fit crcle
                     circleCenter = domain_to_plot.best_fit_parameters(1,1:2);
-                    circleRadius = domain_to_plot.best_fit_parameters(1,3);
+                    circleRadius = domain_to_plot.best_fit_parameters(1,3);                    
                     fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num);
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 
@@ -277,8 +263,9 @@ if flag_do_plots
                     circleRadius = domain_to_plot.best_fit_parameters(1,3);
                     start_angle_in_radians = domain_to_plot.best_fit_parameters(1,4);
                     end_angle_in_radians = domain_to_plot.best_fit_parameters(1,5);
+                    flag_arc_is_counterclockwise = domain_to_plot.best_fit_parameters(1,7);
                     degree_step = []; % Use default
-                    fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, degree_step, current_color,fig_num);
+                    fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, flag_arc_is_counterclockwise, degree_step, current_color, fig_num);
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
 

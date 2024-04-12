@@ -6,10 +6,15 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 % NOTE: If the end angle is numerically larger than the start angle, the
 % plot will be in the positive direction; otherwise, the plot will be in
 % the negative direction starting at the start angle, proceeding to the end
-% angle.
+% angle. The direction can be manually forced in plotting by setting the
+% flag_arc_is_counterclockwise to be 1 for counter-clockwise (default), or
+% 0 for clockwise.
 % 
 % NOTE: The user can specify the fixed angle used to space the plotting
-% points via an optional input, degree_step.
+% points via an optional input, degree_step. The angles are calculated
+% using linspace by dividing by the rounded integer counts of degree_step
+% values in the angle range, so the plotting may not be precisely on every
+% degree.
 %
 % FORMAT:
 %
@@ -18,6 +23,7 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %     radii,...
 %     start_angle_in_radians, 
 %     end_angle_in_radians,
+%     (flag_arc_is_counterclockwise),
 %     (degree_step),
 %     (format),
 %     (fig_num))
@@ -34,6 +40,10 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %      end_angle_in_radians: the starting angle of the arc, in radians
 %
 %      (OPTIONAL INPUTS)
+%
+%      flag_arc_is_counterclockwise: set to 1 if the plotted arc is
+%      counter-clockwise (default) or 0 if clockwise. Leave blank to use
+%      default.
 %
 %      degree_step: how many degrees between plotting points. Default is 1
 %      degree.
@@ -66,15 +76,17 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 % Questions or comments? sbrennan@psu.edu
 
 % Revision History:
-% 2021-05-22
+% 2021-05-22 - S. Brennan
 % -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
 % -- eliminates repo on fcn_plotCircles
-% 2024_01_16
+% 2024_01_16 - S. Brennan
 % -- updated comments
 % -- added fast mode by allowing fig_num set to -1
 % -- added degree_step as an optional input
 % -- fixed bug in figure argument input
 % -- added arc_points as outputs
+% 2024_04_12 - S Brennan
+% -- added flag_arc_is_counterclockwise input
 
 
 %% Debugging and Input checks
@@ -83,7 +95,7 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==7 && isequal(varargin{end},-1))
+if (nargin==8 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -119,7 +131,7 @@ end
 
 if flag_check_inputs    
     % Are there the right number of inputs?
-    narginchk(4,7); 
+    narginchk(4,8); 
     
     % Check the centers input
     fcn_DebugTools_checkInputsToFunctions(...
@@ -134,10 +146,19 @@ if flag_check_inputs
     
 end
 
-% Does user want to specify the degree_step?
-degree_step = 1;
+% Does user want to specify the flag_arc_is_counterclockwise?
+flag_arc_is_counterclockwise = 1;
 if 5 <= nargin
     temp = varargin{1};
+    if ~isempty(temp)
+        flag_arc_is_counterclockwise = temp;
+    end
+end
+
+% Does user want to specify the degree_step?
+degree_step = 1;
+if 6 <= nargin
+    temp = varargin{2};
     if ~isempty(temp)
         degree_step = temp;
     end
@@ -148,8 +169,8 @@ plot_str = 'b-';
 plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
 
 % Check to see if user passed in a string or color style?
-if 6 <= nargin
-    input = varargin{2};
+if 7 <= nargin
+    input = varargin{3};
     if ~isempty(input)
         plot_str = input;
         if isnumeric(plot_str)  % Numbers are a color style
@@ -163,7 +184,7 @@ end
 if (0==flag_max_speed)
     flag_do_plot = 1;
 
-    if (7==nargin)
+    if (8<=nargin)
         temp = varargin{end};
         if ~isempty(temp)
             fig_num = temp;
@@ -189,9 +210,31 @@ end
 % Use number of radii to calculate the number of centers
 Narcs = length(centers(:,1));
 
-% Set angles for plotting
-if start_angle_in_radians>end_angle_in_radians
+% Set angles for plotting - this may require winding up or down the end
+% angle position relative to the start angle position
+if 1==flag_arc_is_counterclockwise
+    loop_count = 0;
+    while any(start_angle_in_radians>end_angle_in_radians) && loop_count<10
+        loop_count = loop_count+1;
+        end_angle_in_radians(start_angle_in_radians>end_angle_in_radians) = end_angle_in_radians(start_angle_in_radians>end_angle_in_radians)+2*pi;
+    end
+    if 10==loop_count
+        warning('on','backtrace');
+        warning('An error will now be thrown because the angles cannot be aligned in the counter-clockwise direction.');
+        error('Unable to wind up end angle to be larger than start angle in the counter-clockwise direction.');
+    end
+else
     degree_step = -1*degree_step;
+    loop_count = 0;
+    while any(start_angle_in_radians<end_angle_in_radians) && loop_count<10
+        loop_count = loop_count+1;
+        end_angle_in_radians(start_angle_in_radians<end_angle_in_radians) = end_angle_in_radians(start_angle_in_radians<end_angle_in_radians)-2*pi;
+    end
+    if 10==loop_count
+        warning('on','backtrace');
+        warning('An error will now be thrown because the angles cannot be aligned in the clockwise direction.');
+        error('Unable to wind down end angle to be smaller than start angle in the clockwise direction.');
+    end
 end
 
 % Loop through the arcs, prepping data for plotting each
@@ -199,7 +242,24 @@ if Narcs>1
     arc_points{Narcs} = [];
 end
 for ith_arc = 1:Narcs 
-    angles = (start_angle_in_radians(ith_arc,1):degree_step*pi/180:end_angle_in_radians(ith_arc,1))';
+
+    this_start_angle = start_angle_in_radians(ith_arc,1);
+    this_end_angle   = end_angle_in_radians(ith_arc,1);
+    %     angles = (this_start_angle:degree_step*pi/180:this_end_angle)';
+
+    degree_step = min(1,(this_end_angle-this_start_angle)*1/10*180/pi);
+
+    is_counterClockwise = 1;
+    if is_counterClockwise~=1
+        degree_step = -1*degree_step;
+        temp = this_start_angle;
+        this_start_angle = this_end_angle;
+        this_end_angle = temp;
+    end
+
+    N_points = ceil(abs(this_end_angle - this_start_angle)/abs(degree_step*pi/180));
+    angles = linspace(this_start_angle, this_end_angle,N_points)';
+
     % Nangles = length(angles(:,1));
 
     xdata = centers(ith_arc,1)+radii(ith_arc)*cos(angles);
