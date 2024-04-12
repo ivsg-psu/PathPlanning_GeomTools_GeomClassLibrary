@@ -25,6 +25,36 @@
 % -- started a demo code set
 % 2023_12_27 - sbrennan@psu.edu
 % -- switched to using environment settings for checking input parameters
+% 2023_12_28 - Aneesh Batchu 
+% -- updated Max speed options in all the functions
+% -- Fast mode updated: go through all the functions and 
+% -- make sure they all have fast mode code flags at top, namely the code
+%        %% Debugging and Input checks
+%        
+%        % Check if flag_max_speed set. This occurs if the fig_num variable input
+%        % argument (varargin) is given a number of -1, which is not a valid figure
+%        % number.
+%        flag_max_speed = 0;
+%        if (nargin==8 && isequal(varargin{end},-1))
+%            (etc. --- to end of if-statement)
+% -- make sure the comment at top, for the fig_num, mentions the fast mode,
+%    like the following template:
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
+%
+% -- update their input checks for fast mode
+%        if 0==flag_max_speed
+%            if flag_check_inputs == 1
+%
+% -- update input area for optional figures(and ordered to check
+%    flag_max_speed first, namely: 
+%
+%        if (0==flag_max_speed) && (2<= nargin)
+%
+% -- each function has working test scripts to make sure fast mode works 
+% --  updated the README.md file.
 % 2024_03_14 - sbrennan@psu.edu
 % -- updated the Path library dependence to the new function
 % 2024_04_11 - sbrennan@psu.edu
@@ -49,44 +79,16 @@
 %
 %
 % make sure all functions have at least one straighforward test case in
-% this main code
+% this main code    
 %
 % fix plotCircle to produce outputs, just like ploArc
 % 
-% update the README.md file
+% 2024_04_11 - Aneesh Batchu
+% -- Some functions are missing on the ReadME.md file. It is not up to
+% date.
 % 
-% 2023_12_28 - Aneesh Batchu 
-%  -- updated Max speed options in all the functions
 %
-% Fast mode updated: go through all the functions and 
-%  -- make sure they all have fast mode code flags at top, namely the code
-%        %% Debugging and Input checks
-%        
-%        % Check if flag_max_speed set. This occurs if the fig_num variable input
-%        % argument (varargin) is given a number of -1, which is not a valid figure
-%        % number.
-%        flag_max_speed = 0;
-%        if (nargin==8 && isequal(varargin{end},-1))
-%            (etc. --- to end of if-statement)
 % 
-% -- make sure the comment at top, for the fig_num, mentions the fast mode,
-%    like the following template:
-% 
-%      fig_num: a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed.
-%
-% -- update their input checks for fast mode
-%        if 0==flag_max_speed
-%            if flag_check_inputs == 1
-%
-% -- update input area for optional figures(and ordered to check
-%    flag_max_speed first, namely: 
-%
-%        if (0==flag_max_speed) && (2<= nargin)
-%
-%
-% -- each function has working test scripts to make sure fast mode works 
 % 
 % -- run the test scripts to make sure above changes don't break codes
 
