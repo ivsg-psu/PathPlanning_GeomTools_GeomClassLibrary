@@ -232,12 +232,12 @@ if signed_distance_along_line_to_join<0
     error('Stop here');
 end
 
-% Depending on which side of the line the arc is located, either need
-% to subtract or add on the circle radius. Note: the result is designed
-% to be positive if the line doesn't quite meet the circle as a tangent
-% creating a gap - in this case, a spiral is needed. The result is negative
-% if the line would intersect the circle; in this case, a line shift offset
-% is needed.
+% Depending on which side of the line the arc is located, either need to
+% subtract or add on the circle radius. Note: the result is designed to be
+% positive if the line doesn't quite meet the circle as a tangent creating
+% a gap - in this case, a spiral is needed. The result is negative if the
+% line would intersect the circle; in this case, a line shift offset is
+% needed.
 if signed_distance_ortho_line_to_arc_center >= 0
     offset_dist_from_line_toward_circle   = signed_distance_ortho_line_to_arc_center - arc_radius;
 else
