@@ -80,7 +80,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -175,11 +175,8 @@ line_unit_tangent_vector = line_parameters(1,1:2);
 line_base_point_xy       = line_parameters(1,3:4);
 line_s_start             = line_parameters(1,5);
 line_s_end               = line_parameters(1,6);
-% line_length              = line_s_end-line_s_start;
-line_unit_ortho_vector   = line_unit_tangent_vector*[0 1; -1 0];
 line_start_xy            = line_base_point_xy + line_unit_tangent_vector*line_s_start;
 line_end_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_end;
-% line_angle               = atan2(line_unit_tangent_vector(1,2),line_unit_tangent_vector(1,1));
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy                = arc_parameters(1,1:2);
@@ -192,8 +189,6 @@ arc_is_circle                = arc_parameters(1,6);
 arc_is_counter_clockwise     = arc_parameters(1,7);
 
 % Find the change in angle of the arc
-
-
 arc_start_unit_vector        = [cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
 arc_end_unit_vector          = [cos(arc_end_angle_in_radians)   sin(arc_end_angle_in_radians)  ];
 if arc_is_counter_clockwise
@@ -232,13 +227,14 @@ if flag_line_joins_at_line_end
 else
     to_joint_line_unit_tangent_vector = -1*line_unit_tangent_vector;
 end
+to_joint_line_unit_ortho_vector= to_joint_line_unit_tangent_vector*[0 1; -1 0];
 
 % Calculate the offset from the circle to the line
 vector_from_line_anti_join_to_arc_center = arc_center_xy - line_anti_join_point;
 signed_distance_along_line_to_join = sum(to_joint_line_unit_tangent_vector.*vector_from_line_anti_join_to_arc_center,2);
-signed_distance_ortho_line_to_arc_center = sum(line_unit_ortho_vector.*vector_from_line_anti_join_to_arc_center,2);
+signed_distance_ortho_line_to_arc_center = sum(to_joint_line_unit_ortho_vector.*vector_from_line_anti_join_to_arc_center,2);
 crossProduct_to_find_arc_sign = cross([to_joint_line_unit_tangent_vector 0],[vector_from_line_anti_join_to_arc_center 0]);
-arc_direction = crossProduct_to_find_arc_sign(3)>0;
+arc_direction_relative_to_line_to_join = crossProduct_to_find_arc_sign(3);
 
 % If everything is done right, signed distance along the line to circle
 % is always positive
@@ -278,7 +274,7 @@ if abs(offset)<threshold
         new_line_base_point_xy       = line_anti_join_point;
         new_line_s_start             = 0;
         new_line_s_end               = signed_distance_along_line_to_join;
-        if arc_direction>=0
+        if arc_direction_relative_to_line_to_join>=0
             % Arc veers to the left relative to the line's vector
             new_arc_is_counter_clockwise = 1;
         else
@@ -292,10 +288,10 @@ if abs(offset)<threshold
         new_line_base_point_xy       = join_point_xy + point_shift_xy;
         new_line_s_start             = 0;
         new_line_s_end               = signed_distance_along_line_to_join;
-        if arc_direction>=0
-            new_arc_is_counter_clockwise = 1;
-        else
+        if arc_direction_relative_to_line_to_join>=0
             new_arc_is_counter_clockwise = 0;
+        else
+            new_arc_is_counter_clockwise = 1;
         end
     end
     revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
@@ -432,8 +428,11 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 %% fcn_geometry_plotGeometry
 function fcn_geometry_plotGeometry(plot_type_string, parameters)
+
+% Get the color vector using the name
 color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
 
+% Change the plot style depending on type
 switch lower(plot_type_string)
     case {'line','segment'}
         line_vector          = parameters(1,1:2);
@@ -487,4 +486,59 @@ plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
 
 end % Ends fcn_geometry_plotGeometry
 
+%% fcn_INTERNAL_fixOrientationAndOrdering
+function [clean_line_parameters, clean_arc_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(line_parameters, arc_parameters)
+% This function takes the parameter inputs and produces parameter sets such
+% that the line is first, it is oriented so that it ends at the junction
+% with the arc, and the arc starts at the junction
 
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = line_parameters(1,1:2);
+line_base_point_xy       = line_parameters(1,3:4);
+line_s_start             = line_parameters(1,5);
+line_s_end               = line_parameters(1,6);
+line_start_xy            = line_base_point_xy + line_unit_tangent_vector*line_s_start;
+line_end_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_center_xy                = arc_parameters(1,1:2);
+arc_radius                   = arc_parameters(1,3);
+arc_start_angle_in_radians   = arc_parameters(1,4);
+arc_end_angle_in_radians     = arc_parameters(1,5);
+arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+arc_is_counter_clockwise     = arc_parameters(1,7);
+
+% Find the change in angle of the arc
+arc_start_unit_vector        = [cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+arc_end_unit_vector          = [cos(arc_end_angle_in_radians)   sin(arc_end_angle_in_radians)  ];
+if arc_is_counter_clockwise
+    cross_product_direction = 1;
+else
+    cross_product_direction = -1;
+end
+change_in_arc_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc_start_unit_vector, arc_end_unit_vector, cross_product_direction);
+
+
+% Find line and arc's join points, e.g. where they meet. This can
+% happen at either end
+distances_to_check = sum((...
+    [line_start_xy; line_start_xy; line_end_xy; line_end_xy] - [arc_start_xy; arc_end_xy; arc_start_xy; arc_end_xy]).^2,2).^0.5;
+[~,closest_pair] = min(distances_to_check);
+if closest_pair<=2
+    flag_line_joins_at_line_end = 0;
+else
+    flag_line_joins_at_line_end = 1;
+end
+if 0==mod(closest_pair,2)
+    % arc_anti_join_point = arc_start_xy;
+    flag_arc_joins_at_arc_end = 1;
+else
+    % arc_anti_join_point = arc_end_xy;
+    flag_arc_joins_at_arc_end = 0;
+end
+
+
+
+
+end % ends fcn_INTERNAL_fixOrientationAndOrdering

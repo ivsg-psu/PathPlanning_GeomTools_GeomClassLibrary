@@ -13,8 +13,8 @@ close all;
 % Bit 3                      : arc oriented, 
 % Bit 4                      : ends aligned, 
 % Bit 5 (lowest bit)         : arc is positive
-NtotalTests = (2^5+1);
-for ith_test = 17:NtotalTests
+NtotalTests = (2^5);
+for ith_test = 1:NtotalTests
 
     numDigits = 5;
     binary_string = dec2bin(ith_test-1,numDigits);
@@ -23,38 +23,51 @@ for ith_test = 17:NtotalTests
     figure(fig_num); clf;
     title_string = sprintf('Test %.0d of %.0d, %s: ',ith_test, NtotalTests, binary_string);
 
-    line_unit_tangent_vector = [1 0];
-    line_base_point_xy       = [0 0];
-    line_s_start             = -1;
-    line_s_end               = 0;
-
-    arc_center_xy            = [0 1];
-    arc_radius               = 1;
-    arc_angles               = [270 360]*pi/180;
-    arc_vector_start         = [ 0 -1];
-    arc_vector_end           = [ 1  0];
-    arc_is_circle            = 0;
-    arc_is_counter_clockwise = 1;
-
-    true_line_unit_tangent_vector = [1 0];
-    true_start_point_xy = [-1 0];
-    true_arc_center_xy  = [0 1];
-    true_arc_is_counter_clockwise = 1;
-    true_arc_angles     = arc_angles;
-
 
     % Top bit - is the line first? 0 is yes, 1 is no
     if strcmp(binary_string(1),'0')
         title_string = cat(2,title_string,'line precedes arc,');
+
+        true_line_unit_tangent_vector = [1 0];
+        true_start_point_xy = [-1 0];
+        
+        line_unit_tangent_vector = [1 0];
+        line_base_point_xy       = [-1 0];
+        line_s_start             = 0;
+        line_s_end               = 1;
+
+        arc_center_xy            = [0 1];
+        arc_radius               = 1;
+        arc_vector_start         = [ 0 -1];
+        arc_vector_end           = [ 1  0];
+        arc_is_circle            = 0;
+        arc_is_counter_clockwise = 1;
+
+        true_arc_center_xy  = [0 1];
+        true_arc_is_counter_clockwise = 1;
+        true_arc_angles     = [270 360]*pi/180;
+
         flag_arc_is_first = 0;
     else
         title_string = cat(2,title_string,'arc precedes line,');
+
         true_line_unit_tangent_vector = [1 0];
         true_start_point_xy           = [0 0];
+
+        line_unit_tangent_vector = [1 0];
+        line_base_point_xy       = [0 0];
         line_s_start             = 0;
         line_s_end               = 1;
+
+        arc_center_xy            = [0 1];
+        arc_radius               = 1;
         arc_vector_start         = [-1  0];
         arc_vector_end           = [ 0 -1];  
+        arc_is_circle            = 0;
+        arc_is_counter_clockwise = 1;
+
+        true_arc_center_xy  = [0 1];
+        true_arc_is_counter_clockwise = 1;
         true_arc_angles          = [180 270]*pi/180;
         flag_arc_is_first = 1;
     end
@@ -64,10 +77,11 @@ for ith_test = 17:NtotalTests
         title_string = cat(2,title_string,'line oriented,');
     else
         title_string = cat(2,title_string,'line misoriented,');
+        % Move the start point of the line to the end
+        line_base_point_xy = line_base_point_xy + line_s_end*line_unit_tangent_vector;
+
+        % Change the line's orientation
         line_unit_tangent_vector = -line_unit_tangent_vector;
-        temp                     = line_s_start;
-        line_s_start             = line_s_end;        
-        line_s_end               = -1*temp;
     end
 
     % Next from top bit - is the arc oriented correctly? 0 is yes, 1 is no
@@ -132,6 +146,7 @@ for ith_test = 17:NtotalTests
 
     [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLineToArc(line_parameters, arc_parameters, flag_arc_is_first, (tolerance),(fig_num));
     sgtitle(title_string);
+    pause(0.01);
 
     % Check size of results
     assert(isequal(size(revised_line_parameters),[1 6]));
