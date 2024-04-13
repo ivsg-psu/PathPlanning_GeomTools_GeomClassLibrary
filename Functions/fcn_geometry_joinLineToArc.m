@@ -65,17 +65,17 @@ function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLi
 % number.
 flag_max_speed = 0;
 if (nargin==5 && isequal(varargin{end},-1))
-    flag_do_debug = 0; %#ok<NASGU> % Flag to plot the results for debugging
+    flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
-    flag_do_debug = 0; %#ok<NASGU> % Flag to plot the results for debugging
+    flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); %#ok<NASGU>
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); 
         flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
@@ -203,16 +203,6 @@ else
 end
 change_in_arc_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc_start_unit_vector, arc_end_unit_vector, cross_product_direction);
 
-% 
-% dotProduct_to_find_magnitude = sum(arc_start_unit_vector.*arc_end_unit_vector,2);
-% crossProduct_to_find_sign    = cross([arc_start_unit_vector 0],[arc_end_unit_vector 0]);
-% arc_angle                    = acos(dotProduct_to_find_magnitude)*sign(crossProduct_to_find_sign(3));
-% if (arc_angle<0) && (1==arc_is_counter_clockwise)
-%     arc_angle = 2*pi - arc_angle;
-% elseif (arc_angle>0) && (0==arc_is_counter_clockwise)
-%     arc_angle = 2*pi - arc_angle;
-% end
-
 
 % Find line and arc's join points, e.g. where they meet. This can
 % happen at either end
@@ -226,13 +216,13 @@ else
     line_anti_join_point = line_start_xy;
     flag_line_joins_at_line_end = 1;
 end
-% if 0==mod(closest_pair,2)
-%     arc_anti_join_point = arc_start_xy;
-%     flag_arc_joins_at_arc_end = 1;
-% else
-%     arc_anti_join_point = arc_end_xy;
-%     flag_arc_joins_at_arc_end = 0;
-% end
+if 0==mod(closest_pair,2)
+    % arc_anti_join_point = arc_start_xy;
+    flag_arc_joins_at_arc_end = 1;
+else
+    % arc_anti_join_point = arc_end_xy;
+    flag_arc_joins_at_arc_end = 0;
+end
 
 % Fix the vector direction depending on where line is joining, either
 % at its start or end. The goal is to make sure the vector always
@@ -248,10 +238,13 @@ vector_from_line_anti_join_to_arc_center = arc_center_xy - line_anti_join_point;
 signed_distance_along_line_to_join = sum(to_joint_line_unit_tangent_vector.*vector_from_line_anti_join_to_arc_center,2);
 signed_distance_ortho_line_to_arc_center = sum(line_unit_ortho_vector.*vector_from_line_anti_join_to_arc_center,2);
 crossProduct_to_find_arc_sign = cross([to_joint_line_unit_tangent_vector 0],[vector_from_line_anti_join_to_arc_center 0]);
+arc_direction = crossProduct_to_find_arc_sign(3)>0;
 
 % If everything is done right, signed distance along the line to circle
 % is always positive
-assert(signed_distance_along_line_to_join>=0);
+if signed_distance_along_line_to_join<0
+    error('Stop here');
+end
 
 % Depending on which side of the line the arc is located, either need
 % to subtract or add on the circle radius. Note: the result is designed
@@ -285,7 +278,7 @@ if abs(offset)<threshold
         new_line_base_point_xy       = line_anti_join_point;
         new_line_s_start             = 0;
         new_line_s_end               = signed_distance_along_line_to_join;
-        if crossProduct_to_find_arc_sign>=0
+        if arc_direction>=0
             % Arc veers to the left relative to the line's vector
             new_arc_is_counter_clockwise = 1;
         else
@@ -298,11 +291,11 @@ if abs(offset)<threshold
         new_line_unit_tangent_vector = -1*to_joint_line_unit_tangent_vector;
         new_line_base_point_xy       = join_point_xy + point_shift_xy;
         new_line_s_start             = 0;
-        new_line_s_end               = -1*signed_distance_along_line_to_join;
-        if crossProduct_to_find_arc_sign>=0
-            new_arc_is_counter_clockwise = 0;
-        else
+        new_line_s_end               = signed_distance_along_line_to_join;
+        if arc_direction>=0
             new_arc_is_counter_clockwise = 1;
+        else
+            new_arc_is_counter_clockwise = 0;
         end
     end
     revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
@@ -322,12 +315,20 @@ if abs(offset)<threshold
         % The line is first, so need to shift the arc
         new_arc_center_xy = arc_center_xy - point_shift_xy;
         new_arc_start_angle_in_radians = arc_angle_at_join;
-        new_arc_end_angle_in_radians   = arc_angle_at_join + change_in_arc_angle;
+        if flag_arc_joins_at_arc_end
+            new_arc_end_angle_in_radians   = arc_angle_at_join - change_in_arc_angle;
+        else
+            new_arc_end_angle_in_radians   = arc_angle_at_join + change_in_arc_angle;
+        end
     else
         % The line is last, do not shift the arc
         new_arc_center_xy = arc_center_xy;
-        new_arc_start_angle_in_radians = arc_angle_at_join - change_in_arc_angle;
         new_arc_end_angle_in_radians   = arc_angle_at_join;
+        if flag_arc_joins_at_arc_end
+            new_arc_start_angle_in_radians = arc_angle_at_join - change_in_arc_angle;
+        else
+            new_arc_start_angle_in_radians = arc_angle_at_join + change_in_arc_angle;
+        end
     end
 
     revised_arc_parameters(1,1:2) = new_arc_center_xy;
