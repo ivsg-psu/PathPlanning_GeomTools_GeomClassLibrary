@@ -10,51 +10,51 @@
 close all;
 
 
-%% Filling test data for arcs
-arc_seed_points = [2 3; 4 5; 6 3];
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-
-M = 10; % Number of points per meter
-sigma = 0.02;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-fig_num = -1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Fill test data - 2 arcs
-twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
-corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
-
-start_vector = arc_seed_points(1,:)-arc_true_circleCenter;
-arc_true_start_angle_in_radians = atan2(start_vector(2),start_vector(1));
-end_vector = arc_seed_points(end,:)-arc_true_circleCenter;
-arc_true_end_angle_in_radians = atan2(end_vector(2),end_vector(1));
-
-% Fill circle data
-% circle
-circle_center = [4 3];
-circle_radius = 2;
-M = 3; % 5 points per meter
-sigma = 0.02;
-
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
-circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
+% %% Filling test data for arcs
+% arc_seed_points = [2 3; 4 5; 6 3];
+% [arc_true_circleCenter, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+% 
+% M = 10; % Number of points per meter
+% sigma = 0.02;
+% 
+% onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+% 
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% fig_num = -1;
+% 
+% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% 
+% % Fill test data - 2 arcs
+% twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+% corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+% 
+% start_vector = arc_seed_points(1,:)-arc_true_circleCenter;
+% arc_true_start_angle_in_radians = atan2(start_vector(2),start_vector(1));
+% end_vector = arc_seed_points(end,:)-arc_true_circleCenter;
+% arc_true_end_angle_in_radians = atan2(end_vector(2),end_vector(1));
+% 
+% % Fill circle data
+% % circle
+% circle_center = [4 3];
+% circle_radius = 2;
+% M = 3; % 5 points per meter
+% sigma = 0.02;
+% 
+% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+% circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
+% 
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% 
 
 
 %% Fit the onarc_test_points
@@ -62,7 +62,7 @@ fig_num = 234;
 figure(fig_num); clf;
 
 arc_seed_points = [2 3; 4 5; 6 3];
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+[~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -183,7 +183,7 @@ best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
     fcn_geometry_fitArcRegressionFromHoughFit(domains_onearc_test_points{1}, best_fit_domain_box_projection_distance, fig_num);
 
-true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00 ];
+true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00, 1.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
 fprintf(1,'                        [centerX          centerY         radius         startAngle      endAngle        isCircle] (meters and degrees)\n');
 params = true_params;
@@ -277,7 +277,7 @@ best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
 
-true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00 ];
+true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00, 1.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
 fprintf(1,'                        [centerX          centerY         radius         startAngle      endAngle        isCircle] (meters and degrees)\n');
 params = true_params;
