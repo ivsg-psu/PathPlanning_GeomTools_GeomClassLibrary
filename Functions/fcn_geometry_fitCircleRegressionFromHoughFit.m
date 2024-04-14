@@ -200,7 +200,7 @@ if flag_do_plots
     current_color = get(h_plot,'Color');
 
     % Plot the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num)
+    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num);
     plot(circleCenter(1,1),circleCenter(1,2),'b+','MarkerSize',30);
 
     % Plot the domain

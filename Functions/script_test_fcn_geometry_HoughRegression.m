@@ -295,7 +295,7 @@ threshold_max_points = 20;
 
 % Seed test data for arcs
 arc_seed_points = [2 3; 4 5; 6 3];
-[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+[~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
 
 M = 10; % Points per meter
 sigma = 0.02;
@@ -333,7 +333,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Regression arc',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(regression_domain.best_fit_parameters),[1 7]));
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
