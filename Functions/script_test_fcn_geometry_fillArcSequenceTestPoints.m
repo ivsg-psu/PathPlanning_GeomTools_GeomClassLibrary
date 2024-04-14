@@ -3,6 +3,9 @@
 % Revision history:
 % 2024_03_31 - S. Brennan
 % -- wrote the code
+% Revision history:
+% 2024_04_14 - S. Brennan
+% -- added assertions
 
 close all;
 
@@ -17,8 +20,19 @@ arc_pattern = [1/20, 30; -1/5 9; 0 20; 1/10 50; 0 40; -1/25 39; 0 13; -2/38 38/2
 M = 10;
 sigma = 0.02;
 
-[test_points, circleCenters, startPointsOfArcs] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, fig_num);
+[test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, fig_num);
 
+% Check sizes
+assert(length(test_points(:,1))>1);
+assert(length(test_points(1,:))==2);
+assert(length(circleCenters(:,1))==length(arc_pattern(:,1)));
+assert(length(circleCenters(1,:))==2);
+assert(length(arcStartIndicies(:,1))==length(arc_pattern(:,1)));
+assert(length(arcStartIndicies(1,:))==1);
+assert(length(namedCurveTypes)==length(arc_pattern(:,1)));
+assert(iscell(namedCurveTypes));
+assert(length(trueParameters)==length(arc_pattern(:,1)));
+assert(iscell(trueParameters));
 
 %% Speed test
 

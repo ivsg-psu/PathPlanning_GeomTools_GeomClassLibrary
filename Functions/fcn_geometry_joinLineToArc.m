@@ -80,7 +80,7 @@ else
     end
 end
 
-% flag_do_debug = 1;
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -196,20 +196,20 @@ end
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 line_unit_tangent_vector = clean_line_parameters(1,1:2);
 line_base_point_xy       = clean_line_parameters(1,3:4);
-line_s_start             = clean_line_parameters(1,5);
-line_s_end               = clean_line_parameters(1,6);
-line_start_xy            = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-line_end_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+% line_s_start             = clean_line_parameters(1,5);
+% line_s_end               = clean_line_parameters(1,6);
+% line_start_xy            = line_base_point_xy + line_unit_tangent_vector*line_s_start;
+% line_end_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_end;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy                = clean_arc_parameters(1,1:2);
 arc_radius                   = clean_arc_parameters(1,3);
 arc_start_angle_in_radians   = clean_arc_parameters(1,4);
 arc_end_angle_in_radians     = clean_arc_parameters(1,5);
-arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
-arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+% arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+% arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
 arc_is_circle                = clean_arc_parameters(1,6);
-arc_is_counter_clockwise     = clean_arc_parameters(1,7);
+% arc_is_counter_clockwise     = clean_arc_parameters(1,7);
 change_in_arc_angle = arc_end_angle_in_radians-arc_start_angle_in_radians; % Find the change in angle of the arc
 
 
@@ -314,9 +314,12 @@ if abs(offset)<threshold
     revised_arc_parameters(1,6)   = arc_is_circle;
     revised_arc_parameters(1,7)   = new_arc_is_counter_clockwise;
 
+    % Fix the arc angles to be between 0 and 2*pi
+    revised_arc_parameters(1,4:5) = mod(revised_arc_parameters(1,4:5),2*pi);
+
 else
     warning('on','backtrace');
-    warning('An error will now be thrown due to detection of a needed spiral.');
+    warning('An error will now be thrown due to detection of a needed spiral. Detected offset was: %.3f but threshold is %.3f',offset,threshold);
     error('The use of spirals to join lines and arcs is not coded yet')
 
 end
@@ -406,65 +409,6 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-%% fcn_geometry_plotGeometry
-function fcn_geometry_plotGeometry(plot_type_string, parameters)
-
-% Get the color vector using the name
-color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
-
-% Change the plot style depending on type
-switch lower(plot_type_string)
-    case {'line','segment'}
-        line_vector          = parameters(1,1:2);
-        base_point_xy        = parameters(1,3:4);
-        station_distance_min = parameters(1,5);
-        station_distance_max = parameters(1,6);
-        
-        stations = [station_distance_min; station_distance_max];
-        XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
-        plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
-
-    case 'arc'
-        circleCenter         = parameters(1,1:2);
-        circleRadius         = parameters(1,3);
-        arcAngles            = parameters(1,4:5);
-        flag_arc_is_counterclockwise = parameters(1,7);
-
-        start_angle_in_radians = arcAngles(1);
-        end_angle_in_radians   = arcAngles(2);
-        degree_step = [];
-
-        XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
-
-
-        plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
-
-    otherwise
-        warning('on','backtrace');
-        warning('An error will now be thrown because a geometry string was not recognized.');
-        error('Unknown plotting type: %s', plot_type_string);
-end
-
-% Plot green headers - calculated from vector direction
-vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
-start_length = sum(vector_direction_start.^2,2).^0.5;
-unit_vector_direction_start = fcn_geometry_calcUnitVector(vector_direction_start);
-arrow_length = max(min(10,start_length*0.2),0.2);
-offset_start = XY_data(1,1:2) + arrow_length*unit_vector_direction_start;
-
-start_line = [XY_data(1,1:2) 0; offset_start, 0];
-plot(start_line(:,1),start_line(:,2), '-','Color',[0 1 0],'Linewidth',5);
-
-% Plot red tailers - calculated from vector direction
-vector_direction_end = (XY_data(end,1:2) - XY_data(end-1,1:2));
-end_length = sum(vector_direction_end.^2,2).^0.5;
-unit_vector_direction_end = fcn_geometry_calcUnitVector(vector_direction_end);
-arrow_length = max(min(10,end_length*0.2),0.2);
-offset_end = XY_data(end,1:2) - arrow_length*unit_vector_direction_end;
-end_line = [offset_end, 0; XY_data(end,1:2) 0];
-plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
-
-end % Ends fcn_geometry_plotGeometry
 
 %% fcn_INTERNAL_fixOrientationAndOrdering
 function [clean_line_parameters, clean_arc_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(line_parameters, arc_parameters)
@@ -481,6 +425,18 @@ line_s_start             = line_parameters(1,5);
 line_s_end               = line_parameters(1,6);
 line_start_xy            = line_base_point_xy + line_unit_tangent_vector*line_s_start;
 line_end_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+
+% Make sure the line segment is well-formed, e.g. the station at the end is
+% larger than the station at the start. If not, need to correct
+if line_s_end<line_s_start
+    % Flip the order
+    line_s_start             = line_parameters(1,6);
+    line_s_end               = line_parameters(1,5);
+
+    % Flip the vector
+    line_unit_tangent_vector = -line_unit_tangent_vector;
+
+end
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy                = arc_parameters(1,1:2);
