@@ -13,7 +13,7 @@ fig_num = 1;
 path = [0 0; 1 1; 0 2];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num) %#ok<*NOPTS,*NASGU>
+    path, fig_num); %#ok<*NOPTS,*NASGU>
 
 assert(isequal(cross_products,2));
 
@@ -22,7 +22,9 @@ fig_num = 2;
 path = [0 0; 1 1; 2 0];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num) %#ok<*NASGU>
+    path, fig_num); %#ok<*NASGU>
+
+assert(isequal(cross_products,-2));
 
 %% BASIC example -
 % find all the cross-products for many bends
@@ -30,7 +32,13 @@ fig_num = 3;
 path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num)
+    path, fig_num);
+
+assert(isequal(cross_products,[2;
+    -4;
+    -8;
+     4;
+    10]));
 
 %% Test of fast implementation mode 
 

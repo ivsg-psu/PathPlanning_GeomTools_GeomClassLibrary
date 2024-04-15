@@ -49,7 +49,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 segment_length = [];
 
-fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, (fig_num));
+XY_data = fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, (fig_num));
 
 assert(ishandle(2));
 assert(length(XY_data(1,:))==2)

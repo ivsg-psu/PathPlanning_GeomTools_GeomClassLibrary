@@ -50,8 +50,11 @@ tolerance = [];
 
 [endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(domains, tolerance, fig_num);
 
-disp(endPointsCell)
-disp(sortedHoughSegmentEndPoints)
+if 1==0
+    disp(endPointsCell)
+    disp(sortedHoughSegmentEndPoints)
+   
+end
 
 % The plots would serve the purpose of assertions
 
