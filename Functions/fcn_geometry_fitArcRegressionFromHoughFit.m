@@ -34,6 +34,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % DEPENDENCIES:
 %
 %      fcn_geometry_fitCircleRegressionFromHoughFit
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %      
@@ -52,6 +53,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % -- added best_fit_domain_box_projection_distance as an input option
 % 2024_04_14 - S Brennan
 % -- fixed output angles to be between 0 and 2*pi
+% -- added fcn_geometry_fillColorFromNumberOrName for plotting
 
 
 %% Debugging and Input checks
@@ -275,22 +277,12 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end    
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     hold on;
     grid on;
     axis equal;
 
     % Plot the fits    
-    ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); 
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
       
     
     if flag_do_debug

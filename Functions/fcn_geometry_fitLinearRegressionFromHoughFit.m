@@ -47,6 +47,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 %      fcn_geometry_fitVectorToNPoints
 %      fcn_geometry_fitSlopeInterceptNPoints 
 %      fcn_geometry_domainBoxByType
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %      
@@ -75,6 +76,8 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 % -- fixed plotting of results to show input points
 % -- now uses fcn_geometry_domainBoxByType to calculate bounding boxes
 % -- fixed bounding box bug when standard deviations are very close to 0
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName for plotting
 
 
 
@@ -349,15 +352,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     hold on;
     grid on;
     axis equal;
@@ -367,7 +361,7 @@ if flag_do_plots
 
     % Plot the fits    
     ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); %#ok<NASGU>
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain); %#ok<NASGU>
       
     % Plot the base point and vector
     plot(base_point_of_domain(1,1),base_point_of_domain(1,2),'g.','MarkerSize',30);

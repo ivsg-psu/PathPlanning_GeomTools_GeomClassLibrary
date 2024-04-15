@@ -13,17 +13,6 @@ currentScan = ptCloud_pts_layers_separated_cell{1};
 RingNames = fieldnames(currentScan);
 N_rings = length(RingNames);
 
-% For plotting
-
-% Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-
-N_colors = length(color_ordering(:,1));
-
 %% Look at data
 flag_do_plots = 0;
 good_limits = [0.5    2.5    1.0    3   -1    1];
@@ -264,14 +253,6 @@ N_rings = length(RingNames);
 good_limits = [0.5    2.5    1.0    3   -1    1];
 
 
-% Get the color ordering
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-N_colors = length(color_ordering(:,1));
-
 filt_circle_center = results_to_plot(1).mean_circle_center;
 while(1)
     for time_iteration = 1:95 % length(ptCloud_pts_raw_rings_cell_save)
@@ -283,14 +264,14 @@ while(1)
         rings_in_agreement = results_to_plot(time_iteration).rings_in_agreement;
         good_Regression_domains_to_keep = results_to_plot(time_iteration).good_Regression_domains_to_keep;
 
-        fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering);
+        fcn_INTERNAL_plotResults(time_iteration, filt_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits);
         pause(0.01);
 
     end % Ends loop through time
 end
 
 %% Find and plot all the points in each ring, in 3D
-function fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits, color_ordering)
+function fcn_INTERNAL_plotResults(time_iteration, mean_circle_center, RingNames, currentScanRaw, rings_in_agreement, good_Regression_domains_to_keep, good_limits)
 figure(47464);
 clf;
 hold on;
@@ -301,8 +282,6 @@ title(sprintf('Time: %.0d',time_iteration));
 
 plot3(mean_circle_center(:,1), mean_circle_center(:,2), mean_circle_center(:,3),'r.','MarkerSize',50, 'Linewidth',3);
 
-
-N_colors = length(color_ordering(:,1));
 
 % Start by plotting the entire scan
 N_rings = length(RingNames);
@@ -352,7 +331,7 @@ if 1==0
 
 
         % Plot results
-        current_color = color_ordering(mod(ith_ring,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_ring);
         plot3(all_fitted_RingData{ith_ring}(:,1), all_fitted_RingData{ith_ring}(:,2), all_fitted_RingData{ith_ring}(:,3),'.','MarkerSize',30,'Color',current_color);
     end
 end

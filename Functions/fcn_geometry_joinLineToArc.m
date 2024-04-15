@@ -80,7 +80,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -204,13 +204,13 @@ line_base_point_xy       = clean_line_parameters(1,3:4);
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy                = clean_arc_parameters(1,1:2);
 arc_radius                   = clean_arc_parameters(1,3);
-arc_start_angle_in_radians   = clean_arc_parameters(1,4);
+% arc_start_angle_in_radians   = clean_arc_parameters(1,4);
 arc_end_angle_in_radians     = clean_arc_parameters(1,5);
 % arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
-% arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
 arc_is_circle                = clean_arc_parameters(1,6);
 % arc_is_counter_clockwise     = clean_arc_parameters(1,7);
-change_in_arc_angle = arc_end_angle_in_radians-arc_start_angle_in_radians; % Find the change in angle of the arc
+% change_in_arc_angle = arc_end_angle_in_radians-arc_start_angle_in_radians; % Find the change in angle of the arc
 
 
 % With the cleaned parameters, the line vector always
@@ -295,16 +295,20 @@ if abs(offset)<threshold
     % The angle the arc starts at the join point
     arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
 
+    % The angle the arc ends is where the arc stops
+    vector_from_arc_center_to_end = arc_end_xy - arc_center_xy;
+    arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
+
     if 0==flag_arc_is_first
         % The line is first, so need to shift the arc
         new_arc_center_xy = arc_center_xy - point_shift_xy;
         new_arc_start_angle_in_radians = arc_angle_at_join;
-        new_arc_end_angle_in_radians   = arc_angle_at_join + change_in_arc_angle;        
+        new_arc_end_angle_in_radians   = arc_angle_at_end;        
     else
         % The line is last, do not shift the arc
         new_arc_center_xy = arc_center_xy;
         new_arc_end_angle_in_radians   = arc_angle_at_join;
-        new_arc_start_angle_in_radians = arc_angle_at_join + change_in_arc_angle;        
+        new_arc_start_angle_in_radians = arc_angle_at_end;        
     end
 
     revised_arc_parameters(1,1:2) = new_arc_center_xy;

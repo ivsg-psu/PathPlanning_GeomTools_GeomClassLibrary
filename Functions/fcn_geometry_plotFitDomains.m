@@ -21,7 +21,7 @@ function fcn_geometry_plotFitDomains(domains, varargin)
 %      (none)
 %
 % DEPENDENCIES:
-%      (none)
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %
@@ -34,8 +34,10 @@ function fcn_geometry_plotFitDomains(domains, varargin)
 % Revision history:
 % 2024_01_12 - S. Brennan
 % -- wrote the code
-% 2024_01_16
+% 2024_01_16 - S. Brennan
 % -- fixed bug with line/segment plotting
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName for plotting
 
 
 %% Debugging and Input checks
@@ -141,15 +143,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     hold on;
     grid on;
     axis equal;
@@ -157,7 +150,7 @@ if flag_do_plots
     %% Plot all the points and domains
     for ith_domain = 1:length(domains)
         % Get current color
-        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
         % Convert domain to one structure, to make things easy
         if iscell(domains)
@@ -204,7 +197,7 @@ if flag_do_plots
     % Plot the fits
     for ith_domain = 1:length(domains)
         % Get current color
-        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
         % Convert domain to one structure, to make things easy
         if iscell(domains)

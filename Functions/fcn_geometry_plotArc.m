@@ -247,8 +247,6 @@ for ith_arc = 1:Narcs
     this_end_angle   = end_angle_in_radians(ith_arc,1);
     %     angles = (this_start_angle:degree_step*pi/180:this_end_angle)';
 
-    degree_step = min(1,(this_end_angle-this_start_angle)*1/10*180/pi);
-
     is_counterClockwise = 1;
     if is_counterClockwise~=1
         degree_step = -1*degree_step;

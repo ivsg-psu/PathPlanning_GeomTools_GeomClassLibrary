@@ -284,14 +284,6 @@ N_rings = length(RingNames);
 good_axis_limits = [0.5    2.5    1.0    3   -1    1];
 
 
-% Get the color ordering
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-N_colors = length(color_ordering(:,1));
-
 N_scans = length(ptCloud_pts_layers_separated_cell);
 
 iterationSpheres = zeros(N_scans,1);
@@ -376,15 +368,6 @@ title(sprintf('Time: %.0d',time_iteration));
 
 plot3(mean_circle_center(:,1), mean_circle_center(:,2), mean_circle_center(:,3),'r.','MarkerSize',50, 'Linewidth',3);
 
-% Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
-end
-
-N_colors = length(color_ordering(:,1));
-
 % Start by plotting the entire scan
 N_rings = length(RingNames);
 for ith_ring = 1:N_rings
@@ -432,7 +415,7 @@ if 1==0
 
 
         % Plot results
-        current_color = color_ordering(mod(ith_ring,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_ring);
         plot3(all_fitted_RingData{ith_ring}(:,1), all_fitted_RingData{ith_ring}(:,2), all_fitted_RingData{ith_ring}(:,3),'.','MarkerSize',30,'Color',current_color);
     end
 end

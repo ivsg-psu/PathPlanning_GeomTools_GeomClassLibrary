@@ -72,8 +72,10 @@ function [x_spiral,y_spiral] = fcn_geometry_fitSpiralFromLineToArc(s, l0, h0, x0
 % Revision history:
 % 2022_03_20 - C. Beal
 % -- wrote the code
-% 2022_03_22 - S. Brennan
+% 2024_03_22 - S. Brennan
 % -- wrote the code
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName to plotting
 
 %% Debugging and Input checks
 
@@ -187,14 +189,6 @@ if flag_do_plots
     axis equal
 
 
-    % Grab colors to use
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-    N_colors = length(color_ordering(:,1)); 
-
     % Set up labels and title
     xlabel('X (m)')
     ylabel('Y (m)')
@@ -202,7 +196,7 @@ if flag_do_plots
     % Plot the results as dots
     for ith_column = 1:length(x_spiral(1,:))
         % Get current color
-        current_color = color_ordering(mod(ith_column,N_colors)+1,:); %#ok<NASGU>
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_column);
 
         % Plot results as dots
         plot(x_spiral(:,ith_column),y_spiral(:,ith_column),'.-.','MarkerSize',30); % ,'Color',current_color);

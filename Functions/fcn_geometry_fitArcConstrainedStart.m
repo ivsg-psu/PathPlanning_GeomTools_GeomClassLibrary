@@ -40,7 +40,7 @@ function [radius, arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fit
 %
 % DEPENDENCIES:
 %
-%      (none)
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %      
@@ -51,8 +51,10 @@ function [radius, arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fit
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2024_03_30 - S Brennan
+% 2024_03_30 - S. Brennan
 % -- wrote the code
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName for plotting
 
 %% Debugging and Input checks
 
@@ -208,22 +210,12 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end    
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     hold on;
     grid on;
     axis equal;
 
     % Plot the fits    
-    ith_domain = 1;
-    current_color = color_ordering(mod(ith_domain,N_colors)+1,:); 
+    current_color = fcn_geometry_fillColorFromNumberOrName(1);
       
     
     % Plot the associated_points_in_domain

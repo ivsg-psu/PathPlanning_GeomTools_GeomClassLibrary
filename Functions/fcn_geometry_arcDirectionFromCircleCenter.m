@@ -154,7 +154,7 @@ is_counterClockwise = sum(vote_clockwise)>(N_points/2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    %Prep the figure
+    % Prep the figure
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
@@ -165,14 +165,6 @@ if flag_do_plots
     grid on;
     grid minor;
     axis equal;
-
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1)); %#ok<NASGU>
 
     % Plot the inputs
     plot(points(:,1),points(:,2),'k.','MarkerSize',30);  % Plot points

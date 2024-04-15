@@ -83,6 +83,7 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 %      fcn_geometry_circleCenterFrom3Points
 %      fcn_geometry_plotCircle 
 %      fcn_geometry_findArcAgreementIndicies
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %      
@@ -120,6 +121,8 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % 2024_01_25 - S. Brennan
 % -- added flag_find_only_best_agreement input
 % -- added break out of searching if all points are fit
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName for plotting
 
 %% Debugging and Input checks
 
@@ -524,15 +527,6 @@ if flag_do_plots
     % Produce the sorted list, to create the Hough plot
     [~,sorted_indicies] = sort(agreements,'ascend');
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     %% Plot the results in point space
 
     hold on;
@@ -621,7 +615,7 @@ if flag_do_plots
     % Plot the best fits
     for ith_domain = 1:(length(domains)-1)
 
-        current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
         circleCenter = best_fit_circleCenters{ith_domain};
         circleRadius = best_fit_circleRadii{ith_domain};

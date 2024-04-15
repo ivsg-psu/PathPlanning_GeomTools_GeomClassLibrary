@@ -381,18 +381,9 @@ if flag_do_plots
         fitted_parameters = [phis(index_to_plot), rhos(index_to_plot)];
         plot(fitted_parameters(1,1),fitted_parameters(1,2),'r.','MarkerSize',30);
     else
-        % Get the color ordering?
-        try
-            color_ordering = orderedcolors('gem12');
-        catch
-            color_ordering = colororder;
-        end
-
-        N_colors = length(color_ordering(:,1));
-
         for ith_agreement = 1:length(domains)-1
             % Get current color
-            current_color = color_ordering(mod(ith_agreement,N_colors)+1,:);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_agreement);
 
             % Get points to plot
             index_to_plot = max_agreement_indicies{ith_agreement};

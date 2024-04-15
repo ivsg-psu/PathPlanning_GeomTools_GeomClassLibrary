@@ -1,9 +1,9 @@
-function fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
+function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
 %% fcn_geometry_plotGeometry
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-% fcn_geometry_plotGeometry(plot_type_string, parameters, (fig_num))
+%      XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, (segment_length), (fig_num))
 %
 % INPUTS:
 %
@@ -16,6 +16,9 @@ function fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
 %
 %      (OPTIONAL INPUTS)
 %
+%      segment_length: the smallest step to use for plotting, representing
+%      the length (approximately) between points. Default is 0.1 meters.
+% 
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
@@ -23,7 +26,8 @@ function fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
 %
 % OUTPUTS:
 %
-%      (none)
+%      XY_data: the data produced during plotting calculations. Note: this
+%      data is returned even if fig_num is empty or set to -1.
 %
 % DEPENDENCIES:
 %      
@@ -40,6 +44,10 @@ function fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
 % Revision history:
 % 2024_04_14 - S. Brennan
 % -- wrote the code
+% 2024_04_15 - S. Brennan
+% -- added XY_data output
+% -- added segment_length input
+
 
 %% Debugging and Input checks
 
@@ -47,7 +55,7 @@ function fcn_geometry_plotGeometry(plot_type_string, parameters, varargin)
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -90,7 +98,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,3);
+        narginchk(2,4);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -106,11 +114,20 @@ if 0==flag_max_speed
     end
 end
 
+% Does user want to specify the segment_length?
+segment_length = 0.1;
+if 3 <= nargin
+    temp = varargin{1};
+    if ~isempty(temp)
+        segment_length = temp;
+    end
+end
+
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if 0==flag_max_speed
     flag_do_plots = 1;
-    if 3<= nargin
+    if 4<= nargin
         temp = varargin{end};
         if ~isempty(temp)
             fig_num = temp;
@@ -131,7 +148,44 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Nothing in main, all is in plotting
+% Calculate the XY_data depending on type
+switch lower(plot_type_string)
+    case {'line','segment','vector regression segment fit'}
+        line_vector          = parameters(1,1:2);
+        base_point_xy        = parameters(1,3:4);
+        station_distance_min = parameters(1,5);
+        station_distance_max = parameters(1,6);
+
+        if station_distance_max>station_distance_min
+            stations = (station_distance_min:segment_length:station_distance_max)';
+        else
+            stations = (station_distance_min:(-1*segment_length):station_distance_max)';
+        end
+        if stations(end)~=station_distance_max
+            stations = [stations; station_distance_max];
+        end
+
+        XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
+
+
+    case {'arc','regression arc'}
+        circleCenter         = parameters(1,1:2);
+        circleRadius         = parameters(1,3);
+        arcAngles            = parameters(1,4:5);
+        flag_arc_is_counterclockwise = parameters(1,7);
+
+        start_angle_in_radians = arcAngles(1);
+        end_angle_in_radians   = arcAngles(2);
+        degree_step = (segment_length/circleRadius)*180/pi;
+
+        XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
+
+    otherwise
+        warning('on','backtrace');
+        warning('An error will now be thrown because a geometry string was not recognized.');
+        error('Unknown plotting type: %s', plot_type_string);
+end
+
 
 
 %% Plot the results (for debugging)?
@@ -161,43 +215,13 @@ if flag_do_plots
     % Get the color vector using the name
     color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
 
-    % Change the plot style depending on type
-    switch lower(plot_type_string)
-        case {'line','segment','vector regression segment fit'}
-            line_vector          = parameters(1,1:2);
-            base_point_xy        = parameters(1,3:4);
-            station_distance_min = parameters(1,5);
-            station_distance_max = parameters(1,6);
+    % Plot the XY data
+    plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
 
-            stations = [station_distance_min; station_distance_max];
-            XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
-            plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
-
-        case {'arc','regression arc'}
-            circleCenter         = parameters(1,1:2);
-            circleRadius         = parameters(1,3);
-            arcAngles            = parameters(1,4:5);
-            flag_arc_is_counterclockwise = parameters(1,7);
-
-            start_angle_in_radians = arcAngles(1);
-            end_angle_in_radians   = arcAngles(2);
-            degree_step = [];
-
-            XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
-
-
-            plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
-
-        otherwise
-            warning('on','backtrace');
-            warning('An error will now be thrown because a geometry string was not recognized.');
-            error('Unknown plotting type: %s', plot_type_string);
-    end
 
     % Plot green headers - calculated from vector direction
-
-    maximum_arrow_length = 10;
-    minimum_arrow_length = 0.2;
+    maximum_arrow_length = 2*segment_length;
+    minimum_arrow_length = 1*segment_length;
 
     vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
     start_length = sum(vector_direction_start.^2,2).^0.5;

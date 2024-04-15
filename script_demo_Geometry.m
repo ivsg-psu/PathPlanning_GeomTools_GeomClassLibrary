@@ -75,6 +75,7 @@
 % -- need methods to compare similar geometries to find the maximum error
 % between them (for example, an arc versus an arc or a line versus an arc,
 % or a line versus a line).
+% -- pull out functions from script_demo_VelodyneLIDARFitting
 %
 % 2024_04_11 - S. Brennan
 % -- Need to speed up testing scripts

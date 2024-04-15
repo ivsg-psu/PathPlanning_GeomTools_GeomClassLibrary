@@ -40,16 +40,16 @@ function [gridIndicies, grid_AABBs, gridCenters] = fcn_geometry_separatePointsIn
 %
 % DEPENDENCIES:
 %
-%      (none)
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %
 %       See the script:
-%       scripts_test_fcn_geometry_separatePointsIntoGrids.m for a full
+%       script_test_fcn_geometry_separatePointsIntoGrids.m for a full
 %       test suite.
 %
-% This function was written on 2024_01_22 by V. Wagh
-% Questions or comments? vbw5054@psu.ed
+% This function was written on 2024_01_22 by V. Wagh, updated by S. Brennan
+% Questions or comments? vbw5054@psu.edu or sbrennan@psu.edu
 
 
 % Revision history:
@@ -66,6 +66,8 @@ function [gridIndicies, grid_AABBs, gridCenters] = fcn_geometry_separatePointsIn
 % -- added plotting for all cases
 % -- added support for 1D
 % -- fixed name on script and function
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -258,17 +260,6 @@ if flag_do_plots
     xlabel('X [m]')
     ylabel('Y [m]')
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
-
-
     % Plot the grid with the points
     if N_dims==1 % 1D points
 
@@ -279,7 +270,7 @@ if flag_do_plots
         % domain
         for ith_domain = 1:totalDomains
             % Get current color
-            current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
             % Plot current AABB
             current_AABB = grid_AABBs(ith_domain,:);
@@ -312,7 +303,7 @@ if flag_do_plots
         % domain
         for ith_domain = 1:totalDomains
             % Get current color
-            current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
             % Plot current AABB
             current_AABB = grid_AABBs(ith_domain,:);
@@ -358,7 +349,7 @@ if flag_do_plots
         % domain
         for ith_domain = 1:totalDomains
             % Get current color
-            current_color = color_ordering(mod(ith_domain,N_colors)+1,:);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
             % Plot current AABB
             current_AABB = grid_AABBs(ith_domain,:);

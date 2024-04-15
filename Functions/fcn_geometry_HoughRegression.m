@@ -185,14 +185,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-    
-    N_colors = length(color_ordering(:,1)); %#ok<NASGU>
-
     tiledlayout('flow')
 
     % Plot the starting points in the first plot, save the axis

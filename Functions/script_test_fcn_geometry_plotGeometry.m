@@ -22,9 +22,12 @@ line_parameters(1,3:4) = line_base_point_xy;
 line_parameters(1,5)   = line_s_start;
 line_parameters(1,6)   = line_s_end;
 
-fcn_geometry_plotGeometry('line', line_parameters,(fig_num));
+segment_length = [];
+XY_data = fcn_geometry_plotGeometry('line', line_parameters,segment_length, (fig_num));
 
 assert(ishandle(1));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
 
 %% BASIC test - arc plotting
 fig_num = 2;
@@ -44,9 +47,13 @@ arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
 arc_parameters(1,7)   = arc_is_counter_clockwise;
 
-fcn_geometry_plotGeometry('arc', arc_parameters,(fig_num));
+segment_length = [];
+
+fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, (fig_num));
 
 assert(ishandle(2));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
 
 %% Fail conditions
 if 1==0

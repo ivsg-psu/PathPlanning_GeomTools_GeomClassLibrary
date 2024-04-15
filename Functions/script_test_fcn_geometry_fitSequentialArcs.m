@@ -1,10 +1,8 @@
-%% script_sequential_fit_data
-% Exercises the function: fcn_geometry_fitArcRegressionFromHoughFit
+%% script_test_fcn_geometry_fitSequentialArcs
+% Exercises the function: script_test_fcn_geometry_fitSequentialArcs
 
-% 2024_04_02 - S. Brennan
-% -- wrote the code
 % 2024_04_14 - S. Brennan
-% -- separated out functions - URHERE
+% -- wrote the code
 
 close all;
 
@@ -16,18 +14,18 @@ clf;
 rng(1); % Fix the random number, for debugging
 
 % arc_pattern has [1/R and L] for each segment as a row
-% arc_pattern = [...
-%     1/20, 15; 
-%     0 20;
-%     -1/5 10; 
-%     0 10;
-%     1/15 40; 
-%     0 15
-%     -1/10 20];
-
 arc_pattern = [...
     1/20, 15; 
-    0 20];
+    0 20;
+    -1/5 10; 
+    0 10;
+    1/15 40; 
+    0 15
+    -1/10 20];
+
+% arc_pattern = [...
+%     1/20, 15; 
+%     0 20];
 
 M = 10;
 sigma = 0.02;
@@ -144,6 +142,7 @@ end
 %% Connect the fits so that the lines perfectly align with the arcs
 
 fig_num = 23456;
+figure(fig_num);clf;
 
 revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, fitting_tolerance*2, fig_num);
 revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance*2, fig_num);
@@ -151,49 +150,86 @@ revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(fig_num));
 
+subplot(1,2,1);
+good_axis_limits = axis;
 
 %% Print the results
 close all
+comparison_fig_num = 2828;
+figure(comparison_fig_num); clf;
+hold on;
+
+NleadCharacters = 20;
+threshold = 0.15;
 
 max_forward_error = -inf;
 max_backward_error = -inf;
+max_averaged_error = -inf;
+
 fprintf(1,'\n\nPARAMETER FIT COMPARISON:\n');
 for ith_fit = 1:NfitsInSequence
     fprintf(1,'\n\nFit Sequence Number: %.0d\n', ith_fit); 
 
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),10));
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),NleadCharacters));
     fcn_INTERNAL_printFitDetails(trueNamedCurveTypes{ith_fit},trueParameters{ith_fit},1)
 
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('TRUE '),10));
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('TRUE '),NleadCharacters));
     fcn_INTERNAL_printFitDetails(trueNamedCurveTypes{ith_fit},trueParameters{ith_fit},0)
+     
+    % fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('FORWARD'),NleadCharacters));
+    % fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_forward{ith_fit}, fitSequence_parameters_forward{ith_fit},0)
+    % 
+    % fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('REVERSE'),NleadCharacters));
+    % fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_backward{ith_fit}, fitSequence_parameters_backward{ith_fit},0)
 
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('FORWARD '),10));
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('FORWARD REV'),NleadCharacters));
     fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_forward{ith_fit},revised_fitSequence_parameters_forward{ith_fit},0)
 
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('REVERSE '),10));
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('REVERSE REV'),NleadCharacters));
     fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_backward{ith_fit},revised_fitSequence_parameters_backward{ith_fit},0)
 
+    averaged_parameters = (revised_fitSequence_parameters_backward{ith_fit} + revised_fitSequence_parameters_forward{ith_fit})/2;
 
-    threshold = 0.05;
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('AVERAGED'),NleadCharacters));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_forward{ith_fit},averaged_parameters,0)
+
+    subplot(1,3,1);
     curve_test_segment_length = [];    
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_forward{ith_fit}, revised_fitSequence_parameters_forward{ith_fit},...
-    (threshold), (curve_test_segment_length), (98765));
+    (threshold), (curve_test_segment_length), (comparison_fig_num));
     max_forward_error = max(max_forward_error,max_error);
-    
-    threshold = 0.05;
+    title('Forward fitting');
+    axis(good_axis_limits)
+
+    subplot(1,3,2);
     curve_test_segment_length = [];    
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_backward{ith_fit}, revised_fitSequence_parameters_backward{ith_fit},...
-    (threshold), (curve_test_segment_length), (12345));
+    (threshold), (curve_test_segment_length), (comparison_fig_num));
     max_backward_error = max(max_backward_error,max_error);
-    
+    title('Reverse fitting');
+    axis(good_axis_limits)
+
+    subplot(1,3,3);
+    curve_test_segment_length = [];    
+    [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+    fcn_geometry_compareCurves(...
+    trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_backward{ith_fit}, averaged_parameters,...
+    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    max_averaged_error = max(max_averaged_error,max_error);
+    title('Averaged fitting');
+    axis(good_axis_limits)
+
 
 end
 fprintf(1,'\n');
 
+fprintf(1,'Max forward fitting error:  %.3f meters\n',max_forward_error);
+fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
+fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
 
 
 %% Functions follow

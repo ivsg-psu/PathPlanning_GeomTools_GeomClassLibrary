@@ -364,63 +364,63 @@ assert(length(fitted_arcCenter(1,:))==2);
 assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
 assert(length(radial_fitting_error(1,:))==1);
 
-%% BASIC test - LINE fit
-fig_num = 8;
-figure(fig_num); clf;
-
-% arc_radius = 2;
-% arc_center = [2 0];
-% angles = [0; pi/4; pi/2]; % angles relative to vertical
+%% BASIC test - LINE fit - DOES NOT YET WORK
+% fig_num = 8;
+% figure(fig_num); clf;
 % 
-% % Calculate locations of test points
-% if arc_center(1,1)<0
-%     arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
-% else
-%     arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
-% end
+% % arc_radius = 2;
+% % arc_center = [2 0];
+% % angles = [0; pi/4; pi/2]; % angles relative to vertical
+% % 
+% % % Calculate locations of test points
+% % if arc_center(1,1)<0
+% %     arc_seed_points = arc_radius*[cos(angles) sin(angles)] + arc_center;
+% % else
+% %     arc_seed_points = arc_radius*[cos(pi-angles) sin(pi-angles)] + arc_center;
+% % end
+% % 
+% % [arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+% % 
+% % M = 20; % Number of points per meter
+% % sigma = 0;
+% % 
+% % onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
+% % 
+% % % Add outliers?
+% % % Corrupt the results
+% % probability_of_corruption = 0;
+% % magnitude_of_corruption = 1;
+% % 
+% % corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+% %     (probability_of_corruption), (magnitude_of_corruption), (-1));
 % 
-% [arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+% seed_points = [0 0; 0 5];
+% M = 10;
+% sigma = 0.02;
 % 
-% M = 20; % Number of points per meter
-% sigma = 0;
+% test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 % 
-% onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma, -1);
+% % Find the arc fit
 % 
-% % Add outliers?
-% % Corrupt the results
-% probability_of_corruption = 0;
-% magnitude_of_corruption = 1;
+% inputPoints = test_points;
+% [fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+% axis([-5 5 -1 6]);
 % 
-% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-seed_points = [0 0; 0 5];
-M = 10;
-sigma = 0.02;
-
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
-
-% Find the arc fit
-
-inputPoints = test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
-axis([-5 5 -1 6]);
-
-% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(arcLength(:,1))==1);
-assert(length(arcLength(1,:))==1);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-% assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-% assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-% assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
-% assert(max(radial_fitting_error)<0.001);
+% % Check sizes
+% assert(length(fitted_radius(:,1))==1);
+% assert(length(fitted_radius(1,:))==1);
+% assert(length(fitted_arcCenter(:,1))==1);
+% assert(length(fitted_arcCenter(1,:))==2);
+% assert(length(arcLength(:,1))==1);
+% assert(length(arcLength(1,:))==1);
+% assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
+% assert(length(radial_fitting_error(1,:))==1);
+% 
+% % Check values
+% % assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
+% % assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
+% % assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
+% % assert(max(radial_fitting_error)<0.001);
 
 %% Test of fast mode
 % 

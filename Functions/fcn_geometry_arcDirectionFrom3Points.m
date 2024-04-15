@@ -30,8 +30,7 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
-%      cross
-%      sign
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:   
 %
@@ -50,6 +49,8 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 % 2024_01_08 - S. Brennan
 % -- changed plotting to plot each case separately
 % -- fixed bug with cross function call to force it to cross column-wise
+% 2024_04_14 - S. Brennan
+% -- added fcn_geometry_fillColorFromNumberOrName to plotting
 
 %% Debugging and Input checks
 
@@ -166,14 +167,6 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end        
 
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
     tiledlayout('flow')
 
     % Calculate the location for text
@@ -207,11 +200,14 @@ if flag_do_plots
         plot(points3(i_fit,1),points3(i_fit,2),'r.','MarkerSize',10);  % Plot points3
 
 
+        current_color = fcn_geometry_fillColorFromNumberOrName(i_fit);
+
+
         % Plot the connecting lines
-        plot([points1(i_fit,1) points3(i_fit,1)],[points1(i_fit,2) points3(i_fit,2)],'-','LineWidth',3,'Color',color_ordering(mod(i_fit,N_colors)+1,:));
+        plot([points1(i_fit,1) points3(i_fit,1)],[points1(i_fit,2) points3(i_fit,2)],'-','LineWidth',3,'Color',current_color);
 
         % Plot the midpoint lines
-        plot([half_point(i_fit,1) points2(i_fit,1)],[half_point(i_fit,2) points2(i_fit,2)],'-','LineWidth',3,'Color',color_ordering(mod(i_fit,N_colors)+1,:));
+        plot([half_point(i_fit,1) points2(i_fit,1)],[half_point(i_fit,2) points2(i_fit,2)],'-','LineWidth',3,'Color',current_color);
 
         % Label the result
         nudge = 0.1*difference(i_fit);

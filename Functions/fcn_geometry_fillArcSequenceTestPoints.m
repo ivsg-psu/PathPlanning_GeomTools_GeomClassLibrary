@@ -48,6 +48,7 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 %      fcn_geometry_circleCenterFrom3Points
 %      fcn_geometry_arcDirectionFrom3Points
 %      fcn_geometry_calcUnitVector
+%      fcn_geometry_fillColorFromNumberOrName
 %
 % EXAMPLES:
 %      
@@ -62,6 +63,8 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 % -- wrote the code
 % 2024_04_14 - S Brennan
 % -- fixed output angles to be between 0 and 2*pi
+% -- added fcn_geometry_fillColorFromNumberOrName in plotting
+
 
 
 %% Debugging and Input checks
@@ -278,16 +281,6 @@ if flag_do_plots
     hold on;
     grid on;
 
-    % Get the color ordering?
-    try
-        color_ordering = orderedcolors('gem12');
-    catch
-        color_ordering = colororder;
-    end
-
-    N_colors = length(color_ordering(:,1));
-
-
     % Plot the circle centers
     plot(circleCenters(:,1), circleCenters(:,2), 'r+','MarkerSize',30);
 
@@ -296,7 +289,7 @@ if flag_do_plots
 
     % Plot the segments in different colors
     for ith_row = 1:length(arc_pattern(:,1))
-        current_color = color_ordering(mod(ith_row,N_colors)+1,:);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_row);
         plot(trueStartPointsOfArcs(ith_row,1),trueStartPointsOfArcs(ith_row,2),'.','MarkerSize',50,'Color',current_color);
         if ith_row < length(arc_pattern(:,1))
             range = (arcStartIndicies(ith_row):arcStartIndicies(ith_row+1));
