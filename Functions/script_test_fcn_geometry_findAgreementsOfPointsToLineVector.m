@@ -28,6 +28,8 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
+assert(length(test_points)>1);
+assert(length(test_points(1,:)) == 2);
 
 %% Test 1: a basic test of line segment fitting, specifying index-type base_point_index
 fig_num = 1;
@@ -63,6 +65,10 @@ station_tolerance = 2;
 
 [agreement_indicies,station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
 
+assert(length(agreement_indicies)>1);
+assert(length(station_distances(1,:)) == 2);
+
+
 %% Test 2: a basic test of line segment fitting, specifying point-type base_point_index
 fig_num = 2;
 figure(fig_num); clf;
@@ -95,6 +101,8 @@ transverse_tolerance = 0.2;
 station_tolerance = 2;
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+
+assert(length(agreement_indicies)>1);
 
 %% Test 3: a basic test of line segment fitting, showing unit vector effect
 fig_num = 3;
@@ -129,7 +137,7 @@ station_tolerance = 2;
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
 
-
+assert(length(agreement_indicies)>1);
 
 %% Test 4: a basic test of line segment fitting, showing unit vector effect
 fig_num = 4;
@@ -164,6 +172,8 @@ station_tolerance = 2;
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
 
+assert(length(agreement_indicies)>1);
+
 %% Test 5: a basic test of line segment fitting, showing transverse_tolerance effect
 fig_num = 5;
 figure(fig_num); clf;
@@ -196,6 +206,8 @@ transverse_tolerance = 1;
 station_tolerance = 2;
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+
+assert(length(agreement_indicies)>1);
 
 %% Test 6: a basic test of line segment fitting, showing station_tolerance effect
 % NOTE: the lines indicate that the stations are NOT re-sorted if
@@ -232,7 +244,7 @@ station_tolerance = [];
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
 
-
+assert(length(agreement_indicies)>1);
 
 %% Test of fast mode
 
