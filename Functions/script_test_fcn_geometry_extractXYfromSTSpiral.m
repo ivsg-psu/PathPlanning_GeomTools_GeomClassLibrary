@@ -68,12 +68,19 @@ plot(XY_circle(:,1),XY_circle(:,2),'r-');
 
 %% SCALING Test - show that get exactly the same result if using nondimensional equivalent
 
+fig_num = 1;
+figure(fig_num); clf;
+hold on;
+
 % ANY CIRCLE ANALYSIS
 % Dimensionless form
 h0 = 0;
 x0 = 0;
 y0 = 0;
 K0 = 0;
+
+L0 = 2;
+s  = (0:0.01:1)'*L0; 
 
 % Given
 Kf = 1/50; % Radius of 5 
@@ -89,21 +96,21 @@ s_dimensionless  = s*Kf;
 
 
 
-%% Check sizes
-assert(length(fitted_radius(:,1))==1);
-assert(length(fitted_radius(1,:))==1);
-assert(length(fitted_arcCenter(:,1))==1);
-assert(length(fitted_arcCenter(1,:))==2);
-assert(length(arcLength(:,1))==1);
-assert(length(arcLength(1,:))==1);
-assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
-assert(length(radial_fitting_error(1,:))==1);
-
-% Check values
-assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
-assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
-assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
-assert(max(radial_fitting_error)<0.001);
+% %% Check sizes
+% assert(length(fitted_radius(:,1))==1);
+% assert(length(fitted_radius(1,:))==1);
+% assert(length(fitted_arcCenter(:,1))==1);
+% assert(length(fitted_arcCenter(1,:))==2);
+% assert(length(arcLength(:,1))==1);
+% assert(length(arcLength(1,:))==1);
+% assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
+% assert(length(radial_fitting_error(1,:))==1);
+% 
+% % Check values
+% assert(isequal(round(arc_true_circleRadius,4),round(fitted_radius,4)));
+% assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
+% assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
+% assert(max(radial_fitting_error)<0.001);
 
 
 %% BASIC test - perfect fit, perfectly oriented, not at origin

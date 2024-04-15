@@ -139,7 +139,7 @@ for ith_plot = 1:NfitsInSequence
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
-%% Connect the fits so that the lines perfectly align with the arcs
+% Connect the fits so that the lines perfectly align with the arcs
 
 fig_num = 23456;
 figure(fig_num);clf;
@@ -153,7 +153,7 @@ fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSeque
 subplot(1,2,1);
 good_axis_limits = axis;
 
-%% Print the results
+% Print the results
 close all
 comparison_fig_num = 2828;
 figure(comparison_fig_num); clf;
