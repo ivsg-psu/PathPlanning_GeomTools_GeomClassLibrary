@@ -25,60 +25,60 @@ close all
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-%% Fill test data 
-% fig_num = 21;
-% figure(fig_num);
-% clf;
-% hold on;
-% axis equal
-% grid on;
-
-% circle
-circle_center = [4 3];
-circle_radius = 2;
-M = 5; % 5 points per meter
-sigma = 0.02;
-
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
-
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
-
-
-% 1 arc
-% fig_num = 23;
-% figure(fig_num);
-% clf;
-% hold on;
-% axis equal
-% grid on;
-
-seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
-
-M = 10; % Number of points per meter
-sigma = 0.02;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
-
-% Fill test data - 2 arcs
-twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
-corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
+% %% Fill test data 
+% % fig_num = 21;
+% % figure(fig_num);
+% % clf;
+% % hold on;
+% % axis equal
+% % grid on;
+% 
+% % circle
+% circle_center = [4 3];
+% circle_radius = 2;
+% M = 5; % 5 points per meter
+% sigma = 0.02;
+% 
+% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+% 
+% 
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
+% 
+% 
+% % 1 arc
+% % fig_num = 23;
+% % figure(fig_num);
+% % clf;
+% % hold on;
+% % axis equal
+% % grid on;
+% 
+% seed_points = [2 3; 4 5; 6 3];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+% 
+% M = 10; % Number of points per meter
+% sigma = 0.02;
+% 
+% onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+% 
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
+% 
+% % Fill test data - 2 arcs
+% twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
+% corrupted_twoarc_test_points = [corrupted_onearc_test_points(1:30,:); corrupted_onearc_test_points(50:60,:)];
 
 %% Example - 1 - BASIC call with arc data, fitting it to source point 10
 fig_num = 111;

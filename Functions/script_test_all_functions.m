@@ -12,7 +12,7 @@ close all;
 clc;
 all_scripts = dir(cat(2,'.',filesep,'Functions',filesep,'script_test_fcn_*.m'));
 diary 'script_test_fcn_geometry_all_stdout.txt';
-for i_script = 1:length(all_scripts)
+for i_script = 51:55%length(all_scripts)
     file_name_extended = all_scripts(i_script).name;
     file_name = erase(file_name_extended,'.m');
     if ~strcmp(mfilename,file_name)

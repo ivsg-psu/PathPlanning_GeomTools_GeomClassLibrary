@@ -302,7 +302,7 @@ if flag_do_plots
         title('Arc fit');
     end
 
-    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num)
+    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num);
     plot(points(index_source_point,1),points(index_source_point,2),'bo','MarkerSize',15);
 
     % Plot the results

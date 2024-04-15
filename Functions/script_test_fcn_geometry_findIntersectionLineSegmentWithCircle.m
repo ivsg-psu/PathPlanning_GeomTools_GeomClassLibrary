@@ -28,7 +28,7 @@ pc = [0 0];
 R = 25;
 
 % Plot the circle
-fcn_geometry_plotCircle(pc,R,'b-',1)
+fcn_geometry_plotCircle(pc,R,'b-',1);
 
 if flag_getNewData && flag_getDataViaMouse
     % Prompt the user for two points
@@ -41,7 +41,7 @@ end
 
 title([]);
 % Plot the user line segment
-plot(x,y,'k.-','markersize',10)
+plot(x,y,'k.-','markersize',10);
 
 % Assign the user data points to point arrays
 pa = [x(1) y(1)];

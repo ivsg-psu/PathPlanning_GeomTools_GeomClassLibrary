@@ -4,7 +4,7 @@
 % Revision history:
 %      2021_04_28:
 %      -- Added more comments, made testing cases more clear
-
+close all
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
 fig_num = 1;
@@ -25,61 +25,10 @@ outgoing_destination_points = [0 -2^0.5];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num) %#ok<*ASGLU,*NOPTS>
+    outgoing_destination_points,fig_num); %#ok<*ASGLU,*NOPTS>
 
 assert(isequal(round(angles,4), 1.5708));
 assert(isequal(round(better_angles,4), 3.1416));
-
-% %% Test of fast implementation mode 
-% 
-% % Perform the calculation in slow mode
-% fig_num = [];
-% REPS = 100; minTimeSlow = Inf; 
-% tic;
-% for i=1:REPS
-%     tstart = tic;
-%     [angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
-%     apex_points,...
-%     centers,...
-%     start_points_on_circle,...
-%     end_points_on_circle,...
-%     radii,...
-%     incoming_source_points,...
-%     outgoing_destination_points, (fig_num));
-%     telapsed = toc(tstart);
-%     minTimeSlow = min(telapsed,minTimeSlow);
-% end
-% averageTimeSlow = toc/REPS;
-% 
-% % Perform the operation in fast mode
-% fig_num = -1;
-% minTimeFast = Inf; nsum = 10;
-% tic;
-% for i=1:REPS
-%     tstart = tic;
-%     [angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
-%     apex_points,...
-%     centers,...
-%     start_points_on_circle,...
-%     end_points_on_circle,...
-%     radii,...
-%     incoming_source_points,...
-%     outgoing_destination_points, (fig_num));
-%     telapsed = toc(tstart);
-%     minTimeFast = min(telapsed,minTimeFast);
-% end
-% averageTimeFast = toc/REPS;
-% 
-% fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
-% fprintf(1,'N repetitions: %.0d\n',REPS);
-% fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
-% fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
-% fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
-% fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
-% fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
-% fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
-
-
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 fig_num = 2;
@@ -100,7 +49,10 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isequal(round(angles,4), 4.7124));
+assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 % BUT the apex angle is in the wrong location (so BAD)
@@ -122,7 +74,10 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num); 
+
+assert(isnan(angles));
+assert(isequal(round(better_angles,4), 0));
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 % BUT the apex angle is in the wierd location
@@ -144,7 +99,10 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isequal(round(angles,4), 4.7124));
+assert(isequal(round(better_angles,4), 5.4978));
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
 fig_num = 5;
@@ -165,8 +123,10 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
 
+assert(isequal(round(angles,4), 1.5708));
+assert(isequal(round(better_angles,4), 3.9270));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
@@ -188,7 +148,10 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isequal(round(angles,4), 3.1416));
+assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
@@ -210,7 +173,10 @@ outgoing_destination_points = [-1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isequal(round(angles,4), 3.1416));
+assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 0 degrees,
 % and it's a BAD situation
@@ -232,7 +198,10 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isnan(angles));
+assert(isnan(better_angles));
 
 
 %% BASIC example for one circle, incoming and outgoing are 0 degrees,
@@ -254,7 +223,10 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isequal(round(angles,4), 0));
+assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a BAD situation (grazing contact)
@@ -275,7 +247,10 @@ outgoing_destination_points = [1 1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
+
+assert(isnan(angles));
+assert(isnan(better_angles));
 
 %% BASIC example for one circle that is NOT feasible
 fig_num = 11;
@@ -296,8 +271,10 @@ outgoing_destination_points = [2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num)
+    outgoing_destination_points,fig_num);
 
+assert(isnan(angles));
+assert(isnan(better_angles));
 
 %% Fill in vectorized cases
 % Initialize variables

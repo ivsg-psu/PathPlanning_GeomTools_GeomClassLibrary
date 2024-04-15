@@ -308,9 +308,9 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',30)
 
     % Plot the boundaries of the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num) 
-    fcn_geometry_plotCircle(circleCenter, circleRadius-transverse_tolerance, 'r-',fig_num) 
-    fcn_geometry_plotCircle(circleCenter, circleRadius+transverse_tolerance, 'r-',fig_num) 
+    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num); 
+    fcn_geometry_plotCircle(circleCenter, circleRadius-transverse_tolerance, 'r-',fig_num); 
+    fcn_geometry_plotCircle(circleCenter, circleRadius+transverse_tolerance, 'r-',fig_num); 
     plot(circleCenter(:,1),circleCenter(:,2),'b+','MarkerSize',15);
 
     if ~isempty(agreement_indicies)

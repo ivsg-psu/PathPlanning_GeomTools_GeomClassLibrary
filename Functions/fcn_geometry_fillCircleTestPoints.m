@@ -172,7 +172,7 @@ if flag_do_plots
 
     % Plot the input circle
     plot(circle_center(1,1), circle_center(1,2), 'r+','MarkerSize',30);
-    fcn_geometry_plotCircle(circle_center,circle_radius,'b-', fig_num)
+    fcn_geometry_plotCircle(circle_center,circle_radius,'b-', fig_num);
 
     % Plot the results
     plot(test_points(:,1), test_points(:,2), 'k.','MarkerSize',20);
