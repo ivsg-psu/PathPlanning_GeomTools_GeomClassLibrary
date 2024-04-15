@@ -61,9 +61,21 @@
 % -- add lines and segments to domainBoxByType
 % -- used domainBoxByType call in fcn_geometry_fitLinearRegressionFromHoughFit
 % -- went through all the scripts and removeed all clc commands
+% 2024_04_14 - sbrennan@psu.edu
+% -- added joinLineToArc functionality but without spiral joins
+% -- added fillArcSequenceTestPoints with true values
 
 
 %% To-do items
+% 2024_04_14 - S. Brennan
+% -- In joinLineToArc, need to develop methods to reflect geometries about
+% a vector, and flip a geometry's direction. Then need to push those
+% methods into the testing script and this function for better clearity.
+% -- in joinLineToArc, need to allow joins of line to arcs via spirals
+% -- need methods to compare similar geometries to find the maximum error
+% between them (for example, an arc versus an arc or a line versus an arc,
+% or a line versus a line).
+%
 % 2024_04_11 - S. Brennan
 % -- Need to speed up testing scripts
 % -- Need to remove long data prints in test scripts

@@ -6,7 +6,7 @@
 
 close all;
 
-%% BASIC test
+%% BASIC test - joining line to arc without any spiral
 
 % Bit 1 (top bit)            : line precedes arc, 
 % Bit 2 (2nd from top bit)   : line oriented, 

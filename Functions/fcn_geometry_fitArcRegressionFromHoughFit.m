@@ -50,6 +50,9 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % -- changed to domain inputs and outputs
 % 2024_04_02 - S Brennan
 % -- added best_fit_domain_box_projection_distance as an input option
+% 2024_04_14 - S Brennan
+% -- fixed output angles to be between 0 and 2*pi
+
 
 %% Debugging and Input checks
 
@@ -213,6 +216,10 @@ else
 
     % Fill in the results
     regression_fit_arc_center_and_radius_and_angles_and_flag = [circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, Hough_flag_this_is_a_circle, flag_arc_is_counterclockwise];
+
+    % Fix the arc angles to be between 0 and 2*pi
+    regression_fit_arc_center_and_radius_and_angles_and_flag(1,4:5) = mod(regression_fit_arc_center_and_radius_and_angles_and_flag(1,4:5),2*pi);
+
     regression_domain.best_fit_parameters = regression_fit_arc_center_and_radius_and_angles_and_flag;
 end
 

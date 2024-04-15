@@ -1,4 +1,4 @@
-function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
+function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, varargin)
 %% fcn_geometry_fillArcSequenceTestPoints
 % given a Ax2 matrix containing [curvature station_length] in each row,
 % where A are the number of interconnected arcs to form. This function then
@@ -39,6 +39,8 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 %           'line': for line segments
 %
 %           'arc': for arc segments
+%
+%      trueParameters: a cell array of the true parameters for the segement
 % 
 % DEPENDENCIES:
 %
@@ -58,6 +60,8 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 % Revision history:
 % 2024_03_31 - S. Brennan
 % -- wrote the code
+% 2024_04_14 - S Brennan
+% -- fixed output angles to be between 0 and 2*pi
 
 
 %% Debugging and Input checks
@@ -89,7 +93,7 @@ if flag_do_debug
     figure(debug_fig_num);
     clf;
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -145,7 +149,7 @@ N_segments = length(arc_pattern(:,1));
 circleRadius = 1./arc_pattern(:,1);
 
 % Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = 2*(circleRadius>0)-1;
+sign_counterClockwise = 2*(circleRadius>0)-1;
 
 % Save the circle centers that we encounter
 circleCenters = nan(N_segments,2);
@@ -165,8 +169,8 @@ for ith_segment = 1:N_segments
 
     % Find the circle center
     if ~isinf(current_radius)
-        namedCurveTypes{ith_segment} = 'arc';
-        current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 is_counterClockwise(ith_segment,1); -is_counterClockwise(ith_segment,1) 0];
+        namedCurveTypes{ith_segment} = 'arc'; %#ok<AGROW>
+        current_circle_center = current_position + current_radius*[cos(current_angle) sin(current_angle)]*[0 sign_counterClockwise(ith_segment,1); -sign_counterClockwise(ith_segment,1) 0];
         circleCenters(ith_segment,:) = current_circle_center;
 
         % Find the number points
@@ -175,8 +179,8 @@ for ith_segment = 1:N_segments
         N_points = length(projection_distances);
 
         % Convert from distances to angles, and then angles to points
-        angles = current_angle + is_counterClockwise(ith_segment)*projection_distances./current_radius;
-        if 1==is_counterClockwise(ith_segment,1)
+        angles = current_angle + sign_counterClockwise(ith_segment)*projection_distances./current_radius;
+        if 1==sign_counterClockwise(ith_segment,1)
             unit_radial_vectors = [cos(angles-pi/2) sin(angles-pi/2)];
         else
             unit_radial_vectors = [cos(angles+pi/2) sin(angles+pi/2)];
@@ -186,15 +190,34 @@ for ith_segment = 1:N_segments
 
         % Repeat for the last point, which may not be included in the list
         % above, and should also NOT have any noise added
-        final_angle = current_angle + is_counterClockwise(ith_segment)*total_arc_length./current_radius;
-        if 1==is_counterClockwise(ith_segment,1)
+        final_angle = current_angle + sign_counterClockwise(ith_segment)*total_arc_length./current_radius;
+        if 1==sign_counterClockwise(ith_segment,1)
             unit_radial_vectors = [cos(final_angle-pi/2) sin(final_angle-pi/2)];
         else
             unit_radial_vectors = [cos(final_angle+pi/2) sin(final_angle+pi/2)];
         end
         final_point = current_circle_center + current_radius.*unit_radial_vectors;
+
+        true_arc_parameters(1,1:2) = current_circle_center;
+        true_arc_parameters(1,3)   = current_radius;
+        if 1==sign_counterClockwise(ith_segment)
+            true_arc_parameters(1,4)   = current_angle-pi/2;
+            true_arc_parameters(1,5)   = final_angle-pi/2;
+            true_arc_parameters(1,6)   = 0;
+            true_arc_parameters(1,7)   = 1;
+        else
+            true_arc_parameters(1,4)   = current_angle+pi/2;
+            true_arc_parameters(1,5)   = final_angle+pi/2;
+            true_arc_parameters(1,6)   = 0;
+            true_arc_parameters(1,7)   = 0;
+        end
+  
+        % Fix the arc angles to be between 0 and 2*pi
+        true_arc_parameters(1,4:5) = mod(true_arc_parameters(1,4:5),2*pi);
+
+        trueParameters{ith_segment}   = true_arc_parameters; %#ok<AGROW>
     else
-        namedCurveTypes{ith_segment} = 'line';
+        namedCurveTypes{ith_segment} = 'line'; %#ok<AGROW>
         circleCenters(ith_segment,:) = [nan nan];
         projection_distances = (0:(1/M):total_arc_length)';
         N_points = length(projection_distances);
@@ -203,13 +226,20 @@ for ith_segment = 1:N_segments
         orthogonal_distances = randn(N_points,1)*sigma;
         perturbed_points = current_position + projection_distances*unit_tangential_vector + orthogonal_distances.*unit_radial_vector;
         final_point = current_position + total_arc_length.*unit_tangential_vector;
+
+        true_line_parameters(1,1:2) = unit_tangential_vector;
+        true_line_parameters(1,3:4) = current_position;
+        true_line_parameters(1,5)   = 0;
+        true_line_parameters(1,6)   = sum((final_point - current_position).^2,2).^0.5;
+
+         trueParameters{ith_segment}   = true_line_parameters; %#ok<AGROW>
     end
 
     % Convert to test points
     test_points = [test_points; perturbed_points]; %#ok<AGROW>
 
     % Save where we are for the next loop
-    current_angle = current_angle + is_counterClockwise(ith_segment)*total_arc_length./current_radius;
+    current_angle = current_angle + sign_counterClockwise(ith_segment)*total_arc_length./current_radius;
     current_position = final_point;
 
     if flag_do_debug

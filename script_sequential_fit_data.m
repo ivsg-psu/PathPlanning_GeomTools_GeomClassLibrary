@@ -3,6 +3,8 @@
 
 % 2024_04_02 - S. Brennan
 % -- wrote the code
+% 2024_04_14 - S. Brennan
+% -- separated out functions - URHERE
 
 close all;
 
@@ -14,21 +16,23 @@ clf;
 rng(1); % Fix the random number, for debugging
 
 % arc_pattern has [1/R and L] for each segment as a row
-% arc_pattern = [...
-%     1/20, 15; 
-%     0 20;
-%     -1/5 10; 
-%     1/15 40; 
-%     -1/10 20];
-
 arc_pattern = [...
     1/20, 15; 
-    0 20];
+    0 20;
+    -1/5 10; 
+    0 10;
+    1/15 40; 
+    0 15
+    -1/10 20];
+
+% arc_pattern = [...
+%     1/20, 15; 
+%     0 20];
 
 M = 10;
 sigma = 0.02;
 
-[test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
+[test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
 % Add noise?
 if 1==0
@@ -58,27 +62,27 @@ animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, trueArcStartI
 % Perform the fit forwards
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 0;
-[domain_points_forward, domain_shapes_forward, domain_endIndicies_forward, domain_parameters_forward, domain_bestFitType_forward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+[fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Perform the fit backwards
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 1;
-[domain_points_backward, domain_shapes_backward, domain_endIndicies_backward, domain_parameters_backward, domain_bestFitType_backward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+[fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Compare lengths and parameters
 
-Ndomains = length(domain_points_forward);
+NfitsInSequence = length(fitSequence_points_forward);
 
 % First, make absolutely sure that the number of fits found in the forward
 % direction match the same number of fits in the backward direction
-if length(domain_points_backward)~=Ndomains
+if length(fitSequence_points_backward)~=NfitsInSequence
     warning('on','backtrace');
     warning('An error will be thrown at this code location as the fits were directionally different.');
-    error('Found different numbers of domains of fit in forward/backward directions. Code is not able to handle this yet!');
+    error('Found different numbers of fits in the fit sequence when comparing forward/backward directions. Code is not able to handle this yet!');
 end
 
-for ith_domain = 1:Ndomains
-    if ~strcmp(domain_bestFitType_forward{ith_domain},domain_bestFitType_backward{ith_domain})
+for ith_fit = 1:NfitsInSequence
+    if ~strcmp(fitSequence_bestFitType_forward{ith_fit},fitSequence_bestFitType_backward{ith_fit})
         warning('on','backtrace');
         warning('An error will be thrown at this code location as the fits were found to be geometrically different.');
         error('Found different geometries as the best fit for the same regions when comparing forward/backward directions. Code is not able to handle this yet!');
@@ -87,27 +91,27 @@ end
 
 
 % Find the probable fit
-domain_indicies_matrix_forward = cell2mat(domain_endIndicies_forward)';
-domain_indicies_matrix_backward = cell2mat(domain_endIndicies_backward)';
-probable_arc_boundary_indicies = round(mean([domain_indicies_matrix_forward domain_indicies_matrix_backward],2));
+fitSequence_indicies_matrix_forward = cell2mat(fitSequence_endIndicies_forward)';
+fitSequence_indicies_matrix_backward = cell2mat(fitSequence_endIndicies_backward)';
+probable_arc_boundary_indicies = round(mean([fitSequence_indicies_matrix_forward fitSequence_indicies_matrix_backward],2));
 % probable_arc_boundary_indicies = probable_arc_boundary_indicies(1:end-1,:);
 
 % Print the results
 
 fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit number:'),20));
-for ith_fit = 1:Ndomains
+for ith_fit = 1:NfitsInSequence
     fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',ith_fit),10));
 end
 fprintf(1,'\n');
 
 fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('True start index:'),20));
-for ith_fit = 1:Ndomains
+for ith_fit = 1:NfitsInSequence
     fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',trueArcStartIndicies(ith_fit)),10));
 end
 fprintf(1,'\n');
 
 fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit start index:'),20));
-for ith_fit = 1:Ndomains
+for ith_fit = 1:NfitsInSequence
     fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0d',probable_arc_boundary_indicies(ith_fit)),10));
 end
 fprintf(1,'\n');
@@ -116,9 +120,9 @@ fprintf(1,'\n');
 % changing
 figure(subplot_fig_num);
 subplot(2,2,3);
-for ith_start = 1:Ndomains
+for ith_start = 1:NfitsInSequence
     
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_start,domain_bestFitType_forward{ith_start},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_start,fitSequence_bestFitType_forward{ith_start},-1);
 
     plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
 end
@@ -129,18 +133,44 @@ subplot(2,2,4);
 % Plot the fitted groups of points. If any of the points are mis-labeled,
 % there will be one color incorrectly on top of another, for example a red
 % point on top of a blue underlying point.
-for ith_plot = 1:Ndomains
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,domain_bestFitType_forward{ith_plot},-1);
+for ith_plot = 1:NfitsInSequence
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,fitSequence_bestFitType_forward{ith_plot},-1);
     index_range = probable_arc_boundary_indicies(ith_plot):probable_arc_boundary_indicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
-%% Check if spirals are needed by checking the lateral offset between segments
-for ith_domain = 1:Ndomains-1
-    offset_forward  = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType_forward,domain_parameters_forward, fitting_tolerance);
-    offset_backward = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType_backward,domain_parameters_backward, fitting_tolerance);
+%% Connect the fits so that the lines perfectly align with the arcs
 
+fig_num = 23456;
+
+revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, fitting_tolerance*2, fig_num);
+revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance*2, fig_num);
+
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(fig_num));
+
+
+%% Print the results
+
+
+fprintf(1,'\n\nPARAMETER FIT COMPARISON:\n');
+for ith_fit = 1:NfitsInSequence
+    fprintf(1,'\n\nFit Sequence Number: %.0d\n', ith_fit); 
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),10));
+    fcn_INTERNAL_printFitDetails(trueNamedCurveTypes{ith_fit},trueParameters{ith_fit},1)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('TRUE '),10));
+    fcn_INTERNAL_printFitDetails(trueNamedCurveTypes{ith_fit},trueParameters{ith_fit},0)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('FORWARD '),10));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_forward{ith_fit},revised_fitSequence_parameters_forward{ith_fit},0)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('REVERSE '),10));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_backward{ith_fit},revised_fitSequence_parameters_backward{ith_fit},0)
 end
+fprintf(1,'\n');
+
 
 
 %% Functions follow
@@ -155,37 +185,94 @@ end
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-%% fcn_geometry_joinGeometricCurves
-function revised_domain_parameters = fcn_geometry_joinGeometricCurves(ith_domain, domain_bestFitType, domain_parameters, threshold)
-current_fit_type = domain_bestFitType{ith_domain};
-next_fit_type    = domain_bestFitType{ith_domain+1};
+%% fcn_INTERNAL_printFitDetails
+function fcn_INTERNAL_printFitDetails(fit_type,fit_parameters, flag_print_header)
 
-revised_domain_parameters = domain_parameters;
-
-if strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Regression arc')
-    error('Joining arcs to arcs is not yet implemented');
-elseif strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Vector regression segment fit')
-    error('Joining line segements to line segments is not yet implemented');
-elseif (strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Vector regression segment fit')) || (strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Regression arc'))
-    % This is a connection that is an arc to line or line to arc 
-
-    % find which index is which
-    if strcmp(current_fit_type,'Regression arc')
-        line_index = ith_domain+1;
-        arc_index  = ith_domain;
-        flag_arc_is_first = 1;
-    else
-        line_index = ith_domain;
-        arc_index  = ith_domain+1;
-        flag_arc_is_first = 0;
-    end
-
-    [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLineToArc(domain_parameters{line_index}, domain_parameters{arc_index},flag_arc_is_first);
-    
-else
-    error('unrecognized pattern encountered! Exiting.')
+if contains(fit_type,{'arc','circle'})
+    print_type = 'arc';            
+    header_strings = {'centerX','centerY','radius','startAngle','endAngle','isCircle','turnsLeft'};
+elseif contains(fit_type,{'segment','line'})
+    print_type = 'line';
+    header_strings = {'vect_x','vect_y','start_x','start_y','start_station','end_station'};
 end
-end % Ends fcn_geometry_joinGeometricCurves
+
+NumColumnChars = 15;
+
+% Print header?
+if flag_print_header
+    % Print values
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(' '),20));
+
+    parameter_string = '';
+    for ith_parameter = 1:length(fit_parameters)
+        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
+        parameter_string = cat(2,parameter_string,number_string);
+    end
+    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
+else
+    % Print values
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit type: %s ',print_type),20));
+
+    % Print parameters
+    parameter_string = '';
+    for ith_parameter = 1:length(fit_parameters)
+        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.4f ',fit_parameters(ith_parameter)),NumColumnChars);
+        if strcmp(number_string(1),'-')
+            parameter_string = cat(2,parameter_string,number_string, ' ');
+        else
+            parameter_string = cat(2,parameter_string,' ', number_string);
+        end
+    end
+    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
+end
+
+end % Ends fcn_INTERNAL_printFitDetails
+
+%% fcn_geometry_alignGeometriesInSequence
+function revised_fitSequence_parameters = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, fig_num)
+
+NfitsInSequence = length(fitSequence_bestFitType);
+
+revised_fitSequence_parameters = fitSequence_parameters;
+
+% Loop through fits, connecting them together
+for ith_fit = 1:NfitsInSequence-1
+    current_fit_type = fitSequence_bestFitType{ith_fit};
+    next_fit_type    = fitSequence_bestFitType{ith_fit+1};
+
+    if strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Regression arc')
+        error('Joining arcs to arcs is not yet implemented');
+    elseif strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Vector regression segment fit')
+        error('Joining line segements to line segments is not yet implemented');
+    elseif (strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Vector regression segment fit')) || (strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Regression arc'))
+        % This is a connection that is an arc to line or line to arc
+
+        % find which index is which
+        if strcmp(current_fit_type,'Regression arc')
+            line_index = ith_fit+1;
+            arc_index  = ith_fit;
+            flag_arc_is_first = 1;
+        else
+            line_index = ith_fit;
+            arc_index  = ith_fit+1;
+            flag_arc_is_first = 0;
+        end
+
+        % Fix connections of lines to arcs and arcs to lines
+        [revised_fitSequence_parameters{line_index}, revised_fitSequence_parameters{arc_index}] = fcn_geometry_joinLineToArc(fitSequence_parameters{line_index}, fitSequence_parameters{arc_index}, flag_arc_is_first, (threshold),(fig_num));
+
+        % Need to update the 2nd one for the next iteration
+        if flag_arc_is_first
+            fitSequence_parameters{line_index} = revised_fitSequence_parameters{line_index};
+        else
+            fitSequence_parameters{arc_index} = revised_fitSequence_parameters{arc_index};
+        end
+
+    else
+        error('unrecognized pattern encountered! Exiting.')
+    end
+end % Ends looping through fits
+end % Ends fcn_geometry_alignGeometriesInSequence
 
 
 
@@ -228,8 +315,8 @@ subplot(2,2,2);
 
 
 NtestPoints = length(test_points(:,1));
-Hough_domain.best_fit_type    = 'Hough arc';
-Hough_domain.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicates this is an arc
+Hough_fit.best_fit_type    = 'Hough arc';
+Hough_fit.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicates this is an arc
 
 
 figure(subplot_fig_num);
@@ -245,14 +332,14 @@ ylabel('Y [meters]');
 % Plot the original data
 plot(test_points(:,1),test_points(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
-% Plot the domain shape
-Hough_domain.points_in_domain = test_points(:,1:2);
-Hough_domain.best_fit_source_indicies = [1 2 NtestPoints];
-regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, 0.1, -1);
-domainShape = regression_domain.best_fit_domain_box;
+% Plot the fit shape
+Hough_fit.points_in_domain = test_points(:,1:2);
+Hough_fit.best_fit_source_indicies = [1 2 NtestPoints];
+regression_fit  =  ...
+    fcn_geometry_fitArcRegressionFromHoughFit(Hough_fit, 0.1, -1);
+fitShape = regression_fit.best_fit_domain_box;
 current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
-h_plotDomainShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+h_plotFitShape = plot(fitShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
 % Plot the "hit" points within the fit
 empty_data = nan*test_points;
@@ -284,8 +371,9 @@ end
 
 figure_handles(1) = h_plotPoints;
 figure_handles(2) = h_plotPercentage;
-figure_handles(3) = h_plotDomainShape;
+figure_handles(3) = h_plotFitShape;
 
+figure(subplot_fig_num);
 subplot(2,2,4);
 hold on;
 grid on;
@@ -304,7 +392,7 @@ end
 
 end % ends fcn_INTERNAL_setupSubplots
 
-function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, varargin)
+function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, varargin)
 %% fcn_geometry_fitSequentialArcs
 % Given a set of XY data, attempts to fit the data in sequential order with
 % an arc until the points in the fit fall outside of a fitting tolerance.
@@ -328,7 +416,7 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, d
 % typical first-point as starting piont.
 % 
 % Format: 
-% [domain_points, domain_shapes, domain_endIndicies, domain_parameters, domain_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (animation_figure_handles),(fig_num))
+% [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (animation_figure_handles),(fig_num))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed to
@@ -351,7 +439,7 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, d
 %
 %           h_plotPoints      = animation_figure_handles(1);
 %           h_plotPercentage  = animation_figure_handles(2);
-%           h_plotDomainShape = animation_figure_handles(3);
+%           h_plotFitShape = animation_figure_handles(3);
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -359,19 +447,19 @@ function [domain_points, domain_shapes, domain_endIndicies, domain_parameters, d
 %
 % OUTPUTS:
 %
-%      domain_points: a cell array saving the XY points that were found in
+%      fitSequence_points: a cell array saving the XY points that were found in
 %      each domain
 %
-%      domain_shapes: a polyshape object that defines the boundary of the
+%      fitSequence_shapes: a polyshape object that defines the boundary of the
 %      domain of fit for each domain
 %
-%      domain_endIndicies: the indicies that indicate the end of each
+%      fitSequence_endIndicies: the indicies that indicate the end of each
 %      domain, of length N+1 where N is the number of domains (the +1 is
 %      because the indicies include the start and end indicies)
 %
-%      domain_parameters: the parameters for each of the arc fits
+%      fitSequence_parameters: the parameters for each of the arc fits
 %
-%      domain_bestFitType: the label of the best fit type (all are arcs)
+%      fitSequence_bestFitType: the label of the best fit type (all are arcs)
 %
 %
 % DEPENDENCIES:
@@ -500,7 +588,7 @@ Ndomains = 1;
 if flag_do_animations
     h_plotPoints      = animation_figure_handles(1);
     h_plotPercentage  = animation_figure_handles(2);
-    h_plotDomainShape = animation_figure_handles(3);       
+    h_plotFitShape = animation_figure_handles(3);       
 end
 
 % Set the fit direction
@@ -529,7 +617,7 @@ percentage_of_fits = nan(NtestPoints,1);
 Hough_domain.best_fit_type    = 'Hough arc';
 Hough_domain.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicates this is an arc
 empty_data = nan*points_to_fit;
-domain_endIndicies{Ndomains} = current_segment_start_index;
+fitSequence_endIndicies{Ndomains} = current_segment_start_index;
 
 
 % Perform the fitting
@@ -565,7 +653,7 @@ while 1==flag_keep_going
     % Perform plot updates?
     if flag_do_animations && flag_update_plots
         % Update the fit region
-        set(h_plotDomainShape,'Shape',regression_domain.best_fit_domain_box);
+        set(h_plotFitShape,'Shape',regression_domain.best_fit_domain_box);
         
         % Update the points inside the fit
         set(h_plotPoints,'XData',points_in_fit(:,1),'YData',points_in_fit(:,2),'Color',regression_point_color);
@@ -577,11 +665,11 @@ while 1==flag_keep_going
     if percentage_of_fits(current_point_index,1)<1
         
         % Save results from previous segment
-        domain_endIndicies{Ndomains+1} = current_point_index; 
-        domain_points{Ndomains} = current_points_in_domain; %#ok<AGROW>
-        domain_shapes{Ndomains} = regression_domain.best_fit_domain_box; %#ok<AGROW>
-        domain_parameters{Ndomains} = regression_domain.best_fit_parameters; %#ok<AGROW>
-        domain_bestFitType{Ndomains} = regression_domain.best_fit_type; %#ok<AGROW>
+        fitSequence_endIndicies{Ndomains+1} = current_point_index; 
+        fitSequence_points{Ndomains} = current_points_in_domain; %#ok<AGROW>
+        fitSequence_shapes{Ndomains} = regression_domain.best_fit_domain_box; %#ok<AGROW>
+        fitSequence_parameters{Ndomains} = regression_domain.best_fit_parameters; %#ok<AGROW>
+        fitSequence_bestFitType{Ndomains} = regression_domain.best_fit_type; %#ok<AGROW>
 
         % Set up for next loop
         Ndomains = Ndomains + 1;        
@@ -590,10 +678,11 @@ while 1==flag_keep_going
         % Perform plot updates?
         if flag_do_animations 
             % Set up plots for next round
+            figure(get(h_plotFitShape.Parent.Parent, 'Number'));
             subplot(2,2,2)
             domainShape = regression_domain.best_fit_domain_box;
             current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,regression_domain.best_fit_type,-1);
-            h_plotDomainShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+            h_plotFitShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
             % Add vertical lines to indicate where the segments are changing
             subplot(2,2,3);
@@ -612,16 +701,17 @@ while 1==flag_keep_going
 end
 
 % Save last results
-domain_endIndicies{Ndomains+1} = current_point_index;
-domain_points{Ndomains} = current_points_in_domain;
-domain_shapes{Ndomains} = regression_domain.best_fit_domain_box;
-domain_parameters{Ndomains} = regression_domain.best_fit_parameters; 
-domain_bestFitType{Ndomains} = regression_domain.best_fit_type; 
+fitSequence_endIndicies{Ndomains+1} = current_point_index;
+fitSequence_points{Ndomains} = current_points_in_domain;
+fitSequence_shapes{Ndomains} = regression_domain.best_fit_domain_box;
+fitSequence_parameters{Ndomains} = regression_domain.best_fit_parameters; 
+fitSequence_bestFitType{Ndomains} = regression_domain.best_fit_type; 
 
 if flag_do_animations
     % Add vertical lines to first indicate where the segments are changing
+    figure(get(h_plotFitShape.Parent.Parent, 'Number'));
     subplot(2,2,3);
-    current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,domain_bestFitType{Ndomains},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,fitSequence_bestFitType{Ndomains},-1);
     plot([absolute_start_index absolute_start_index],[-0.1 1.1],'-','Color',current_color);
 end
 
@@ -630,22 +720,22 @@ end
 % the last indicies.
 if flag_fit_backwards
     % The indicies have Ndomains+1 in length
-    temp_domain_endIndicies = domain_endIndicies;
+    temp_fitSequence_endIndicies = fitSequence_endIndicies;
     Nindicies = Ndomains+1;
     for ith_index = 1:Nindicies
-        domain_endIndicies{ith_index} = temp_domain_endIndicies{Nindicies+1-ith_index};
+        fitSequence_endIndicies{ith_index} = temp_fitSequence_endIndicies{Nindicies+1-ith_index};
     end
 
     % These inputs all have Ndomains in length
-    temp_domain_points      = domain_points;
-    temp_domain_shapes      = domain_shapes;
-    temp_domain_parameters  = domain_parameters;
-    temp_domain_bestFitType = domain_bestFitType;
+    temp_fitSequence_points      = fitSequence_points;
+    temp_fitSequence_shapes      = fitSequence_shapes;
+    temp_fitSequence_parameters  = fitSequence_parameters;
+    temp_fitSequence_bestFitType = fitSequence_bestFitType;
     for ith_domain = 1:Ndomains
-        domain_points{ith_domain}      = temp_domain_points{Ndomains+1-ith_domain};
-        domain_shapes{ith_domain}      = temp_domain_shapes{Ndomains+1-ith_domain};
-        domain_parameters{ith_domain}  = temp_domain_parameters{Ndomains+1-ith_domain};
-        domain_bestFitType{ith_domain} = temp_domain_bestFitType{Ndomains+1-ith_domain};
+        fitSequence_points{ith_domain}      = temp_fitSequence_points{Ndomains+1-ith_domain};
+        fitSequence_shapes{ith_domain}      = temp_fitSequence_shapes{Ndomains+1-ith_domain};
+        fitSequence_parameters{ith_domain}  = temp_fitSequence_parameters{Ndomains+1-ith_domain};
+        fitSequence_bestFitType{ith_domain} = temp_fitSequence_bestFitType{Ndomains+1-ith_domain};
     end
 
 end
@@ -661,13 +751,13 @@ end
 %                flag_this_is_a_circle
 %               ] 
 
-for ith_domain = 1:length(domain_parameters)
-    if strcmp(domain_bestFitType{ith_domain},'Regression arc')
+for ith_domain = 1:length(fitSequence_parameters)
+    if strcmp(fitSequence_bestFitType{ith_domain},'Regression arc')
         % Find the arc's height. See diagram here, for example:
         % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
-        angle_sweep_radians = diff(domain_parameters{ith_domain}(4:5));
+        angle_sweep_radians = diff(fitSequence_parameters{ith_domain}(4:5));
         half_angle = abs(angle_sweep_radians)/2;
-        fit_radius = domain_parameters{ith_domain}(3);
+        fit_radius = fitSequence_parameters{ith_domain}(3);
         arc_height = fit_radius*(1-cos(half_angle));
 
         % It's probably a line if the arc almost fits within the box
@@ -677,15 +767,15 @@ for ith_domain = 1:length(domain_parameters)
         % tolerance.
         if arc_height < 3*fitting_tolerance
             % This is a line - redo the fit with a line
-            Hough_domain.points_in_domain = domain_points{ith_domain};
-            Hough_domain.best_fit_source_indicies = [1 length(domain_points{ith_domain}(:,1))];
+            Hough_domain.points_in_domain = fitSequence_points{ith_domain};
+            Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
             Hough_domain.best_fit_type = 'Hough segment';
             regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance, -1);
             
             % Update the data with the regression fit
-            domain_shapes{ith_domain} = regression_domain.best_fit_domain_box; 
-            domain_parameters{ith_domain} = regression_domain.best_fit_parameters; 
-            domain_bestFitType{ith_domain} = regression_domain.best_fit_type; 
+            fitSequence_shapes{ith_domain} = regression_domain.best_fit_domain_box; 
+            fitSequence_parameters{ith_domain} = regression_domain.best_fit_parameters; 
+            fitSequence_bestFitType{ith_domain} = regression_domain.best_fit_type; 
 
         end
         
@@ -706,6 +796,9 @@ end
 if flag_do_plots
 
     if flag_do_animations
+
+        figure(get(h_plotFitShape.Parent.Parent, 'Number'));
+        
         % Plot the results in the subplot
         flag_rescale_axis = 0;
 
@@ -736,15 +829,17 @@ if flag_do_plots
     plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
     % Plot the domain points
-    for ith_domain = 1:length(domain_points)        
-        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,domain_bestFitType{ith_domain},-1);
-        current_domain_points = domain_points{ith_domain};
-        current_domain_shape  = domain_shapes{ith_domain};
-        plot(current_domain_points(:,1),current_domain_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
-        plot(current_domain_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+    for ith_domain = 1:length(fitSequence_points)        
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
+        current_fitSequence_points = fitSequence_points{ith_domain};
+        current_fitSequence_shape  = fitSequence_shapes{ith_domain};
+        plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
+        plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
     end
 
-
+    % Plot the domain fits
+    fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+    
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
