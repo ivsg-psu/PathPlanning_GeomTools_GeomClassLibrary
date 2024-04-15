@@ -7,114 +7,114 @@
 
 close all;
 
-%% Fill in test data
-rng(383);
-
-
-fig_num = 21;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-
-% circle
-circle_center = [4 3];
-circle_radius = 2;
-M = 3; % 5 points per meter
-sigma = 0.02;
-
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
-
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-
-% 1 arc
-fig_num = 23;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-
-seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
-
-M = 10; % Number of points per meter
-sigma = 0.02;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Fill test data for 2 arcs
-first_fraction = [0 0.5]; % data from 0 to 50 percent
-second_fraction = [0.80 1]; % data from 80 percent to end
-N_points = length(onearc_test_points(:,1));
-
-first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
-first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
-first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
-
-second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
-second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
-second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
-
-twoarc_test_points = ...
-    [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
-    onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
-
-corrupted_twoarc_test_points = ...
-    [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
-    corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
-
-
-% For debugging
-figure(33838);
-clf;
-hold on;
-grid on;
-grid minor;
-axis equal;
-plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
-
-% 1 outlier arc
-seed_points = [6 6; 9 3; 6 0];
-[true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
-
-M = 8; % Number of points per meter
-sigma = 0.02;
-
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-figure(234);
-clf;
-hold on;
-grid on;
-grid minor;
-axis equal;
-
-corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (234));
-
+% %% Fill in test data
+% rng(383);
+% 
+% 
+% fig_num = 21;
+% figure(fig_num);
+% clf;
+% hold on;
+% axis equal
+% grid on;
+% 
+% % circle
+% circle_center = [4 3];
+% circle_radius = 2;
+% M = 3; % 5 points per meter
+% sigma = 0.02;
+% 
+% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+% 
+% 
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% 
+% 
+% % 1 arc
+% fig_num = 23;
+% figure(fig_num);
+% clf;
+% hold on;
+% axis equal
+% grid on;
+% 
+% seed_points = [2 3; 4 5; 6 3];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+% 
+% M = 10; % Number of points per meter
+% sigma = 0.02;
+% 
+% onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+% 
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% 
+% % Fill test data for 2 arcs
+% first_fraction = [0 0.5]; % data from 0 to 50 percent
+% second_fraction = [0.80 1]; % data from 80 percent to end
+% N_points = length(onearc_test_points(:,1));
+% 
+% first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
+% first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+% first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+% 
+% second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
+% second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
+% second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
+% 
+% twoarc_test_points = ...
+%     [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+%     onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+% 
+% corrupted_twoarc_test_points = ...
+%     [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
+%     corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
+% 
+% 
+% % For debugging
+% figure(33838);
+% clf;
+% hold on;
+% grid on;
+% grid minor;
+% axis equal;
+% plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
+% 
+% % 1 outlier arc
+% seed_points = [6 6; 9 3; 6 0];
+% [true_circleCenter2, true_circleRadius2] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
+% 
+% M = 8; % Number of points per meter
+% sigma = 0.02;
+% 
+% outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+% 
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% figure(234);
+% clf;
+% hold on;
+% grid on;
+% grid minor;
+% axis equal;
+% 
+% corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
+%     (probability_of_corruption), (magnitude_of_corruption), (234));
+% 
 
 
 

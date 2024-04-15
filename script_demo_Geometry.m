@@ -101,6 +101,10 @@
 % date.
 % 
 %
+% 2024_04_14 - Aneesh Batchu
+% -- Write Assertions to the following scripts
+% script_test_fcn_geometry_findIntersectionOfLineSegmentWithCircle
+% script_test_fcn_geometry_findPhiConstraints
 % 
 % 
 % -- run the test scripts to make sure above changes don't break codes

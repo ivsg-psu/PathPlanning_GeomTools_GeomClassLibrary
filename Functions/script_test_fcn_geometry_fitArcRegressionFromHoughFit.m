@@ -199,7 +199,6 @@ params = abs(regression_domain.best_fit_parameters - true_params);
 fcn_INTERNAL_printResults('Regression errors', params)
 
 
-
 %% Basic call with bad data
 
 fig_num = 234;
