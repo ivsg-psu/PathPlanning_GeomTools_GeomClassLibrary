@@ -37,20 +37,21 @@ assert(isequal(round(centers(1,:),4), [3.6667    1.2083]));
 assert(isequal(round(centers(2,:),4), [0.0000    1.5750]));
 assert(isequal(round(radii(1,1),4), 3.8606));
 assert(isequal(round(radii(2,1),4), 2.6231));
+
 %% ADVANCED example that lets user select N points
-enable_advanced_example = false; % flag advanced example off for non-interactive execution
-if enable_advanced_example
-    fig_num = 1000;
-    figure(fig_num); clf; grid on; axis equal;
-
-    points = ginput; % Get arbitrary N points until user hits return
-    [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
-
-    fcn_summarize(...
-        centers,...
-        radii,...
-        points);
-end
+% enable_advanced_example = false; % flag advanced example off for non-interactive execution
+% if enable_advanced_example
+%     fig_num = 1000;
+%     figure(fig_num); clf; grid on; axis equal;
+% 
+%     points = ginput; % Get arbitrary N points until user hits return
+%     [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
+% 
+%     fcn_summarize(...
+%         centers,...
+%         radii,...
+%         points);
+% end
 
 
 %% ADVANCED example that uses vectors of x and y
@@ -76,43 +77,43 @@ end
 
 
 %% ADVANCED example that lets user select N points
-enable_advanced_example = false; % flag advanced example off for non-interactive execution
-if enable_advanced_example
-    fig_num = 1001;
-    x = [1; 2];
-    y = [1; 2];
-    button = 1;
-    figure(fig_num); clf; grid on; axis equal;
-    while sum(button) <=1   % read ginputs until a mouse right-button occurs
-        % Get a new point and redo plot
-        [x(end+1),y(end+1),button] = ginput(1); %#ok<SAGROW>
-        points = [x, y];
-        fcn_geometry_circleCenterFrom3Points(points,fig_num);
-    end
-end
+% enable_advanced_example = false; % flag advanced example off for non-interactive execution
+% if enable_advanced_example
+%     fig_num = 1001;
+%     x = [1; 2];
+%     y = [1; 2];
+%     button = 1;
+%     figure(fig_num); clf; grid on; axis equal;
+%     while sum(button) <=1   % read ginputs until a mouse right-button occurs
+%         % Get a new point and redo plot
+%         [x(end+1),y(end+1),button] = ginput(1); %#ok<SAGROW>
+%         points = [x, y];
+%         fcn_geometry_circleCenterFrom3Points(points,fig_num);
+%     end
+% end
 
 
 %% ADVANCED example that lets user select N points
-enable_advanced_example = false; % flag advanced example off for non-interactive execution
-if enable_advanced_example
-    fig_num = 1002;
-    x = [1; 2; 3];
-    y = [1; 2; 3];
-    figure(fig_num); clf; grid on; axis equal;
-
-    % The following tests the 3 input form:
-    button = 1;
-    while sum(button) <=1   % read ginputs until a mouse right-button occurs
-        % Shift points up to prep for next input
-        x(1:end-1) = x(2:end);
-        y(1:end-1) = y(2:end);
-
-        % Get a new point and redo plot
-        [x(end),y(end),button] = ginput(1);
-        points = [x,y];
-        fcn_geometry_circleCenterFrom3Points(points,fig_num);
-    end
-end
+% enable_advanced_example = false; % flag advanced example off for non-interactive execution
+% if enable_advanced_example
+%     fig_num = 1002;
+%     x = [1; 2; 3];
+%     y = [1; 2; 3];
+%     figure(fig_num); clf; grid on; axis equal;
+% 
+%     % The following tests the 3 input form:
+%     button = 1;
+%     while sum(button) <=1   % read ginputs until a mouse right-button occurs
+%         % Shift points up to prep for next input
+%         x(1:end-1) = x(2:end);
+%         y(1:end-1) = y(2:end);
+% 
+%         % Get a new point and redo plot
+%         [x(end),y(end),button] = ginput(1);
+%         points = [x,y];
+%         fcn_geometry_circleCenterFrom3Points(points,fig_num);
+%     end
+% end
 
 %% BASIC example that tests the 3 separate point input styles
 fig_num = 103;

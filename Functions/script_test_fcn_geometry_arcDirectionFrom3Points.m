@@ -40,6 +40,17 @@ is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, poi
 
 assert(isequal(is_counterClockwise,[-1; 1]))
 
+
+%% Debugging case
+fig_num = 1232;
+figure(fig_num);clf;
+
+seed_points = [2 3; 4 5; 6 3; 1 1; -2 -1];
+
+% Find if the arcs are counterclockwise or clockwise
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
+assert(isequal(is_counterClockwise,[-1; -1; 1]))
+
 %% Test of fast mode
 
 points1 = [0 0; 3 3;];
@@ -51,7 +62,7 @@ REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, []);
+     is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, []);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -76,16 +87,6 @@ fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
-
-%% Debugging case
-fig_num = 1232;
-figure(fig_num);clf;
-
-seed_points = [2 3; 4 5; 6 3; 1 1; -2 -1];
-
-% Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
-assert(isequal(is_counterClockwise,[-1; -1; 1]))
 
 
 %% Fail cases follow

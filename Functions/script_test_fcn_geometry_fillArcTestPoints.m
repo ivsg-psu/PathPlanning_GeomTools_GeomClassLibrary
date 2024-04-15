@@ -19,6 +19,11 @@ sigma = 0.02;
 
 test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
 
+% Check sizes
+assert(length(test_points(:,1))>1);
+assert(length(test_points(1,:))==2);
+
+
 %% Speed test
 
 seed_points = [2 3; 4 5; 6 3; 1 1; 2 -1; 0 -3];

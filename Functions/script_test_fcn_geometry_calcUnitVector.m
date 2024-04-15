@@ -11,7 +11,7 @@ close all;
 fig_num = 1;
 input_vectors = [3 3]; 
 
-unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num); %#ok<NASGU>
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;

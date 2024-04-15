@@ -46,7 +46,7 @@ transverse_tolerance = 0.2;
 
 
 agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num));
-
+assert(length(agreement_indicies)>1);
 
 %% Test of fast mode
 

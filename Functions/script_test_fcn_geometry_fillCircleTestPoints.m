@@ -19,6 +19,9 @@ sigma = 0.02;
 
 test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma, (fig_num));
 
+% Check sizes
+assert(length(test_points(:,1))>1);
+assert(length(test_points(1,:))==2);
 
 %% Speed test
 

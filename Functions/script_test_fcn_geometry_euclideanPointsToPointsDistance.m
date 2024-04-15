@@ -32,14 +32,14 @@ fig_num = 3;
 pt1 = rand(5,2);
 pt2 = rand(5,2);
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-
-% BASIC example - single points in 3D
+assert(~isequal(round(dist,4), [1; 1; 1; 1; 1]));
+%% BASIC example - single points in 3D
 fig_num = 31;
 
 pt1 = [1 1 0];
 pt2 = [2 3 2];
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
-assert(isequal(round(dist,4), [3]));
+assert(isequal(round(dist,4), 3));
 
 %% BASIC example - two points in 3D
 fig_num = 32;
