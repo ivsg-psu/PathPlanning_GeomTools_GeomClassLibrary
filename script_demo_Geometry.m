@@ -64,50 +64,47 @@
 % 2024_04_14 - sbrennan@psu.edu
 % -- added joinLineToArc functionality but without spiral joins
 % -- added fillArcSequenceTestPoints with true values
-
+% 2024_04_15 - sbrennan@psu.edu
+% -- added fcn_geometry_fitSequentialArcs
+% -- added methods to compare similar geometries to find the maximum error
+% between them (for example, an arc versus an arc or a line versus an arc,
+% or a line versus a line), or even points versus points. See functions:
+% compareCurves, comparePointsToCurve, and comparePointsToPoints
+% -- fixed plotCircle to produce outputs, just like plotArc
 
 %% To-do items
+% 2024_04_15 - S. Brennan
+% -- need to check the fcn_geometry_fitSequentialArcs closely. There are
+% larger errors at the end points and not sure why.
+% 2024_04_14 - Aneesh Batchu
+% -- Write Assertions to the following scripts
+% script_test_fcn_geometry_findIntersectionOfLineSegmentWithCircle
+% script_test_fcn_geometry_findPhiConstraints
+% -- run the test scripts to make sure above changes don't break codes
 % 2024_04_14 - S. Brennan
 % -- In joinLineToArc, need to develop methods to reflect geometries about
 % a vector, and flip a geometry's direction. Then need to push those
 % methods into the testing script and this function for better clearity.
 % -- in joinLineToArc, need to allow joins of line to arcs via spirals
-% -- need methods to compare similar geometries to find the maximum error
-% between them (for example, an arc versus an arc or a line versus an arc,
-% or a line versus a line).
 % -- pull out functions from script_demo_VelodyneLIDARFitting
-%
+% 2024_04_11 - Aneesh Batchu
+% -- Some functions are missing on the ReadME.md file. It is not up to
+% date.
 % 2024_04_11 - S. Brennan
 % -- Need to speed up testing scripts
 % -- Need to remove long data prints in test scripts
-% -- Need to fix domain bug in circle regressionw where the issimplified
+% -- Need to fix domain bug in circle regression where the issimplified
 % test fails. This is because, in the circle regression, the domain box is
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
-%
 % 2024_03_14 - S. Brennan
 % -- need to update the intersection calculation to use the Path
 % library function, NOT the geometry library version
-%
-%
-% make sure all functions have at least one straighforward test case in
+% -- make sure all functions have at least one straighforward test case in
 % this main code    
-%
-% fix plotCircle to produce outputs, just like ploArc
-% 
-% 2024_04_11 - Aneesh Batchu
-% -- Some functions are missing on the ReadME.md file. It is not up to
-% date.
-% 
-%
-% 2024_04_14 - Aneesh Batchu
-% -- Write Assertions to the following scripts
-% script_test_fcn_geometry_findIntersectionOfLineSegmentWithCircle
-% script_test_fcn_geometry_findPhiConstraints
-% 
-% 
-% -- run the test scripts to make sure above changes don't break codes
+
+
 
 %% Prep the workspace
 close all

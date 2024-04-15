@@ -1,5 +1,5 @@
 %% script_test_fcn_geometry_fitSequentialArcs
-% Exercises the function: script_test_fcn_geometry_fitSequentialArcs
+% Exercises the function: fcn_geometry_fitSequentialArcs
 
 % 2024_04_14 - S. Brennan
 % -- wrote the code

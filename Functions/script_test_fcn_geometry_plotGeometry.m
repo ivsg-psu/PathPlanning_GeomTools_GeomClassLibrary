@@ -3,6 +3,8 @@
 % Revision history:
 % 2024_04_12
 % -- wrote the code
+% 2024_04_15
+% -- fixed assertions
 
 close all;
 
@@ -25,6 +27,8 @@ line_parameters(1,6)   = line_s_end;
 segment_length = [];
 XY_data = fcn_geometry_plotGeometry('line', line_parameters,segment_length, (fig_num));
 
+% Check that a figure opened with this number, and that outputs are right
+% sizes
 assert(ishandle(1));
 assert(length(XY_data(1,:))==2)
 assert(length(XY_data(:,1))>1)
@@ -49,8 +53,10 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 segment_length = [];
 
-fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, (fig_num));
+XY_data = fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, (fig_num));
 
+% Check that a figure opened with this number, and that outputs are right
+% sizes
 assert(ishandle(2));
 assert(length(XY_data(1,:))==2)
 assert(length(XY_data(:,1))>1)

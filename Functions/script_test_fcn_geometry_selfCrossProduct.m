@@ -13,7 +13,7 @@ fig_num = 1;
 path = [0 0; 1 1; 0 2];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num) %#ok<*NOPTS,*NASGU>
+    path, fig_num);
 
 assert(isequal(cross_products,2));
 
@@ -22,7 +22,9 @@ fig_num = 2;
 path = [0 0; 1 1; 2 0];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num) %#ok<*NASGU>
+    path, fig_num);
+
+assert(isequal(cross_products,-2));
 
 %% BASIC example -
 % find all the cross-products for many bends
@@ -30,7 +32,8 @@ fig_num = 3;
 path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
 [cross_products] = ...
     fcn_geometry_selfCrossProduct(...
-    path, fig_num)
+    path, fig_num);
+assert(isequal(cross_products,[ 2    -4    -8     4    10]'));
 
 %% Test of fast implementation mode 
 
@@ -64,7 +67,7 @@ for i=1:REPS
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitVectorToNPoints:\n');
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_selfCrossProduct:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
@@ -74,7 +77,7 @@ fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTi
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
 
-
+assert(averageTimeFast<averageTimeSlow);
 
 
 if 1==0
@@ -82,23 +85,23 @@ if 1==0
     %% ERROR example - find cross product for straight
     fig_num = 4;
     path = [0 0; 1 1; 2 2];
-    [cross_products,err] = ...
+    [~,~] = ...
         fcn_geometry_selfCrossProduct(...
-        path, fig_num) %#ok<*ASGLU,*NASGU>
+        path, fig_num);
 
     %% ERROR example - find cross product for bent back on self
     fig_num = 5;
     path = [0 0; 1 1; 0 0];
-    [cross_products,err] = ...
+    [~,~] = ...
         fcn_geometry_selfCrossProduct(...
-        path, fig_num) %#ok<*NASGU>
+        path, fig_num);
 
     %% ERROR example - find cross product for zero-length segment
     fig_num = 6;
     path = [1 1; 1 1; 0 0];
-    [cross_products,err] = ...
+    [~,~] = ...
         fcn_geometry_selfCrossProduct(...
-        path, fig_num) %#ok<*NASGU>
+        path, fig_num);
 
 end
 

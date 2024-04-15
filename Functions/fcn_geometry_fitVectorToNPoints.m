@@ -60,6 +60,8 @@ function [vector_root, unit_vector] = ...
 % -- fixed bug wherein it crashes if empty figure given
 % 2024_01_27 - S. Brennan
 % -- typo fixes in comments
+% 2024_04_15 - S. Brennan
+% -- fixed errors that come up when legend entries missing
 
 %% Debugging and Input checks
 
