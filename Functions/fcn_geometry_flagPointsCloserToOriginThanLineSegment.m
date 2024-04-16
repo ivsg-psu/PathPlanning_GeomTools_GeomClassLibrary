@@ -64,6 +64,9 @@ function [point_flags] = ...
 % incorrectly
 % 2024_01_17 - Aneesh Batchu
 % -- added max speed options
+% 2024_04_15 - S. Brennan
+% -- added plot handles to legend entries to keep from causing warnings 
+
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -215,7 +218,7 @@ if flag_do_plot
     if isinf(slope)  % The result is a vertical line        
         y = linspace(min(segment_points(:,2)),max(segment_points(:,2)),100)';
     end    
-    plot(x,y,'b-');
+    h_lineSegment = plot(x,y,'b-');
     
     % PLOT THE ORIGIN LINE
     y_origin = x*slope;
@@ -223,21 +226,27 @@ if flag_do_plot
         x = x*0;
         y_origin = linspace(min(segment_points(:,2)),max(segment_points(:,2)),100)';
     end    
-    plot(x,y_origin,'g-');
+    h_originCutoff = plot(x,y_origin,'g-');
     
     
     % NOW PLOT THE POINTS
-    plot(test_points(:,1),test_points(:,2),'k.');
+    h_testPoints = plot(test_points(:,1),test_points(:,2),'k.');
     
     % Circle inside points with green
     inside_points = test_points(point_flags>0,:);
-    plot(inside_points(:,1),inside_points(:,2),'go');
+    if isempty(inside_points)
+        inside_points = [nan nan];
+    end
+    h_inside = plot(inside_points(:,1),inside_points(:,2),'go');
 
     % Circle outside points with red
     outside_points = test_points(point_flags==0,:);
-    plot(outside_points(:,1),outside_points(:,2),'ro');
+    if isempty(outside_points)
+        outside_points = [nan nan];
+    end
+    h_outside = plot(outside_points(:,1),outside_points(:,2),'ro');
     
-    legend('Line segment','Origin cut-off','Test points','Inside','Outside');
+    legend([h_lineSegment, h_originCutoff,  h_testPoints, h_inside, h_outside], 'Line segment','Origin cut-off','Test points','Inside','Outside');
 
 end
 

@@ -161,13 +161,13 @@ base_point_XYZ_corrected = base_point_XYZ;
 base_point_XZY_corrected = [base_point_XZY(1) base_point_XZY(3) base_point_XZY(2)] ;
 base_point_YZX_corrected = [base_point_YZX(3) base_point_YZX(1) base_point_YZX(2)];
 
-[~,min_std_z_index] = min([standard_deviation_in_z_XYZ, standard_deviation_in_z_XZY, standard_deviation_in_z_YZX]);
+[~,min_std_z_index] = min([standard_deviation_in_z_XYZ, standard_deviation_in_z_XZY, standard_deviation_in_z_YZX]); %#ok<ASGLU>
 [~,min_std_ortho_index] = min([standard_deviation_in_plane_orthogonals_XYZ, standard_deviation_in_plane_orthogonals_XZY, standard_deviation_in_plane_orthogonals_YZX]);
 
-if min_std_z_index~=min_std_ortho_index
-    warning('on','backtrace');
-    warning('minimum direction for standard deviations in z does not match minimum directions for standard deviations in plane orthogonals.');
-end
+% if min_std_z_index~=min_std_ortho_index
+%     warning('on','backtrace');
+%     warning('minimum direction for standard deviations in z does not match minimum directions for standard deviations in plane orthogonals.');
+% end
 
 % Find the root and unit vector depending on which situation gives minimum
 % standard deviation

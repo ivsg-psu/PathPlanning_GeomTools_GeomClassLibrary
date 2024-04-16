@@ -71,6 +71,11 @@
 % or a line versus a line), or even points versus points. See functions:
 % compareCurves, comparePointsToCurve, and comparePointsToPoints
 % -- fixed plotCircle to produce outputs, just like plotArc
+% -- ran test scripts to make sure above changes don't break codes
+% -- updated the intersection calculation to use the Path
+% library function, NOT the geometry library version. Aneesh did this
+% earlier but did not add it to the revisions list.
+% -- Need to remove long data prints in test scripts
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -80,7 +85,6 @@
 % -- Write Assertions to the following scripts
 % script_test_fcn_geometry_findIntersectionOfLineSegmentWithCircle
 % script_test_fcn_geometry_findPhiConstraints
-% -- run the test scripts to make sure above changes don't break codes
 % 2024_04_14 - S. Brennan
 % -- In joinLineToArc, need to develop methods to reflect geometries about
 % a vector, and flip a geometry's direction. Then need to push those
@@ -92,15 +96,12 @@
 % date.
 % 2024_04_11 - S. Brennan
 % -- Need to speed up testing scripts
-% -- Need to remove long data prints in test scripts
 % -- Need to fix domain bug in circle regression where the issimplified
 % test fails. This is because, in the circle regression, the domain box is
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
 % 2024_03_14 - S. Brennan
-% -- need to update the intersection calculation to use the Path
-% library function, NOT the geometry library version
 % -- make sure all functions have at least one straighforward test case in
 % this main code    
 

@@ -13,8 +13,6 @@ close all
 %% Load Data: Use the rawdata_lidar.mat in the Data folder to start, 
 % the loaded data is a struct containing two fields
 % rawdata.GPS_SparkFun_Temp_ENU and rawdata.Lidar_pointcloud_cell
-data_folder = fullfile("..","Data");
-addpath(data_folder)
 load('PointCloud_Separated_Data_newTarget.mat')
 
 % Test 1: a basic test, change the index of scan and ring label if needed
