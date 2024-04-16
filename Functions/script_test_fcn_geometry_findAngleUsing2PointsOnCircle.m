@@ -5,6 +5,7 @@
 %      2021_05_22:
 %      -- Edited for new function name
 
+close all
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
 fig_num = 1;
@@ -357,6 +358,48 @@ fcn_summarize(angles,...
     end_points_on_circle,...
     cross_products);
 
+
+
+%% Debugging example
+fig_num = 22232;
+
+circle_centers = [0 2];
+radii = 2;
+points1 = [0 0];
+points2 = [-2 2];
+is_counterClockwise = -1;
+
+
+[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
+    circle_centers,...
+    radii,...
+    points1,...
+    points2,...
+    is_counterClockwise,...
+    fig_num);
+
+assert(isequal(angles,-pi/2));
+
+%% Debugging example
+fig_num = 234343;
+
+circle_centers = [0 2];
+radii = 2;
+points1 = [0 0];
+points2 = [0 4];
+is_counterClockwise = 1;
+
+
+[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
+    circle_centers,...
+    radii,...
+    points1,...
+    points2,...
+    is_counterClockwise,...
+    fig_num);
+
+assert(isequal(angles,pi));
+
 %% Test of fast mode
 
 centers = [0 0; 4 4; 8 10; -6 10];
@@ -410,46 +453,6 @@ fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
-
-%% Debugging example
-fig_num = 22232;
-
-circle_centers = [0 2];
-radii = 2;
-points1 = [0 0];
-points2 = [-2 2];
-is_counterClockwise = -1;
-
-
-[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
-    circle_centers,...
-    radii,...
-    points1,...
-    points2,...
-    is_counterClockwise,...
-    fig_num);
-
-assert(isequal(angles,-pi/2));
-
-%% Debugging example
-fig_num = 234343;
-
-circle_centers = [0 2];
-radii = 2;
-points1 = [0 0];
-points2 = [0 4];
-is_counterClockwise = 1;
-
-
-[angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
-    circle_centers,...
-    radii,...
-    points1,...
-    points2,...
-    is_counterClockwise,...
-    fig_num);
-
-assert(isequal(angles,pi));
 
 %% Function start here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

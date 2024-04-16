@@ -90,6 +90,9 @@ vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
 %         mod(change(ith_vertex,1),2*pi)*180/pi);
 % end
 
+assert(isequal(round(phi_start,4),[1.5708; 0.7854; 4.7124; 1.5708]));
+assert(isequal(round(change,4),[-1.5708; -1.5708; -1.5708; 1.5708]));
+
 %% Simple rotation test to check for unknown items
 
 fig_num = 13;

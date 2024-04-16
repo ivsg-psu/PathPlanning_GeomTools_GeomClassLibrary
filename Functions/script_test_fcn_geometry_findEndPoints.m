@@ -568,6 +568,9 @@ if 1 == 0
     % assert(isequal(round(closeEndPointsMatrix(2,:),4),[4.0000, 1.9768]));
     % assert(isequal(round(closeEndPointsMatrix(3,:),4),[4.0000, 2.1955]));
     % assert(isequal(round(dist_btw_close_endPoints,4), 0.2187));
+    
+    assert(length(closeEndPointsMatrix(1,:)) == 2);
+    assert(length(dist_btw_close_endPoints(1,:)) == 2);
 
 end
 %% In this case, one arc and one line have been used as the test data. 
