@@ -22,7 +22,8 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % typical first-point as starting piont.
 % 
 % Format: 
-% [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (animation_figure_handles),(fig_num))
+% [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = ...
+% fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (fig_num))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed to
@@ -39,17 +40,22 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 %      process to proceed "backwards", e.g. from the end of the data set to
 %      the beginning. Default is 0.
 %
-%      animation_figure_handles: a set of figure handles that, if set, will
-%      update an animation of the fitting progress into 4 subplots, so that
-%      the user can view results. The handles are stored in an array:
-%
-%           h_plotPoints      = animation_figure_handles(1);
-%           h_plotPercentage  = animation_figure_handles(2);
-%           h_plotFitShape = animation_figure_handles(3);
-%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
+%
+%      NOTE: this code is often used with animations and supports a special
+%      fig_num input. Namely, the user can pass an array that includes the
+%      figure number and a set of figure handles that, if set, will update
+%      an animation of the fitting progress into 4 subplots, so that the
+%      user can view results. The array is as follows:
+%
+%           fig_num(1): the figure number of the plot to use
+%           fig_num(2): a handle to the h_plotPoints, that animates the
+%           points being tested
+%           fig_num(3): h_plotPercentage, to animate the percentage
+%           agreement
+%           fig_num(4): h_plotFitShape to animate the domain fit shape
 %
 % OUTPUTS:
 %
@@ -83,6 +89,8 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % Revision history:
 % 2024_04_03 - S Brennan
 % -- wrote the code
+% 2024_04_17 - S Brennan
+% -- fixed the animation subfigure issues to be consistent with fig_num
 
 %% Debugging and Input checks
 
@@ -90,7 +98,7 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -131,7 +139,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,5);
+        narginchk(1,4);
 
     end
 end
@@ -155,24 +163,27 @@ if (3<=nargin)
     end
 end
 
-% Does user want to specify animation_figure_handles?
-flag_do_animations = 0;
-if (4<=nargin)
-    temp = varargin{3};
-    if ~isempty(temp)
-        animation_figure_handles = temp;
-        flag_do_animations = 1;
-    end
-end
+
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if  (0==flag_max_speed) && (5<= nargin)
+if  (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
-    if ~isempty(temp)
+    if ~isempty(temp)        
         fig_num = temp;
         flag_do_plots = 1;
+
+        % Does user want to specify animation_figure_handles?
+        flag_plot_subfigs = 0;
+
+        if length(temp)>1
+            fig_num           = temp(1);
+            h_plotPoints      = temp(2);
+            h_plotPercentage  = temp(3);
+            h_plotFitShape    = temp(4);
+            flag_plot_subfigs = 1;
+        end
     end
 end
 
@@ -189,13 +200,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 NtestPoints = length(points_to_fit(:,1));
 Ndomains = 1;
-
-% Prep for animations?
-if flag_do_animations
-    h_plotPoints      = animation_figure_handles(1);
-    h_plotPercentage  = animation_figure_handles(2);
-    h_plotFitShape = animation_figure_handles(3);       
-end
 
 % Set the fit direction
 if flag_fit_backwards
@@ -218,6 +222,7 @@ else
 end
 
 
+
 % Initialize arrays and structures
 percentage_of_fits = nan(NtestPoints,1);
 Hough_domain.best_fit_type    = 'Hough arc';
@@ -225,6 +230,80 @@ Hough_domain.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicate
 empty_data = nan*points_to_fit;
 fitSequence_endIndicies{Ndomains} = current_segment_start_index;
 
+% Initialize subfigure plots?
+if flag_do_plots==1 && 1==flag_plot_subfigs
+    figure(fig_num);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Plot the input points
+    subplot(2,2,1);
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]');
+    title('Input points');
+
+    % Plot the input points
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',2);
+
+
+    % Grab the axis
+    original_axis = axis + [-10 10 -10 10];
+    axis(original_axis);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Plot the percentage fit per index
+    subplot(2,2,2);
+
+    title('Regression fit');
+    hold on;
+    grid on;
+    axis equal
+    xlabel('X [meters]');
+    ylabel('Y [meters]');
+
+    % Plot the original data
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',2);
+
+    % Plot the fit shape
+    Hough_domain.points_in_domain = points_to_fit(:,1:2);
+    Hough_domain.best_fit_source_indicies = [1 2 NtestPoints];
+    regression_fit  =  fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, 0.1, -1);
+
+    fitShape = regression_fit.best_fit_domain_box;
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
+    h_plotFitShape = plot(fitShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+
+
+    % Plot the "hit" points within the fit
+    empty_data = nan*points_to_fit;
+    h_plotPoints = plot(empty_data(:,1),empty_data(:,2),'.','Color',[0 1 0],'MarkerSize',10);
+    axis(original_axis);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Make a plot of percentage of fits
+    subplot(2,2,3);
+    hold on;
+    percentage_of_fits = nan(NtestPoints,1);
+    xlabel('Number of points');
+    ylabel('Percentage inside');
+    title('Percentage of points fit for fits of N points')
+
+    % Plot a bar going across at 100%
+    plot((1:NtestPoints)',ones(NtestPoints,1),'k-','LineWidth',5);
+
+    % Create placeholder points to show progress
+    h_plotPercentage = plot((1:NtestPoints)',percentage_of_fits,'.');
+    axis([0 NtestPoints -0.1 1.1]);
+    grid on;
+
+
+
+
+end
 
 % Perform the fitting
 % On the first time through, we do not know orientation, so use a
@@ -258,7 +337,7 @@ while 1==flag_keep_going
     percentage_of_fits(current_point_index,1) = min(sum(indicies_inside_fit)/NpointsInCurrentFit,1);
 
     % Perform plot updates?
-    if flag_do_animations && flag_update_plots
+    if flag_plot_subfigs && flag_update_plots
         % Update the fit region
         set(h_plotFitShape,'Shape',regression_domain.best_fit_domain_box);
         
@@ -283,7 +362,7 @@ while 1==flag_keep_going
         current_segment_start_index = min(max(1,current_point_index-2*direction_of_fit),NtestPoints);
 
         % Perform plot updates?
-        if flag_do_animations 
+        if flag_plot_subfigs 
             % Set up plots for next round
             figure(get(h_plotFitShape.Parent.Parent, 'Number'));
             subplot(2,2,2)
@@ -314,7 +393,7 @@ fitSequence_shapes{Ndomains} = regression_domain.best_fit_domain_box;
 fitSequence_parameters{Ndomains} = regression_domain.best_fit_parameters; 
 fitSequence_bestFitType{Ndomains} = regression_domain.best_fit_type; 
 
-if flag_do_animations
+if flag_plot_subfigs
     % Add vertical lines to first indicate where the segments are changing
     figure(get(h_plotFitShape.Parent.Parent, 'Number'));
     subplot(2,2,3);
@@ -372,7 +451,7 @@ for ith_domain = 1:length(fitSequence_parameters)
         % 2*tolerance. However, the first and last points may be very
         % slightly outside this, and so we make the height 3 times the
         % tolerance.
-        if arc_height < 3*fitting_tolerance
+        if arc_height < 3*fitting_tolerance(1)
             % This is a line - redo the fit with a line
             Hough_domain.points_in_domain = fitSequence_points{ith_domain};
             Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
@@ -402,7 +481,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    if flag_do_animations
+    if flag_plot_subfigs
 
         figure(get(h_plotFitShape.Parent.Parent, 'Number'));
         
@@ -413,9 +492,6 @@ if flag_do_plots
         subplot(2,2,1);
         original_axis = axis;
 
-        subplot(2,2,4);
-        axis(original_axis);
-
     else
         % Plot the results in the given figure number
         temp_h = figure(fig_num);
@@ -425,51 +501,70 @@ if flag_do_plots
         end
     end
 
-    subplot(2,1,1)
+    if flag_plot_subfigs == 1
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Final fit
+        figure(fig_num);
+        subplot(2,2,4);
+        hold on;
+        grid on;
+        axis equal;
+        xlabel('X [meters]');
+        ylabel('Y [meters]');
 
-    % Plot the input points
-    subplot(2,2,1);
-    hold on;
-    grid on;
-    axis equal;
-    xlabel('X [meters]');
-    ylabel('Y [meters]');
+        % Plot the fit results 
+        for ith_domain = 1:length(fitSequence_points)
+            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+            current_fitSequence_points = fitSequence_points{ith_domain};
+            current_fitSequence_shape  = fitSequence_shapes{ith_domain};
+            plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
+            plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+        end
 
-    % Plot the input points
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
-    plot(test_points(:,1),test_points(:,2),'.','Color',current_color,'MarkerSize',10);
+        % Plot the domain fits
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+
+        axis(original_axis);
 
 
-    % Grab the axis
-    original_axis = axis + [-10 10 -10 10];
-    axis(original_axis);
+    else
+        figure(fig_num);
+        hold on;
+        grid on;
+        axis equal;
+        xlabel('X [meters]');
+        ylabel('Y [meters]');
 
-    URHERE
+        % Plot the input points very large 
+        current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+        plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',10);
 
-    plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
-    % Plot the domain points
-    for ith_domain = 1:length(fitSequence_points)
-        current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-        current_fitSequence_points = fitSequence_points{ith_domain};
-        current_fitSequence_shape  = fitSequence_shapes{ith_domain};
-        plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
-        plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
+
+        % Plot the domain points
+        for ith_domain = 1:length(fitSequence_points)
+            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+            current_fitSequence_points = fitSequence_points{ith_domain};
+            current_fitSequence_shape  = fitSequence_shapes{ith_domain};
+            plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);
+            plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',3,'EdgeAlpha',0);
+        end
+
+        % Plot the domain fits
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+
+        % Make axis slightly larger?
+        if flag_rescale_axis
+            temp = axis;
+            %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+            axis_range_x = temp(2)-temp(1);
+            axis_range_y = temp(4)-temp(3);
+            percent_larger = 0.3;
+            axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+        end
     end
-
-    % Plot the domain fits
-    fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
-    
-    % Make axis slightly larger?
-    if flag_rescale_axis
-        temp = axis;
-        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-    end
-
 
 end % Ends check if plotting
 

@@ -12,11 +12,16 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 %
 %      (OPTIONAL INPUTS)
 %
-%      best_fit_domain_box_projection_distance: the distance from the curve
-%      fit, in the transverse direction, to project in both the positive
-%      and negative directions to produce the best_fit_domain_box. If left
-%      empty, defaults to 2 standard deviations to thus give a box that is
-%      +/- 2 sigma.
+%      best_fit_domain_box_projection_distance: if entered as an 1x1, this
+%      is the distance from the curve fit, in the transverse direction, to
+%      project in both the positive and negative directions to produce the
+%      best_fit_domain_box. If left empty, defaults to 2 standard
+%      deviations to thus give a box that is +/- 2 sigma. If this is
+%      entered as a 2x1 or 1x2, then this specifies the distance first in
+%      the transverse direction, and then in the station direction. For
+%      example, an entry of [0.02 3] would have 0.02 meters tolerance in
+%      the transverse direction, but 3 meters tolerance in the station
+%      direction.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -54,7 +59,12 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % 2024_04_14 - S Brennan
 % -- fixed output angles to be between 0 and 2*pi
 % -- added fcn_geometry_fillColorFromNumberOrName for plotting
-
+% 2024_04_17 - S Brennan
+% -- fixed bug in plotting
+% -- fixed error due to best_fit_domain_box_projection_distance not being
+% used in the track data
+% -- added option to best_fit_domain_box_projection_distance to allow both
+% transverse AND station tolerances
 
 %% Debugging and Input checks
 
@@ -188,6 +198,20 @@ regression_domain.points_in_domain = points_in_domain;
 circleCenter = regression_fit_circle_center_and_radius(1,1:2);
 circleRadius = regression_fit_circle_center_and_radius(1,3);
 
+% Find the station tolerance to use
+
+if ~isempty(best_fit_domain_box_projection_distance)
+    if length(best_fit_domain_box_projection_distance)==1
+        station_tolerance = 10*best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+    else
+        station_tolerance = best_fit_domain_box_projection_distance(2);
+    end
+
+else
+    station_tolerance = circleRadius*3*pi; % Allow the arc to go all the way around, we only do this to force the check below to use all the points
+end
+
+
 % Calculate the remaining arc details?
 if Hough_flag_this_is_a_circle
     regression_domain.best_fit_parameters = [circleCenter, circleRadius];
@@ -199,7 +223,6 @@ else
     % These may be slightly different from Hough fit because the circle center
     % and radius will be different, due to regression fit
     index_source_point = Hough_best_fit_source_indicies(1);
-    station_tolerance = circleRadius*3*pi; % Allow the arc to go all the way around, we only do this to force the check below to use all the points
 
     [~, ~, start_angle_in_radians, end_angle_in_radians] = ...
         fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
@@ -246,7 +269,7 @@ regression_domain.best_fit_3_sigma_box = domain_box_3_sigma;
 if isempty(best_fit_domain_box_projection_distance)
     regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
 else
-    additional_arc_radians = best_fit_domain_box_projection_distance/circleRadius;
+    additional_arc_radians = station_tolerance/circleRadius;
     if end_angle_in_radians>start_angle_in_radians
         direction_of_angles = 1;
     else
@@ -282,7 +305,7 @@ if flag_do_plots
     axis equal;
 
     % Plot the fits    
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
       
     
     if flag_do_debug

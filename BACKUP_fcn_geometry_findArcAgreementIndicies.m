@@ -1,6 +1,6 @@
 function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, varargin)
-% fcn_geometry_findArcAgreementIndicies
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, flag_is_counterclockwise, varargin)
+%% fcn_geometry_findArcAgreementIndicies
 %
 % Given a set of points, a circle center and radius, and the index of a
 % source point within the set of points, finds the indicies of the points
@@ -11,6 +11,9 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % completely around the circle. Contiguous is defined as having an arc
 % distance, when the points are projected onto the circle, less than or
 % equal to the station tolerance.
+%
+% Also returns the arc that has the index source point in correct order,
+% with start angle always at the start and arc always proceeding 
 %
 % FORMAT:
 % 
@@ -37,6 +40,10 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 %      point "belongs" to the arc (if distance is less than or equal
 %      to the tolerance), or is "outside" the fit (if distance is greater
 %      than the tolerance). 
+%
+%      flag_is_counterclockwise: set to 1 if the arc is proceeding
+%      counter-clockwise (default), or 0 (or -1) to indicate
+%      clockwise motion
 % 
 %      (OPTIONAL INPUTS)
 % 
@@ -76,7 +83,10 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % 2024_01_12 - S. Brennan
 % -- fixed typo in test script name
 % 2024_04_17 - S. Brennan
-% -- fixed typo in test script name
+% -- fixed bug where gives wrong sorting order if angles cross over origin
+% -- added flag_is_counterclockwise to fix this bug. No way to easily solve
+% without this
+
 
 %% Debugging and Input checks
 
@@ -84,7 +94,7 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -123,10 +133,14 @@ end
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+if isempty(flag_is_counterclockwise)
+    flag_is_counterclockwise = 1;
+end
+
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(5,6);
+        narginchk(6,7);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -144,6 +158,10 @@ if 0==flag_max_speed
         % Check the station_tolerance input is a positive single number
         fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
 
+        % Check the flag_is_counterclockwise input is a positive single number
+        fcn_DebugTools_checkInputsToFunctions(flag_is_counterclockwise, 'positive_1column_of_numbers',1);
+        
+
     end
 end
 
@@ -151,7 +169,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (6<=nargin) && (0==flag_max_speed)
+if (7<=nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -191,13 +209,18 @@ end
 
 % Find angles of the points, relative to center
 shifted_points = (points - circleCenter);
-point_angles = atan2(shifted_points(:,2),shifted_points(:,1));
+unshifted_point_angles = atan2(shifted_points(:,2),shifted_points(:,1));
+point_angles = unshifted_point_angles - unshifted_point_angles(index_source_point);
 
 % Make sure all the angles are positive
 point_angles = mod(point_angles,2*pi);
 
 % Sort the angles in ascending order
-[sorted_angles, sorted_index] = sort(point_angles);
+if 1==flag_is_counterclockwise
+    [sorted_angles, sorted_index] = sort(point_angles,'ascend');
+else
+    [sorted_angles, sorted_index] = sort(point_angles,'descend');
+end
 
 % Find where the source point index moved after sorting. This is
 % used to determine where points need to be padded
@@ -222,9 +245,11 @@ if sorted_source_index~=1
     padded_sorted_angles = [padded_sorted_angles; sorted_angles(1:sorted_source_index)+2*pi];
     padded_sorted_indicies = [padded_sorted_indicies; sorted_index(1:sorted_source_index)];
 end
+
 % padded_sorted_angles   = sorted_angles(padded_sorted_indicies);
 padded_sorted_source_index = find(padded_sorted_indicies(1:end-1) == index_source_point);
 
+% Check to make sure source index is not missing or repeated
 if isempty(padded_sorted_source_index) || length(padded_sorted_source_index)>1 
     error('Unexpected index found.');
 end
@@ -251,12 +276,17 @@ indicies_in_station_agreement_sorted = ...
     station_tolerance, -1);
 
 indicies_in_input_form = padded_sorted_indicies(indicies_in_station_agreement_sorted);
-start_angle_in_radians = padded_sorted_angles(indicies_in_station_agreement_sorted(1));
-end_angle_in_radians   = padded_sorted_angles(indicies_in_station_agreement_sorted(end));
+start_angle_in_radians = padded_sorted_angles(indicies_in_station_agreement_sorted(1)); % + unshifted_point_angles(index_source_point);
+end_angle_in_radians   = padded_sorted_angles(indicies_in_station_agreement_sorted(end)); % + unshifted_point_angles(index_source_point);
 
-indicies_in_station_agreement = unique(indicies_in_input_form,'stable');
+start_angle_in_radians = mod(start_angle_in_radians,2*pi);
+end_angle_in_radians   = mod(end_angle_in_radians,2*pi);
 
 % Check if any repeated - if so, it is a circle!
+indicies_in_station_agreement = unique(indicies_in_input_form,'stable');
+
+% If any points are repeated, then the length of the vector after removing
+% repeats will have changed.
 flag_is_a_circle = 0;
 if length(indicies_in_input_form) ~= length(indicies_in_station_agreement)
     flag_is_a_circle = 1;

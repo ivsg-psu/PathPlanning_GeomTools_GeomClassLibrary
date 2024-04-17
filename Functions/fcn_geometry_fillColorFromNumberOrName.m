@@ -26,6 +26,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 %      color format. For example, the string types used for naming plotting
 %      domain types for curve fits are supported, including the following:
 %
+%      'points': plots points in black
+%
 %      'Regression arc': plots arcs in red
 %
 %      'Vector regression segment fit': plots lines or segments in blue
@@ -63,7 +65,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % Revision history:
 % 2024_04_11 - S Brennan
 % -- wrote the code
-
+% 2024_04_17 - S Brennan
+% -- added points type
 
 
 %% Debugging and Input checks
@@ -170,6 +173,8 @@ if isempty(string_identifier)
     color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
 else
     switch lower(string_identifier)
+        case {'points'}  % Points are black
+            color_vector = [0 0 0];
         case {'arc','regression arc'}  % Arcs are red
             color_vector = [1 0 0];
         case {'line','segment','vector regression segment fit'} % Line fits are blue

@@ -14,18 +14,18 @@ clf;
 rng(1); % Fix the random number, for debugging
 
 % arc_pattern has [1/R and L] for each segment as a row
-arc_pattern = [...
-    1/20, 15; 
-    0 20;
-    -1/5 10; 
-    0 10;
-    1/15 40; 
-    0 15
-    -1/10 20];
-
 % arc_pattern = [...
 %     1/20, 15; 
-%     0 20];
+%     0 20;
+%     -1/5 10; 
+%     0 10;
+%     1/15 40; 
+%     0 15
+%     -1/10 20];
+
+arc_pattern = [...
+    1/20, 15; 
+    0 20];
 
 M = 10;
 sigma = 0.02;
@@ -54,8 +54,13 @@ end
 
 
 % Initialize the subplots
-subplot_fig_num = fig_num*100;
-figure(subplot_fig_num); clf;
+fig_num_array(1) = fig_num;
+fig_num_array(2) = 0;
+fig_num_array(3) = 0;
+fig_num_array(4) = 0;
+figure(fig_num); clf;
+
+% Add starter points (truth) onto subplot 2,1,1
 subplot(2,2,1);
 hold on;
 grid on;
@@ -80,13 +85,23 @@ end
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+    fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+
+% Plot the true results
+subplot(2,2,4);
+fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array(1)));
+
 
 % Perform the fit backwards
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
-    fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
+    fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+
+% Plot the true results
+subplot(2,2,4);
+fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array(1)));
+
 
 % Compare lengths and parameters
 NfitsInSequence = length(fitSequence_points_forward);
@@ -115,11 +130,11 @@ probable_arc_boundary_indicies = round(mean([fitSequence_indicies_matrix_forward
 % probable_arc_boundary_indicies = probable_arc_boundary_indicies(1:end-1,:);
 
 % Print and plot the results
-
-% Initialize the subplots
-subplot_fig_num = fig_num*100;
-animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, trueArcStartIndicies, trueNamedCurveTypes, subplot_fig_num);
-
+% % Add vertical lines to indicate where the segments are TRUELY changing
+% for ith_start = 1:length(arcStartIndicies)
+%     plot([arcStartIndicies(ith_start) arcStartIndicies(ith_start)],[-0.1 1.1],'k-','LineWidth',5);
+% end
+%
 
 fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit number:'),20));
 for ith_fit = 1:NfitsInSequence
@@ -141,7 +156,7 @@ fprintf(1,'\n');
 
 % Add vertical lines to indicate where the segments were identified as
 % changing
-figure(subplot_fig_num);
+figure(fig_num_array(1));
 subplot(2,2,3);
 for ith_start = 1:NfitsInSequence
     
@@ -150,7 +165,7 @@ for ith_start = 1:NfitsInSequence
     plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
 end
 
-figure(subplot_fig_num);
+figure(fig_num_array(1));
 subplot(2,2,4);
 
 % Plot the fitted groups of points. If any of the points are mis-labeled,
@@ -162,7 +177,7 @@ for ith_plot = 1:NfitsInSequence
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
-% Connect the fits so that the lines perfectly align with the arcs
+%% Connect the fits so that the lines perfectly align with the arcs
 
 fig_num = 23456;
 figure(fig_num);clf;
@@ -176,11 +191,8 @@ fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSeque
 subplot(1,2,1);
 good_axis_limits = axis;
 
-% Print the results
-close all
-comparison_fig_num = 2828;
-figure(comparison_fig_num); clf;
-hold on;
+%% Print the results
+
 
 NleadCharacters = 20;
 threshold = 0.15;
@@ -215,6 +227,24 @@ for ith_fit = 1:NfitsInSequence
 
     fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('AVERAGED'),NleadCharacters));
     fcn_INTERNAL_printFitDetails(fitSequence_bestFitType_forward{ith_fit},averaged_parameters,0)
+end
+fprintf(1,'\n');
+
+fprintf(1,'Max forward fitting error:  %.3f meters\n',max_forward_error);
+fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
+fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
+
+
+%% Plot the results
+comparison_fig_num = 2828;
+figure(comparison_fig_num); clf;
+hold on;
+
+for ith_fit = 1:NfitsInSequence
+
+    averaged_parameters = (revised_fitSequence_parameters_backward{ith_fit} + revised_fitSequence_parameters_forward{ith_fit})/2;
+
+    sgtitle({'Fit quality',sprintf('Red is %.2fm error, blue is 0m error', threshold)});
 
     subplot(1,3,1);
     curve_test_segment_length = [];    
@@ -248,12 +278,6 @@ for ith_fit = 1:NfitsInSequence
 
 
 end
-fprintf(1,'\n');
-
-fprintf(1,'Max forward fitting error:  %.3f meters\n',max_forward_error);
-fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
-fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
-
 
 %% Now try fitting real-world data
 fig_num = 237492;
@@ -266,16 +290,17 @@ if exist(mat_filename,'file')
     load(mat_filename,'XY_data');
 end
 
-% Since the XY data is very dense, keep only every 100 points
+% Since the XY data is very dense, keep only 1 of every 100 points
 indicies = (1:length(XY_data(:,1)))';
 small_XY_data_indicies = find(0==mod(indicies,100));
 small_XY_data = XY_data(small_XY_data_indicies,:);
 
 % Perform the fit forwards
-fitting_tolerance = 1; % Units are meters
+fitting_tolerance = [1 10]; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, [], fig_num);
+    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+
 
 
 %% Functions follow
@@ -385,103 +410,6 @@ end % Ends fcn_geometry_alignGeometriesInSequence
 
 
 
-%% fcn_INTERNAL_setupSubplots
-function figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndicies, namedCurveTypes, subplot_fig_num)
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PLOT INPUT TEST POINTS 
-figure(subplot_fig_num);
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot that shows sequential segment fitting
-figure(subplot_fig_num);
-subplot(2,2,2);
-
-
-NtestPoints = length(test_points(:,1));
-Hough_fit.best_fit_type    = 'Hough arc';
-Hough_fit.best_fit_parameters  = [nan nan nan nan nan 0]; % The zero indicates this is an arc
-
-
-figure(subplot_fig_num);
-subplot(2,2,2);
-
-title('Regression fit');
-hold on;
-grid on;
-axis equal
-xlabel('X [meters]');
-ylabel('Y [meters]');
-
-% Plot the original data
-plot(test_points(:,1),test_points(:,2),'.','Color',[0 0 0],'MarkerSize',5);
-
-% Plot the fit shape
-Hough_fit.points_in_domain = test_points(:,1:2);
-Hough_fit.best_fit_source_indicies = [1 2 NtestPoints];
-regression_fit  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(Hough_fit, 0.1, -1);
-
-fitShape = regression_fit.best_fit_domain_box;
-current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
-h_plotFitShape = plot(fitShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
-
-% Plot the "hit" points within the fit
-empty_data = nan*test_points;
-h_plotPoints = plot(empty_data(:,1),empty_data(:,2),'.','Color',[0 1 0],'MarkerSize',10);
-axis(original_axis);
-
-% Make a plot of percentage of fits
-figure(subplot_fig_num);
-subplot(2,2,3);
-hold on;
-percentage_of_fits = nan(NtestPoints,1);
-xlabel('Number of points');
-ylabel('Percentage inside');
-
-% Plot a bar going across at 100%
-plot((1:NtestPoints)',ones(NtestPoints,1),'k-','LineWidth',5);
-
-% Create placeholder points to show progress
-h_plotPercentage = plot((1:NtestPoints)',percentage_of_fits,'.');
-axis([0 NtestPoints -0.1 1.1]);
-grid on;
-
-% Add vertical lines to indicate where the segments are TRUELY changing
-figure(subplot_fig_num);
-subplot(2,2,3);
-for ith_start = 1:length(arcStartIndicies)
-    plot([arcStartIndicies(ith_start) arcStartIndicies(ith_start)],[-0.1 1.1],'k-','LineWidth',5);
-end
-
-figure_handles(1) = h_plotPoints;
-figure_handles(2) = h_plotPercentage;
-figure_handles(3) = h_plotFitShape;
-
-figure(subplot_fig_num);
-subplot(2,2,4);
-hold on;
-grid on;
-axis equal;
-xlabel('X [meters]');
-ylabel('Y [meters]');
-
-% Plot the groups of points
-modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
-for ith_plot = 1:length(arcStartIndicies(:,1))
-    if ~isempty(namedCurveTypes)
-        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
-    else
-        current_color = [0 0 0];
-    end
-    index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
-    plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',30);
-end
-
-
-end % ends fcn_INTERNAL_setupSubplots
 
 
 

@@ -238,3 +238,33 @@ assert(isequal(flag_is_a_circle,0));
 assert(length(indicies_in_station_agreement)>1);
 assert(length(start_angle_in_radians) == 1);
 assert(length(end_angle_in_radians) == 1);
+
+%% ERROR - this gives the wrong results if the station_tolerance is too high - it loops back
+
+test_fig = 5678;
+figure(test_fig); clf;
+
+associated_points_in_domain = [
+  420.0263   75.5937
+  427.2219   82.2462
+  433.8011   89.3658
+  439.8038   96.9843
+  444.8438  105.1485
+  449.1222  113.9601
+  452.3287  123.2168
+  454.7150  132.6166
+  456.0727  142.3187
+  456.4009  152.2096
+  455.8907  161.7935
+  454.0404  171.4099
+  451.1417  180.7694
+  447.2674  189.7660
+  442.3539  198.3610];
+
+circleCenter =  [363.3234  149.7991];
+circleRadius =  93.0388;
+index_source_point = 1;
+station_tolerance = 10;
+
+[~, ~, start_angle_in_radians, end_angle_in_radians] = ...
+    fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, test_fig);
