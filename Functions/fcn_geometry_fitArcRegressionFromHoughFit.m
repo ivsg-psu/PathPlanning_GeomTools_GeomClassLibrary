@@ -282,7 +282,7 @@ if flag_do_plots
     axis equal;
 
     % Plot the fits    
-    current_color = fcn_geometry_fillColorFromNumberOrName(fig_num);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
       
     
     if flag_do_debug

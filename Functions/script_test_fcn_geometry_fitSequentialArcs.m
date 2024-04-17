@@ -232,6 +232,25 @@ fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
 fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
 
 
+%% Now try fitting real-world data
+fig_num = 237492;
+% Check to see if data was loaded earlier
+mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
+if exist(mat_filename,'file')
+    load(mat_filename,'XY_data');
+end
+
+% Since the XY data is very dense, keep only every 100 points
+indicies = (1:length(XY_data(:,1)))';
+small_XY_data = find(0==mod(indicies,100));
+
+% Perform the fit forwards
+fitting_tolerance = 1; % Units are meters
+flag_fit_backwards = 0;
+[fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
+    fcn_geometry_fitSequentialArcs(XY_data, fitting_tolerance, flag_fit_backwards, [], fig_num);
+
+
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   ______                _   _
@@ -357,10 +376,15 @@ ylabel('Y [meters]');
 % Plot the groups of points
 modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
 for ith_plot = 1:length(arcStartIndicies(:,1))
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    if ~isempty(namedCurveTypes)
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    else
+        current_color = [0 0 0];
+    end
     index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
+
 
 % Grab the axis
 original_axis = axis + [-10 10 -10 10];
@@ -400,6 +424,7 @@ Hough_fit.points_in_domain = test_points(:,1:2);
 Hough_fit.best_fit_source_indicies = [1 2 NtestPoints];
 regression_fit  =  ...
     fcn_geometry_fitArcRegressionFromHoughFit(Hough_fit, 0.1, -1);
+
 fitShape = regression_fit.best_fit_domain_box;
 current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
 h_plotFitShape = plot(fitShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
@@ -447,7 +472,11 @@ ylabel('Y [meters]');
 % Plot the groups of points
 modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
 for ith_plot = 1:length(arcStartIndicies(:,1))
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    if ~isempty(namedCurveTypes)
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    else
+        current_color = [0 0 0];
+    end
     index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',30);
 end
