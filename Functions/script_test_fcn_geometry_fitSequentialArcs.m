@@ -55,7 +55,26 @@ end
 
 % Initialize the subplots
 subplot_fig_num = fig_num*100;
-animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, trueArcStartIndicies, trueNamedCurveTypes, subplot_fig_num);
+figure(subplot_fig_num); clf;
+subplot(2,2,1);
+hold on;
+grid on;
+axis equal;
+xlabel('X [meters]');
+ylabel('Y [meters]');
+
+% Plot the groups of true points
+modifiedArcStartIndicies = [trueArcStartIndicies; length(test_points(:,1))];
+for ith_plot = 1:length(trueArcStartIndicies(:,1))
+    if ~isempty(trueNamedCurveTypes)
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,trueNamedCurveTypes{ith_plot},-1);
+    else
+        current_color = [0 0 0];
+    end
+    index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
+    plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
+end
+
 
 % Perform the fit forwards
 fitting_tolerance = 0.1; % Units are meters
@@ -70,7 +89,6 @@ flag_fit_backwards = 1;
     fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, animation_figure_handles, fig_num);
 
 % Compare lengths and parameters
-
 NfitsInSequence = length(fitSequence_points_forward);
 
 % First, make absolutely sure that the number of fits found in the forward
@@ -96,7 +114,12 @@ fitSequence_indicies_matrix_backward = cell2mat(fitSequence_endIndicies_backward
 probable_arc_boundary_indicies = round(mean([fitSequence_indicies_matrix_forward fitSequence_indicies_matrix_backward],2));
 % probable_arc_boundary_indicies = probable_arc_boundary_indicies(1:end-1,:);
 
-% Print the results
+% Print and plot the results
+
+% Initialize the subplots
+subplot_fig_num = fig_num*100;
+animation_figure_handles = fcn_INTERNAL_setupSubplots(test_points, trueArcStartIndicies, trueNamedCurveTypes, subplot_fig_num);
+
 
 fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit number:'),20));
 for ith_fit = 1:NfitsInSequence
@@ -367,37 +390,9 @@ function figure_handles = fcn_INTERNAL_setupSubplots(test_points, arcStartIndici
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CREATE TEST POINTS
+% PLOT INPUT TEST POINTS 
 figure(subplot_fig_num);
-clf;
-subplot(2,2,1);
-hold on;
-grid on;
-axis equal;
-xlabel('X [meters]');
-ylabel('Y [meters]');
 
-% Plot the groups of points
-modifiedArcStartIndicies = [arcStartIndicies; length(test_points(:,1))];
-for ith_plot = 1:length(arcStartIndicies(:,1))
-    if ~isempty(namedCurveTypes)
-        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
-    else
-        current_color = [0 0 0];
-    end
-    index_range = modifiedArcStartIndicies(ith_plot):modifiedArcStartIndicies(ith_plot+1);
-    plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
-end
-
-
-% Grab the axis
-original_axis = axis + [-10 10 -10 10];
-axis(original_axis);
-
-% Label the plot
-figure(subplot_fig_num);
-subplot(2,2,1);
-title('Input points');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot that shows sequential segment fitting

@@ -412,6 +412,7 @@ if flag_do_plots
         % Match subplot 4 axis with that from subplot 1
         subplot(2,2,1);
         original_axis = axis;
+
         subplot(2,2,4);
         axis(original_axis);
 
@@ -424,19 +425,31 @@ if flag_do_plots
         end
     end
 
+    subplot(2,1,1)
+
+    % Plot the input points
+    subplot(2,2,1);
     hold on;
     grid on;
     axis equal;
-
-    title('Domains that were found');
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    % Plot the original data
+    % Plot the input points
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,namedCurveTypes{ith_plot},-1);
+    plot(test_points(:,1),test_points(:,2),'.','Color',current_color,'MarkerSize',10);
+
+
+    % Grab the axis
+    original_axis = axis + [-10 10 -10 10];
+    axis(original_axis);
+
+    URHERE
+
     plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',[0 0 0],'MarkerSize',5);
 
     % Plot the domain points
-    for ith_domain = 1:length(fitSequence_points)        
+    for ith_domain = 1:length(fitSequence_points)
         current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
         current_fitSequence_points = fitSequence_points{ith_domain};
         current_fitSequence_shape  = fitSequence_shapes{ith_domain};
