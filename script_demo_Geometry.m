@@ -104,8 +104,22 @@
 % 2024_03_14 - S. Brennan
 % -- make sure all functions have at least one straighforward test case in
 % this main code    
-
-
+%
+% fix plotCircle to produce outputs, just like ploArc
+% 
+% 2024_04_11 - Aneesh Batchu
+% -- Some functions are missing on the ReadME.md file. It is not up to
+% date.
+% 
+%
+% 2024_04_14 - Aneesh Batchu
+%
+% -- Write Assertions to the following scripts
+% script_test_fcn_geometry_extractXYfromSTSpiral
+% script_test_fcn_geometry_fillEmptyDomainStructure
+% 
+%
+% -- run the test scripts to make sure above changes don't break codes
 
 %% Prep the workspace
 close all

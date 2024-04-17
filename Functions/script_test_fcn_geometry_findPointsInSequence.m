@@ -31,43 +31,8 @@ station_tolerance = 2;
 
 sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
-%% Example - 2 - fast implementation mode
-
-input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
-base_point_index = 6;
-station_tolerance = 2;
-
-% Perform the calculation in slow mode
-REPS = 10; minTimeSlow = Inf;
-tic;
-for i=1:REPS
-    tstart = tic;
-    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, []);
-    telapsed = toc(tstart);
-    minTimeSlow = min(telapsed,minTimeSlow);
-end
-averageTimeSlow = toc/REPS;
-
-% Perform the operation in fast mode
-REPS = 1000; minTimeFast = Inf; nsum = 10;
-tic;
-for i=1:REPS
-    tstart = tic;
-    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, -1);
-    telapsed = toc(tstart);
-    minTimeFast = min(telapsed,minTimeFast);
-end
-averageTimeFast = toc/REPS;
-
-fprintf(1,'Comparison of fast and slow modes of fcn_geometry_findPointsInSequence:\n');
-fprintf(1,'N repetitions: %.0d\n',REPS);
-fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
-fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
-fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
-fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
-fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
-fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
-
+assert(length(sequence_indicies) > 1);
+assert(length(sequence_indicies(1,:)) == 1);
 
 %% Example 3
 input_distances = [
@@ -155,6 +120,45 @@ fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
 fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+
+%% Example - 2 - fast implementation mode
+
+input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+% Perform the calculation in slow mode
+REPS = 10; minTimeSlow = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, []);
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+REPS = 1000; minTimeFast = Inf; nsum = 10;
+tic;
+for i=1:REPS
+    tstart = tic;
+    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, -1);
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'Comparison of fast and slow modes of fcn_geometry_findPointsInSequence:\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.8f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.8f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.8f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+
 %% Fail cases follow
 if 1==0
     %% Fails because the base_point_index is out of range
