@@ -39,7 +39,7 @@ fig_num = 3;
 figure(fig_num); clf;
 set(fig_num,'UserData',[]);
 
-increment_angle = 15;
+increment_angle = 45;
 increment_angle_in_radians = (increment_angle*pi/180);
 changes_in_angles = (0:increment_angle:(360))'*pi/180;
 start_angles_in_radians = (0:increment_angle:360)'*pi/180;

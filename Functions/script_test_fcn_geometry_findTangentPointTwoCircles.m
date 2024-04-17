@@ -1,9 +1,11 @@
-% script_test_fcn_geometry_findTangentPointTwoCircles
+%% script_test_fcn_geometry_findTangentPointTwoCircles
 % Tests fcn_geometry_findTangentPointTwoCircles
 
 % Revision history:
-%      2021_04_25:
-%      -- first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
+% 2021_04_25 - S. Brennan
+% -- first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
+% 2024_04_16 - S. Brennan
+% -- added assertions
 
 
 %% BASIC example - find the points for two circle, all inner
@@ -26,8 +28,15 @@ cross_products_end   = [-1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num); %#ok<*NOPTS,*ASGLU>
+    fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
+% Check values
 assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
 assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 
@@ -53,6 +62,12 @@ cross_products_end   = [ 1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 fig_num = 3;
@@ -75,6 +90,12 @@ cross_products_end   = [1];
     cross_products_start,...
     cross_products_end,...
     fig_num);
+
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, equal radii, outer, negative cross
@@ -99,6 +120,11 @@ cross_products_end   = [-1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
@@ -124,6 +150,11 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
@@ -149,6 +180,12 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % negative horizontal orientation
@@ -172,6 +209,12 @@ cross_products_end   = [1];
     cross_products_start,...
     cross_products_end,...
     fig_num);
+
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross,
@@ -197,6 +240,12 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
 %% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross
 % start circle smaller than end circle
@@ -221,6 +270,12 @@ cross_products_end   = [1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
 %% ADVANCED example - find the points for three circle, all inner
 fig_num = 11;
 centers_start = [1 1; 3 1];
@@ -242,6 +297,12 @@ cross_products_end = [1; -1];
     cross_products_start,...
     cross_products_end,...
     fig_num);
+
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for three circles, two outside, last inside, but where
@@ -267,6 +328,12 @@ cross_products_end = [1; -1];
     cross_products_end,...
     fig_num);
 
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
+
 %% BASIC example -
 % find the points for three circles, two outside, last inside, but where
 % all are equal radii
@@ -290,6 +357,12 @@ cross_products_end = [-1; 1];
     cross_products_start,...
     cross_products_end,...
     fig_num);
+
+% Check variable sizes
+assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_start(:,1))>=1); % Does it have 1 or more rows?
+assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
+assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% Test of fast implementation mode 
 
@@ -356,7 +429,7 @@ fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
-
+assert(averageTimeSlow>=averageTimeFast);
 
 %% Fail cases
 
@@ -375,8 +448,8 @@ if 1==0
     cross_products_end   = [1];
 
     [...
-        points_tangent_start, ...
-        points_tangent_end] ...
+        ~, ...
+        ~] ...
         = ...
         fcn_geometry_findTangentPointTwoCircles(...
         centers_start,...
@@ -400,8 +473,8 @@ if 1==0
     cross_products_end   = [1];
 
     [...
-        points_tangent_start, ...
-        points_tangent_end] ...
+        ~, ...
+        ~] ...
         = ...
         fcn_geometry_findTangentPointTwoCircles(...
         centers_start,...
@@ -426,8 +499,8 @@ if 1==0
     cross_products_end   = [-1];
 
     [...
-        points_tangent_start, ...
-        points_tangent_end] ...
+        ~, ...
+        ~] ...
         = ...
         fcn_geometry_findTangentPointTwoCircles(...
         centers_start,...

@@ -235,6 +235,7 @@ plotting_increment_interval = 10;
 
 while 1==flag_keep_going
     current_point_index = current_point_index + 1*direction_of_fit;
+    fprintf(1,'Checking current point: %.0d of %.0d\n',current_point_index,NtestPoints)
 
     flag_update_plots = (0==mod(current_point_index,plotting_increment_interval));
     

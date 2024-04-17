@@ -234,6 +234,9 @@ fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
 
 %% Now try fitting real-world data
 fig_num = 237492;
+figure(fig_num);
+clf;
+
 % Check to see if data was loaded earlier
 mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
 if exist(mat_filename,'file')
@@ -242,13 +245,14 @@ end
 
 % Since the XY data is very dense, keep only every 100 points
 indicies = (1:length(XY_data(:,1)))';
-small_XY_data = find(0==mod(indicies,100));
+small_XY_data_indicies = find(0==mod(indicies,100));
+small_XY_data = XY_data(small_XY_data_indicies,:);
 
 % Perform the fit forwards
 fitting_tolerance = 1; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcs(XY_data, fitting_tolerance, flag_fit_backwards, [], fig_num);
+    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, [], fig_num);
 
 
 %% Functions follow

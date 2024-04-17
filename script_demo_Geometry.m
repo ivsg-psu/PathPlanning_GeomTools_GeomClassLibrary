@@ -27,34 +27,12 @@
 % -- switched to using environment settings for checking input parameters
 % 2023_12_28 - Aneesh Batchu 
 % -- updated Max speed options in all the functions
-% -- Fast mode updated: go through all the functions and 
-% -- make sure they all have fast mode code flags at top, namely the code
-%        %% Debugging and Input checks
-%        
-%        % Check if flag_max_speed set. This occurs if the fig_num variable input
-%        % argument (varargin) is given a number of -1, which is not a valid figure
-%        % number.
-%        flag_max_speed = 0;
-%        if (nargin==8 && isequal(varargin{end},-1))
-%            (etc. --- to end of if-statement)
-% -- make sure the comment at top, for the fig_num, mentions the fast mode,
-%    like the following template:
-% 
-%      fig_num: a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed.
-%
-% -- update their input checks for fast mode
-%        if 0==flag_max_speed
-%            if flag_check_inputs == 1
-%
-% -- update input area for optional figures(and ordered to check
-%    flag_max_speed first, namely: 
-%
-%        if (0==flag_max_speed) && (2<= nargin)
-%
+% -- fast mode updated for all functions
+% -- fast mode in fig num updated for all functions
+% -- inputs updated for fast mode in all functions
+% -- figures not created if fast mode activated
 % -- each function has working test scripts to make sure fast mode works 
-% --  updated the README.md file.
+% -- updated the README.md file.
 % 2024_03_14 - sbrennan@psu.edu
 % -- updated the Path library dependence to the new function
 % 2024_04_11 - sbrennan@psu.edu
@@ -76,6 +54,14 @@
 % library function, NOT the geometry library version. Aneesh did this
 % earlier but did not add it to the revisions list.
 % -- Need to remove long data prints in test scripts
+% 2024_04_17 - S. Brennan
+% -- added testing times to script_test_all_functions
+% -- sped up testing in fcn_geometry_findAngleBetweenAngles, 
+% -- sped up testing in fcn_geometry_findPhiConstraints 
+% -- added rng seed specification to test script for domainBoxByType since 
+%    some results were throwing errors
+% -- updated test script and function for
+% fcn_geometry_findTangentPointsTwoCircles in prep for region checking
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -104,22 +90,6 @@
 % 2024_03_14 - S. Brennan
 % -- make sure all functions have at least one straighforward test case in
 % this main code    
-%
-% fix plotCircle to produce outputs, just like ploArc
-% 
-% 2024_04_11 - Aneesh Batchu
-% -- Some functions are missing on the ReadME.md file. It is not up to
-% date.
-% 
-%
-% 2024_04_14 - Aneesh Batchu
-%
-% -- Write Assertions to the following scripts
-% script_test_fcn_geometry_extractXYfromSTSpiral
-% script_test_fcn_geometry_fillEmptyDomainStructure
-% 
-%
-% -- run the test scripts to make sure above changes don't break codes
 
 %% Prep the workspace
 close all

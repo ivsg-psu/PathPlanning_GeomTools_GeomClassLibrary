@@ -93,29 +93,30 @@ vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
 assert(isequal(round(phi_start,4),[1.5708; 0.7854; 4.7124; 1.5708]));
 assert(isequal(round(change,4),[-1.5708; -1.5708; -1.5708; 1.5708]));
 
-%% Simple rotation test to check for unknown items
-
-fig_num = 13;
-
-p_apex =   [0 0;  2                      0; 0 -1; -1 0];
-vertex_1 = [1  0; 2+1/(2^0.5)  -1/(2^0.5) ; -1 -1; -2 0];
-vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
-
-angles = 0:0.01:2*pi;
-for i_angle = 1:length(angles)
-    angle = angles(i_angle);
-    R = [cos(angle) -sin(angle); sin(angle) cos(angle)];
-
-    p_apex2 = p_apex*R;
-    vertex_12   = vertex_1*R;
-    vertex_22   = vertex_2*R;
-
-    [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex2,vertex_12,vertex_22,fig_num);
-    % fprintf('\t %.2f \t %.2f\n', ...
-    %     mod(phi_start,2*pi)*180/pi, ...
-    %     mod(change,2*pi)*180/pi);
-    drawnow;
-end
+%% Simple rotation test to check for unknown issues not yet found
+% Commented out because no assertions!
+%
+% fig_num = 13;
+% 
+% p_apex =   [0 0;  2                      0; 0 -1; -1 0];
+% vertex_1 = [1  0; 2+1/(2^0.5)  -1/(2^0.5) ; -1 -1; -2 0];
+% vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
+% 
+% angles = 0:(45*pi/180):2*pi;
+% for i_angle = 1:length(angles)
+%     angle = angles(i_angle);
+%     R = [cos(angle) -sin(angle); sin(angle) cos(angle)];
+% 
+%     p_apex2 = p_apex*R;
+%     vertex_12   = vertex_1*R;
+%     vertex_22   = vertex_2*R;
+% 
+%     [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex2,vertex_12,vertex_22,fig_num);
+%     % fprintf('\t %.2f \t %.2f\n', ...
+%     %     mod(phi_start,2*pi)*180/pi, ...
+%     %     mod(change,2*pi)*180/pi);
+%     drawnow;
+% end
 
 %% Test of fast implementation mode 
 
@@ -156,4 +157,5 @@ fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
+assert(averageTimeFast<averageTimeSlow);
 
