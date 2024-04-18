@@ -290,9 +290,10 @@ if exist(mat_filename,'file')
     load(mat_filename,'XY_data');
 end
 
-% Since the XY data is very dense, keep only 1 of every 100 points
+% Since the XY data is very dense, keep only 1 of every "keep_every" points
+keep_every = 20;
 indicies = (1:length(XY_data(:,1)))';
-small_XY_data_indicies = find(0==mod(indicies,100));
+small_XY_data_indicies = find(0==mod(indicies,keep_every));
 small_XY_data = XY_data(small_XY_data_indicies,:);
 
 % Perform the fit forwards

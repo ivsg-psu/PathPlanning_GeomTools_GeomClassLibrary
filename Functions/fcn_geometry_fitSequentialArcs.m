@@ -456,7 +456,7 @@ for ith_domain = 1:length(fitSequence_parameters)
             Hough_domain.points_in_domain = fitSequence_points{ith_domain};
             Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
             Hough_domain.best_fit_type = 'Hough segment';
-            regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance, -1);
+            regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance(1), -1);
             
             % Update the data with the regression fit
             fitSequence_shapes{ith_domain} = regression_domain.best_fit_domain_box; 

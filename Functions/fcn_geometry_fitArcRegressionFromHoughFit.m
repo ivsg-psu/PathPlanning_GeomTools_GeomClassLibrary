@@ -276,7 +276,7 @@ else
         direction_of_angles = -1;
     end
     angles_padded = [start_angle_in_radians - direction_of_angles*additional_arc_radians; angles; end_angle_in_radians + direction_of_angles*additional_arc_radians];
-    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance,-1);
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance(1),-1);
 end
 
 
