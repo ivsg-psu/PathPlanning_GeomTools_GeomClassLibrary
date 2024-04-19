@@ -151,35 +151,43 @@ end
 % Calculate the XY_data depending on type
 switch lower(plot_type_string)
     case {'line','segment','vector regression segment fit'}
-        line_vector          = parameters(1,1:2);
-        base_point_xy        = parameters(1,3:4);
-        station_distance_min = parameters(1,5);
-        station_distance_max = parameters(1,6);
+        if ~isempty(parameters)
+            line_vector          = parameters(1,1:2);
+            base_point_xy        = parameters(1,3:4);
+            station_distance_min = parameters(1,5);
+            station_distance_max = parameters(1,6);
 
-        if station_distance_max>station_distance_min
-            stations = (station_distance_min:segment_length:station_distance_max)';
+            if station_distance_max>station_distance_min
+                stations = (station_distance_min:segment_length:station_distance_max)';
+            else
+                stations = (station_distance_min:(-1*segment_length):station_distance_max)';
+            end
+            if stations(end)~=station_distance_max
+                stations = [stations; station_distance_max];
+            end
+
+            XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
         else
-            stations = (station_distance_min:(-1*segment_length):station_distance_max)';
+            XY_data = [nan nan; nan nan];
         end
-        if stations(end)~=station_distance_max
-            stations = [stations; station_distance_max];
-        end
-
-        XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
 
 
     case {'arc','regression arc'}
-        circleCenter         = parameters(1,1:2);
-        circleRadius         = parameters(1,3);
-        arcAngles            = parameters(1,4:5);
-        flag_arc_is_counterclockwise = parameters(1,7);
+        if ~isempty(parameters)
+            circleCenter         = parameters(1,1:2);
+            circleRadius         = parameters(1,3);
+            arcAngles            = parameters(1,4:5);
+            flag_arc_is_counterclockwise = parameters(1,7);
 
-        start_angle_in_radians = arcAngles(1);
-        end_angle_in_radians   = arcAngles(2);
-        degree_step = (segment_length/circleRadius)*180/pi;
+            start_angle_in_radians = arcAngles(1);
+            end_angle_in_radians   = arcAngles(2);
+            degree_step = (segment_length/circleRadius)*180/pi;
 
-        XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
-
+            XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
+        else
+            XY_data = [nan nan; nan nan];
+                        
+        end
     otherwise
         warning('on','backtrace');
         warning('An error will now be thrown because a geometry string was not recognized.');
@@ -218,29 +226,30 @@ if flag_do_plots
     % Plot the XY data
     plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
 
+    % Plot headers?
+    if ~any(isnan(XY_data))
+        % Plot green headers - calculated from vector direction
+        maximum_arrow_length = 2*segment_length;
+        minimum_arrow_length = 1*segment_length;
 
-    % Plot green headers - calculated from vector direction
-    maximum_arrow_length = 2*segment_length;
-    minimum_arrow_length = 1*segment_length;
+        vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
+        start_length = sum(vector_direction_start.^2,2).^0.5;
+        unit_vector_direction_start = fcn_geometry_calcUnitVector(vector_direction_start);
+        arrow_length = max(min(maximum_arrow_length,start_length*0.2),minimum_arrow_length);
+        offset_start = XY_data(1,1:2) + arrow_length*unit_vector_direction_start;
 
-    vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
-    start_length = sum(vector_direction_start.^2,2).^0.5;
-    unit_vector_direction_start = fcn_geometry_calcUnitVector(vector_direction_start);
-    arrow_length = max(min(maximum_arrow_length,start_length*0.2),minimum_arrow_length);
-    offset_start = XY_data(1,1:2) + arrow_length*unit_vector_direction_start;
+        start_line = [XY_data(1,1:2) 0; offset_start, 0];
+        plot(start_line(:,1),start_line(:,2), '-','Color',[0 1 0],'Linewidth',5);
 
-    start_line = [XY_data(1,1:2) 0; offset_start, 0];
-    plot(start_line(:,1),start_line(:,2), '-','Color',[0 1 0],'Linewidth',5);
-
-    % Plot red tailers - calculated from vector direction
-    vector_direction_end = (XY_data(end,1:2) - XY_data(end-1,1:2));
-    end_length = sum(vector_direction_end.^2,2).^0.5;
-    unit_vector_direction_end = fcn_geometry_calcUnitVector(vector_direction_end);
-    arrow_length = max(min(maximum_arrow_length,end_length*0.2),minimum_arrow_length);
-    offset_end = XY_data(end,1:2) - arrow_length*unit_vector_direction_end;
-    end_line = [offset_end, 0; XY_data(end,1:2) 0];
-    plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
-
+        % Plot red tailers - calculated from vector direction
+        vector_direction_end = (XY_data(end,1:2) - XY_data(end-1,1:2));
+        end_length = sum(vector_direction_end.^2,2).^0.5;
+        unit_vector_direction_end = fcn_geometry_calcUnitVector(vector_direction_end);
+        arrow_length = max(min(maximum_arrow_length,end_length*0.2),minimum_arrow_length);
+        offset_end = XY_data(end,1:2) - arrow_length*unit_vector_direction_end;
+        end_line = [offset_end, 0; XY_data(end,1:2) 0];
+        plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
+    end
 
 
     % Make axis slightly larger?

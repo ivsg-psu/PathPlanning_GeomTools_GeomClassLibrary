@@ -279,30 +279,6 @@ for ith_fit = 1:NfitsInSequence
 
 end
 
-%% Now try fitting real-world data
-fig_num = 237492;
-figure(fig_num);
-clf;
-
-% Check to see if data was loaded earlier
-mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
-if exist(mat_filename,'file')
-    load(mat_filename,'XY_data');
-end
-
-% Since the XY data is very dense, keep only 1 of every "keep_every" points
-keep_every = 20;
-indicies = (1:length(XY_data(:,1)))';
-small_XY_data_indicies = find(0==mod(indicies,keep_every));
-small_XY_data = XY_data(small_XY_data_indicies,:);
-
-% Perform the fit forwards
-fitting_tolerance = [1 10]; % Units are meters
-flag_fit_backwards = 0;
-[fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
-
-
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -363,51 +339,7 @@ end
 
 end % Ends fcn_INTERNAL_printFitDetails
 
-%% fcn_geometry_alignGeometriesInSequence
-function revised_fitSequence_parameters = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, fig_num)
 
-NfitsInSequence = length(fitSequence_bestFitType);
-
-revised_fitSequence_parameters = fitSequence_parameters;
-
-% Loop through fits, connecting them together
-for ith_fit = 1:NfitsInSequence-1
-    current_fit_type = fitSequence_bestFitType{ith_fit};
-    next_fit_type    = fitSequence_bestFitType{ith_fit+1};
-
-    if strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Regression arc')
-        error('Joining arcs to arcs is not yet implemented');
-    elseif strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Vector regression segment fit')
-        error('Joining line segements to line segments is not yet implemented');
-    elseif (strcmp(current_fit_type,'Regression arc') && strcmp(next_fit_type,'Vector regression segment fit')) || (strcmp(current_fit_type,'Vector regression segment fit') && strcmp(next_fit_type,'Regression arc'))
-        % This is a connection that is an arc to line or line to arc
-
-        % find which index is which
-        if strcmp(current_fit_type,'Regression arc')
-            line_index = ith_fit+1;
-            arc_index  = ith_fit;
-            flag_arc_is_first = 1;
-        else
-            line_index = ith_fit;
-            arc_index  = ith_fit+1;
-            flag_arc_is_first = 0;
-        end
-
-        % Fix connections of lines to arcs and arcs to lines
-        [revised_fitSequence_parameters{line_index}, revised_fitSequence_parameters{arc_index}] = fcn_geometry_joinLineToArc(fitSequence_parameters{line_index}, fitSequence_parameters{arc_index}, flag_arc_is_first, (threshold),(fig_num));
-
-        % Need to update the 2nd one for the next iteration
-        if flag_arc_is_first
-            fitSequence_parameters{line_index} = revised_fitSequence_parameters{line_index};
-        else
-            fitSequence_parameters{arc_index} = revised_fitSequence_parameters{arc_index};
-        end
-
-    else
-        error('unrecognized pattern encountered! Exiting.')
-    end
-end % Ends looping through fits
-end % Ends fcn_geometry_alignGeometriesInSequence
 
 
 

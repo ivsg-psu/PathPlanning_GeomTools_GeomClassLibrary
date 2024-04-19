@@ -34,7 +34,12 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % 
 %      fitting_tolerance: the distance allowable from a point to an arc fit
 %      wherein the point is considered "fitted" to the arc. Default is 0.1
-%      meters.
+%      meters. If this is entered as a 2x1 or 1x2, then this specifies the
+%      threshold first in the transverse direction, and then in the station
+%      direction. For example, an entry of [0.02 3] would have 0.02 meters
+%      threshold in the transverse direction, but 3 meters threshold in the
+%      station direction.
+
 %
 %      flag_fit_backwards: a flag that, if set to 1, causes the fitting
 %      process to proceed "backwards", e.g. from the end of the data set to
@@ -87,10 +92,13 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % Questions or comments? sbrennan@psu.edu 
 
 % Revision history:
-% 2024_04_03 - S Brennan
+% 2024_04_03 - S. Brennan
 % -- wrote the code
-% 2024_04_17 - S Brennan
+% 2024_04_17 - S. Brennan
 % -- fixed the animation subfigure issues to be consistent with fig_num
+% 2024_04_19 - S. Brennan
+% -- added ability to provide tolerances in station and transverse
+% directions separately
 
 %% Debugging and Input checks
 

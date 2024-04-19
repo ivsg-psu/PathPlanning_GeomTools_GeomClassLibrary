@@ -1,12 +1,14 @@
-function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLineToArc(line_parameters, arc_parameters, flag_arc_is_first, varargin)
-%% fcn_geometry_joinLineToArc
-% Revises the geometric parameters of an arc and line such that they
-% join. It does this by checking the offset between the two objects at the
-% join location. If the offset is less than a threshold (default is 0.1
-% meter), the second geometric object is shifted to force alignment.
+function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_alignLineToArc(line_parameters, arc_parameters, flag_arc_is_first, varargin)
+%% fcn_geometry_alignLineToArc
+% Revises the geometric parameters of an arc and line such that they align
+% where they join. It does this by checking the offset between the two
+% objects at the join location. If the offset is less than a threshold
+% (default is 0.1 meter), the second geometric object is shifted to force
+% alignment.
 %
 % Format:
-% [revised_line_parameters, revised_arc_parameters]  = fcn_geometry_joinLineToArc(line_parameters, arc_parameters, flag_arc_is_first, (threshold), (fig_num))
+% [revised_line_parameters, revised_arc_parameters]  = ...
+% fcn_geometry_alignLineToArc(line_parameters, arc_parameters, flag_arc_is_first, (threshold), (fig_num))
 %
 % INPUTS:
 %
@@ -24,7 +26,18 @@ function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLi
 %      (OPTIONAL INPUTS)
 %
 %      threshold: the offset, in meters, between the arc and the line such
-%      that this offset is removed by shifting.
+%      that this offset is removed by shifting. If the offset is larger
+%      than this, then the outputs are set to empty.If this is
+%      entered as a 2x1 or 1x2, then this specifies the threshold first in
+%      the transverse direction, and then in the station direction. For
+%      example, an entry of [0.02 3] would have 0.02 meters threshold in
+%      the transverse direction, but 3 meters threshold in the station
+%      direction.
+%
+%      continuity_level: the level of continuity desired in the alignment.
+%      Input values include 0 for C0 continuity, 1 for C1 continuity
+%      (default), or 2 for C2 continuity. For an explanation of continuity,
+%      see fcn_geometry_alignGeometriesInSequence
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -48,7 +61,7 @@ function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLi
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_geometry_joinLineToArc
+% See the script: script_test_fcn_geometry_alignLineToArc
 % for a full test suite.
 %
 % This function was written on 2024_04_12 by S. Brennan
@@ -57,6 +70,10 @@ function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLi
 % Revision history:
 % 2024_04_12 - S. Brennan
 % -- wrote the code
+% 2024_04_19
+% -- renamed from fcn_geometry_joinLineToArc
+% -- fixed bug where calculation still works if error larger than tolerance
+% -- added continuity_level input
 
 %% Debugging and Input checks
 
@@ -64,7 +81,7 @@ function [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLi
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -107,7 +124,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,5);
+        narginchk(3,6);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -132,10 +149,18 @@ if (4<=nargin)
     end
 end
 
+% Does user want to specify continuity_level?
+continuity_level = 1;
+if (4<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        continuity_level = temp;
+    end
+end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if 5<= nargin && 0==flag_max_speed
+if 6<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp; 
@@ -247,85 +272,168 @@ offset = offset_dist_from_line_toward_circle;
 
 % Do we join the line to the arc?
 if abs(offset)<threshold
-    % Join the line to the arc with a direct connection, no spiral
 
-    % Need to find where the line and arc join
-    join_point_xy = line_base_point_xy + signed_distance_along_line_to_join*to_joint_line_unit_tangent_vector;
+    % How do we join?
+    if 0 == continuity_level
+        URHERE
+        % Join the line to the arc with a C1 connection, e.g. connect the
+        % end points together AND make sure the tangent vectors match
+
+        % Need to find where the line and arc join
+        join_point_xy = line_base_point_xy + signed_distance_along_line_to_join*to_joint_line_unit_tangent_vector;
 
 
-    % Calculate how much shift is needed to connect the line exactly to the
-    % arc
-    vector_from_arc_center_to_join = join_point_xy - arc_center_xy;
-    unit_vector_from_arc_center_to_join = fcn_geometry_calcUnitVector(vector_from_arc_center_to_join);
-    point_shift_xy = -1*offset_dist_from_line_toward_circle*unit_vector_from_arc_center_to_join;
+        % Calculate how much shift is needed to connect the line exactly to the
+        % arc
+        vector_from_arc_center_to_join = join_point_xy - arc_center_xy;
+        unit_vector_from_arc_center_to_join = fcn_geometry_calcUnitVector(vector_from_arc_center_to_join);
+        point_shift_xy = -1*offset_dist_from_line_toward_circle*unit_vector_from_arc_center_to_join;
 
-    %%% Fix the line
-    if 0==flag_arc_is_first
-        % The line is first, do not shift it
-        new_line_unit_tangent_vector = to_joint_line_unit_tangent_vector;
-        new_line_base_point_xy       = line_base_point_xy;
-        new_line_s_start             = 0;
-        new_line_s_end               = signed_distance_along_line_to_join;
-        if arc_direction_relative_to_line_to_join>=0
-            % Arc veers to the left relative to the line's vector
-            new_arc_is_counter_clockwise = 1;
+        %%% Fix the line
+        if 0==flag_arc_is_first
+            % The line is first, do not shift it
+            new_line_unit_tangent_vector = to_joint_line_unit_tangent_vector;
+            new_line_base_point_xy       = line_base_point_xy;
+            new_line_s_start             = 0;
+            new_line_s_end               = signed_distance_along_line_to_join;
+            if arc_direction_relative_to_line_to_join>=0
+                % Arc veers to the left relative to the line's vector
+                new_arc_is_counter_clockwise = 1;
+            else
+                % Arc veers to the right relative to the line's vector
+                new_arc_is_counter_clockwise = 0;
+            end
+
         else
-            % Arc veers to the right relative to the line's vector
-            new_arc_is_counter_clockwise = 0;
+            % The line is last, need to shift it
+            new_line_unit_tangent_vector = -1*to_joint_line_unit_tangent_vector;
+            new_line_base_point_xy       = join_point_xy + point_shift_xy;
+            new_line_s_start             = 0;
+            new_line_s_end               = signed_distance_along_line_to_join;
+            if arc_direction_relative_to_line_to_join>=0
+                new_arc_is_counter_clockwise = 0;
+            else
+                new_arc_is_counter_clockwise = 1;
+            end
+        end
+        revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
+        revised_line_parameters(1,3:4) = new_line_base_point_xy;
+        revised_line_parameters(1,5)   = new_line_s_start;
+        revised_line_parameters(1,6)   = new_line_s_end;
+
+        %%% Fix the arc
+        % The angle the arc starts at the join point
+        arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
+
+        % The angle the arc ends is where the arc stops
+        vector_from_arc_center_to_end = arc_end_xy - arc_center_xy;
+        arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
+
+        if 0==flag_arc_is_first
+            % The line is first, so need to shift the arc
+            new_arc_center_xy = arc_center_xy - point_shift_xy;
+            new_arc_start_angle_in_radians = arc_angle_at_join;
+            new_arc_end_angle_in_radians   = arc_angle_at_end;
+        else
+            % The line is last, do not shift the arc
+            new_arc_center_xy = arc_center_xy;
+            new_arc_end_angle_in_radians   = arc_angle_at_join;
+            new_arc_start_angle_in_radians = arc_angle_at_end;
         end
 
-    else
-        % The line is last, need to shift it
-        new_line_unit_tangent_vector = -1*to_joint_line_unit_tangent_vector;
-        new_line_base_point_xy       = join_point_xy + point_shift_xy;
-        new_line_s_start             = 0;
-        new_line_s_end               = signed_distance_along_line_to_join;
-        if arc_direction_relative_to_line_to_join>=0
-            new_arc_is_counter_clockwise = 0;
+        revised_arc_parameters(1,1:2) = new_arc_center_xy;
+        revised_arc_parameters(1,3)   = arc_radius;
+        revised_arc_parameters(1,4)   = new_arc_start_angle_in_radians;
+        revised_arc_parameters(1,5)   = new_arc_end_angle_in_radians;
+        revised_arc_parameters(1,6)   = arc_is_circle;
+        revised_arc_parameters(1,7)   = new_arc_is_counter_clockwise;
+
+        % Fix the arc angles to be between 0 and 2*pi
+        revised_arc_parameters(1,4:5) = mod(revised_arc_parameters(1,4:5),2*pi);
+
+    elseif 1 == continuity_level
+        % Join the line to the arc with a C1 connection, e.g. connect the
+        % end points together AND make sure the tangent vectors match
+
+        % Need to find where the line and arc join
+        join_point_xy = line_base_point_xy + signed_distance_along_line_to_join*to_joint_line_unit_tangent_vector;
+
+
+        % Calculate how much shift is needed to connect the line exactly to the
+        % arc
+        vector_from_arc_center_to_join = join_point_xy - arc_center_xy;
+        unit_vector_from_arc_center_to_join = fcn_geometry_calcUnitVector(vector_from_arc_center_to_join);
+        point_shift_xy = -1*offset_dist_from_line_toward_circle*unit_vector_from_arc_center_to_join;
+
+        %%% Fix the line
+        if 0==flag_arc_is_first
+            % The line is first, do not shift it
+            new_line_unit_tangent_vector = to_joint_line_unit_tangent_vector;
+            new_line_base_point_xy       = line_base_point_xy;
+            new_line_s_start             = 0;
+            new_line_s_end               = signed_distance_along_line_to_join;
+            if arc_direction_relative_to_line_to_join>=0
+                % Arc veers to the left relative to the line's vector
+                new_arc_is_counter_clockwise = 1;
+            else
+                % Arc veers to the right relative to the line's vector
+                new_arc_is_counter_clockwise = 0;
+            end
+
         else
-            new_arc_is_counter_clockwise = 1;
+            % The line is last, need to shift it
+            new_line_unit_tangent_vector = -1*to_joint_line_unit_tangent_vector;
+            new_line_base_point_xy       = join_point_xy + point_shift_xy;
+            new_line_s_start             = 0;
+            new_line_s_end               = signed_distance_along_line_to_join;
+            if arc_direction_relative_to_line_to_join>=0
+                new_arc_is_counter_clockwise = 0;
+            else
+                new_arc_is_counter_clockwise = 1;
+            end
         end
+        revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
+        revised_line_parameters(1,3:4) = new_line_base_point_xy;
+        revised_line_parameters(1,5)   = new_line_s_start;
+        revised_line_parameters(1,6)   = new_line_s_end;
+
+        %%% Fix the arc
+        % The angle the arc starts at the join point
+        arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
+
+        % The angle the arc ends is where the arc stops
+        vector_from_arc_center_to_end = arc_end_xy - arc_center_xy;
+        arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
+
+        if 0==flag_arc_is_first
+            % The line is first, so need to shift the arc
+            new_arc_center_xy = arc_center_xy - point_shift_xy;
+            new_arc_start_angle_in_radians = arc_angle_at_join;
+            new_arc_end_angle_in_radians   = arc_angle_at_end;
+        else
+            % The line is last, do not shift the arc
+            new_arc_center_xy = arc_center_xy;
+            new_arc_end_angle_in_radians   = arc_angle_at_join;
+            new_arc_start_angle_in_radians = arc_angle_at_end;
+        end
+
+        revised_arc_parameters(1,1:2) = new_arc_center_xy;
+        revised_arc_parameters(1,3)   = arc_radius;
+        revised_arc_parameters(1,4)   = new_arc_start_angle_in_radians;
+        revised_arc_parameters(1,5)   = new_arc_end_angle_in_radians;
+        revised_arc_parameters(1,6)   = arc_is_circle;
+        revised_arc_parameters(1,7)   = new_arc_is_counter_clockwise;
+
+        % Fix the arc angles to be between 0 and 2*pi
+        revised_arc_parameters(1,4:5) = mod(revised_arc_parameters(1,4:5),2*pi);
+
+    elseif 2 == continuity_level
+        error('Sprial connections not yet programmed');
     end
-    revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
-    revised_line_parameters(1,3:4) = new_line_base_point_xy;
-    revised_line_parameters(1,5)   = new_line_s_start;
-    revised_line_parameters(1,6)   = new_line_s_end;
-
-    %%% Fix the arc
-    % The angle the arc starts at the join point
-    arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
-
-    % The angle the arc ends is where the arc stops
-    vector_from_arc_center_to_end = arc_end_xy - arc_center_xy;
-    arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
-
-    if 0==flag_arc_is_first
-        % The line is first, so need to shift the arc
-        new_arc_center_xy = arc_center_xy - point_shift_xy;
-        new_arc_start_angle_in_radians = arc_angle_at_join;
-        new_arc_end_angle_in_radians   = arc_angle_at_end;        
-    else
-        % The line is last, do not shift the arc
-        new_arc_center_xy = arc_center_xy;
-        new_arc_end_angle_in_radians   = arc_angle_at_join;
-        new_arc_start_angle_in_radians = arc_angle_at_end;        
-    end
-
-    revised_arc_parameters(1,1:2) = new_arc_center_xy;
-    revised_arc_parameters(1,3)   = arc_radius;
-    revised_arc_parameters(1,4)   = new_arc_start_angle_in_radians;
-    revised_arc_parameters(1,5)   = new_arc_end_angle_in_radians;
-    revised_arc_parameters(1,6)   = arc_is_circle;
-    revised_arc_parameters(1,7)   = new_arc_is_counter_clockwise;
-
-    % Fix the arc angles to be between 0 and 2*pi
-    revised_arc_parameters(1,4:5) = mod(revised_arc_parameters(1,4:5),2*pi);
-
 else
-    warning('on','backtrace');
-    warning('An error will now be thrown due to detection of a needed spiral. Detected offset was: %.3f but threshold is %.3f',offset,threshold);
-    error('The use of spirals to join lines and arcs is not coded yet')
-
+    % Not possible to shift
+    revised_line_parameters = [];
+    revised_arc_parameters  = [];
 end
 
 

@@ -1,8 +1,10 @@
-%% script_test_fcn_geometry_joinLineToArc
-% Exercises the function: fcn_geometry_joinLineToArc
+%% script_test_fcn_geometry_alignLineToArc
+% Exercises the function: fcn_geometry_alignLineToArc
 % Revision history:
 % 2024_04_12
 % -- wrote the code
+% 2024_04_19
+% -- renamed from fcn_geometry_joinLineToArc
 
 close all;
 
@@ -143,8 +145,9 @@ for ith_test = 1:NtotalTests
     tolerance = 0.4; % Use default
 
 
-
-    [revised_line_parameters, revised_arc_parameters] = fcn_geometry_joinLineToArc(line_parameters, arc_parameters, flag_arc_is_first, (tolerance),(fig_num));
+    continuity_level = 1;
+    [revised_line_parameters, revised_arc_parameters] = ...
+        fcn_geometry_alignLineToArc(line_parameters, arc_parameters, flag_arc_is_first, (tolerance), (continuity_level), (fig_num));
     sgtitle(title_string);
     pause(0.01);
 
@@ -163,11 +166,62 @@ for ith_test = 1:NtotalTests
     assert(isequal(true_arc_params, fitted_arc_params));
 end
 
+%% Test that threshold will not cause fitting if error is too large
+fig_num = 2;
+figure(fig_num); clf;
+
+tolerance = 0.01; % Use very low tolerance to force fit to NOT occur
+shift_error = [0 0.2];
+
+title_string = 'Checking that a large error causes fit to not occur';
+
+true_line_unit_tangent_vector = [1 0];
+true_start_point_xy = [-1 0];
+
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-1 0] + shift_error;
+line_s_start             = 0;
+line_s_end               = 1;
+
+arc_center_xy            = [0 1];
+arc_radius               = 1;
+arc_vector_start         = [ 0 -1];
+arc_vector_end           = [ 1  0];
+arc_is_circle            = 0;
+arc_is_counter_clockwise = 1;
+arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
+
+
+true_arc_center_xy  = [0 1];
+true_arc_is_counter_clockwise = 1;
+true_arc_angles     = [270 360]*pi/180;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_parameters(1,1:2) = line_unit_tangent_vector;
+line_parameters(1,3:4) = line_base_point_xy;
+line_parameters(1,5)   = line_s_start;
+line_parameters(1,6)   = line_s_end;
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_parameters(1,1:2) = arc_center_xy;
+arc_parameters(1,3)   = arc_radius;
+arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,7)   = arc_is_counter_clockwise;
+
+flag_arc_is_first = 0;
+continuity_level = 1;
+[revised_line_parameters, revised_arc_parameters] = fcn_geometry_alignLineToArc(...
+    line_parameters, arc_parameters, flag_arc_is_first, (tolerance), (continuity_level), (fig_num));
+
+% Check size of results
+assert(isempty(revised_line_parameters));
+assert(isempty(revised_arc_parameters));
+
 
 %% Fail conditions
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_joinLineToArc(points,fig_num);
+    [slope,intercept] = fcn_geometry_alignLineToArc(points,fig_num);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
