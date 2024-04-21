@@ -8,7 +8,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % INPUTS:
 %
 %      plot_type_string: a string indicating the geometry type to plot,
-%      such as 'line' or 'arc'.
+%      such as 'line', 'spiral, or 'arc'.
 %
 %      parameters: the parameter set describing the geometry. See
 %      fcn_geometry_fillEmptyDomainStructure for details, as the parameter
@@ -47,6 +47,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % 2024_04_15 - S. Brennan
 % -- added XY_data output
 % -- added segment_length input
+% 2024_04_20 - S. Brennan
+% -- added spiral type
 
 
 %% Debugging and Input checks
@@ -185,9 +187,25 @@ switch lower(plot_type_string)
 
             XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
         else
-            XY_data = [nan nan; nan nan];
-                        
+            XY_data = [nan nan; nan nan];            
         end
+    case {'spiral'}
+        if ~isempty(parameters)
+            spiralLength      = parameters(1,1);
+            h0                = parameters(1,2);
+            x0                = parameters(1,3);
+            y0                = parameters(1,4);
+            K0                = parameters(1,5);
+            Kf                = parameters(1,6);
+
+            s_range = linspace(0,spiralLength,20);
+            [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s_range,spiralLength,h0,x0,y0,K0,Kf);
+
+            XY_data = [x_spiral,y_spiral];
+        else
+            XY_data = [nan nan; nan nan];
+        end
+
     otherwise
         warning('on','backtrace');
         warning('An error will now be thrown because a geometry string was not recognized.');

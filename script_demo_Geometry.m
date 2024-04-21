@@ -62,6 +62,9 @@
 %    some results were throwing errors
 % -- updated test script and function for
 % fcn_geometry_findTangentPointsTwoCircles in prep for region checking
+% 2024_04_20 - S. Brennan
+% -- added C0, C1, and C2 continuity type join options for alignLineToArc
+%
 
 %% To-do items
 % 2024_04_15 - S. Brennan

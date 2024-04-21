@@ -40,6 +40,9 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %            
 %            'Vector regression segment fit' - a vector fit of a line
 %            segment, using regression
+%
+%            'spiral' - an Euler spiral curve such that the curvature is
+%            linearly changing versus the station coordinate.
 %            
 %      emptyDomain.points_in_domain = [nan nan];
 %
@@ -123,6 +126,16 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                flag_this_is_a_circle
 %                flag_arc_is_counterclockwise
 %               ] 
+%            
+%            'spiral' - 
+%
+%               [spiralLength,  % the s-coordinate length allowed
+%                h0,  % The initial heading
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
 %
 %            
 %      emptyDomain.best_fit_domain_box = [];
