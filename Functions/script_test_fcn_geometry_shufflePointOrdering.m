@@ -20,6 +20,9 @@ test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
 
 shuffled_points = fcn_geometry_shufflePointOrdering(test_points, (fig_num));
 
+assert(length(shuffled_points(:,1))>1);
+assert(length(shuffled_points(1,:))==2);
+
 %% Test of fast mode
 
 seed_points = [2 3; 4 5; 3 2];
