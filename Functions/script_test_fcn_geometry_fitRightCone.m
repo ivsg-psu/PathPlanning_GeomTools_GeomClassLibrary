@@ -22,3 +22,7 @@ inputPoints = test_ring(:,1:3);
 ring_id = test_ring(1,5);
 fig_num = 1;
 [cone_parameters,fittedPoints,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,fig_num);
+
+assert(length(cone_parameters(1,:)) == 2);
+assert(length(fittedPoints(:,1))>2);
+assert(length(fitting_result(1,:)) == 2);

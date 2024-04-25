@@ -26,115 +26,10 @@ close all
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-%% Fill test data 
-fig_num = 21;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-
-% circle
-circle_center = [4 3];
-circle_radius = 2;
-M = 3; % 5 points per meter
-sigma = 0.02;
-
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
-
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-
-% 1 arc
-fig_num = 23;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-
-seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
-
-M = 10; % Number of points per meter
-sigma = 0.02;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-% Fill test data for 2 arcs
-first_fraction = [0 0.5]; % data from 0 to 50 percent
-second_fraction = [0.80 1]; % data from 80 percent to end
-N_points = length(onearc_test_points(:,1));
-
-first_fraction_indicies = round(first_fraction*N_points); % find closest indicies
-first_fraction_indicies = max([first_fraction_indicies; 1 1],[],1); % Make sure none are below 1
-first_fraction_indicies = min([first_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
-
-second_fraction_indicies = round(second_fraction*N_points); % find closest indicies
-second_fraction_indicies = max([second_fraction_indicies; 1 1],[],1); % Make sure none are below 1
-second_fraction_indicies = min([second_fraction_indicies; N_points N_points],[],1); % Make sure none are above N_points
-
-twoarc_test_points = ...
-    [onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
-    onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
-
-corrupted_twoarc_test_points = ...
-    [corrupted_onearc_test_points(first_fraction_indicies(1):first_fraction_indicies(2),:); ...
-    corrupted_onearc_test_points(second_fraction_indicies(1):second_fraction_indicies(2),:)];
-
-
-% For debugging
-figure(33838);
-clf;
-hold on;
-grid on;
-grid minor;
-axis equal;
-plot(corrupted_twoarc_test_points(:,1),corrupted_twoarc_test_points(:,2),'k.');
-
-% 1 outlier arc
-seed_points = [6 6; 9 3; 6 0];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
-
-M = 8; % Number of points per meter
-sigma = 0.02;
-
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Corrupt the results
-% For debugging
-figure(234);
-clf;
-hold on;
-grid on;
-grid minor;
-axis equal;
-
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outlieronearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (234));
-
-
 %% BASIC call with arc data, fitting it with a circle by not specifying station tolerance
 
+rng(123)
+
 % 1 arc
 fig_num = 23;
 figure(fig_num);
@@ -144,8 +39,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -175,7 +70,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -186,8 +114,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -218,7 +146,41 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range),(flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with arc data, fitting it with a circle and some arcs by specifying medium station tolerance
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -229,8 +191,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -261,7 +223,41 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
+% % Check the output type and size
+% for ith_domain = 1:length(domains)-2
+%     domain = domains{ith_domain};
+%     assert(isstruct(domain));
+%     assert(isfield(domain,'best_fit_type'));
+%     assert(isfield(domain,'points_in_domain'));
+%     assert(isfield(domain,'best_fit_parameters'));
+%     assert(isfield(domain,'best_fit_domain_box'));
+%     assert(isfield(domain,'best_fit_1_sigma_box'));
+%     assert(isfield(domain,'best_fit_2_sigma_box'));
+%     assert(isfield(domain,'best_fit_3_sigma_box'));
+%     assert(ischar(domain.best_fit_type));
+%     assert(strcmp('Hough arc',domain.best_fit_type));
+%     assert(length(domain.points_in_domain(:,1))>1);
+%     assert(length(domain.points_in_domain(1,:))==2);
+%     assert(isequal(size(domain.best_fit_parameters),[1 7]));
+%     assert(issimplified(domain.best_fit_domain_box));
+% end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with arc data, fitting it with all circles by specifying large station tolerance
+
+rng(123);
 
 % 1 arc
 fig_num = 23;
@@ -272,8 +268,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -304,7 +300,41 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with arc data, forcing circle fit to fail, by using flag_force_circle_fit to give ONLY circles that meet all criteria
+
+rng(123);
 
 % 1 arc
 fig_num = 23;
@@ -315,8 +345,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -347,7 +377,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with arc data, forcing circle fit by using flag_force_circle_fit to give ONLY circles that meet all criteria
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -358,8 +421,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -391,7 +454,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with circle data, fitting it with a circle by not specifying station tolerance
+
+rng(123)
 
 fig_num = 21;
 figure(fig_num);
@@ -433,7 +529,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with circle data, fitting it with a circle by specifying station tolerance that winds all the way around
+
+rng(123)
 
 fig_num = 21;
 figure(fig_num);
@@ -479,7 +608,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with circle data, fitting it with an arc by specifying station tolerance is too small
+
+rng(123)
 
 fig_num = 21;
 figure(fig_num);
@@ -522,7 +684,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with circle AND arc data, fitting it with an arc because this has the most points
+
+rng(123)
 
 fig_num = 21;
 figure(fig_num);
@@ -551,8 +746,8 @@ corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_tes
 
 % 1 outlier arc
 seed_points = [6 6; 9 3; 6 0];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters = [true_circleCenter true_circleRadius];
 
 M = 8; % Number of points per meter
 sigma = 0.02;
@@ -595,7 +790,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% % Check the output type and size
+% for ith_domain = 1:length(domains)-1
+%     domain = domains{ith_domain};
+%     assert(isstruct(domain));
+%     assert(isfield(domain,'best_fit_type'));
+%     assert(isfield(domain,'points_in_domain'));
+%     assert(isfield(domain,'best_fit_parameters'));
+%     assert(isfield(domain,'best_fit_domain_box'));
+%     assert(isfield(domain,'best_fit_1_sigma_box'));
+%     assert(isfield(domain,'best_fit_2_sigma_box'));
+%     assert(isfield(domain,'best_fit_3_sigma_box'));
+%     assert(ischar(domain.best_fit_type));
+%     assert(strcmp('Hough arc',domain.best_fit_type));
+%     assert(length(domain.points_in_domain(:,1))>1);
+%     assert(length(domain.points_in_domain(1,:))==2);
+%     assert(isequal(size(domain.best_fit_parameters),[1 7]));
+% end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% BASIC call with circle AND arc data, fitting it with a circle because of flag setting
+
+rng(123)
 
 fig_num = 21;
 figure(fig_num);
@@ -668,7 +896,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% Test using expected radii range
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -679,8 +940,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -711,7 +972,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% Test using expected radii range that is bad
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -722,8 +1016,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -754,87 +1048,40 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
-%% Speed test effect of adding radii range to show this speeds up calculations
-
-% 1 arc
-fig_num = 23;
-figure(fig_num);
-clf;
-hold on;
-axis equal
-grid on;
-
-seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
-
-M = 10; % Number of points per meter
-sigma = 0.02;
-
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
-
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
-
-
-% Note, there is more speed-up the more corrupted and larger the data is
-% used
-inputPoints = corrupted_onearc_test_points;
-transverse_tolerance = 0.1;
-station_tolerance = [];
-points_required_for_agreement = [];
-flag_force_circle_fit = [];
-flag_find_only_best_agreement = []; flag_use_permutations = [];
-
-% Perform the calculation in slow mode
-expected_radii_range = [];
-fig_num = -1;
-REPS = 1; minTimeSlow = Inf; 
-tic;
-for i=1:REPS
-    tstart = tic;
-
-    domains  = ...
-        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
-
-    telapsed = toc(tstart);
-    minTimeSlow = min(telapsed,minTimeSlow);
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
 end
-averageTimeSlow = toc/REPS;
 
-% Perform the operation in fast mode
-expected_radii_range = [1 3];
-fig_num = -1;
-minTimeFast = Inf;
-tic;
-for i=1:REPS
-    tstart = tic;
-
-    domains  = ...
-        fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
-
-    telapsed = toc(tstart);
-    minTimeFast = min(telapsed,minTimeFast);
-end
-averageTimeFast = toc/REPS;
-
-fprintf(1,'\n\nComparison of fcn_geometry_fitHoughCircle without radii range (slow) and with radii range (fast):\n');
-fprintf(1,'N repetitions: %.0d\n',REPS);
-fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
-fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
-fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
-fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
-fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
-fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 %% Test arc fitting using station_tolerance
 
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -845,8 +1092,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -880,7 +1127,7 @@ corrupted_twoarc_test_points = ...
 
 inputPoints = corrupted_twoarc_test_points;
 transverse_tolerance = 0.1;
-station_tolerance = [];
+% station_tolerance = [];
 points_required_for_agreement = [];
 flag_force_circle_fit = [];
 expected_radii_range = [1 5];
@@ -898,6 +1145,37 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 % Make station tolerance larger so it finds entire arc, connecting together
 % but not finding a circle
 station_tolerance = 3;
@@ -909,6 +1187,37 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 % Fit a circle by shutting station tolerance off
 station_tolerance = [];
 fig_num = 7799;
@@ -918,6 +1227,36 @@ figure(fig_num); clf;
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 % Force a circle that forces station tolerance to be met by using flag
 station_tolerance = 10;
@@ -930,6 +1269,36 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough circle',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 
 %% Test using flag_use_permutations to search only points in sequence
@@ -937,6 +1306,8 @@ fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
 % the search process quite a bit, since much of the search is simply
 % sorting points. This will not work well if the points are not well
 % sorted, for example if there are a large number of outliers.
+
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -947,8 +1318,8 @@ axis equal
 grid on;
 
 seed_points = [2 3; 4 5; 6 3];
-[true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
+% [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
+% trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 
 M = 10; % Number of points per meter
 sigma = 0.02;
@@ -981,11 +1352,43 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% Test using flag_use_permutations for fractional setting (e.g. only 50%)
 % This assumes that the points are over-fitted, e.g. that there are way
 % more points than needed to fit. By setting a fraction, we can specify to
 % only use a fraction of the input data, which speeds things up.
 
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -1030,6 +1433,37 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
 % fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
@@ -1039,6 +1473,7 @@ fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutation
 % be used if the data is VERY clean, wherein all the data is quite good.
 % However, if this is the case, this is quite fast.
 
+rng(123)
 
 % 1 arc
 fig_num = 23;
@@ -1083,6 +1518,37 @@ domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);
 % fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
@@ -1105,6 +1571,37 @@ flag_use_permutations = 30;
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough arc',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 7]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 fprintf(1,'\n\nTrue parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',trueParameters_onearc_test_points(1),trueParameters_onearc_test_points(2),trueParameters_onearc_test_points(3));
 fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutations);

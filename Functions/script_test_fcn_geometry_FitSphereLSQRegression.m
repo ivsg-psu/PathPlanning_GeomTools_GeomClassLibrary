@@ -29,6 +29,7 @@ assert(length(XYZ_array(:,1))==N_points);
 [C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
 
 
+
 % Print the results
 fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
 fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
@@ -53,6 +54,10 @@ fcn_INTERNAL_printResults('Error ratio', error_fitted_params./predicted_errors)
 fprintf('N points used: %.0d\n',N_points_used);
 fprintf('predicted sigma (m): %.4f\n',sigma);
 fprintf('Actual sigma (m)   : %.4f\n',std(errors));
+
+assert(length(C_sphere(1,:))==3);
+assert(length(R_sphere(1,:))==1);
+assert(length(errors(:,1))>2);
 
 % figure(11);
 % normplot(errors)
@@ -105,6 +110,10 @@ fprintf('N points used: %.0d\n',N_points_used);
 fprintf('predicted sigma (m): %.4f\n',sigma);
 fprintf('Actual sigma (m)   : %.4f\n',std(errors));
 
+assert(length(C_sphere(1,:))==3);
+assert(length(R_sphere(1,:))==1);
+assert(length(errors(:,1))>2);
+
 % figure(21);
 % normplot(errors)
 % 
@@ -155,6 +164,10 @@ fcn_INTERNAL_printResults('Error ratio', error_fitted_params./predicted_errors)
 fprintf('N points used: %.0d\n',N_points_used);
 fprintf('predicted sigma (m): %.4f\n',sigma);
 fprintf('Actual sigma (m)   : %.4f\n',std(errors));
+
+assert(length(C_sphere(1,:))==3);
+assert(length(R_sphere(1,:))==1);
+assert(length(errors(:,1))>2);
 
 % figure(31);
 % normplot(errors)
@@ -284,6 +297,10 @@ xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
 % axis equal
+
+assert(length(C_sphere(1,:))==3);
+assert(length(R_sphere(1,:))==1);
+assert(length(E_total(:,1)) == 1);
 
 
 %% Functions follow

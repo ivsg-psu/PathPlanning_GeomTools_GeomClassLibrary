@@ -24,13 +24,13 @@ sigma = 0.02;
 
 circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
 
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.3;
-magnitude_of_corruption = 1;
-
-corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% % Add outliers?
+% % Corrupt the results
+% probability_of_corruption = 0.3;
+% magnitude_of_corruption = 1;
+% 
+% % corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+% %     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
 
 
 % Basic call with clean data
