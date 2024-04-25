@@ -190,6 +190,8 @@ points_tangent = ...
     points);
 
 %% Separate out the points
+
+Ncircles = length(centers(:,1));
 points_tanget1 = points_tangent(1:Ncircles,:);
 points_tanget2 = points_tangent(Ncircles+1:end,:);
 

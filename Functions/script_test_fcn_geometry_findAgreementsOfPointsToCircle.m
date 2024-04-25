@@ -14,7 +14,7 @@ rng(383);
 % 1 outlier arc
 seed_points = [6 6; 9 3; 6 0];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
-trueParameters = [true_circleCenter true_circleRadius];
+% trueParameters = [true_circleCenter true_circleRadius];
 
 M = 8; % Number of points per meter
 sigma = 0.02;

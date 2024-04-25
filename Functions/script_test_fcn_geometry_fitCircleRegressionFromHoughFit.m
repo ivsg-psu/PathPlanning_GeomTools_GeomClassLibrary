@@ -41,6 +41,13 @@ hold on;
 
 [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
 
+assert(length(regression_fit_circle(1,:))==3);
+assert(length(domain_box(:,1))>1);
+assert(length(domain_box(1,:))==2);
+assert(length(radial_errors(:,1))>1);
+assert(length(radial_errors(1,:))==1);
+assert(length(standard_deviation(1,:))==1);
+
 fprintf(1,'\n\nResults of circle regression fitting:\n')
 fprintf(1,'Actual circle center [X Y] (meters): %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
 fprintf(1,'Fitted circle center [X Y] (meters): %.4f %.4f\n',regression_fit_circle(1,1),regression_fit_circle(1,2));
@@ -74,6 +81,13 @@ corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_tes
 
 
 [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, fig_num);
+
+assert(length(regression_fit_circle(1,:))==3);
+assert(length(domain_box(:,1))>1);
+assert(length(domain_box(1,:))==2);
+assert(length(radial_errors(:,1))>1);
+assert(length(radial_errors(1,:))==1);
+assert(length(standard_deviation(1,:))==1);
 
 fprintf(1,'\n\nResults of circle regression fitting:\n')
 fprintf(1,'Actual circle center [X Y] (meters): %.4f %.4f\n',circle_center(1,1),circle_center(1,2));
@@ -109,7 +123,12 @@ circle_test_points = [...
 
 [regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
 
-
+assert(length(regression_fit_circle(1,:))==3);
+assert(length(domain_box(:,1))>1);
+assert(length(domain_box(1,:))==2);
+assert(length(radial_errors(:,1))>1);
+assert(length(radial_errors(1,:))==1);
+assert(length(standard_deviation(1,:))==1);
 
 
 %% Test of fast mode
