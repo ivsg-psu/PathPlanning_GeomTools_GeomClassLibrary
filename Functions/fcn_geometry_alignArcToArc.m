@@ -241,9 +241,10 @@ end
 % and the start of the tangent line on arc1 is at the origin.
 % This is to make the debugging MUCH easier, as it reduces permutations.
 % Again, this is fixed in later steps.
-[st_arc1_parameters, st_arc2_parameters, St_transform, rotation_angle, flag_arc1_is_flipped] = fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters);
+[st_arc1_parameters, st_arc2_parameters, St_transform, rotation_angle, flag_arc1_is_flipped] = ...
+    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters);
 
-if flag_do_debug
+if ~isempty(debug_fig_num)
     figure(debug_fig_num);
 
     % Plot the rotated inputs
@@ -269,8 +270,7 @@ end
 %% Check to see if arc1 and arc2 intersect
 intersection_point = fcn_INTERNAL_findLineArcIntersection(st_arc1_parameters,st_arc2_parameters);
 
-
-if flag_do_debug
+if ~isempty(debug_fig_num)
     % Plot the intersection
     figure(debug_fig_num);
     subplot(3,2,3);
@@ -282,10 +282,10 @@ end
 
 %% Check how much shift is needed to connect arc1 to arc2
 [delta_transverse, delta_station, desired_arc2_start_point, desired_arc1_end_point,spiral_join_parameters] = ...
-    fcn_INTERNAL_findShiftToMatchArcToLine(st_arc1_parameters, st_arc2_parameters,continuity_level, intersection_point);
+    fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters,continuity_level, intersection_point);
 % Deltas are from desired to actual
 
-if flag_do_debug
+if ~isempty(debug_fig_num)
     % Plot the bounding box
     figure(debug_fig_num);
     subplot(3,2,3);
@@ -731,10 +731,10 @@ end % Ends fcn_INTERNAL_findLineArcIntersection
 
 
 
-%% fcn_INTERNAL_findShiftToMatchArcToLine
+%% fcn_INTERNAL_findShiftToMatchArcToArc
 function [delta_transverse, delta_station, desired_closest_arc2_point_to_joint, desired_closest_arc1_point_to_joint,spiral_join_parameters] = ...
-    fcn_INTERNAL_findShiftToMatchArcToLine(arc1_parameters, arc2_parameters, continuity_level, intersection_point)
-% Calculates the delta amount to match the arc to the line. The delta
+    fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point)
+% Calculates the delta amount to match the arc to the arc. The delta
 % values are measured FROM desired point TO actual point
 
 spiral_join_parameters = []; % Initialize output. This is ONLY used for spiral fits.
@@ -803,7 +803,7 @@ elseif 1 == continuity_level
     % joint to arc1 and arc2 is always going to be the point where each arc
     % touches the tangent line connecting them. Since arc2 is the only one
     % that can be moved, the connecting point is simply the location where
-    % arc1 is tangent, which by construction is [0 0]
+    % arc1 is tangent, which by construction is [0 0].
 
     desired_closest_arc2_point_to_joint = [0 0];
     desired_closest_arc1_point_to_joint = [0 0];
@@ -814,28 +814,19 @@ elseif 2 == continuity_level
     % numerical iteration, and the inputs require the calculation
     % of the offset of the spirals relative to each other - e.g. the
     % "space" between the arcs. There are many cases where spirals cannot
-    % exist between arcs, and these are tested in the function call.
+    % exist between arcs, and specifically if the space_between_circles is
+    % negative
 
-    URHERE (delete spiral iteration, then get the spiral added)
 
-    % Calculate the space that the spiral must fit within
-    center_to_center_distance_between_circles = sum((arc2_center_xy - arc1_center_xy).^2,2).^0.5;
-    space_between_circles = 1;
+    [spiral_join_parameters, space_between_circles] = ...
+        fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
 
-    % if 1==arc2_is_counter_clockwise
-    %     if arc2_radius<arc1_radius
-    %         % For a spiral to work between a big arc1 and smaller arc2, the circle2 must be within circle1
-    %         space_between_circles = arc1_radius - center_to_center_distance_between_circles - arc2_radius;
-    %     else
-    % 
-    %     end
-    % else
-    % end
-
-    
-    % space_between_circles  = center_to_center_distance_between_circles - abs(arc1_radius) - abs(arc2_radius);
     if space_between_circles>0
-        
+        URHERE - test this
+        % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
+
+        spiralLength = spiral_join_parameters(1,1);
+
         [spiralLength, h0]  = fcn_INTERNAL_findLengthFromOffset(offset, arc1_radius, arc2_radius, arc2_center_xy);
         [~, x0, y0, K0, Kf] = fcn_INTERNAL_calcArcParameters(h0, arc1_radius, arc2_radius);
 
@@ -856,8 +847,6 @@ elseif 2 == continuity_level
             fcn_geometry_plotGeometry('arc',arc1_parameters);
             fcn_geometry_plotGeometry('arc',arc2_parameters);
             fcn_geometry_extractXYfromSTSpiral(s,spiralLength,h0,x0,y0,K0,Kf,(1234));
-
-
             
             % % Find the center of the circle tangent at the end of the spiral
             % % Find the unit vector (need to do this analytically!)
@@ -945,7 +934,7 @@ elseif 2 == continuity_level
 else
     error('This continuity not possible yet')
 end
-end % Ends fcn_INTERNAL_findShiftToMatchArcToLine
+end % Ends fcn_INTERNAL_findShiftToMatchArcToArc
 
 %% fcn_INTERNAL_performShift
 function [revised_line_parameters,revised_arc_parameters] = fcn_INTERNAL_performShift(clean_line_parameters, clean_arc_parameters,~, delta_transverse,delta_station, arc_start_point, line_end_point)

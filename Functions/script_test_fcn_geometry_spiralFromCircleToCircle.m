@@ -171,12 +171,13 @@ circle2_center_XY = [0.2 -1.8];
 flag_circle2_is_counterclockwise = -1;
 
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
 assert(all(isnan(spiral_join_parameters)));
-
+assert(space_between_circles<0);
 

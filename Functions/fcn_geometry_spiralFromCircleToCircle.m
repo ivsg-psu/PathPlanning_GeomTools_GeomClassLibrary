@@ -1,4 +1,4 @@
-function spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, varargin)
+function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, varargin)
 %% fcn_geometry_spiralFromCircleToCircle
 % Calculates the spiral parameters that join one circle to another. The
 % spiral is assumed to leave the first circle in a counter-clockwise
@@ -38,7 +38,15 @@ function spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_
 %      spiral_join_parameters: the parameter set describing the
 %      spiral segment geometry that joins the circles. See
 %      fcn_geometry_fillEmptyDomainStructure for details, specifically the
-%      structure for 'spiral'.
+%      structure for 'spiral'. If a spiral is not possible, then nan values
+%      are returned for all parameters.
+%
+%      space_between_circles: the amount of space between the circles if a
+%      spiral is to be joined between them. Positive values will generate
+%      feasible spirals, negative values are not feasible. This
+%      space_between_circles is a useful measure to determine how "close"
+%      in physical distance a configuration that does NOT work would be to
+%      a configuration that does work.
 %
 % DEPENDENCIES:
 %
