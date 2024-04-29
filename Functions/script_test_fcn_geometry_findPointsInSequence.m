@@ -64,6 +64,9 @@ station_tolerance = 0.1;
 
 sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
 
+assert(length(sequence_indicies) > 1);
+assert(length(sequence_indicies(1,:)) == 1);
+
 %% Example - 3 - fast implementation mode
 fig_num = 333;
 

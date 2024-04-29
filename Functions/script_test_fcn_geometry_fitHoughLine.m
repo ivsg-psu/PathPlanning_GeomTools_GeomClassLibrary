@@ -6,29 +6,6 @@
 
 close all;
 
-%% Fill in some test data
-rng(383);
-
-% Fill test data - 3 segments
-seed_points = [2 3; 4 5; 8 0; 9 3]; 
-M = 10;
-sigma = 0.05;
-
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma);
-
-% Add outliers?
-% Corrupt the results
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 4;
-
-test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption));
-
-
-% Shuffle points?
-test_points = fcn_geometry_shufflePointOrdering(test_points);
-
-
 %% Test 1: a basic test of line segment fitting
 fig_num = 1;
 transverse_tolerance = 0.2;
@@ -36,6 +13,35 @@ station_tolerance = 2;
 points_required_for_agreement = [];
 
 domains= fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough segment',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
 
 
 %% Test 2: a basic test of line segment fitting, noisy points
@@ -71,6 +77,38 @@ points_required_for_agreement = [];
 
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough segment',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% Test 3: a basic test of LINE fitting, noisy points, showing effect of station_tolerance setting
 
 rng(383);
@@ -103,6 +141,38 @@ station_tolerance = [];
 points_required_for_agreement = [];
 
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough line',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 %% Test 4: a basic test of line segment fitting, noisy points
 
@@ -137,6 +207,38 @@ points_required_for_agreement = 20;
 
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough segment',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
 %% Test 5: confirming that it does not plot if figure is off
 
 rng(383);
@@ -169,6 +271,38 @@ points_required_for_agreement = 20;
 domains = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
 
 fcn_geometry_plotFitDomains(domains, fig_num);
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough segment',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 %% Test 6: show get empty domain if points for agreement is too high
 
@@ -203,6 +337,38 @@ points_required_for_agreement = length(test_points(:,1))+1;
 
 domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
 
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough segment',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(issimplified(domain.best_fit_domain_box));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
 
 %% Test of fast mode
 

@@ -64,16 +64,14 @@
 % fcn_geometry_findTangentPointsTwoCircles in prep for region checking
 % 2024_04_20 - S. Brennan
 % -- added C0, C1, and C2 continuity type join options for alignLineToArc
-%
+% 2024_04_25 - Aneesh Batchu
+% -- Wrote Assertions to the missing test scripts. 
+% -- Also, sped up the test scripts to run faster. 
 
 %% To-do items
 % 2024_04_15 - S. Brennan
 % -- need to check the fcn_geometry_fitSequentialArcs closely. There are
 % larger errors at the end points and not sure why.
-% 2024_04_14 - Aneesh Batchu
-% -- Write Assertions to the following scripts
-% script_test_fcn_geometry_findIntersectionOfLineSegmentWithCircle
-% script_test_fcn_geometry_findPhiConstraints
 % 2024_04_14 - S. Brennan
 % -- In joinLineToArc, need to develop methods to reflect geometries about
 % a vector, and flip a geometry's direction. Then need to push those
