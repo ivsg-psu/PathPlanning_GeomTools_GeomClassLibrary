@@ -99,6 +99,8 @@ function [...
 % -- Added plotting from: fcn_geometry_plotCircle
 % 2024_01_17 - Aneesh Batchu
 % -- added max speed options 
+% 2024_04_23 - S. Brennan
+% -- force function to output nan outputs if circles overlap 
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -248,10 +250,13 @@ if ~isempty(inside_indices)
     D_squared = sum(...
         (centers_start(inside_indices,:) - ...
         centers_end(inside_indices,:)).^2,2);
-    if any(D_squared<r_sum_squared)
+    if flag_do_debug
+        
         % Plot the circles
-        fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,fig_num);
-        error('The internal tangent points between two circles were sought, but the circles overlap each another. Not possible to continue!');
+        fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,363537);
+        warning('on','backtrace');
+        warning('The internal tangent points between two circles were sought, but the circles overlap each another. See fig 363537. Returning empty values!');
+        return;
     end
     
     % Calculate inner tangent points

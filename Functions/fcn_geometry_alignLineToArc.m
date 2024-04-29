@@ -85,6 +85,7 @@ function [revised_line_parameters, revised_arc_parameters, revised_spiral_join_p
 % -- finished functionalizing code
 % -- added C0 and C1 continuity, confirmed via script testing they work
 % -- added C2 continuity and revised_spiral_join_parameters output
+% -- bug fix in nargin check
 
 %% Debugging and Input checks
 
@@ -162,7 +163,7 @@ end
 
 % Does user want to specify continuity_level?
 continuity_level = 1;
-if (4<=nargin)
+if (5<=nargin)
     temp = varargin{2};
     if ~isempty(temp)
         continuity_level = temp;

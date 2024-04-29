@@ -38,6 +38,7 @@ centers    = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
 fcn_geometry_plotCircle(centers,radii,'r.',fig_num);
 
+
 %% BASIC example 5
 fig_num = 5;
 
@@ -47,7 +48,7 @@ radii = [3; 4; 5];
 % Do a light blue
 fcn_geometry_plotCircle(centers,radii,[0.5 0.5 1],fig_num);
 
-%% BASIC example 6
+%% BASIC example 6 - many circles
 fig_num = 6;
 
 centers  = [1 2; 2 4; 3 5];
@@ -56,6 +57,16 @@ radii = [3; 4; 5];
 for i_circle=1:length(centers(:,1))
     fcn_geometry_plotCircle(centers(i_circle,:),radii(i_circle),[0.3*i_circle 0.3*i_circle 1],fig_num);
 end
+
+%% BASIC example 7 - complex plot string
+fig_num = 7;
+figure(fig_num); clf;
+
+centers    = [1 2];
+radii = [3];
+fcn_geometry_plotCircle(centers,radii,sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',2 '),fig_num);
+
+
 
 %% Break cases follow
 % - these are ones that intentionally crash the code by passing invalid
