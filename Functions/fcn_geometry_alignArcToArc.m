@@ -196,7 +196,7 @@ fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
 % is fixed in later steps using a flag.
 [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, debug_fig_num);
 
-%% Rotate the geometries to ST coordinates
+%% Rotate the geometries out of XY into ST coordinates
 % so that the tangent line is oriented horizontally
 % and the start of the tangent line on arc1 is at the origin.
 % This is to make the debugging MUCH easier, as it reduces permutations.
@@ -206,6 +206,32 @@ fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
 
 %% Check to see if arc1 and arc2 intersect
 intersection_point = fcn_INTERNAL_ArcArcIntersection(st_arc1_parameters,st_arc2_parameters, debug_fig_num);
+% FROM
+% line, segment, circle, arc, spiral
+% TO
+% line, segment, circle, arc, spiral
+
+% RULE: for segments, arcs, and spirals that have multiple intersection
+% points, return the point that is nearest to the start of the segment,
+% arc, or spiral, with "nearest" meaning in station distance, not geometric
+% position. In other words, the intersection is returned that is
+% encountered first when traversing the "from" geometry starting at its
+% "start" position.
+%
+% For circles and lines that are the "starting" geometry, the intersection
+% point is returned that is the first point encountered in the 2nd geometry
+% if the 2nd geometry is a segment, arc, or spiral.
+%
+% For circles intersecting with circles or lines, both points are returned.
+
+% DONE in this code: intersection_point = fcn_geometry_intersectGeom('arc',  st_arc1_parameters, 'arc',  st_arc2_parameters, debug_fig_num); 
+% DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('line', st_arc1_parameters,'arc',   st_arc2_parameters, debug_fig_num);
+% DONE inside alignLineToArc BUT MAY BE WRONG!!!:  intersection_point = fcn_geometry_intersectGeom('arc',  st_arc1_parameters, 'line', st_arc2_parameters, debug_fig_num);
+% NOT DONE, but probably similar to this code:  intersection_point = fcn_geometry_intersectGeom('circle',  st_arc1_parameters, 'arc', st_arc2_parameters, debug_fig_num);
+% DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'arc', st_arc2_parameters, debug_fig_num);
+% DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'circle', st_arc2_parameters, debug_fig_num);
+% NO SPIRALS ARE DONE YET: put a "case" into the function for when we need
+% this later
 
 %% Check how much shift is needed to connect arc1 to arc2
 [desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters] = ...
@@ -216,7 +242,7 @@ intersection_point = fcn_INTERNAL_ArcArcIntersection(st_arc1_parameters,st_arc2_
 [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_spiral_join_parameters_St] = ...
     fcn_INTERNAL_performShift(threshold, continuity_level, st_arc1_parameters, st_arc2_parameters, desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters, debug_fig_num);
 
-%% Rotate results out of St
+%% Rotate results out of St back into XY
 [revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
     revised_arc1_parameters_St, revised_arc2_parameters_St, revised_spiral_join_parameters_St, St_transform, rotation_angle, flag_arc1_is_flipped, debug_fig_num);
@@ -1262,10 +1288,16 @@ else
         circle_to_circle_distance = sum((first_circle_projection_vector).^2,2).^0.5;
         desired_circle2_center = [0 (arc2_is_counter_clockwise*circle_to_circle_distance + arc1_radius)];
     else
-        % Should only enter here when one circle is inside another
-        line_angle = atan2(arc1_end_xy(2),arc1_end_xy(1)) + pi/2;
+        % Should only enter here when one circle is completely inside another
+        line_angle = -1*(arc1_end_angle_in_radians + pi/2);
         desired_circle1_center =  [0 0] + arc1_radius*[0 1];
-
+        unit_projection_orthogo_vector_from_arc1 = -[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
+        unit_projection_tangent_vector_from_arc1 = unit_projection_orthogo_vector_from_arc1*[0 -1; 1 0]; % Rotate by -90 degrees
+        
+        vector_from_circle1_to_circle2 = arc2_center_xy - arc1_center_xy;
+        predicted_circle2_x_coord      = sum((vector_from_circle1_to_circle2.*unit_projection_tangent_vector_from_arc1),2);
+        predicted_circle2_y_coord      = sum((vector_from_circle1_to_circle2.*unit_projection_orthogo_vector_from_arc1),2);
+        desired_circle2_center         = desired_circle1_center + [predicted_circle2_x_coord predicted_circle2_y_coord];
     end
 end
 
@@ -1276,26 +1308,28 @@ end
 % Use the SE2 toolbox to transform. Unfortunately, we have to force a
 % translation FIRST, then rotation. (There's no obvious way to do this in
 % one step).
-translation_to_St       = desired_circle1_center - arc1_center_xy;
-rotation_angle          = line_angle;
+translation_to_center1        = -arc1_center_xy;          % Push circle 1 to be at origin
+rotation_angle                = line_angle;               % Rotate everything to align the arc1 to end at -90 degree position
+translation_to_offset_center1 = desired_circle1_center;   % Push everything back "up" to make arc1 end to be at origin
 
-transformMatrix_translation_into_St = se2(0,'theta',translation_to_St);
-transformMatrix_rotation_into_St    = se2(rotation_angle,'theta',[0 0]);
-transformMatrix_into_St             = transformMatrix_rotation_into_St*transformMatrix_translation_into_St;
+transformMatrix_translation_into_center1 = se2(0,'theta',translation_to_center1);
+transformMatrix_rotation_into_St         = se2(rotation_angle,'theta',[0 0]);
+transformMatrix_offset_center1           = se2(0,'theta',translation_to_offset_center1);
+transformMatrix_into_St                  = transformMatrix_offset_center1*transformMatrix_rotation_into_St*transformMatrix_translation_into_center1;
 
 %%%%%
-% Fix arc1
+% Fix arc1 - translation only, not translate and rotate
 arc1_center_xy_St                       = transform(transformMatrix_into_St,arc1_center_xy);
 arc1_start_angle_in_radians_St          = arc1_start_angle_in_radians+rotation_angle;
 arc1_end_angle_in_radians_St            = arc1_end_angle_in_radians  +rotation_angle;
 
 %%%%%
-% Fix arc2
+% Fix arc2 - translation and rotation
 arc2_center_xy_St                       = transform(transformMatrix_into_St,arc2_center_xy);
 arc2_start_angle_in_radians_St          = arc2_start_angle_in_radians+rotation_angle;
 arc2_end_angle_in_radians_St            = arc2_end_angle_in_radians  +rotation_angle;
 
-% assert(isequal(round(desired_circle2_center,4),round(arc2_center_xy_St,4)));
+assert(isequal(round(desired_circle2_center,4),round(arc2_center_xy_St,4)));
 
 %%%%
 % Do we need to fix arcs so that arc1 is not flipped?

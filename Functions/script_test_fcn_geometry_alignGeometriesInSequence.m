@@ -4,8 +4,11 @@
 % Revision history:
 % 2024_04_19 - S Brennan
 % -- wrote the code
+% 2024_05_02 - S Brennan / A. Batchu
+% -- add more test cases
 
 
+%% REAL WORLD TEST CASE
 % Test with real-world data (test track)
 fig_num = 237492;
 figure(fig_num);

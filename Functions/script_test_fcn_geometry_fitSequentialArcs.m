@@ -27,12 +27,12 @@ arc_pattern = [...
     1/20, 15; 
     0 20];
 
-M = 10;
-sigma = 0.02;
+M = 10; % How many points per meter
+sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
 
 [test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
-% Add noise?
+% Add more noise?
 if 1==0
     % Corrupt the results
     probability_of_corruption = 1;
@@ -182,7 +182,7 @@ end
 fig_num = 23456;
 figure(fig_num);clf;
 
-revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, fitting_tolerance*2, fig_num);
+revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, 0.5, fig_num);
 revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance*2, fig_num);
 
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));

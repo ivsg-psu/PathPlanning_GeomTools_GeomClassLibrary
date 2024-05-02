@@ -25,14 +25,14 @@ line_s_end               = 1;
 
 
 true_arc_center_xy  = [0 1];
-true_arc_is_counter_clockwise = 1;
-true_arc_angles     = [270 360]*pi/180;
+% true_arc_is_counter_clockwise = 1;
+% true_arc_angles     = [270 360]*pi/180;
 
 arc_center_xy            = true_arc_center_xy+shift_error;
 arc_radius               = 1;
 arc_vector_start         = [cos(-70*pi/180) sin(-70*pi/180)];
 arc_vector_end           = [ 1  0];
-arc_is_circle            = 0;
+% arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
@@ -679,6 +679,42 @@ continuity_level = 2;
     line_parameters, arc_parameters, flag_arc_is_first, (tolerance), (continuity_level), (fig_num));
 
 title('Checking that arc is joined to the line: C2 continuous');
+
+
+% Check size of results
+assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_arc_parameters),[1 7]));
+
+% Check that line results
+fitted_line_params = round(revised_line_parameters,4);
+% true_line_params   = round([true_line_unit_tangent_vector true_start_point_xy 0 line_s_end-line_s_start],4);
+assert(isequal([1.0000         0   -1.0000         0         0    0.2326], round(fitted_line_params,4)));
+
+% Check the arc results
+fitted_arc_params = round([revised_arc_parameters(1,1:3) mod(revised_arc_parameters(1,4:5),2*pi) revised_arc_parameters(1,6:7)],4);
+% true_arc_params = round([true_arc_center_xy arc_radius mod(true_arc_angles,2*pi) arc_is_circle true_arc_is_counter_clockwise],4);
+assert(isequal([ 0    1.1000    1.0000    5.4955         0         0    1.0000], round(fitted_arc_params,4)));
+
+% Check the spiral results
+assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
+
+%% Checking case that fails
+
+fig_num = 99;
+figure(fig_num); clf;
+
+
+line_parameters = [ 0.7317    0.6816    3.6549   -3.9239   15.7332   33.6332];
+arc_parameters =  [-0.1225   20.3593   20.3705    4.7184    5.5674         0    1.0000];
+
+flag_arc_is_first = 1;
+tolerance = 0.5;         % meters
+continuity_level = 1;
+[revised_line_parameters, revised_arc_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignLineToArc(...
+    line_parameters, arc_parameters, flag_arc_is_first, (tolerance), (continuity_level), (fig_num));
+
+title('Checking that arc is joined to the line: C1 continuous');
 
 
 % Check size of results

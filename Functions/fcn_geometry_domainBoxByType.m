@@ -1,6 +1,10 @@
 function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 % fcn_geometry_domainBoxByType -  generates the domain box given a
-% particular type of domain. NOTE: the inputs change depending on the type
+% particular type of domain. A domain box is the region surrounding a
+% function wherein the function is valid, represented as a polyshape
+% boundary around an area where the function is fitted.
+% 
+% NOTE: the inputs change depending on the type
 % of domain used.
 %
 % FORMAT:
