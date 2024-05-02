@@ -12,7 +12,8 @@ function [...
     varargin)
 %% fcn_geometry_findTangentPointTwoCircles
 % finds tangent points from one set of circles to another, returning only
-% the one set of points tht matches the given cross products
+% the one set of points that matches the given cross products. If one
+% circle is inside another, returns NaN values.
 %
 % This function allows vectorization where centers and radii can be a
 % vector [x y] and [r] respectively, where x, y, and r are equal-length
@@ -101,6 +102,9 @@ function [...
 % -- added max speed options 
 % 2024_04_23 - S. Brennan
 % -- force function to output nan outputs if circles overlap 
+% 2024_04_30 - S. Brennan
+% -- updated plotting to make the start (green) and end (red) circles more clear 
+% -- force function to output nan outputs if circles inside each other
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -354,9 +358,14 @@ if ~isempty(outside_indices)
             (centers_start(unequal_and_outside_indices,:) - ...
             centers_end(unequal_and_outside_indices,:)).^2,2);
         if any(D_squared<r_diff_squared)
-            % Plot the circles
-            fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,fig_num);
-            error('The external tangent points between two circles were sought, but one circle is completely inside another. Not possible to continue!');
+            points_tangent_start = nan(size(centers_start));
+            points_tangent_end   = nan(size(centers_start));
+            if flag_do_debug
+                % Plot the circles
+                fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,2345);
+                warning('The external tangent points between two circles were sought, but one circle is completely inside another. Not possible to continue!');
+            end
+           return;
         end
                
         % If no circles are within another, now can find the outer points
@@ -418,14 +427,14 @@ if flag_do_plot
     fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,fig_num);
     
     % Plot the tangent points    
-    plot(points_tangent_start(:,1),points_tangent_start(:,2),'g+');
-    plot(points_tangent_end(:,1),points_tangent_end(:,2),'g+');
+    plot(points_tangent_start(:,1),points_tangent_start(:,2),'g.','MarkerSize',30);
+    plot(points_tangent_end(:,1),points_tangent_end(:,2),'r.','MarkerSize',30);
     
     % Plot the tangent lines
     for  i=1:length(points_tangent_start(:,1))
         plot([points_tangent_start(i,1) points_tangent_end(i,1)],...
             [points_tangent_start(i,2) points_tangent_end(i,2)],...
-            'r-');
+            'k-','LineWidth',3);
     end
     
 end
@@ -444,14 +453,15 @@ axis equal;
 grid on; grid minor;
 
 % Plot the circle centers
-plot(centers_start(:,1),centers_start(:,2),'+');
-plot(centers_end(:,1),centers_end(:,2),'+');
+plot(centers_start(:,1),centers_start(:,2),'g+');
+text(centers_start(:,1),centers_start(:,2),'S');
+
+plot(centers_end(:,1),centers_end(:,2),'r+');
+text(centers_end(:,1),centers_end(:,2),'E');
 
 % plot the circles, and label then with S for start, E for end
-fcn_geometry_plotCircle(centers_start,radii_start);
-text(centers_start(:,1),centers_start(:,2)+radii_start*0.5,'S');
-fcn_geometry_plotCircle(centers_end,radii_end);
-text(centers_end(:,1),centers_end(:,2)-radii_start*0.5,'E');
+fcn_geometry_plotCircle(centers_start,radii_start,sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',3 '));
+fcn_geometry_plotCircle(centers_end,radii_end,sprintf(' ''-'',''Color'',[1 0 0],''LineWidth'',3 '));
 end
 
 

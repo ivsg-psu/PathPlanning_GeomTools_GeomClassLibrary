@@ -49,6 +49,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- added segment_length input
 % 2024_04_20 - S. Brennan
 % -- added spiral type
+% 2024_04_30 - S. Brennan
+% -- checks added to avoid plotting nan values for parameters
 
 
 %% Debugging and Input checks
@@ -153,7 +155,7 @@ end
 % Calculate the XY_data depending on type
 switch lower(plot_type_string)
     case {'line','segment','vector regression segment fit'}
-        if ~isempty(parameters)
+        if ~isempty(parameters) && ~any(isnan(parameters))
             line_vector          = parameters(1,1:2);
             base_point_xy        = parameters(1,3:4);
             station_distance_min = parameters(1,5);
@@ -175,7 +177,7 @@ switch lower(plot_type_string)
 
 
     case {'arc','regression arc'}
-        if ~isempty(parameters)
+        if ~isempty(parameters) && ~any(isnan(parameters))
             circleCenter         = parameters(1,1:2);
             circleRadius         = parameters(1,3);
             arcAngles            = parameters(1,4:5);
@@ -190,7 +192,7 @@ switch lower(plot_type_string)
             XY_data = [nan nan; nan nan];            
         end
     case {'spiral'}
-        if ~isempty(parameters)
+        if ~isempty(parameters) && ~any(isnan(parameters))
             spiralLength      = parameters(1,1);
             h0                = parameters(1,2);
             x0                = parameters(1,3);

@@ -106,6 +106,8 @@ function [...
 % 2024_04_17 - S. Brennan
 % -- added max speed options
 % -- cleaned up input area
+% 2024_04_30 - S. Brennan
+% -- updated plotting to make the start (green) and end (red) circles more clear 
 
 %% Debugging and Input checks
 
@@ -391,23 +393,29 @@ if flag_do_plot
     axis equal;
     grid on; grid minor;
 
-    fcn_geometry_plotCircle(centers_start,radii_start);
-    text(centers_start(:,1),centers_start(:,2)+radii_start*0.5,'S');
-    fcn_geometry_plotCircle(centers_end,radii_end);
-    text(centers_end(:,1),centers_end(:,2)-radii_start*0.5,'E');
+    plot(centers_start(:,1),centers_start(:,2),'g+');
+    text(centers_start(:,1),centers_start(:,2),'S');
+    fcn_geometry_plotCircle(centers_start,radii_start,sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',3 '));
 
-    plot(points_tangent_start(:,1),points_tangent_start(:,2),'g+');
-    plot(points_tangent_end(:,1),points_tangent_end(:,2),'r.');
+    plot(centers_end(:,1),centers_end(:,2),'r+');
+    text(centers_end(:,1),centers_end(:,2),'E');
+    fcn_geometry_plotCircle(centers_end,radii_end,sprintf(' ''-'',''Color'',[1 0 0],''LineWidth'',3 '));
+
+
+    plot(points_tangent_start(:,1),points_tangent_start(:,2),'g.','MarkerSize',30);
+    plot(points_tangent_end(:,1),points_tangent_end(:,2),'r.','MarkerSize',30);
 
     if flag_use_voting_points
-        plot(voting_points_start(:,1), voting_points_start(:,2),'co');
-        plot(voting_points_end(:,1), voting_points_end(:,2),'co');
+        plot(voting_points_start(:,1), voting_points_start(:,2),'c.','MarkerSize',30);
+        plot(voting_points_end(:,1), voting_points_end(:,2),'c.','MarkerSize',30);
+        text(voting_points_start(:,1),voting_points_start(:,2),'VotingPointStart');
+        text(voting_points_end(:,1),voting_points_end(:,2),'VotingPointEnd');
     end
 
     for  i=1:length(points_tangent_start(:,1))
         plot([points_tangent_start(i,1) points_tangent_end(i,1)],...
             [points_tangent_start(i,2) points_tangent_end(i,2)],...
-            'k-');
+            'k-','LineWidth',3);
     end
 
 end

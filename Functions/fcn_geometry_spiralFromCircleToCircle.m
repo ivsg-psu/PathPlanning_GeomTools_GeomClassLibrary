@@ -251,7 +251,11 @@ if space_between_circles>0
     y0 = 0;
     K0 = 1/circle1_radius;
     Kf = 1/(circle2_radius*flag_circle2_is_counterclockwise);
-    [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,(1234));
+    if 1==flag_do_debug
+        [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,(1234));
+    else
+        [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,-1);
+    end
 
     analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
     unit_tangent           = [cos(analytical_end_angle) sin(analytical_end_angle)];

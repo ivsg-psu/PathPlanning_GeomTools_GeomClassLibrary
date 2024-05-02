@@ -30,7 +30,8 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_
 %      the threshold first in the transverse direction, and then in the
 %      station direction. For example, an entry of [0.02 3] would have 0.02
 %      meters threshold in the transverse direction, but 3 meters threshold
-%      in the station direction.
+%      in the station direction. To force a joining of geometries without
+%      using shifts, leave threshold empty, e.g. threshold = [];
 %
 %      continuity_level: the level of continuity desired in the alignment.
 %      Input values include 0 for C0 continuity, 1 for C1 continuity
@@ -141,10 +142,13 @@ end
 
 % Does user want to specify best_fit_domain_box_projection_distance?
 threshold = 0.1;
+flag_perform_shift_of_arc2 = 1;
 if (3<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
         threshold = temp;
+    else
+        flag_perform_shift_of_arc2 = 0;
     end
 end
 
@@ -183,58 +187,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plot inputs?
-if flag_do_debug
-    figure(debug_fig_num);
-    clf;
-
-    % Plot the inputs
-    subplot(3,2,1);
-
-
-    fcn_geometry_plotGeometry('arc',arc1_parameters);
-    fcn_geometry_plotGeometry('arc',arc2_parameters);
-
-    temp = axis;
-    %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
-    axis([min(new_axis) max(new_axis) min(new_axis) max(new_axis)]);
-
-    hold on;
-    grid on;
-    axis equal;
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
-
-    title('Inputs');
-
-    debug_axis = axis;
-
-end
-
+fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
 
 %% Rearrange parameters so line is always the 1st input, arc is 2nd
 % Fix the parameters to make the line segment first, arc second, and make
 % sure the line and arc point into and then out of the junction
 % respectively. For situations where arc is actually the first input, this
 % is fixed in later steps using a flag.
-[clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters);
-
-if flag_do_debug
-    figure(debug_fig_num);
-
-    % Plot the cleaned inputs
-    subplot(3,2,2);
-
-    fcn_geometry_plotGeometry('arc',clean_arc1_parameters);
-    fcn_geometry_plotGeometry('arc',clean_arc2_parameters);
-    title('Cleaned inputs');
-    axis(debug_axis);
-end
-
-
+[clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, debug_fig_num);
 
 %% Rotate the geometries to ST coordinates
 % so that the tangent line is oriented horizontally
@@ -242,118 +202,26 @@ end
 % This is to make the debugging MUCH easier, as it reduces permutations.
 % Again, this is fixed in later steps.
 [st_arc1_parameters, st_arc2_parameters, St_transform, rotation_angle, flag_arc1_is_flipped] = ...
-    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters);
-
-if ~isempty(debug_fig_num)
-    figure(debug_fig_num);
-
-    % Plot the rotated inputs
-    subplot(3,2,3);
-
-    fcn_geometry_plotCircle(st_arc1_parameters(1,1:2),st_arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
-    fcn_geometry_plotCircle(st_arc2_parameters(1,1:2),st_arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
-
-    fcn_geometry_plotGeometry('arc',st_arc1_parameters);
-    fcn_geometry_plotGeometry('arc',st_arc2_parameters);
-
-    plot(st_arc1_parameters(1,1),st_arc1_parameters(1,2),'+','Color',[0 0.6 0]);
-    plot(st_arc2_parameters(1,1),st_arc2_parameters(1,2),'+','Color',[0.6 0 0]);
-
-
-    title('Rotated into St');
-    axis(debug_axis);
-end
-
+    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters, debug_fig_num);
 
 %% Check to see if arc1 and arc2 intersect
-intersection_point = fcn_INTERNAL_findLineArcIntersection(st_arc1_parameters,st_arc2_parameters);
-
-if ~isempty(debug_fig_num)
-    % Plot the intersection
-    figure(debug_fig_num);
-    subplot(3,2,3);
-    plot(intersection_point(:,1),intersection_point(:,2),'k.','MarkerSize',20);
-    axis(debug_axis);
-end
-
-
+intersection_point = fcn_INTERNAL_ArcArcIntersection(st_arc1_parameters,st_arc2_parameters, debug_fig_num);
 
 %% Check how much shift is needed to connect arc1 to arc2
-[delta_transverse, delta_station, desired_arc2_start_point, desired_arc1_end_point,spiral_join_parameters] = ...
-    fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters,continuity_level, intersection_point);
+[desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters] = ...
+    fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters,continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_fig_num);
 % Deltas are from desired to actual
 
-if ~isempty(debug_fig_num)
-    % Plot the bounding box
-    figure(debug_fig_num);
-    subplot(3,2,3);
-
-    % bounding_box = [0 0; 1 0; 1 1; 0 1; 0 0]*[threshold(1) 0; 0 threshold(1)];
-    % plot(bounding_box(:,1),bounding_box(:,2),'r-','LineWidth',1);
-
-    fcn_geometry_plotCircle(desired_arc1_end_point, threshold(1),'r-');
-
-    plot(desired_arc1_end_point(:,1),desired_arc1_end_point(:,2),'b.','MarkerSize',30);
-    plot(desired_arc2_start_point(:,1),desired_arc2_start_point(:,2),'c.','MarkerSize',10);
-    fcn_geometry_plotGeometry('spiral',spiral_join_parameters);
-    
-    axis(debug_axis);
-end
-
-
-%% Do we join arc1 and arc2?
-shift_distance = sum(([delta_transverse delta_station]).^2,2).^0.5;
-if abs(shift_distance)<threshold
-    [revised_arc1_parameters_St,revised_arc2_parameters_St] = fcn_INTERNAL_performShift(st_arc1_parameters, st_arc2_parameters,continuity_level, delta_transverse,delta_station, desired_arc2_start_point, desired_arc1_end_point);
-    revised_spiral_join_parameters_St = spiral_join_parameters;
-else
-    % Not possible to shift
-    revised_arc1_parameters_St = [];
-    revised_arc2_parameters_St  = [];
-    revised_spiral_join_parameters_St = [];
-end
-
-
-if flag_do_debug
-    % Plot the results
-    figure(debug_fig_num);
-    subplot(3,2,4);
-
-    fcn_geometry_plotGeometry('arc',revised_arc1_parameters_St);
-    fcn_geometry_plotGeometry('arc',revised_arc2_parameters_St);
-    fcn_geometry_plotGeometry('spiral',revised_spiral_join_parameters_St);
-
-    title('St outputs');
-    axis(debug_axis);
-end
+%% Perform shift to join arcs 1 and 2
+[revised_arc1_parameters_St,revised_arc2_parameters_St, revised_spiral_join_parameters_St] = ...
+    fcn_INTERNAL_performShift(threshold, continuity_level, st_arc1_parameters, st_arc2_parameters, desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters, debug_fig_num);
 
 %% Rotate results out of St
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_INTERNAL_convertParametersOutOfStOrientation(...
+    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_spiral_join_parameters_St, St_transform, rotation_angle, flag_arc1_is_flipped, debug_fig_num);
 
-if ~isempty(revised_arc1_parameters_St)
-    [revised_arc1_parameters,revised_arc2_parameters, revised_spiral_join_parameters] = ...
-        fcn_INTERNAL_convertParametersOutOfStOrientation(...
-        revised_arc1_parameters_St, revised_arc2_parameters_St, St_transform, rotation_angle, revised_spiral_join_parameters_St);
-else
-    % Not possible to shift
-    revised_arc1_parameters = [];
-    revised_arc2_parameters  = [];
-    revised_spiral_join_parameters = [];
-end
 
-if flag_do_debug
-    % Plot the results
-    figure(debug_fig_num);
-    subplot(3,2,5);
-
-    fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
-    fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
-    fcn_geometry_plotGeometry('spiral',revised_spiral_join_parameters);
-    
-    title('St outputs');
-    axis(debug_axis);
-end
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -407,11 +275,6 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    % Plot the inputs
-    fcn_geometry_plotGeometry('arc',arc1_parameters);
-    fcn_geometry_plotGeometry('arc',arc2_parameters);
-
-
     % Plot the outputs
     fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
     fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
@@ -458,7 +321,7 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_fixOrientationAndOrdering
-function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters)
+function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, debug_fig_num)
 % This function takes the parameter inputs and produces parameter sets such
 % that the arc1 is first, it is oriented so that it ends at the junction
 % with arc2, and the arc2 starts at the junction. 
@@ -598,12 +461,33 @@ clean_arc2_parameters(1,4:5)   = [corrected_arc2_start_angle_in_radians correcte
 clean_arc2_parameters(1,6)     = arc2_parameters(1,6);   % flag is circle
 clean_arc2_parameters(1,7)     = corrected_arc2_is_counter_clockwise;
 
+if ~isempty(debug_fig_num)
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    % Plot the cleaned inputs
+    subplot(3,2,2);
+
+    fcn_geometry_plotGeometry('arc',clean_arc1_parameters);
+    fcn_geometry_plotGeometry('arc',clean_arc2_parameters);
+
+    axis(debug_axis);
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+    title('Corrected inputs');
+end
+
 
 end % ends fcn_INTERNAL_fixOrientationAndOrdering
 
 
-%% fcn_INTERNAL_findLineArcIntersection
-function  intersection_point_both_arcs = fcn_INTERNAL_findLineArcIntersection(arc1_parameters,arc2_parameters)
+%% fcn_INTERNAL_ArcArcIntersection
+function  intersection_point_both_arcs = fcn_INTERNAL_ArcArcIntersection(arc1_parameters,arc2_parameters, debug_fig_num)
 
 % Calculate needed values from parameter sets
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -727,17 +611,30 @@ if ~isnan(xout)
 else
     intersection_point_both_arcs = [nan nan];
 end
-end % Ends fcn_INTERNAL_findLineArcIntersection
+
+if ~isempty(debug_fig_num)
+    % Plot the intersection
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    subplot(3,2,3);
+    plot(intersection_point_both_arcs(:,1),intersection_point_both_arcs(:,2),'k.','MarkerSize',20);
+    
+    axis(debug_axis);
+end
+
+end % Ends fcn_INTERNAL_ArcArcIntersection
 
 
 
 %% fcn_INTERNAL_findShiftToMatchArcToArc
-function [delta_transverse, delta_station, desired_closest_arc2_point_to_joint, desired_closest_arc1_point_to_joint,spiral_join_parameters] = ...
-    fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point)
+function [desired_arc1_parameters, desired_arc2_parameters, desired_spiral_join_parameters] = ...
+    fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_fig_num)
 % Calculates the delta amount to match the arc to the arc. The delta
 % values are measured FROM desired point TO actual point
 
-spiral_join_parameters = []; % Initialize output. This is ONLY used for spiral fits.
+desired_spiral_join_parameters = []; % Initialize output. This is ONLY used for spiral fits.
 
 % Calculate needed values from parameter sets
 % Calculate needed values from parameter sets
@@ -786,171 +683,227 @@ arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_
 to_joint_unit_tangent_vector = [1 0];
 to_joint_unit_ortho_vector   = [0 1];
 
-if 0 == continuity_level
-    % For C0 continuity of arc1 to arc2, the closest point of the
-    % desired joint to the arc is either the intersection of arc1
-    % arc2, or where arc1 ends
-    if any(isnan(intersection_point))
-        desired_closest_arc2_point_to_joint  = arc1_end_xy;
-        desired_closest_arc1_point_to_joint  = arc1_end_xy;
-    else
-        desired_closest_arc2_point_to_joint  = intersection_point;
-        desired_closest_arc1_point_to_joint = intersection_point;
-    end
-
-elseif 1 == continuity_level
-    % For C1 continuity of arc1 to arc2, the closest point of the desired
-    % joint to arc1 and arc2 is always going to be the point where each arc
-    % touches the tangent line connecting them. Since arc2 is the only one
-    % that can be moved, the connecting point is simply the location where
-    % arc1 is tangent, which by construction is [0 0].
-
-    desired_closest_arc2_point_to_joint = [0 0];
-    desired_closest_arc1_point_to_joint = [0 0];
-
-elseif 2 == continuity_level
-    % For C2 continuity of an arc to an arc, the spiral must change
-    % curvature. Calculation of the spiral is difficult and requires
-    % numerical iteration, and the inputs require the calculation
-    % of the offset of the spirals relative to each other - e.g. the
-    % "space" between the arcs. There are many cases where spirals cannot
-    % exist between arcs, and specifically if the space_between_circles is
-    % negative
-
-
-    [spiral_join_parameters, space_between_circles] = ...
-        fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
-
-    if space_between_circles>0
-        URHERE - test this
-        % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
-
-        spiralLength = spiral_join_parameters(1,1);
-
-        [spiralLength, h0]  = fcn_INTERNAL_findLengthFromOffset(offset, arc1_radius, arc2_radius, arc2_center_xy);
-        [~, x0, y0, K0, Kf] = fcn_INTERNAL_calcArcParameters(h0, arc1_radius, arc2_radius);
-
-        % Check results?
-        if 1==1
-            % Set up station coordinates            
-            s  = (0:0.01:1)'*spiralLength;
-
-            % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
-            % spiral and calculate the offsets, plotting the results in
-            % figure 1234
-            figure(1234);
-            clf;
-            hold on;
-            grid on;
-            axis equal;
-
-            fcn_geometry_plotGeometry('arc',arc1_parameters);
-            fcn_geometry_plotGeometry('arc',arc2_parameters);
-            fcn_geometry_extractXYfromSTSpiral(s,spiralLength,h0,x0,y0,K0,Kf,(1234));
-            
-            % % Find the center of the circle tangent at the end of the spiral
-            % % Find the unit vector (need to do this analytically!)
-            % s_tangent = [0.999999 1]'*spiralLength;
-            % [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,spiralLength,h0,x0,y0,K0,Kf);
-            % unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
-            % unit_orthogonal = unit_tangent*[0 1; -1 0];
-            % calculated_circle_center = arc_radius*unit_orthogonal + [x_tangent(end) y_tangent(end)];
-            %
-            % % Plot the circle's center
-            % plot(calculated_circle_center(:,1),calculated_circle_center(:,2),'r+');
-            %
-            % % Plot the circle
-            % fcn_geometry_plotCircle(arc2_center_xy, arc_radius,'r-',(1234));
-        end % Ends plotting
-
-
-
-  
-        % Find the angle that the spiral ends at - it is always the spiral length/2
-        [x_spiralEnd,y_spiralEnd] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,-1);
-
-        spiral_end_angles_radians = spiralLength/2;
-
-        % Find where the circle center is at based on this end angle
-        unit_tangent_vector = [cos(spiral_end_angles_radians) sin(spiral_end_angles_radians)];
-        unit_orthogonal_vector = unit_tangent_vector*[0 1; -1 0];
-        spiral_predicted_circle_center = arc_radius*unit_orthogonal_vector + [x_spiralEnd(end) y_spiralEnd(end)];
-        offset_error = arc2_center_xy - spiral_predicted_circle_center;
-        x0 = offset_error(1);
-        [x_spiralEnd,y_spiralEnd] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,-1);
-
-        % Make sure x0 and final angles are within the line segment and the
-        % arc respectively, 
-        if 0>x0 || x0>line_s_end
-            error('Spiral fit does not fit within x-range of line. Unable to continue.')
+switch continuity_level
+    case 0
+        % For C0 continuity of arc1 to arc2, the closest point of the
+        % desired joint to the arc is either the intersection of arc1
+        % arc2, or where arc1 ends
+        if any(isnan(intersection_point))
+            desired_closest_arc2_point_to_joint  = arc1_end_xy;
+            desired_closest_arc1_point_to_joint  = arc1_end_xy;
+        else
+            desired_closest_arc2_point_to_joint  = intersection_point;
+            desired_closest_arc1_point_to_joint = intersection_point;
         end
 
-        spiral_join_xy = [x_spiralEnd,y_spiralEnd];
-        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, spiral_join_xy, arc_end_xy,-1);
-        if arc_is_counter_clockwise ~= intersection_is_counterClockwise
-            error('Spiral fit does not fit within angle range of arc. Unable to continue.')
-        end
+    case 1
+        % For C1 continuity of arc1 to arc2, the closest point of the desired
+        % joint to arc1 and arc2 is always going to be the point where each arc
+        % touches the tangent line connecting them. Since arc2 is the only one
+        % that can be moved, the connecting point is simply the location where
+        % arc1 is tangent, which by construction is [0 0].
 
-        delta_transverse = 0;
-        delta_station    = 0;
-        desired_closest_arc2_point_to_joint = spiral_join_xy;
-        desired_closest_arc1_point_to_joint = [x0 0];
-        spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
-        return;
-    else
-        error('Spirals cannot be formed between arcs unless the circles upon which the arcs lie have some space between their closest points. This is geometrically impossible');
-    end % Ends if statement to check if spiral is possible
+        desired_closest_arc2_point_to_joint = [0 0];
+        desired_closest_arc1_point_to_joint = [0 0];
 
-    desired_closest_arc2_point_to_joint = arc1_end_xy;
-    desired_closest_arc1_point_to_joint = arc1_end_xy;
+    case 2
+        % For C2 continuity of an arc to an arc, the spiral must change
+        % curvature. Calculation of the spiral is difficult and requires
+        % numerical iteration, and the inputs require the calculation
+        % of the offset of the spirals relative to each other - e.g. the
+        % "space" between the arcs. There are many cases where spirals cannot
+        % exist between arcs, and specifically if the space_between_circles is
+        % negative, the spiral cannot exist. To determine if a spiral is
+        % possible between arcs, we call the function to determine if the
+        % spiral is possible between the circles containing the arcs, and if
+        % not, how much space is needed to allow the spiral.
 
-else
-    error('This continuity not possible yet')
+
+        [desired_spiral_join_parameters, space_between_circles] = ...
+            fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
+
+        if space_between_circles>0
+            % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
+
+            spiralLength = desired_spiral_join_parameters(1,1);
+            h0           = desired_spiral_join_parameters(1,2);
+            x0           = desired_spiral_join_parameters(1,3);
+            y0           = desired_spiral_join_parameters(1,4);
+            K0           = desired_spiral_join_parameters(1,5);
+            Kf           = desired_spiral_join_parameters(1,6);
+
+            % Check results?
+            if 1==1
+                % Set up station coordinates
+                s  = (0:0.01:1)'*spiralLength;
+
+                % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
+                % spiral and calculate the offsets, plotting the results in
+                % figure 1234
+                figure(1234);
+                clf;
+                hold on;
+                grid on;
+                axis equal;
+
+                fcn_geometry_plotGeometry('arc',arc1_parameters);
+                fcn_geometry_plotGeometry('arc',arc2_parameters);
+                fcn_geometry_plotGeometry('spiral',desired_spiral_join_parameters);
+            end % Ends plotting
+
+            % Find the angle and position that the spiral ends at
+            analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+
+            % Make sure the spiral's start position is within the angle range
+            % of arc1. If not, return Nan values for everything
+            arc1_angle_where_spiral_starts = h0 - pi/2;
+            spiral_arc1_join_xy = arc1_center_xy + arc1_radius*[cos(arc1_angle_where_spiral_starts) sin(arc1_angle_where_spiral_starts)];
+            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, spiral_arc1_join_xy, arc1_end_xy,-1);
+            if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
+                St_shift = [nan nan];
+                desired_closest_arc2_point_to_joint = [nan nan];
+                desired_closest_arc1_point_to_joint = [nan nan];
+                desired_spiral_join_parameters = nan(1,6);
+            end
+
+            % Make sure the spiral's start position is within the angle range
+            % of arc1. If not, return Nan values for everything
+            arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
+            spiral_arc2_join_xy = arc2_center_xy + arc2_radius*[cos(arc2_angle_where_spiral_ends) sin(arc2_angle_where_spiral_ends)];
+            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, spiral_arc2_join_xy, arc2_end_xy,-1);
+            if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
+                St_shift = [nan nan];
+                desired_closest_arc2_point_to_joint = [nan nan];
+                desired_closest_arc1_point_to_joint = [nan nan];
+                desired_spiral_join_parameters = nan(1,6);
+            end
+
+            % If made it here, then the spiral is good. Fill outputs and then
+            % return results
+            desired_arc1_parameters = arc1_parameters;
+            desired_arc1_parameters(1,4)   = arc1_start_angle_in_radians;
+            desired_arc1_parameters(1,5)   = arc1_angle_where_spiral_starts;
+            desired_arc2_parameters        = arc2_parameters;
+            desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends;
+            desired_arc2_parameters(1,5)   = arc2_end_angle_in_radians;
+        else
+            if flag_perform_shift_of_arc2==1
+                if space_between_circles<threshold
+                    direction_vector_to_shift_arc2 = arc2_center_xy - arc1_center_xy;
+                    unit_direction_vector_to_shift_arc2 = fcn_geometry_calcUnitVector(direction_vector_to_shift_arc2);
+
+                    if 1==arc2_is_counter_clockwise
+                        % Small circle must be completely inside the large circle
+                        sign_of_vector = -1;
+                    else
+                        % Small circle must be completely outside the large circle
+                        sign_of_vector = 1;
+                    end
+
+                    revised_arc2_parameters = arc2_parameters;
+                    revised_arc2_parameters(1,1:2) = revised_arc2_parameters(1,1:2) + unit_direction_vector_to_shift_arc2*sign_of_vector*(space_between_circles+0.001);
+                    [desired_arc1_parameters, desired_arc2_parameters, desired_spiral_join_parameters] = ...
+                        fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
+                else
+                    % Not possible
+                    desired_arc1_parameters = nan(size(arc1_parameters));
+                    desired_arc2_parameters = nan(size(arc1_parameters));
+                    desired_spiral_join_parameters = nan(1,6);
+                end
+            else
+                % Not allowed by user entry
+                desired_arc1_parameters = nan(size(arc1_parameters));
+                desired_arc2_parameters = nan(size(arc1_parameters));
+                desired_spiral_join_parameters = nan(1,6);
+            end
+        end % Ends if statement to check if spiral is possible
+    otherwise
+        error('This continuity not possible yet')
 end
 
-% Depending on which side of the line the arc is located, either need to
-% subtract or add on the circle radius. Note: the result is designed to be
-% positive if the line doesn't quite meet the circle as a tangent creating
-% a gap - in this case, a spiral is needed. The result is negative if the
-% line would intersect the circle; in this case, a line shift offset is
-% needed.
-unit_St_vector_to_arc2_center = to_joint_unit_ortho_vector*arc2_is_counter_clockwise;
+% % Depending on which side of the line the arc is located, either need to
+% % subtract or add on the circle radius. Note: the result is designed to be
+% % positive if the line doesn't quite meet the circle as a tangent creating
+% % a gap - in this case, a spiral is needed. The result is negative if the
+% % line would intersect the circle; in this case, a line shift offset is
+% % needed.
+% unit_St_vector_to_arc2_center = to_joint_unit_ortho_vector*arc2_is_counter_clockwise;
+% if 0 == continuity_level
+%     difference_vector_from_line_end_to_arc_start = arc2_start_xy - desired_closest_arc1_point_to_joint;
+%     delta_transverse = sum(to_joint_unit_ortho_vector.*difference_vector_from_line_end_to_arc_start,2);
+%     delta_station    = sum(to_joint_unit_tangent_vector.*difference_vector_from_line_end_to_arc_start,2);
+%     St_shift = [delta_station, delta_transverse];
+% elseif 1 == continuity_level
+%     desired_arc2_center_xy = desired_closest_arc1_point_to_joint + arc2_radius*unit_St_vector_to_arc2_center;
+%     difference_vector_from_desired_to_actual_circle_center = arc2_center_xy - desired_arc2_center_xy;
+%     delta_transverse = sum(to_joint_unit_ortho_vector.*difference_vector_from_desired_to_actual_circle_center,2);
+%     delta_station    = sum(to_joint_unit_tangent_vector.*difference_vector_from_desired_to_actual_circle_center,2);
+%     % if signed_distance_ortho_line_to_arc_center < 0
+%     %     delta_transverse   = -1*delta_transverse;
+%     % end
+%     St_shift = [delta_station, delta_transverse];
+% elseif 2 == continuity_level
+%     % Do nothing
+% else
+%     error('This continuity not possible yet')
+% end
 
-if 0 == continuity_level
-    difference_vector_from_line_end_to_arc_start = arc2_start_xy - desired_closest_arc1_point_to_joint;
-    delta_transverse = sum(to_joint_unit_ortho_vector.*difference_vector_from_line_end_to_arc_start,2);
-    delta_station    = sum(to_joint_unit_tangent_vector.*difference_vector_from_line_end_to_arc_start,2);
-elseif 1 == continuity_level
-    desired_arc2_center_xy = desired_closest_arc1_point_to_joint + arc2_radius*unit_St_vector_to_arc2_center;
-    difference_vector_from_desired_to_actual_circle_center = arc2_center_xy - desired_arc2_center_xy;
-    delta_transverse = sum(to_joint_unit_ortho_vector.*difference_vector_from_desired_to_actual_circle_center,2);
-    delta_station    = sum(to_joint_unit_tangent_vector.*difference_vector_from_desired_to_actual_circle_center,2);
-    % if signed_distance_ortho_line_to_arc_center < 0
-    %     delta_transverse   = -1*delta_transverse;
-    % end
 
-elseif 2 == continuity_level
-    error('Not coded yet');
-else
-    error('This continuity not possible yet')
+if ~isempty(debug_fig_num)
+    % Plot the bounding box
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    subplot(3,2,4);
+    fcn_geometry_plotGeometry('arc',desired_arc1_parameters);
+    fcn_geometry_plotGeometry('arc',desired_arc2_parameters);
+    fcn_geometry_plotGeometry('spiral',desired_spiral_join_parameters);
+    
+    axis(debug_axis);
+
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+    title('Desired St geometries');
 end
 end % Ends fcn_INTERNAL_findShiftToMatchArcToArc
 
 %% fcn_INTERNAL_performShift
-function [revised_line_parameters,revised_arc_parameters] = fcn_INTERNAL_performShift(clean_line_parameters, clean_arc_parameters,~, delta_transverse,delta_station, arc_start_point, line_end_point)
+function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_spiral_join_parameters_St] = ...
+    fcn_INTERNAL_performShift(threshold, continuity_level, st_arc1_parameters, st_arc2_parameters, desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters, debug_fig_num)
+
+
+St_shift = st_arc2_parameters(1,1:2)-desired_st_arc2_parameters(1,1:2);
+
+% Check to see if shift is even possible
+shift_distance = sum(St_shift.^2,2).^0.5;
+if abs(shift_distance)>=threshold
+    % Not possible to shift
+    revised_arc1_parameters_St        = nan(size(st_arc1_parameters));
+    revised_arc2_parameters_St        = nan(size(st_arc2_parameters));
+    revised_spiral_join_parameters_St = nan(size(spiral_join_parameters));
+    return
+end
+
+delta_station = St_shift(1,1);
+delta_transverse = St_shift(1,2);
 
 % Calculate needed values from parameter sets
 
 % Calculate needed values from parameter sets
 % Calculate needed values from parameter sets
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc1_center_xy                = arc1_parameters(1,1:2);
-arc1_radius                   = arc1_parameters(1,3);
-arc1_start_angle_in_radians   = arc1_parameters(1,4);
-arc1_end_angle_in_radians     = arc1_parameters(1,5);
+arc1_center_xy                = st_arc1_parameters(1,1:2);
+arc1_radius                   = st_arc1_parameters(1,3);
+arc1_start_angle_in_radians   = st_arc1_parameters(1,4);
+arc1_end_angle_in_radians     = st_arc1_parameters(1,5);
 arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
 arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
-arc1_is_counter_clockwise     = arc1_parameters(1,7);
+arc1_is_counter_clockwise     = st_arc1_parameters(1,7);
 
 % Find the change in angle of the arc
 arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
@@ -964,13 +917,13 @@ arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_
 
 
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc2_center_xy                = arc2_parameters(1,1:2);
-arc2_radius                   = arc2_parameters(1,3);
-arc2_start_angle_in_radians   = arc2_parameters(1,4);
-arc2_end_angle_in_radians     = arc2_parameters(1,5);
+arc2_center_xy                = st_arc2_parameters(1,1:2);
+arc2_radius                   = st_arc2_parameters(1,3);
+arc2_start_angle_in_radians   = st_arc2_parameters(1,4);
+arc2_end_angle_in_radians     = st_arc2_parameters(1,5);
 arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
 arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-arc2_is_counter_clockwise     = arc2_parameters(1,7);
+arc2_is_counter_clockwise     = st_arc2_parameters(1,7);
 
 % Find the change in angle of the arc
 arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
@@ -982,98 +935,154 @@ else
 end
 arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, arc2_is_counter_clockwise);
 
-
 % With the cleaned parameters, the line vector always
 % points in the direction of the join point.
 to_joint_unit_tangent_vector = [1 0];
 to_joint_unit_ortho_vector   = [0 1];
 
-% Calculate the offset from the arc's circle to the line
-vector_from_line_anti_joint_to_arc_center = arc_center_xy - line_base_point_xy;
-unit_vector_from_line_anti_joint_to_arc_center = fcn_geometry_calcUnitVector(vector_from_line_anti_joint_to_arc_center);
-
-crossProduct_to_find_arc_sign = cross([line_unit_tangent_vector 0],[unit_vector_from_line_anti_joint_to_arc_center 0]);
-arc_direction_relative_to_line_to_joint = crossProduct_to_find_arc_sign(3);
 
 
-point_shift_xy = [-delta_station -delta_transverse];
 
 
-%%% Fix the line
-if 0==flag_arc_is_first
-    % The line is first, do not shift it
-    new_line_unit_tangent_vector = line_unit_tangent_vector;
-    new_line_base_point_xy       = line_base_point_xy;
-    new_line_s_start             = 0;
-    new_line_s_end               = sum((line_base_point_xy - line_end_point).^2,2).^0.5;
-    if arc_direction_relative_to_line_to_joint>=0
-        % Arc veers to the left relative to the line's vector
-        new_arc_is_counter_clockwise = 1;
-    else
-        % Arc veers to the right relative to the line's vector
-        new_arc_is_counter_clockwise = 0;
-    end
+switch continuity_level
+    case 0
+        % For C0 continuity of arc1 to arc2, the closest point of the
+        % desired joint to the arc is either the intersection of arc1
+        % arc2, or where arc1 ends
+        if any(isnan(intersection_point))
+            desired_closest_arc2_point_to_joint  = arc1_end_xy;
+            desired_closest_arc1_point_to_joint  = arc1_end_xy;
+        else
+            desired_closest_arc2_point_to_joint  = intersection_point;
+            desired_closest_arc1_point_to_joint = intersection_point;
+        end
 
-    new_arc_center_xy = arc_center_xy + point_shift_xy;
-    new_arc_end_xy    = arc_end_xy    + point_shift_xy;
+    case 1
+        % For C1 continuity of arc1 to arc2, the closest point of the desired
+        % joint to arc1 and arc2 is always going to be the point where each arc
+        % touches the tangent line connecting them. Since arc2 is the only one
+        % that can be moved, the connecting point is simply the location where
+        % arc1 is tangent, which by construction is [0 0].
 
-    vector_from_arc_center_to_join = arc_start_point - new_arc_center_xy;
-    arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
+        desired_closest_arc2_point_to_joint = [0 0];
+        desired_closest_arc1_point_to_joint = [0 0];
 
-    % The angle the arc ends is where the arc stops
-    vector_from_arc_center_to_end = new_arc_end_xy - new_arc_center_xy;
-    arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
-
-    new_arc_start_angle_in_radians = arc_angle_at_join;
-    new_arc_end_angle_in_radians   = arc_angle_at_end;
-
-
-else
-    % The line is last, need to shift it
-    new_line_unit_tangent_vector = -1*line_unit_tangent_vector;
-    new_line_base_point_xy       = line_end_point - point_shift_xy;
-    new_line_s_start             = 0;
-    new_line_s_end               = sum((line_base_point_xy - line_end_point).^2,2).^0.5;
-    if arc_direction_relative_to_line_to_joint>=0
-        new_arc_is_counter_clockwise = 0;
-    else
-        new_arc_is_counter_clockwise = 1;
-    end
-
-    % The line is last, do not shift the arc
-    new_arc_center_xy = arc_center_xy;
-
-    % The angle the arc starts at the join point
-    vector_from_arc_center_to_join = arc_start_point - new_arc_center_xy;
-    arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
-
-    % The angle the arc ends is where the arc stops
-    new_arc_end_xy = arc_end_xy;
-    vector_from_arc_center_to_end = new_arc_end_xy - new_arc_center_xy;
-    arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
-
-    new_arc_end_angle_in_radians   = arc_angle_at_join;
-    new_arc_start_angle_in_radians = arc_angle_at_end;
+    case 2
+       revised_arc1_parameters_St        = desired_st_arc1_parameters;
+       revised_arc2_parameters_St        = desired_st_arc2_parameters;
+       revised_spiral_join_parameters_St = spiral_join_parameters;
+    otherwise
+        error('This continuity not possible yet')
 end
-revised_line_parameters(1,1:2) = new_line_unit_tangent_vector;
-revised_line_parameters(1,3:4) = new_line_base_point_xy;
-revised_line_parameters(1,5)   = new_line_s_start;
-revised_line_parameters(1,6)   = new_line_s_end;
 
 
-revised_arc_parameters(1,1:2) = new_arc_center_xy;
-revised_arc_parameters(1,3)   = arc_radius;
-revised_arc_parameters(1,4)   = new_arc_start_angle_in_radians;
-revised_arc_parameters(1,5)   = new_arc_end_angle_in_radians;
-revised_arc_parameters(1,6)   = arc_is_circle;
-revised_arc_parameters(1,7)   = new_arc_is_counter_clockwise;
+% 
+% 
+% % Calculate the offset from the arc's circle to the line
+% vector_from_line_anti_joint_to_arc_center = arc_center_xy - line_base_point_xy;
+% unit_vector_from_line_anti_joint_to_arc_center = fcn_geometry_calcUnitVector(vector_from_line_anti_joint_to_arc_center);
+% 
+% crossProduct_to_find_arc_sign = cross([line_unit_tangent_vector 0],[unit_vector_from_line_anti_joint_to_arc_center 0]);
+% arc_direction_relative_to_line_to_joint = crossProduct_to_find_arc_sign(3);
+% 
+% 
+% point_shift_xy = [-delta_station -delta_transverse];
+% 
+% 
+% %%% Fix the line
+% if 0==flag_arc_is_first
+%     % The line is first, do not shift it
+%     new_line_unit_tangent_vector = line_unit_tangent_vector;
+%     new_line_base_point_xy       = line_base_point_xy;
+%     new_line_s_start             = 0;
+%     new_line_s_end               = sum((line_base_point_xy - desired_arc1_end_point).^2,2).^0.5;
+%     if arc_direction_relative_to_line_to_joint>=0
+%         % Arc veers to the left relative to the line's vector
+%         new_arc_is_counter_clockwise = 1;
+%     else
+%         % Arc veers to the right relative to the line's vector
+%         new_arc_is_counter_clockwise = 0;
+%     end
+% 
+%     new_arc_center_xy = arc_center_xy + point_shift_xy;
+%     new_arc_end_xy    = arc_end_xy    + point_shift_xy;
+% 
+%     vector_from_arc_center_to_join = desired_arc2_start_point - new_arc_center_xy;
+%     arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
+% 
+%     % The angle the arc ends is where the arc stops
+%     vector_from_arc_center_to_end = new_arc_end_xy - new_arc_center_xy;
+%     arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
+% 
+%     new_arc_start_angle_in_radians = arc_angle_at_join;
+%     new_arc_end_angle_in_radians   = arc_angle_at_end;
+% 
+% 
+% else
+%     % The line is last, need to shift it
+%     new_line_unit_tangent_vector = -1*line_unit_tangent_vector;
+%     new_line_base_point_xy       = desired_arc1_end_point - point_shift_xy;
+%     new_line_s_start             = 0;
+%     new_line_s_end               = sum((line_base_point_xy - desired_arc1_end_point).^2,2).^0.5;
+%     if arc_direction_relative_to_line_to_joint>=0
+%         new_arc_is_counter_clockwise = 0;
+%     else
+%         new_arc_is_counter_clockwise = 1;
+%     end
+% 
+%     % The line is last, do not shift the arc
+%     new_arc_center_xy = arc_center_xy;
+% 
+%     % The angle the arc starts at the join point
+%     vector_from_arc_center_to_join = desired_arc2_start_point - new_arc_center_xy;
+%     arc_angle_at_join = atan2(vector_from_arc_center_to_join(1,2),vector_from_arc_center_to_join(1,1));
+% 
+%     % The angle the arc ends is where the arc stops
+%     new_arc_end_xy = arc_end_xy;
+%     vector_from_arc_center_to_end = new_arc_end_xy - new_arc_center_xy;
+%     arc_angle_at_end = atan2(vector_from_arc_center_to_end(1,2),vector_from_arc_center_to_end(1,1));
+% 
+%     new_arc_end_angle_in_radians   = arc_angle_at_join;
+%     new_arc_start_angle_in_radians = arc_angle_at_end;
+% end
+% revised_arc1_parameters_St(1,1:2) = new_line_unit_tangent_vector;
+% revised_arc1_parameters_St(1,3:4) = new_line_base_point_xy;
+% revised_arc1_parameters_St(1,5)   = new_line_s_start;
+% revised_arc1_parameters_St(1,6)   = new_line_s_end;
+% 
+% 
+% revised_arc2_parameters_St(1,1:2) = new_arc_center_xy;
+% revised_arc2_parameters_St(1,3)   = arc_radius;
+% revised_arc2_parameters_St(1,4)   = new_arc_start_angle_in_radians;
+% revised_arc2_parameters_St(1,5)   = new_arc_end_angle_in_radians;
+% revised_arc2_parameters_St(1,6)   = arc_is_circle;
+% revised_arc2_parameters_St(1,7)   = new_arc_is_counter_clockwise;
+% 
+% % Fix the arc angles to be between 0 and 2*pi
+% revised_arc2_parameters_St(1,4:5) = mod(revised_arc2_parameters_St(1,4:5),2*pi);
 
-% Fix the arc angles to be between 0 and 2*pi
-revised_arc_parameters(1,4:5) = mod(revised_arc_parameters(1,4:5),2*pi);
+
+if ~isempty(debug_fig_num)
+    % Plot the results
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    subplot(3,2,5);
+
+    fcn_geometry_plotGeometry('arc',revised_arc1_parameters_St);
+    fcn_geometry_plotGeometry('arc',revised_arc2_parameters_St);
+    fcn_geometry_plotGeometry('spiral',revised_spiral_join_parameters_St);
+
+    title('St outputs after shift');
+    axis(debug_axis);
+end
+
 end % Ends fcn_INTERNAL_performShift
 
 %% fcn_INTERNAL_convertParametersToStOrientation
-function [st_arc1_parameters, st_arc2_parameters, St_transform, rotation_angle, flag_arc1_is_flipped] = fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters)
+function [st_arc1_parameters, st_arc2_parameters, St_transform, rotation_angle, flag_arc1_is_flipped] = ...
+    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters, debug_fig_num)
 % Calculate St-equivalent values from parameter sets so that the tangent
 % line between arcs 1 and 2 is oriented horizontally and the start of the
 % tangent line on arc1 is at the origin and the input arc is
@@ -1141,10 +1150,31 @@ arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_
 % outside, they have to have the same clockwise or counterclockwise
 % orientation
 if (arc1_is_counter_clockwise==arc2_is_counter_clockwise)
-    flag_inside_or_outside = 1;
+    flag_inside_or_outside = 1;  % The tangent will be on the outside
 else
-    flag_inside_or_outside = -1;
+    flag_inside_or_outside = -1; % The tangent will be on the inside
 end
+
+% This calculates all the tangent points on circles defined by centers and
+% radii, where tangents can be either inner tangents or outer tangents. An
+% optional flag_inside_or_outside forces one or the other to be used. The
+% key factor of this function versus the one that follows is that one can
+% specify the voting points where the tangent is given that is closest to
+% the given votes.
+% FORMAT:
+%
+% [...
+%     points_tangent_start, ...
+%     points_tangent_end] ...
+%     = ...
+%     fcn_geometry_findTangentPointsTwoCircles(...
+%     centers_start,...
+%     centers_end,...
+%     radii_start,...
+%     radii_end,...
+%     (flag_inside_or_out),...
+%     (voting_points_start,voting_points_end),...
+%     (fig_num))
 
 [points_tangent_start1, points_tangent_end1] = ...
     fcn_geometry_findTangentPointsTwoCircles(...
@@ -1159,8 +1189,10 @@ end
 
 %%%%% OR
 
-% find the points for three circles, two outside, last inside, but where
-% all are equal radii
+% finds tangent points from one set of circles to another, returning only
+% the one set of points that matches the given cross products. 
+% NOTE: the function below will NOT give the right answer if there are 2
+% possible tangents
 [...
     points_tangent_start2, ...
     points_tangent_end2] ...
@@ -1200,26 +1232,41 @@ if ~any(isnan([points_tangent_start1 points_tangent_start2 points_tangent_end1 p
 
 
 else
-    % The code will enter here if the circles intersect each other AND if
-    % there is a situation where the internal tangent is requested. If this
-    % is the case, the only possible solution is to re-align the circle defining the second arc
-    % to be further away from the circle defining the first arc. The
-    % minimum separation that allows an internal tangent is when the
-    % circles "touch" each other at only one point. In this case, the
-    % alignment vector is the one pointing "out" of first circle's
-    % direction, tangent to the first circle, at the point of contact.
+    % The code will enter here if the circle tangents are not defined. This happens when:
+    % 
+    % circles intersect each other AND the internal tangent is requested,
+    % and in in this case the orientations of the arcs will be different
+    %
+    % or
+    % 
+    % one circle is inside the other circle, and the orientations are the
+    % same
+    % 
+    % If this is the case, the alignment vector is the one pointing "out"
+    % of first circle's direction, tangent to the first circle, centered at
+    % the origin.
      
-    % The point of contact is defined as the first circle's radius
-    % projected toward the second circle.
-    first_circle_projection_vector = arc2_center_xy - arc1_center_xy;
-    unit_first_circle_projection_vector = fcn_geometry_calcUnitVector(first_circle_projection_vector);
-    unit_line_alignment_vector = unit_first_circle_projection_vector*[0 1; -1 0]*arc1_is_counter_clockwise;
-    
-    % Finally, solve for the line angle and desired circle1_center
-    line_angle = -atan2(unit_line_alignment_vector(2),unit_line_alignment_vector(1));
-    desired_circle1_center =  [0 0] - arc1_radius*unit_first_circle_projection_vector;
-    circle_to_circle_distance = sum((first_circle_projection_vector).^2,2).^0.5;
-    desired_circle2_center = [0 (arc2_is_counter_clockwise*circle_to_circle_distance + arc1_radius)];
+    if arc1_is_counter_clockwise~=arc2_is_counter_clockwise
+        % Should only enter here if an internal tangent is requested for
+        % overlapping circles
+
+        % The point of contact is defined as the first circle's radius
+        % projected toward the second circle.
+        first_circle_projection_vector = arc2_center_xy - arc1_center_xy;
+        unit_first_circle_projection_vector = fcn_geometry_calcUnitVector(first_circle_projection_vector);
+        unit_line_alignment_vector = unit_first_circle_projection_vector*[0 1; -1 0]*arc1_is_counter_clockwise;
+
+        % Finally, solve for the line angle and desired circle1_center
+        line_angle = -atan2(unit_line_alignment_vector(2),unit_line_alignment_vector(1));
+        desired_circle1_center =  [0 0] - arc1_radius*unit_first_circle_projection_vector;
+        circle_to_circle_distance = sum((first_circle_projection_vector).^2,2).^0.5;
+        desired_circle2_center = [0 (arc2_is_counter_clockwise*circle_to_circle_distance + arc1_radius)];
+    else
+        % Should only enter here when one circle is inside another
+        line_angle = atan2(arc1_end_xy(2),arc1_end_xy(1)) + pi/2;
+        desired_circle1_center =  [0 0] + arc1_radius*[0 1];
+
+    end
 end
 
 %%%%%%%%%%%%%%%%
@@ -1254,7 +1301,9 @@ arc2_end_angle_in_radians_St            = arc2_end_angle_in_radians  +rotation_a
 % Do we need to fix arcs so that arc1 is not flipped?
 flag_arc1_is_flipped = 0;
 if arc1_is_counter_clockwise~=1
-    % Need to flip situation about y-axis
+    flag_arc1_is_flipped = 1;
+
+    % Need to flip arc1 and arc2 about y-axis
     arc1_center_xy_St = [arc1_center_xy_St(1,1) -arc1_center_xy_St(1,2)];
     arc1_start_unit_vector = [cos(arc1_start_angle_in_radians_St) sin(arc1_start_angle_in_radians_St)];
     arc1_end_unit_vector   = [cos(arc1_end_angle_in_radians_St)   sin(arc1_end_angle_in_radians_St)];   
@@ -1287,58 +1336,153 @@ st_arc2_parameters(1,6)        = arc2_is_circle;
 st_arc2_parameters(1,7)        = arc2_is_counter_clockwise;
 
 St_transform = transformMatrix_into_St;
+
+
+if ~isempty(debug_fig_num)
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    % Plot the rotated inputs
+    subplot(3,2,3);
+
+    fcn_geometry_plotCircle(st_arc1_parameters(1,1:2),st_arc1_parameters(1,3),...
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+    fcn_geometry_plotCircle(st_arc2_parameters(1,1:2),st_arc2_parameters(1,3),...
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+
+    fcn_geometry_plotGeometry('arc',st_arc1_parameters);
+    fcn_geometry_plotGeometry('arc',st_arc2_parameters);
+
+    plot(st_arc1_parameters(1,1),st_arc1_parameters(1,2),'+','Color',[0 0.6 0]);
+    plot(st_arc2_parameters(1,1),st_arc2_parameters(1,2),'+','Color',[0.6 0 0]);
+
+    axis(debug_axis);
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+    title('Rotated into St');
+end
+
+
 end % fcn_INTERNAL_convertParametersToStOrientation
 
 
 
 %% fcn_INTERNAL_convertParametersOutOfStOrientation
-function [revised_line_parameters, revised_arc_parameters, revised_spiral_join_parameters] = ...
+function [revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_line_parameters_St, revised_arc_parameters_St, St_transform, rotation_angle, revised_spiral_join_parameters_St)
-% Calculate XY parameters from St-equivalent values of parameter sets
+    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_spiral_join_parameters_St, St_transform, rotation_angle, flag_arc1_is_flipped, debug_fig_num)
 
+if isempty(revised_arc1_parameters_St) || any(isnan(revised_arc1_parameters_St))
+    % Not possible to shift
+    revised_arc1_parameters        = nan(size(revised_arc1_parameters_St));
+    revised_arc2_parameters        = nan(size(revised_arc2_parameters_St));
+    revised_spiral_join_parameters = nan(size(revised_spiral_join_parameters_St));
+    return
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculate needed values from parameter sets
+% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_center_xy                = revised_arc1_parameters_St(1,1:2);
+arc1_radius                   = revised_arc1_parameters_St(1,3);
+arc1_start_angle_in_radians   = revised_arc1_parameters_St(1,4);
+arc1_end_angle_in_radians     = revised_arc1_parameters_St(1,5);
+arc1_is_circle                = revised_arc1_parameters_St(1,6);
+arc1_is_counter_clockwise     = revised_arc1_parameters_St(1,7);
+
+arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
+
+% Find the change in angle of the arc
+arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+arc1_end_unit_vector          = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)  ];
+if arc1_is_counter_clockwise
+    arc1_is_counter_clockwise = 1;
+else
+    arc1_is_counter_clockwise = -1;
+end
+arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, arc1_is_counter_clockwise);
+
+
+% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_center_xy                = revised_arc2_parameters_St(1,1:2);
+arc2_radius                   = revised_arc2_parameters_St(1,3);
+arc2_start_angle_in_radians   = revised_arc2_parameters_St(1,4);
+arc2_end_angle_in_radians     = revised_arc2_parameters_St(1,5);
+arc2_is_circle                = revised_arc2_parameters_St(1,6);
+arc2_is_counter_clockwise     = revised_arc2_parameters_St(1,7);
+
+arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
+
+% Find the change in angle of the arc
+arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
+if arc2_is_counter_clockwise
+    arc2_is_counter_clockwise = 1;
+else
+    arc2_is_counter_clockwise = -1;
+end
+arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, arc2_is_counter_clockwise);
+
+
+
+%%%%
+% Do we need to fix arcs so that arc1 is not flipped?
+if 1==flag_arc1_is_flipped
+
+    % Need to flip arc1 and arc2 about y-axis before fixing orientation
+    arc1_center_xy = [arc1_center_xy(1,1) -arc1_center_xy(1,2)];
+    arc1_start_unit_vector = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+    arc1_end_unit_vector   = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)];   
+    arc1_start_angle_in_radians = atan2(-arc1_start_unit_vector(2), arc1_start_unit_vector(1));
+    arc1_end_angle_in_radians   = atan2(-arc1_end_unit_vector(2),   arc1_end_unit_vector(1)  );
+    arc1_is_counter_clockwise = 1;
+
+    arc2_center_xy = [arc2_center_xy(1,1) -arc2_center_xy(1,2)];
+    arc2_start_unit_vector = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+    arc2_end_unit_vector   = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)];   
+    arc2_start_angle_in_radians = atan2(-arc2_start_unit_vector(2), arc2_start_unit_vector(1));
+    arc2_end_angle_in_radians   = atan2(-arc2_end_unit_vector(2),   arc2_end_unit_vector(1)  );
+    arc2_is_counter_clockwise = -1*arc2_is_counter_clockwise;
+    
+end
+
+% Calculate inverse tranform
 transformMatrix_outOf_St = inv(St_transform);
 
+% Update arc1
+arc1_center_St                 = transform(transformMatrix_outOf_St,arc1_center_xy);
+arc1_start_angle_in_radians_St = arc1_start_angle_in_radians - rotation_angle;
+arc1_end_angle_in_radians_St   = arc1_end_angle_in_radians   - rotation_angle;
 
-% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_unit_tangent_vector     = revised_line_parameters_St(1,1:2);
-line_base_point_xy           = revised_line_parameters_St(1,3:4);
-line_s_start                 = revised_line_parameters_St(1,5);
-line_s_end                   = revised_line_parameters_St(1,6);
-
-revised_vector_head               = transform(transformMatrix_outOf_St,line_unit_tangent_vector);
-revised_vector_tail               = transform(transformMatrix_outOf_St,[0 0]);
-revised_unit_tangent_vector       = revised_vector_head - revised_vector_tail;
-revised_line_base_point_xy        = transform(transformMatrix_outOf_St,line_base_point_xy);
-
-revised_line_parameters(1,1:2)    = revised_unit_tangent_vector;
-revised_line_parameters(1,3:4)    = revised_line_base_point_xy;
-revised_line_parameters(1,5)      = line_s_start;
-revised_line_parameters(1,6)      = line_s_end;
+revised_arc1_parameters(1,1:2)      = arc1_center_St;
+revised_arc1_parameters(1,3)        = arc1_radius;
+revised_arc1_parameters(1,4)        = arc1_start_angle_in_radians_St;
+revised_arc1_parameters(1,5)        = arc1_end_angle_in_radians_St;
+revised_arc1_parameters(1,6)        = arc1_is_circle;
+revised_arc1_parameters(1,7)        = arc1_is_counter_clockwise;
 
 
-% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc_center_xy                = revised_arc_parameters_St(1,1:2);
-arc_radius                   = revised_arc_parameters_St(1,3);
-arc_start_angle_in_radians   = revised_arc_parameters_St(1,4);
-arc_end_angle_in_radians     = revised_arc_parameters_St(1,5);
-arc_is_circle                = revised_arc_parameters_St(1,6);
-arc_is_counter_clockwise     = revised_arc_parameters_St(1,7);
+% Update arc2
+arc2_center_St                 = transform(transformMatrix_outOf_St,arc2_center_xy);
+arc2_start_angle_in_radians_St = arc2_start_angle_in_radians - rotation_angle;
+arc2_end_angle_in_radians_St   = arc2_end_angle_in_radians   - rotation_angle;
+
+revised_arc2_parameters(1,1:2)      = arc2_center_St;
+revised_arc2_parameters(1,3)        = arc2_radius;
+revised_arc2_parameters(1,4)        = arc2_start_angle_in_radians_St;
+revised_arc2_parameters(1,5)        = arc2_end_angle_in_radians_St;
+revised_arc2_parameters(1,6)        = arc2_is_circle;
+revised_arc2_parameters(1,7)        = arc2_is_counter_clockwise;
 
 
-
-arc_center_St                 = transform(transformMatrix_outOf_St,arc_center_xy);
-arc_start_angle_in_radians_St = arc_start_angle_in_radians - rotation_angle;
-arc_end_angle_in_radians_St   = arc_end_angle_in_radians   - rotation_angle;
-
-revised_arc_parameters(1,1:2)      = arc_center_St;
-revised_arc_parameters(1,3)        = arc_radius;
-revised_arc_parameters(1,4)        = arc_start_angle_in_radians_St;
-revised_arc_parameters(1,5)        = arc_end_angle_in_radians_St;
-revised_arc_parameters(1,6)        = arc_is_circle;
-revised_arc_parameters(1,7)        = arc_is_counter_clockwise;
-
-% Get the spiral parameters
+% Update the spiral parameters
 if ~isempty(revised_spiral_join_parameters_St)
     spiralLength      = revised_spiral_join_parameters_St(1,1);
     h0                = revised_spiral_join_parameters_St(1,2);
@@ -1357,6 +1501,24 @@ if ~isempty(revised_spiral_join_parameters_St)
 
 else
     revised_spiral_join_parameters = [];
+end
+
+
+
+if ~isempty(debug_fig_num)
+    % Plot the results
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    subplot(3,2,6);
+
+    fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
+    fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
+    fcn_geometry_plotGeometry('spiral',revised_spiral_join_parameters);
+    
+    title('Final outputs');
+    axis(debug_axis);
 end
 
 end % fcn_INTERNAL_convertParametersOutOfStOrientation
@@ -1417,3 +1579,35 @@ y0 = arc1_xy_point(1,2);
 K0 = 1/arc1_radius;
 Kf = 1/arc2_radius;
 end
+
+%% fcn_INTERNAL_prepDebugFigure
+function fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num)
+if ~isempty(debug_fig_num)
+    figure(debug_fig_num);
+    clf;
+
+    % Plot the inputs
+    subplot(3,2,1);
+
+
+    fcn_geometry_plotGeometry('arc',arc1_parameters);
+    fcn_geometry_plotGeometry('arc',arc2_parameters);
+
+    temp = axis;
+    %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+    axis_range_x = temp(2)-temp(1);
+    axis_range_y = temp(4)-temp(3);
+    percent_larger = 0.3;
+    new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
+    axis([min(new_axis) max(new_axis) min(new_axis) max(new_axis)]);
+
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+    title('Inputs');
+
+end 
+end % Ends fcn_INTERNAL_prepDebugFigure
