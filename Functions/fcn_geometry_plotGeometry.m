@@ -154,7 +154,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculate the XY_data depending on type
 switch lower(plot_type_string)
-    case {'line','segment','vector regression segment fit'}
+    case {'line','segment','vector regression segment fit','line segment'}
         if ~isempty(parameters) && ~any(isnan(parameters))
             line_vector          = parameters(1,1:2);
             base_point_xy        = parameters(1,3:4);

@@ -38,7 +38,7 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_findIntersectionPointsOfAdjacentSegments
+% See the script: script_test_fcn_geometry_findBreakpointsOfAdjacentSegments
 % for a full test suite.
 %
 % This function was written on 2024_02_29 by Aneesh Batchu
