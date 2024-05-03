@@ -179,7 +179,7 @@ else
             color_vector = [0 0 0];
         case {'arc','regression arc'}  % Arcs are red
             color_vector = [1 0 0];
-        case {'line','segment','vector regression segment fit'} % Line fits are blue
+        case {'line','segment','vector regression segment fit', 'line segment'} % Line fits are blue
             color_vector = [0 0 1];
         case {'spiral'} % Spiral fits are magenta
             color_vector = [1 0 1];

@@ -337,12 +337,103 @@ switch lower(firstFitType)
         % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
         line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
         line_base_point_xy           = firstFitType_parameters(1,3:4);
-        % line_s_start               = clean_line_parameters(1,5);
-        % line_s_end                 = clean_line_parameters(1,6);
-        % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-        % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+        line_s_start               = firstFitType_parameters(1,5);
+        line_s_end                 = firstFitType_parameters(1,6);
+        line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
+        line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+
         switch secondFitType
-            
+            case 'arc'
+                % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+                arc_center_xy                = secondFitType_parameters(1,1:2);
+                arc_radius                   = secondFitType_parameters(1,3);
+                arc_start_angle_in_radians   = secondFitType_parameters(1,4);
+                arc_end_angle_in_radians     = secondFitType_parameters(1,5);
+                arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+                arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+                % arc_is_circle                = secondFitType_parameters(1,6);
+                arc_is_counter_clockwise     = secondFitType_parameters(1,7);
+                % change_in_arc_angle = arc_end_angle_in_radians-arc_start_angle_in_radians; % Find the change in angle of the arc
+
+                % With the cleaned parameters, the line vector always
+                % points toward the joint of the line and the arc.
+                % to_joint_line_unit_tangent_vector = line_unit_tangent_vector;
+                % to_joint_line_unit_ortho_vector= to_joint_line_unit_tangent_vector*[0 1; -1 0];
+
+
+                % flag_intersection_points_found = 0;
+                % Check if the line and circle intersect
+                if line_unit_tangent_vector(1)==0
+                    slope = inf;
+                    intercept = line_base_point_xy(1);
+                else
+                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
+                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
+                end
+
+                % Use MATLAB's linecirc algorithm to find intersections
+                [xout,yout] = linecirc(slope,intercept,arc_center_xy(1,1),arc_center_xy(1,2),arc_radius);
+
+                if ~isnan(xout)
+                    % intersection points were found!
+
+                    % Which point(s) to keep?
+                    two_intersection_points = [xout', yout'];
+
+                    % Are the intersections within the arc range that we were given? To
+                    % check this, we use the three points on the arc - the start, the
+                    % intersection, and the end to calculate the arc direction. We then
+                    % check to see if it is the same as the given direction - if it is, the
+                    % point is on the arc.
+                    potential_intersection_points = nan(size(two_intersection_points));
+                    for ith_row = 1:length(two_intersection_points(:,1))
+                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, two_intersection_points(ith_row,:), arc_end_xy,-1);
+                        if arc_is_counter_clockwise == intersection_is_counterClockwise
+                            potential_intersection_points(ith_row,:) = two_intersection_points(ith_row,:);
+                        else
+                            potential_intersection_points(ith_row,:) = [nan nan];
+                        end
+                    end
+
+                    if isequal(potential_intersection_points(1,:),potential_intersection_points(2,:))
+                        intersection_points = potential_intersection_points(1,:);
+                    else
+                        % Find which point is closest to the line's start point
+                        vectors_from_line_base_point = potential_intersection_points - [1;1]*line_base_point_xy;
+
+                        % Distances are dot product with the line's vector
+                        distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
+                        if distances(1)<distances(2)
+
+                            distance = distances(1);
+                            intersection_point_index = 1;
+                            % intersection_points = potential_intersection_points(1,:);
+                        else
+                            distance = distances(2);
+                            intersection_point_index = 2;
+                            % intersection_points = potential_intersection_points(2,:);
+                        end
+
+                        % Find the vector for start point to the end point
+                        distance_btw_line_start_point_and_line_end_point = (sum((line_start_xy - line_end_xy).^2, 2)).^0.5;
+                        
+                        % Check if the distance of the intersection points
+                        % are less than the length of the line segment
+                        flag_compare_dist_of_intersection_points_to_length = distance <= distance_btw_line_start_point_and_line_end_point;
+
+                        if ~isequal(flag_compare_dist_of_intersection_points_to_length, 0)
+                            intersection_points = potential_intersection_points(intersection_point_index,:);
+                        else
+                            intersection_points = [nan nan];
+                        end
+
+                    end
+
+                else
+                    intersection_points = [nan nan];
+                end
+
+
         end
 
 
