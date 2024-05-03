@@ -51,6 +51,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- added spiral type
 % 2024_04_30 - S. Brennan
 % -- checks added to avoid plotting nan values for parameters
+% 2023_05_03 - Aneesh Batchu
+% -- Added Circle case
 
 
 %% Debugging and Input checks
@@ -204,6 +206,16 @@ switch lower(plot_type_string)
             [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s_range,spiralLength,h0,x0,y0,K0,Kf);
 
             XY_data = [x_spiral,y_spiral];
+        else
+            XY_data = [nan nan; nan nan];
+        end
+
+    case{'circle'}
+        if ~isempty(parameters) && ~any(isnan(parameters))
+            circleCenter         = parameters(1,1:2);
+            circleRadius         = parameters(1,3);
+
+            XY_data = fcn_geometry_plotCircle(circleCenter,circleRadius,[]);
         else
             XY_data = [nan nan; nan nan];
         end
