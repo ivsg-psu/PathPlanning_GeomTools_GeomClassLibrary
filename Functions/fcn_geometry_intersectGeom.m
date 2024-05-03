@@ -228,7 +228,7 @@ switch lower(firstFitType)
 
         end
 
-    case 'line segment'
+    case 'line'
 
         % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
         line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
@@ -239,6 +239,33 @@ switch lower(firstFitType)
         % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
         switch secondFitType
             case 'circle'
+                circle_center_xy                = secondFitType_parameters(1,1:2);
+                circle_radius                   = secondFitType_parameters(1,3);
+
+                if line_unit_tangent_vector(1)==0
+                    slope = inf;
+                    intercept = line_base_point_xy(1);
+                else
+                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
+                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
+                end
+                % Use MATLAB's linecirc algorithm to find intersections
+                [xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
+
+                if ~isnan(xout)
+                    % intersection points were found!
+
+                    % Which point(s) to keep?
+                    intersection_points = [xout', yout'];
+                    if isnan(intersection_points(1,:))
+                        intersection_points = intersection_points(2,:);
+                    elseif isnan(intersection_points(2,:))
+                        intersection_points = intersection_points(1,:);
+                    end
+
+                else
+                    intersection_points = [nan nan];
+                end
 
             case 'arc'
                 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -306,7 +333,7 @@ switch lower(firstFitType)
 
         end
 
-    case 'line'
+    case 'line segment'
         % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
         line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
         line_base_point_xy           = firstFitType_parameters(1,3:4);
@@ -315,34 +342,7 @@ switch lower(firstFitType)
         % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
         % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
         switch secondFitType
-            case 'circle'
-                circle_center_xy                = secondFitType_parameters(1,1:2);
-                circle_radius                   = secondFitType_parameters(1,3);
-
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    intersection_points = [xout', yout'];
-                    if isnan(intersection_points(1,:))
-                        intersection_points = intersection_points(2,:);
-                    elseif isnan(intersection_points(2,:))
-                        intersection_points = intersection_points(1,:);
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
+            
         end
 
 

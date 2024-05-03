@@ -160,9 +160,9 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: Line segment to Arc Intersection
+%% Basic Test: Line to Arc Intersection
 
-fig_num = 14;
+fig_num = 111;
 
 
 true_line_unit_tangent_vector = [6 2];
@@ -170,15 +170,15 @@ true_start_point_xy = [-4 0.5];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-% line_s_start             = 0;
-% line_s_end               = 1;
+line_s_start             = 0;
+line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 line_parameters(1,1:2) = line_unit_tangent_vector;
 line_parameters(1,3:4) = line_base_point_xy;
-% line_parameters(1,5)   = line_s_start;
-% line_parameters(1,6)   = line_s_end;
+line_parameters(1,5)   = line_s_start;
+line_parameters(1,6)   = line_s_end;
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -198,7 +198,7 @@ circle_parameters(1,6)   = arc2_is_circle;
 circle_parameters(1,7)   = arc2_is_counter_clockwise;
 
 
-firstFitType = 'line segment';
+firstFitType = 'line';
 firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = circle_parameters;
@@ -209,16 +209,28 @@ assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.2953, 1.0682]));
 
 
-%% Basic Test: Line segment to Arc Intersection
+%% Basic Test: Line to Arc Intersection
 
-fig_num = 15;
+% intersection_points = [NaN NaN]
+%
+% Reason: the function returns the intersection point that is encountered
+% first traversing from the "first" geometry starting at its "start"
+% position.
+%
+% In this case, 
+
+fig_num = 112;
 
 
 true_line_unit_tangent_vector = [6 2];
 true_start_point_xy = [-2 1];
+line_s_start             = 0;
+line_s_end               = 1;
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
+line_parameters(1,5)   = line_s_start;
+line_parameters(1,6)   = line_s_end;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -243,7 +255,7 @@ circle_parameters(1,6)   = arc2_is_circle;
 circle_parameters(1,7)   = arc2_is_counter_clockwise;
 
 
-firstFitType = 'line segment';
+firstFitType = 'line';
 firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = circle_parameters;
@@ -253,9 +265,57 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: Line segment to Arc Intersection
+%% Basic Test: Line to Arc Intersection
 
-fig_num = 16;
+fig_num = 113;
+
+
+true_line_unit_tangent_vector = [1 0];
+true_start_point_xy = [-4 0.5];
+
+line_unit_tangent_vector = true_line_unit_tangent_vector;
+line_base_point_xy       = true_start_point_xy;
+line_s_start             = 0;
+line_s_end               = 1;
+
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_parameters(1,1:2) = line_unit_tangent_vector;
+line_parameters(1,3:4) = line_base_point_xy;
+line_parameters(1,5)   = line_s_start;
+line_parameters(1,6)   = line_s_end;
+
+% Fill in arc 2
+arc2_center_xy            = [0 3];
+circle_radius               = 3;
+arc2_vector_start         = [cos(-180*pi/180) sin(-180*pi/180)];
+arc2_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle_parameters(1,1:2) = arc2_center_xy;
+circle_parameters(1,3)   = circle_radius;
+circle_parameters(1,4:5) = arc2_angles;
+circle_parameters(1,6)   = arc2_is_circle;
+circle_parameters(1,7)   = arc2_is_counter_clockwise;
+
+
+firstFitType = 'line';
+firstFitType_parameters = line_parameters;
+secondFitType = 'arc';
+secondFitType_parameters = circle_parameters;
+
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+
+assert(isequal(size(intersection_points),[1 2]));
+assert(isequal(round(intersection_points,4), [-1.6583, 0.5000]));
+
+%% Basic Test: Line to Circle Intersection
+
+fig_num = 221;
 
 true_line_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 3];
@@ -292,9 +352,9 @@ assert(isequal(size(intersection_points),[2 2]));
 assert(isequal(intersection_points(1,:),[3 3]));
 assert(isequal(intersection_points(2,:),[-3 3]));
 
-%% Basic Test: Line segment to Arc Intersection
+%% Basic Test: Line to Circle Intersection
 
-fig_num = 17;
+fig_num = 222;
 
 true_line_unit_tangent_vector = [0 5];
 true_start_point_xy = [-4 3];
