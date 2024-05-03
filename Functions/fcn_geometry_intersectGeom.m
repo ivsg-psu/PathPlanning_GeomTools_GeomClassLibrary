@@ -59,8 +59,8 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % Questions or comments? abb6486@psu.edu or sbrennan@psu.edu
 
 % Revision History
-% 2024_05_02 
-% -- wrote the code - Aneesh Batchu
+% 2024_05_02 - Aneesh Batchu
+% -- wrote the code 
 
 %% Debugging and Input checks
 
@@ -286,6 +286,11 @@ switch lower(firstFitType)
                     intersection_points = [nan nan];
                 end
 
+            otherwise
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
+                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+
         end
 
     case 'line'
@@ -390,6 +395,11 @@ switch lower(firstFitType)
                 else
                     intersection_points = [nan nan];
                 end
+
+            otherwise
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
+                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
 
         end
 
@@ -549,9 +559,16 @@ switch lower(firstFitType)
                     intersection_points = [nan nan];
                 end
 
-
+            otherwise
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
+                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
         end
 
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
 
 end
 %% Plot the results (for debugging)?
