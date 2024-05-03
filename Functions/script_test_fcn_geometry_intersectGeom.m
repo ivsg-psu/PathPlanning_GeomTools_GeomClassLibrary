@@ -54,7 +54,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.0000, 1.2679]));
 
-%% Basic Test: Arc to Arc Intersection Case. 
+%% Basic Test: Arc to Arc Intersection Case. -- BUG
 
 % In this tes, arc1 and arc2 parameters from the previous test are
 % interchaged
@@ -209,7 +209,7 @@ assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.2953, 1.0682]));
 
 
-%% Basic Test: Line to Arc Intersection
+%% Basic Test: Line to Arc Intersection - BUG
 
 % intersection_points = [NaN NaN]
 %
@@ -484,7 +484,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: Line segment to arc Intersection
+%% Basic Test: Line segment to arc Intersection - BUG
 
 fig_num = 333;
 
@@ -689,7 +689,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: Arc to Line Intersection
+%% Basic Test: Arc to Line Intersection 
 
 fig_num = 551;
 
@@ -737,7 +737,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-1.2209, 0.2597]));
 
-%% Basic Test: Arc to Line Intersection
+%% Basic Test: Arc to Line Intersection - BUG
 
 fig_num = 552;
 

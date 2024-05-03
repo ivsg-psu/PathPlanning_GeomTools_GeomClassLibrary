@@ -212,7 +212,7 @@ switch lower(firstFitType)
                 else
                     intersection_points = [nan nan];
                 end
-
+                
 
             case 'arc'
 
@@ -285,11 +285,13 @@ switch lower(firstFitType)
                 else
                     intersection_points = [nan nan];
                 end
-
+                
+            case 'spiral'
+                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
             otherwise
                 warning('on','backtrace');
                 warning('An error will be thrown at this point due to missing code.');
-                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',current_fit_type);
 
         end
 
@@ -395,6 +397,9 @@ switch lower(firstFitType)
                 else
                     intersection_points = [nan nan];
                 end
+
+            case 'spiral'
+                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
 
             otherwise
                 warning('on','backtrace');
@@ -559,12 +564,16 @@ switch lower(firstFitType)
                     intersection_points = [nan nan];
                 end
 
+            case 'spiral'
+                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
+
             otherwise
                 warning('on','backtrace');
                 warning('An error will be thrown at this point due to missing code.');
                 error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
         end
-
+    case 'spiral'
+        error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
@@ -584,13 +593,35 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    figure(fig_num)
-    
+     temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end
+
+    hold on;
+    grid on;
+    axis equal;
+
+    title('Testing Intersection of Geometries');
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+    % Plot the inputs
     fcn_geometry_plotGeometry(lower(firstFitType),firstFitType_parameters);
     fcn_geometry_plotGeometry(lower(secondFitType),secondFitType_parameters);
     plot(intersection_points(:,1),intersection_points(:,2),'k.','MarkerSize',20);
 
-
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+    
 end
 
 if flag_do_debug
