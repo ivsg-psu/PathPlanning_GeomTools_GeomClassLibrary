@@ -154,6 +154,66 @@ switch lower(firstFitType)
 
         switch secondFitType
 
+            case 'line'
+                % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+                line_unit_tangent_vector     = secondFitType_parameters(1,1:2);
+                line_base_point_xy           = secondFitType_parameters(1,3:4);
+                % line_s_start               = clean_line_parameters(1,5);
+                % line_s_end                 = clean_line_parameters(1,6);
+                % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
+                % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+
+                if line_unit_tangent_vector(1)==0
+                    slope = inf;
+                    intercept = line_base_point_xy(1);
+                else
+                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
+                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
+                end
+                % Use MATLAB's linecirc algorithm to find intersections
+                [xout,yout] = linecirc(slope,intercept,arc1_center_xy(1,1),arc1_center_xy(1,2),arc1_radius);
+
+                if ~isnan(xout)
+                    % intersection points were found!
+
+                    % Which point(s) to keep?
+                    two_intersection_points = [xout', yout'];
+
+                    % Are the intersections within the arc range that we were given? To
+                    % check this, we use the three points on the arc - the start, the
+                    % intersection, and the end to calculate the arc direction. We then
+                    % check to see if it is the same as the given direction - if it is, the
+                    % point is on the arc.
+                    potential_intersection_points = nan(size(two_intersection_points));
+                    for ith_row = 1:length(two_intersection_points(:,1))
+                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, two_intersection_points(ith_row,:), arc1_end_xy,-1);
+                        if arc1_is_counter_clockwise == intersection_is_counterClockwise
+                            potential_intersection_points(ith_row,:) = two_intersection_points(ith_row,:);
+                        else
+                            potential_intersection_points(ith_row,:) = [nan nan];
+                        end
+                    end
+
+                    if isequal(potential_intersection_points(1,:),potential_intersection_points(2,:))
+                        intersection_points = potential_intersection_points(1,:);
+                    else
+                        % Find which point is closest to the line's start point
+                        vectors_from_line_base_point = potential_intersection_points - [1;1]*line_base_point_xy;
+
+                        % Distances are dot product with the line's vector
+                        distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
+                        if distances(1)<distances(2)
+                            intersection_points = potential_intersection_points(1,:);
+                        else
+                            intersection_points = potential_intersection_points(2,:);
+                        end
+                    end
+
+                else
+                    intersection_points = [nan nan];
+                end
+
+
             case 'arc'
 
                 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
