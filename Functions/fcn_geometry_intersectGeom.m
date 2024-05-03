@@ -403,6 +403,8 @@ switch lower(firstFitType)
 
                         % Distances are dot product with the line's vector
                         distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
+                        % line_base_point_xy_matrix = [1; 1]*line_base_point_xy;
+                        % distances = (sum((two_intersection_points - line_base_point_xy_matrix).^2, 2)).^0.5;
                         if distances(1)<distances(2)
 
                             distance = distances(1);
@@ -428,6 +430,60 @@ switch lower(firstFitType)
                         end
 
                     end
+
+                else
+                    intersection_points = [nan nan];
+                end
+
+            case 'circle'
+                circle_center_xy                = secondFitType_parameters(1,1:2);
+                circle_radius                   = secondFitType_parameters(1,3);
+
+                if line_unit_tangent_vector(1)==0
+                    slope = inf;
+                    intercept = line_base_point_xy(1);
+                else
+                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
+                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
+                end
+                % Use MATLAB's linecirc algorithm to find intersections
+                [xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
+
+                if ~isnan(xout)
+                    % intersection points were found!
+
+                    % Which point(s) to keep?
+                    two_intersection_points = [xout', yout'];
+    
+                    % Find which point is closest to the line's start point
+                    % vectors_from_line_base_point = two_intersection_points - [1;1]*line_base_point_xy;
+
+                    % Distances are dot product with the line's vector
+                    % distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
+                    
+                    line_base_point_xy_matrix = [1; 1]*line_base_point_xy;
+
+                    distances = (sum((two_intersection_points - line_base_point_xy_matrix).^2, 2)).^0.5;
+
+
+                    % Find the vector for start point to the end point
+                    distance_btw_line_start_point_and_line_end_point = (sum((line_start_xy - line_end_xy).^2, 2)).^0.5;
+
+                    % Check if the distance of the intersection points
+                    % are less than the length of the line segment
+                    flag_compare_dist_of_intersection_points_to_length = distances <= distance_btw_line_start_point_and_line_end_point;
+
+                    if ~isequal(flag_compare_dist_of_intersection_points_to_length, [0;0])
+                        intersection_points = two_intersection_points(flag_compare_dist_of_intersection_points_to_length,:);
+                    else
+                        intersection_points = [nan nan];
+                    end
+
+                    % if isnan(intersection_points(1,:))
+                    %     intersection_points = intersection_points(2,:);
+                    % elseif isnan(intersection_points(2,:))
+                    %     intersection_points = intersection_points(1,:);
+                    % end
 
                 else
                     intersection_points = [nan nan];

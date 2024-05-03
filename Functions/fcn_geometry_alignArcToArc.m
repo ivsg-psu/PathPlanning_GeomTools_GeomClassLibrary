@@ -228,8 +228,8 @@ intersection_point = fcn_INTERNAL_ArcArcIntersection(st_arc1_parameters,st_arc2_
 % ---DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('line', st_arc1_parameters,'arc',   st_arc2_parameters, debug_fig_num);
 % DONE inside alignLineToArc BUT MAY BE WRONG!!!:  intersection_point = fcn_geometry_intersectGeom('arc',  st_arc1_parameters, 'line', st_arc2_parameters, debug_fig_num);
 % NOT DONE, but probably similar to this code:  intersection_point = fcn_geometry_intersectGeom('circle',  st_arc1_parameters, 'arc', st_arc2_parameters, debug_fig_num);
-% DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'arc', st_arc2_parameters, debug_fig_num);
-% DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'circle', st_arc2_parameters, debug_fig_num);
+% ---DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'arc', st_arc2_parameters, debug_fig_num);
+% ---DONE inside alignLineToArc: intersection_point = fcn_geometry_intersectGeom('segment',  st_arc1_parameters, 'circle', st_arc2_parameters, debug_fig_num);
 % NO SPIRALS ARE DONE YET: put a "case" into the function for when we need
 % this later
 
