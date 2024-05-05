@@ -51,6 +51,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- added spiral type
 % 2024_04_30 - S. Brennan
 % -- checks added to avoid plotting nan values for parameters
+% 2024_05_03 - S. Brennan
+% -- added line and circle types
 
 
 %% Debugging and Input checks
@@ -154,7 +156,27 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculate the XY_data depending on type
 switch lower(plot_type_string)
-    case {'line','segment','vector regression segment fit'}
+
+    case {'line'}
+        if ~isempty(parameters) && ~any(isnan(parameters))
+            line_vector          = parameters(1,1:2);
+            base_point_xy        = parameters(1,3:4);
+
+            station_distance_min = -10;
+            station_distance_max = 10;
+
+            stations = (station_distance_min:segment_length:station_distance_max)';
+            
+            if stations(end)~=station_distance_max
+                stations = [stations; station_distance_max];
+            end
+
+            XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
+        else
+            XY_data = [nan nan; nan nan];
+        end
+
+    case {'segment','vector regression segment fit'}
         if ~isempty(parameters) && ~any(isnan(parameters))
             line_vector          = parameters(1,1:2);
             base_point_xy        = parameters(1,3:4);
@@ -175,6 +197,21 @@ switch lower(plot_type_string)
             XY_data = [nan nan; nan nan];
         end
 
+    case {'circle'}
+        if ~isempty(parameters) && ~any(isnan(parameters))
+            circleCenter         = parameters(1,1:2);
+            circleRadius         = parameters(1,3);
+            arcAngles            = [0 2*pi];
+
+            start_angle_in_radians = arcAngles(1);
+            end_angle_in_radians   = arcAngles(2);
+            degree_step = (segment_length/circleRadius)*180/pi;
+            flag_arc_is_counterclockwise = 1;
+
+            XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
+        else
+            XY_data = [nan nan; nan nan];
+        end
 
     case {'arc','regression arc'}
         if ~isempty(parameters) && ~any(isnan(parameters))
@@ -243,8 +280,14 @@ if flag_do_plots
     % Get the color vector using the name
     color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
 
-    % Plot the XY data
-    plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
+    if strcmp(plot_type_string,'line')
+        direction_vector = XY_data(end,:)-XY_data(1,:);
+        quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);        
+        quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);        
+    else
+        % Plot the XY data
+        plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
+    end
 
     % Plot headers?
     if ~any(isnan(XY_data))

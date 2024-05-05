@@ -175,6 +175,8 @@ else
     switch lower(string_identifier)
         case {'points'}  % Points are black
             color_vector = [0 0 0];
+        case {'circle'}  % Circles are dark
+            color_vector = [0.6 0 0];
         case {'arc','regression arc'}  % Arcs are red
             color_vector = [1 0 0];
         case {'line','segment','vector regression segment fit'} % Line fits are blue

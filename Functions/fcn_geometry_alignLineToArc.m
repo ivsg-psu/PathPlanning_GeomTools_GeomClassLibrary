@@ -706,11 +706,11 @@ spiral_join_parameters = []; % Initialize output. This is ONLY used for spiral f
 % Calculate needed values from parameter sets
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_unit_tangent_vector     = clean_line_parameters(1,1:2);
-line_base_point_xy           = clean_line_parameters(1,3:4);
-% line_s_start               = clean_line_parameters(1,5);
+line_unit_tangent_vector   = clean_line_parameters(1,1:2);
+line_base_point_xy         = clean_line_parameters(1,3:4);
+line_s_start               = clean_line_parameters(1,5);
 line_s_end                 = clean_line_parameters(1,6);
-% line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
+line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
 line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
