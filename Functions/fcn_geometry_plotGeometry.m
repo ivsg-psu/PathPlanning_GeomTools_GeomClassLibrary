@@ -82,9 +82,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; 
+    debug_fig_num = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 
