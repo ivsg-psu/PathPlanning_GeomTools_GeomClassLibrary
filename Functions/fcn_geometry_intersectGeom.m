@@ -61,6 +61,10 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % Revision History
 % 2024_05_02 - Aneesh Batchu
 % -- wrote the code 
+% 2024_05_06 - Aneesh Batchu
+% -- Fixed a BUG in Arc-Arc intersection case. Added a few conditional
+% statements to remove NaNs from the potential_arc_intersection_points to
+% compute the true arc to arc "intersection points"
 
 %% Debugging and Input checks
 
@@ -228,6 +232,22 @@ switch lower(firstFitType)
                 % Use MATLAB's circcirc algorithm to find intersections between two circles
                 [xout,yout] = circcirc(arc1_center_xy(1,1),arc1_center_xy(1,2),arc1_radius,arc2_center_xy(1,1),arc2_center_xy(1,2),arc2_radius);
 
+                % % Check results of above
+                % if 1==1
+                %     figure(233);
+                %     clf;
+                %     hold on;
+                %     grid on;
+                %     axis equal
+                % 
+                %     % Plot the circles
+                %     fcn_geometry_plotCircle(arc1_center_xy, arc1_radius,'g-',(233));
+                %     fcn_geometry_plotCircle(arc2_center_xy, arc2_radius,'r-',(233));
+                % 
+                %     intersections = [xout', yout'];
+                %     plot(intersections(:,1),intersections(:,2),'k.','MarkerSize',20);
+                % end
+
                 if ~isnan(xout)
                     % intersection points were found! To be an intersection, the point must
                     % be on both arc1 and arc2
@@ -277,8 +297,16 @@ switch lower(firstFitType)
 
                         if arc_angle_point1<arc_angle_point2
                             intersection_points = potential_arc_intersection_points(1,:);
-                        else
+                        elseif arc_angle_point2<arc_angle_point1
                             intersection_points = potential_arc_intersection_points(2,:);
+                        else
+                            nan_indices = any(isnan(potential_arc_intersection_points), 2);
+                            potential_arc_intersection_points = potential_arc_intersection_points(~nan_indices,:);
+                            if ~isempty(potential_arc_intersection_points)
+                                 intersection_points = potential_arc_intersection_points;
+                            else
+                                intersection_points = [nan nan];
+                            end
                         end
                     end
 
