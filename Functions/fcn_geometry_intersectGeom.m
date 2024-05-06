@@ -152,7 +152,7 @@ switch lower(firstFitType)
         arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
         arc1_is_counter_clockwise     = firstFitType_parameters(1,7);
 
-        switch secondFitType
+        switch lower(secondFitType)
 
             case 'line'
                 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -287,11 +287,11 @@ switch lower(firstFitType)
                 end
                 
             case 'spiral'
-                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
+                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
             otherwise
                 warning('on','backtrace');
                 warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',current_fit_type);
+                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
 
         end
 
@@ -304,7 +304,7 @@ switch lower(firstFitType)
         % line_s_end                 = clean_line_parameters(1,6);
         % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
         % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
-        switch secondFitType
+        switch lower(secondFitType)
             case 'circle'
                 circle_center_xy                = secondFitType_parameters(1,1:2);
                 circle_radius                   = secondFitType_parameters(1,3);
@@ -399,12 +399,12 @@ switch lower(firstFitType)
                 end
 
             case 'spiral'
-                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
+                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
 
             otherwise
                 warning('on','backtrace');
                 warning('An error will be thrown at this point due to missing code.');
-                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
 
         end
 
@@ -417,7 +417,7 @@ switch lower(firstFitType)
         line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
         line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
 
-        switch secondFitType
+        switch lower(secondFitType)
             case 'arc'
                 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
                 arc_center_xy                = secondFitType_parameters(1,1:2);
@@ -564,20 +564,108 @@ switch lower(firstFitType)
                     intersection_points = [nan nan];
                 end
 
+
+
             case 'spiral'
-                error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
+                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
 
             otherwise
                 warning('on','backtrace');
                 warning('An error will be thrown at this point due to missing code.');
-                error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
         end
+    case 'circle'
+
+        circle_center_xy                = firstFitType_parameters(1,1:2);
+        circle_radius                   = firstFitType_parameters(1,3);
+
+        switch lower(secondFitType)
+            case 'arc'
+                % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+                arc2_center_xy                = secondFitType_parameters(1,1:2);
+                arc2_radius                   = secondFitType_parameters(1,3);
+                arc2_start_angle_in_radians   = secondFitType_parameters(1,4);
+                arc2_end_angle_in_radians     = secondFitType_parameters(1,5);
+                arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+                arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
+                arc2_is_counter_clockwise     = secondFitType_parameters(1,7);
+
+                % Use MATLAB's circcirc algorithm to find intersections between two circles
+                [xout,yout] = circcirc(circle_center_xy(1,1),circle_center_xy(1,2),circle_radius,arc2_center_xy(1,1),arc2_center_xy(1,2),arc2_radius);
+
+                if ~isnan(xout)
+                    % intersection points were found! To be an intersection, the point must
+                    % be on both arc1 and arc2
+
+                    % Which point(s) to keep?
+                    circle_intersection_points = [xout', yout'];
+
+                    % Are the intersections within the arc range that we were given? To
+                    % check this, we use the three points on each arc - the start, the
+                    % intersection, and the end to calculate the arc direction. We then
+                    % check to see if it is the same as the given direction for that arc -
+                    % if it is, the point is on the arc. The way we search is to initialize
+                    % the potential arc intersection points to the circle intersections,
+                    % and remove any of the arc intersection points that are not on both of
+                    % the arcs.
+                    potential_arc_intersection_points = circle_intersection_points;
+                    for ith_row = 1:length(circle_intersection_points(:,1))
+
+                        % % Check arc1
+                        % intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, circle_intersection_points(ith_row,:), arc1_end_xy,-1);
+                        % if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
+                        %     potential_arc_intersection_points(ith_row,:) = [nan nan];
+                        % end
+
+                        % Check arc2
+                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, circle_intersection_points(ith_row,:), arc2_end_xy,-1);
+                        if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
+                            potential_arc_intersection_points(ith_row,:) = [nan nan];
+                        end
+
+                    end
+
+                    if isequal(potential_arc_intersection_points(1,:),potential_arc_intersection_points(2,:))
+                        intersection_points = potential_arc_intersection_points(1,:);
+                    else
+                        
+                        if isnan(potential_arc_intersection_points(2,:))
+                            intersection_points = potential_arc_intersection_points(1,:);
+                        elseif isnan(potential_arc_intersection_points(1,:))
+                            intersection_points = potential_arc_intersection_points(2,:);
+                        else
+                            intersection_points = potential_arc_intersection_points;
+                        end
+                        % % Find which point is closest to arc1's start point
+                        % if ~any(isnan(potential_arc_intersection_points(1,:)))
+                        %     arc_angle_point1  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(1,:), arc1_end_xy,(-1));
+                        % else
+                        %     arc_angle_point1 = nan;
+                        % end
+                        % if ~any(isnan(potential_arc_intersection_points(2,:)))
+                        %     arc_angle_point2  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(2,:), arc1_end_xy,(-1));
+                        % else
+                        %     arc_angle_point2 = nan;
+                        % end
+                        % 
+                        % if arc_angle_point1<arc_angle_point2
+                        %     intersection_points = potential_arc_intersection_points(1,:);
+                        % else
+                        %     intersection_points = potential_arc_intersection_points(2,:);
+                        % end
+                    end
+
+                else
+                    intersection_points = [nan nan];
+                end
+        end
+
     case 'spiral'
-        error('fcn_geometry_intersectionGeom case is not yet read for spiral case');
+        error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
-        error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+        error('Alignments are not yet supported for curves from fit type: %s',firstFitType);
 
 end
 %% Plot the results (for debugging)?
