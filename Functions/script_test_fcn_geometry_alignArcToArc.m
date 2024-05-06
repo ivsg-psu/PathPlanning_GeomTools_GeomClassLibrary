@@ -871,6 +871,863 @@ sgtitle('Checking ST conversion: cross-products are - to - ');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 4
 
+%% Basic test 4.11 - checking the + to + cross product combination, large to small, feasible
+fig_num = 411;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = 0.05;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0.7311    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
+
+%% Basic test 4.12 - checking the + to + cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
+fig_num = 412;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 4.13 - checking the + to + cross product combination, large to small with shift allowed
+fig_num = 413;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3455    2.8005    0.6000   -0.3654    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
+
+
+
+
+%% Basic test 4.21 - checking the + to + cross product combination, small to large, feasible
+fig_num = 421;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.6204    1.5933    3.0000   -0.2366    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
+
+%% Basic test 4.22 - checking the + to + cross product combination, small to large, with shift blocked
+fig_num = 422;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 4.23 - checking the + to + cross product combination, small to large, with shift allowed
+fig_num = 423;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7312    1.5995    3.0000   -0.4920    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
+
+
+
+%% Basic test 4.31 - checking the + to - cross product combination, large to small, feasible
+fig_num = 431;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.05;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.0852   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
+
+%% Basic test 4.32 - checking the + to - cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
+fig_num = 432;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 4.33 - checking the + to - cross product combination, large to small with shift allowed
+fig_num = 433;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.3865    2.1995    0.6000    2.5389   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
+
+
+
+
+%% Basic test 4.41 - checking the + to + cross product combination, small to large, feasible
+fig_num = 441;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4083   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
+
+%% Basic test 4.42 - checking the + to + cross product combination, small to large, with shift blocked
+fig_num = 442;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 4.43 - checking the + to + cross product combination, small to large, with shift allowed
+fig_num = 443;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 1;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 3.4650   -1.4005    3.0000    2.5956   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
+
+
+
+
 %% check C2 intersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____ _               _    _                _____ ___
@@ -962,6 +1819,7 @@ assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0
 assert(isequal(round(revised_spiral_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
 
 %% Basic test 5.12 - checking the + to + cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
 fig_num = 512;
 figure(fig_num); clf;
 
@@ -988,7 +1846,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0;
+offset_t = -0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
@@ -1058,7 +1916,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0;
+offset_t = -0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
@@ -1171,9 +2029,9 @@ assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(isequal(size(revised_spiral_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0.7311    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.6204    1.5933    3.0000   -0.2366    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
 
 %% Basic test 5.22 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 522;
@@ -1183,7 +2041,7 @@ tolerance = []; % meters
 
 
 % Fill in arc 1
-arc1_center_xy            = [0 3];
+arc1_center_xy            = [0 0.6];
 arc1_radius               = 1;
 arc1_end_angle            = -30*pi/180;
 arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
@@ -1202,14 +2060,14 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0;
+offset_t = 0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
 
 end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
 offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
-arc2_radius               = 0.6;
+arc2_radius               = 3;
 arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
 
 arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
@@ -1253,7 +2111,7 @@ tolerance = 0.4; % meters
 
 
 % Fill in arc 1
-arc1_center_xy            = [0 3];
+arc1_center_xy            = [0 0.6];
 arc1_radius               = 1;
 arc1_end_angle            = -30*pi/180;
 arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
@@ -1272,14 +2130,14 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0;
+offset_t = 0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
 
 end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
 offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
-arc2_radius               = 0.6;
+arc2_radius               = 3;
 arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
 
 arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
@@ -1312,27 +2170,14 @@ assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(isequal(size(revised_spiral_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[0.3455    2.8005    0.6000   -0.3654    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7312    1.5995    3.0000   -0.4920    1.5708         0    1.0000]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Basic test 2.20 - checking the + to - cross product combination, no intersection
-fig_num = 220;
+%% Basic test 5.31 - checking the + to - cross product combination, large to small, feasible
+fig_num = 531;
 figure(fig_num); clf;
 
 tolerance = 0.4; % meters
@@ -1342,8 +2187,8 @@ tolerance = 0.4; % meters
 arc1_center_xy            = [0 3];
 arc1_radius               = 1;
 arc1_end_angle            = -30*pi/180;
-arc1_vector_start         = [cos(arc1_end_angle -   90*pi/180) sin(arc1_end_angle -   90*pi/180)];
-arc1_vector_end           = [cos(arc1_end_angle -    0*pi/180) sin(arc1_end_angle -   0*pi/180)];
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
 arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
@@ -1357,19 +2202,19 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
-arc2_radius               = 0.8;
-offset_s = 0.3 ;
-offset_t = -0.1 - 2*arc2_radius;
+offset_s = 0.05;
+offset_t = -0.05;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
 
 end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
 offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
-arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
 
-arc2_vector_start         = [cos(arc1_end_angle + 180*pi/180) sin(arc1_end_angle + 180*pi/180)];
-arc2_vector_end           = [cos(arc1_end_angle +  90*pi/180) sin(arc1_end_angle +  90*pi/180)];
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
 arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 0;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
@@ -1389,21 +2234,32 @@ continuity_level = 2;
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking ST conversion: cross-products are + to - ');
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
-%% Basic test 2.21 - checking the + to - cross product combination, intersection
-fig_num = 221;
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.0852   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
+
+%% Basic test 5.32 - checking the + to - cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
+fig_num = 532;
 figure(fig_num); clf;
 
-tolerance = 0.4; % meters
+tolerance = []; % meters
 
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
 arc1_radius               = 1;
 arc1_end_angle            = -30*pi/180;
-arc1_vector_start         = [cos(arc1_end_angle -   90*pi/180) sin(arc1_end_angle -   90*pi/180)];
-arc1_vector_end           = [cos(arc1_end_angle -    0*pi/180) sin(arc1_end_angle -   0*pi/180)];
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
 arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
@@ -1417,19 +2273,19 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
-arc2_radius               = 0.8;
-offset_s = 0.3 ;
-offset_t = 0.1 - 2*arc2_radius;
+offset_s = 0;
+offset_t = 0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
 
 end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
 offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
-arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
 
-arc2_vector_start         = [cos(arc1_end_angle + 180*pi/180) sin(arc1_end_angle + 180*pi/180)];
-arc2_vector_end           = [cos(arc1_end_angle +  90*pi/180) sin(arc1_end_angle +  90*pi/180)];
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
 arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 0;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
@@ -1449,7 +2305,304 @@ continuity_level = 2;
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking ST conversion: cross-products are + to - ');
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 5.33 - checking the + to - cross product combination, large to small with shift allowed
+fig_num = 533;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 2;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.3865    2.1995    0.6000    2.5389   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
+
+
+
+
+%% Basic test 5.41 - checking the + to + cross product combination, small to large, feasible
+fig_num = 541;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 2;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4083   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
+
+%% Basic test 5.42 - checking the + to + cross product combination, small to large, with shift blocked
+fig_num = 542;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 2;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(all(isnan(revised_spiral_join_parameters)));
+
+%% Basic test 5.43 - checking the + to + cross product combination, small to large, with shift allowed
+fig_num = 543;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 2;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 3.4650   -1.4005    3.0000    2.5956   -1.5708         0         0]));
+assert(isequal(round(revised_spiral_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
+
+
 
 
 

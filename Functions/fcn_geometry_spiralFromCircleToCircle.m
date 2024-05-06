@@ -63,6 +63,9 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % Revision history:
 % 2024_04_24 - S. Brennan
 % -- wrote the code
+% 2024_05_05 - S. Brennan
+% -- fixed bug where, with symmetric setup, will return negative value
+% incorrectly instead of positive value.
 
 %% Debugging and Input checks
 
@@ -186,6 +189,11 @@ end
 if space_between_circles>0
     spiralLength = fcn_INTERNAL_findLengthFromOffset(circle1_radius, circle2_radius*flag_circle2_is_counterclockwise, center_to_center_distance_between_circles);
 
+    % Make sure to keep the positive value
+    if spiralLength<0
+        spiralLength = spiralLength*(-1);
+    end
+
     % Check results?
     if 1==flag_do_debug
         % Set up station coordinates
@@ -228,8 +236,8 @@ if space_between_circles>0
         plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');
 
         % Plot the circles
-        fcn_geometry_plotCircle([0 circle1_radius], circle1_radius,'b-',(1234));
-        fcn_geometry_plotCircle([0 circle1_radius], center_to_center_distance_between_circles,'b--',(1234));
+        fcn_geometry_plotCircle([0 circle1_radius], circle1_radius,'g-',(1234));
+        fcn_geometry_plotCircle([0 circle1_radius], center_to_center_distance_between_circles,'g--',(1234));
 
         fcn_geometry_plotCircle(calculated_circle2_center_xy, circle2_radius,'r-',(1234));
         fcn_geometry_plotCircle(circle2_center_xy, circle2_radius,'r-',(1234));
@@ -354,6 +362,7 @@ function_to_optimize = @(x)fcn_INTERNAL_calcSpiralOffsetError(x, arc1_radius, ar
 % sprialLength = fminsearch(function_to_optimize,1,options);
 X0 = 1;
 X_solution = fminsearch(function_to_optimize,X0);
+% X_solution = fmincon(function_to_optimize,X0,-1,0);
 sprialLength = X_solution(1,1);
 
 end % Ends fcn_INTERNAL_findLengthFromOffset

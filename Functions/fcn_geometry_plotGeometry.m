@@ -53,7 +53,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- checks added to avoid plotting nan values for parameters
 % 2024_05_03 - S. Brennan
 % -- added line and circle types
-
+% 2024_05_05 - S. Brennan
+% -- changed start/end plotting to use dots/circles
 
 %% Debugging and Input checks
 
@@ -289,29 +290,40 @@ if flag_do_plots
         plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
     end
 
-    % Plot headers?
+    % Plot green/red headers and tailers?
     if ~any(isnan(XY_data))
-        % Plot green headers - calculated from vector direction
-        maximum_arrow_length = 2*segment_length;
-        minimum_arrow_length = 1*segment_length;
+        if 1==1
+            %%%%%%
+            % Plot as points
+            plot(XY_data(1,1),XY_data(1,2),     '.','Color',[0 1 0],'Linewidth',5,'MarkerSize',20);
+            plot(XY_data(end,1),XY_data(end,2), 'o','Color',[1 0 0],'MarkerSize',10);
 
-        vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
-        start_length = sum(vector_direction_start.^2,2).^0.5;
-        unit_vector_direction_start = fcn_geometry_calcUnitVector(vector_direction_start);
-        arrow_length = max(min(maximum_arrow_length,start_length*0.2),minimum_arrow_length);
-        offset_start = XY_data(1,1:2) + arrow_length*unit_vector_direction_start;
+        else
+            %%%%%%
+            % Plot as lines
 
-        start_line = [XY_data(1,1:2) 0; offset_start, 0];
-        plot(start_line(:,1),start_line(:,2), '-','Color',[0 1 0],'Linewidth',5);
+            % Plot green headers - calculated from vector direction
+            maximum_arrow_length = 2*segment_length;
+            minimum_arrow_length = 1*segment_length;
 
-        % Plot red tailers - calculated from vector direction
-        vector_direction_end = (XY_data(end,1:2) - XY_data(end-1,1:2));
-        end_length = sum(vector_direction_end.^2,2).^0.5;
-        unit_vector_direction_end = fcn_geometry_calcUnitVector(vector_direction_end);
-        arrow_length = max(min(maximum_arrow_length,end_length*0.2),minimum_arrow_length);
-        offset_end = XY_data(end,1:2) - arrow_length*unit_vector_direction_end;
-        end_line = [offset_end, 0; XY_data(end,1:2) 0];
-        plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
+            vector_direction_start = XY_data(2,1:2) - XY_data(1,1:2);
+            start_length = sum(vector_direction_start.^2,2).^0.5;
+            unit_vector_direction_start = fcn_geometry_calcUnitVector(vector_direction_start);
+            arrow_length = max(min(maximum_arrow_length,start_length*0.2),minimum_arrow_length);
+            offset_start = XY_data(1,1:2) + arrow_length*unit_vector_direction_start;
+
+            start_line = [XY_data(1,1:2) 0; offset_start, 0];
+            plot(start_line(:,1),start_line(:,2), '-','Color',[0 1 0],'Linewidth',5);
+
+            % Plot red tailers - calculated from vector direction
+            vector_direction_end = (XY_data(end,1:2) - XY_data(end-1,1:2));
+            end_length = sum(vector_direction_end.^2,2).^0.5;
+            unit_vector_direction_end = fcn_geometry_calcUnitVector(vector_direction_end);
+            arrow_length = max(min(maximum_arrow_length,end_length*0.2),minimum_arrow_length);
+            offset_end = XY_data(end,1:2) - arrow_length*unit_vector_direction_end;
+            end_line = [offset_end, 0; XY_data(end,1:2) 0];
+            plot(end_line(:,1),end_line(:,2), '-','Color',[1 0 0],'Linewidth',5);
+        end
     end
 
 

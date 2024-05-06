@@ -206,6 +206,7 @@ arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_e
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
 arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 secondary_parameters_type_strings{3} = 'arc';
@@ -337,6 +338,7 @@ arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_e
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
 arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 secondary_parameters_type_strings{3} = 'arc';
