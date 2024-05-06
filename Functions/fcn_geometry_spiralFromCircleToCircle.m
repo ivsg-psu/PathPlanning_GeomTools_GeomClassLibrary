@@ -169,22 +169,24 @@ circle1_center_xy = [0 circle1_radius];
 % smaller circle MUST fit within the larger circle - otherwise, no feasible
 % spiral is possble.
 center_to_center_distance_between_circles = sum((circle2_center_xy - circle1_center_xy).^2,2).^0.5;
+% 
+% if circle1_radius>circle2_radius
+%     larger_radius = circle1_radius;
+%     smaller_radius = circle2_radius;
+% else
+%     larger_radius = circle2_radius;
+%     smaller_radius = circle1_radius;
+% end
+% 
+% if 1==flag_circle2_is_counterclockwise
+%     % Small circle must be completely inside the large circle
+%     space_between_circles = larger_radius - center_to_center_distance_between_circles - smaller_radius;
+% else
+%     % Small circle must be completely outside the large circle
+%     space_between_circles = center_to_center_distance_between_circles - larger_radius - smaller_radius;
+% end
 
-if circle1_radius>circle2_radius
-    larger_radius = circle1_radius;
-    smaller_radius = circle2_radius;
-else
-    larger_radius = circle2_radius;
-    smaller_radius = circle1_radius;
-end
-
-if 1==flag_circle2_is_counterclockwise
-    % Small circle must be completely inside the large circle
-    space_between_circles = larger_radius - center_to_center_distance_between_circles - smaller_radius;
-else
-    % Small circle must be completely outside the large circle
-    space_between_circles = center_to_center_distance_between_circles - larger_radius - smaller_radius;
-end
+space_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, flag_circle2_is_counterclockwise,-1);
 
 if space_between_circles>0
     spiralLength = fcn_INTERNAL_findLengthFromOffset(circle1_radius, circle2_radius*flag_circle2_is_counterclockwise, center_to_center_distance_between_circles);
