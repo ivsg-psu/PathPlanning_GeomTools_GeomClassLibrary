@@ -61,10 +61,12 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % Revision History
 % 2024_05_02 - Aneesh Batchu
 % -- wrote the code 
-% 2024_05_06 - Aneesh Batchu
-% -- Fixed a BUG in Arc-Arc intersection case. Added a few conditional
-% statements to remove NaNs from the potential_arc_intersection_points to
-% compute the true arc to arc "intersection points"
+% 2024_05_06 - Aneesh Batchu 
+% -- Fixed BUGS in Arc-Arc, line-arc, arc-line, line segment-arc
+% intersection cases. Added a few conditional statements to remove NaNs
+% from the potential_intersection_points to compute the true "intersection
+% points"
+
 
 %% Debugging and Input checks
 
@@ -208,8 +210,16 @@ switch lower(firstFitType)
                         distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
                         if distances(1)<distances(2)
                             intersection_points = potential_intersection_points(1,:);
-                        else
+                        elseif distances(2)<distances(1)
                             intersection_points = potential_intersection_points(2,:);
+                        else
+                            nan_indices = any(isnan(potential_intersection_points), 2);
+                            potential_intersection_points = potential_intersection_points(~nan_indices,:);
+                            if ~isempty(potential_intersection_points)
+                                intersection_points = potential_intersection_points;
+                            else
+                                intersection_points = [nan nan];
+                            end
                         end
                     end
 
@@ -417,8 +427,18 @@ switch lower(firstFitType)
                         distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
                         if distances(1)<distances(2)
                             intersection_points = potential_intersection_points(1,:);
-                        else
+                        elseif distances(2)<distances(1)
                             intersection_points = potential_intersection_points(2,:);
+                        else
+                            nan_indices = any(isnan(potential_intersection_points), 2);
+                            potential_intersection_points = potential_intersection_points(~nan_indices,:);
+                            if ~isempty(potential_intersection_points)
+                                intersection_points = potential_intersection_points;
+                            else
+                                intersection_points = [nan nan];
+                            end
+
+
                         end
                     end
 
@@ -513,10 +533,18 @@ switch lower(firstFitType)
                             distance = distances(1);
                             intersection_point_index = 1;
                             % intersection_points = potential_intersection_points(1,:);
-                        else
+                        elseif distances(2)<distances(1)
                             distance = distances(2);
                             intersection_point_index = 2;
                             % intersection_points = potential_intersection_points(2,:);
+                        else
+                            nan_indices = any(isnan(distances), 2);
+                            distance = distances(~nan_indices,:);
+                            if ~isempty(distance)
+                                intersection_point_index = ~nan_indices;
+                            else
+                                distance = nan;
+                            end
                         end
 
                         % Find the vector for start point to the end point

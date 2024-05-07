@@ -55,6 +55,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- added line and circle types
 % 2024_05_05 - S. Brennan
 % -- changed start/end plotting to use dots/circles
+% 2024_05_06 - Aneesh Batchu
+% -- Added line segment as one of the names for the segment case
 
 %% Debugging and Input checks
 
@@ -177,7 +179,7 @@ switch lower(plot_type_string)
             XY_data = [nan nan; nan nan];
         end
 
-    case {'segment','vector regression segment fit'}
+    case {'segment','vector regression segment fit', 'line segment'}
         if ~isempty(parameters) && ~any(isnan(parameters))
             line_vector          = parameters(1,1:2);
             base_point_xy        = parameters(1,3:4);

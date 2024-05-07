@@ -67,6 +67,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % -- wrote the code
 % 2024_04_17 - S Brennan
 % -- added points type
+% 2024_05_06 - Aneesh Batchu
+% -- added line segment as one of the names for the segment case
 
 
 %% Debugging and Input checks
@@ -179,7 +181,7 @@ else
             color_vector = [0.6 0 0];
         case {'arc','regression arc'}  % Arcs are red
             color_vector = [1 0 0];
-        case {'line','segment','vector regression segment fit'} % Line fits are blue
+        case {'line','segment','vector regression segment fit', 'line segment'} % Line fits are blue
             color_vector = [0 0 1];
         case {'spiral'} % Spiral fits are magenta
             color_vector = [1 0 1];
