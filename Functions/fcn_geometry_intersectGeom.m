@@ -721,7 +721,7 @@ switch lower(firstFitType)
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
-        error('Alignments are not yet supported for curves from fit type: %s',firstFitType);
+        error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
 
 end
 %% Plot the results (for debugging)?
