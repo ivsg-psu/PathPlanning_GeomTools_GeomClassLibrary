@@ -67,6 +67,11 @@
 % 2024_04_25 - Aneesh Batchu
 % -- Wrote Assertions to the missing test scripts. 
 % -- Also, sped up the test scripts to run faster. 
+% 2024_05_06 - Aneesh Batchu
+% -- Added codes to calculate intersections between lines and arcs and arcs
+% to arcs
+
+
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -82,15 +87,12 @@
 % -- Some functions are missing on the ReadME.md file. It is not up to
 % date.
 % 2024_04_11 - S. Brennan
-% -- Need to speed up testing scripts
 % -- Need to fix domain bug in circle regression where the issimplified
 % test fails. This is because, in the circle regression, the domain box is
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
-% 2024_03_14 - S. Brennan
-% -- make sure all functions have at least one straighforward test case in
-% this main code    
+
 
 %% Prep the workspace
 close all

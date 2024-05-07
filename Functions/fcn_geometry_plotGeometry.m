@@ -8,7 +8,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % INPUTS:
 %
 %      plot_type_string: a string indicating the geometry type to plot,
-%      such as 'line', 'spiral, or 'arc'.
+%      such as 'line', 'segment','spiral, or 'arc'.
 %
 %      parameters: the parameter set describing the geometry. See
 %      fcn_geometry_fillEmptyDomainStructure for details, as the parameter

@@ -246,12 +246,16 @@ intersection_point = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clean
 
 %% Check how much shift is needed to connect arc1 to arc2
 [desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters] = ...
+    [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type]
     fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters,continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_fig_num);
 % Deltas are from desired to actual
 
 %% Perform shift to join arcs 1 and 2
 [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_spiral_join_parameters_St] = ...
-    fcn_INTERNAL_performShift(threshold, continuity_level, st_arc1_parameters, st_arc2_parameters, desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters, debug_fig_num);
+    fcn_INTERNAL_performShift(threshold, continuity_level, ...
+    st_arc1_parameters, st_arc2_parameters, ...
+    desired_st_arc1_parameters, desired_st_arc2_parameters, ...
+    desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, debug_fig_num);
 
 %% Rotate results out of St back into XY
 % [revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
@@ -1037,12 +1041,13 @@ end
 end % Ends fcn_INTERNAL_convertParametersToStOrientation
 
 %% fcn_INTERNAL_findShiftToMatchArcToArc
-function [desired_arc1_parameters, desired_arc2_parameters, desired_spiral_join_parameters] = ...
+function [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
     fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_fig_num)
 % Calculates the delta amount to match the arc to the arc. The delta
 % values are measured FROM desired point TO actual point
 
-desired_spiral_join_parameters = []; % Initialize output. This is ONLY used for spiral fits.
+desired_intermediate_geometry_join_parameters = nan(1,6); % Initialize output to be a "blank" spiral
+desired_intermediate_geometry_join_type       = 'spiral';
 
 % Calculate needed values from parameter sets
 % Calculate needed values from parameter sets
@@ -1085,6 +1090,9 @@ else
 end
 % arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, arc2_is_counter_clockwise);
 
+% Calculate the distance between the circles and the join point
+space_between_circles = fcn_geometry_gapCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise,-1);
+
 
 % With the cleaned parameters, the line vector always
 % points in the direction of the join point.
@@ -1113,11 +1121,161 @@ switch continuity_level
         % point for arc2 is where the arc2's circle touches the x-axis,
         % which by construction is the radius distance below the center of
         % the circle
-        
 
-        % Calculate the distance between the circles and the join point
-        space_between_circles = fcn_geometry_gapCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise,-1);
-        URHERE
+        if (space_between_circles>0) && (1==arc2_is_counter_clockwise)
+            % In this case, one circle is inside the other and an external
+            % tangent is requested - and this is not possible. So need to
+            % check to see if arc2 can be moved to create an external
+            % tangent.
+            if flag_perform_shift_of_arc2==1
+                if abs(space_between_circles)<threshold
+                    % Yes, arc2 can be moved enough to be tangent. So put
+                    % arc2's center in correct place
+                    desired_arc1_parameters        = arc1_parameters;
+                    desired_arc1_parameters(1,1:2) = [0 arc1_radius];
+                    desired_arc1_parameters(1,5)   = -pi/2;
+
+                    desired_arc2_parameters        = arc2_parameters;
+                    desired_arc2_parameters(1,1:2) = [0 arc2_radius]; 
+                    desired_arc2_parameters(1,4)   = -pi/2;
+
+                    desired_intermediate_geometry_join_parameters = nan(1,6); % Initialize output to be a "blank" spiral
+                    desired_intermediate_geometry_join_type       = 'segment';
+
+                    % line_unit_tangent_vector = line_parameters(1,1:2);
+                    % line_base_point_xy       = line_parameters(1,3:4);
+                    % line_s_start             = line_parameters(1,5);
+                    % line_s_end               = line_parameters(1,6);
+                   
+                else
+                    % Not possible to shift enough to allow connection
+                    desired_arc1_parameters        = nan(size(arc1_parameters));
+                    desired_arc2_parameters        = nan(size(arc1_parameters));
+                end
+            else
+                % No shift allowed by user entry, so not possible
+                desired_arc1_parameters            = nan(size(arc1_parameters));
+                desired_arc2_parameters            = nan(size(arc1_parameters));
+            end
+        elseif (space_between_circles<=0) && (1==arc2_is_counter_clockwise)
+
+        % 
+        % 
+        %     CLEAN AFTER HERE
+        % 
+        %     [desired_spiral_join_parameters, ~] = ...
+        %         fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
+        % 
+        % 
+        %     spiralLength = desired_spiral_join_parameters(1,1);
+        %     h0           = desired_spiral_join_parameters(1,2);
+        %     % x0           = desired_spiral_join_parameters(1,3);
+        %     % y0           = desired_spiral_join_parameters(1,4);
+        %     K0           = desired_spiral_join_parameters(1,5);
+        %     Kf           = desired_spiral_join_parameters(1,6);
+        % 
+        %     % Check results?
+        %     if 1==0
+        % 
+        %         % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
+        %         % spiral and calculate the offsets, plotting the results in
+        %         % figure 1234
+        %         figure(1234);
+        %         clf;
+        %         hold on;
+        %         grid on;
+        %         axis equal;
+        % 
+        %         fcn_geometry_plotGeometry('arc',arc1_parameters);
+        %         fcn_geometry_plotGeometry('arc',arc2_parameters);
+        %         fcn_geometry_plotGeometry('spiral',desired_spiral_join_parameters);
+        %     end % Ends plotting
+        % 
+        %     % Find the angle and position that the spiral ends at
+        %     analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+        % 
+        % 
+        %     flag_spiral_is_bad = 0;
+        %     % Make sure the spiral's start position is within the angle range
+        %     % of arc1. If not, return Nan values for everything
+        %     arc1_angle_where_spiral_starts = h0 - pi/2;
+        %     spiral_arc1_join_xy = arc1_center_xy + arc1_radius*[cos(arc1_angle_where_spiral_starts) sin(arc1_angle_where_spiral_starts)];
+        %     intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, spiral_arc1_join_xy, arc1_end_xy,-1);
+        %     if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
+        %         % St_shift = [nan nan];
+        %         desired_arc1_parameters = nan(size(arc1_parameters));
+        %         desired_arc2_parameters = nan(size(arc1_parameters));
+        %         desired_spiral_join_parameters = nan(1,6);
+        %         flag_spiral_is_bad = 1;
+        %     end
+        % 
+        %     % Make sure the spiral's start position is within the angle range
+        %     % of arc1. If not, return Nan values for everything
+        %     arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
+        %     spiral_arc2_join_xy = arc2_center_xy + arc2_radius*[cos(arc2_angle_where_spiral_ends) sin(arc2_angle_where_spiral_ends)];
+        %     intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, spiral_arc2_join_xy, arc2_end_xy,-1);
+        %     if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
+        %         % St_shift = [nan nan];
+        %         desired_arc1_parameters = nan(size(arc1_parameters));
+        %         desired_arc2_parameters = nan(size(arc1_parameters));
+        %         desired_spiral_join_parameters = nan(1,6);
+        %         flag_spiral_is_bad = 1;
+        %     end
+        % 
+        %     if 0==flag_spiral_is_bad
+        %         % If made it here, then the spiral is good. Fill outputs and then
+        %         % return results
+        %         desired_arc1_parameters = arc1_parameters;
+        %         desired_arc1_parameters(1,4)   = arc1_start_angle_in_radians;
+        %         desired_arc1_parameters(1,5)   = arc1_angle_where_spiral_starts;
+        %         desired_arc2_parameters        = arc2_parameters;
+        %         if 1==arc2_is_counter_clockwise
+        %             desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends;
+        %         else
+        %             desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends+pi;
+        %         end
+        %         desired_arc2_parameters(1,5)   = arc2_end_angle_in_radians;
+        %     end
+        % else
+        %     % Not enough space between circles for a spiral, not without
+        %     % modifying it
+        %     if flag_perform_shift_of_arc2==1
+        %         if abs(space_between_circles)<threshold
+        %             direction_vector_to_shift_arc2 = arc2_center_xy - arc1_center_xy;
+        %             unit_direction_vector_to_shift_arc2 = fcn_geometry_calcUnitVector(direction_vector_to_shift_arc2);
+        % 
+        %             if 1==arc2_is_counter_clockwise
+        %                 % Small circle must be completely inside the large circle
+        %                 sign_of_vector = -1;
+        %             else
+        %                 % Small circle must be completely outside the large circle
+        %                 sign_of_vector = 1;
+        %             end
+        % 
+        %             revised_arc2_parameters = arc2_parameters;
+        %             revised_arc2_parameters(1,1:2) = arc2_parameters(1,1:2) + unit_direction_vector_to_shift_arc2*sign_of_vector*(abs(space_between_circles)+0.001);
+        %             [desired_arc1_parameters, desired_arc2_parameters, desired_spiral_join_parameters] = ...
+        %                 fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
+        %         else
+        %             % Not possible
+        %             desired_arc1_parameters = nan(size(arc1_parameters));
+        %             desired_arc2_parameters = nan(size(arc1_parameters));
+        %             desired_spiral_join_parameters = nan(1,6);
+        %         end
+        %     else
+        %         % Not allowed by user entry
+        %         desired_arc1_parameters = nan(size(arc1_parameters));
+        %         desired_arc2_parameters = nan(size(arc1_parameters));
+        %         desired_spiral_join_parameters = nan(1,6);
+        %     end
+        % end % Ends if statement to check if spiral is possible
+        elseif (space_between_circles>0)  && (1~=arc2_is_counter_clockwise)
+        elseif (space_between_circles<=0) && (1~=arc2_is_counter_clockwise)
+        else
+
+        end
+
+
 
 
 
@@ -1133,18 +1291,19 @@ switch continuity_level
         % spiral is possible between the circles containing the arcs, and if
         % not, how much space is needed to allow the spiral.
 
-        [desired_spiral_join_parameters, space_between_circles] = ...
-            fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
 
         if space_between_circles>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
-            spiralLength = desired_spiral_join_parameters(1,1);
-            h0           = desired_spiral_join_parameters(1,2);
+            [desired_intermediate_geometry_join_parameters, ~] = ...
+                fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
+
+            spiralLength = desired_intermediate_geometry_join_parameters(1,1);
+            h0           = desired_intermediate_geometry_join_parameters(1,2);
             % x0           = desired_spiral_join_parameters(1,3);
             % y0           = desired_spiral_join_parameters(1,4);
-            K0           = desired_spiral_join_parameters(1,5);
-            Kf           = desired_spiral_join_parameters(1,6);
+            K0           = desired_intermediate_geometry_join_parameters(1,5);
+            Kf           = desired_intermediate_geometry_join_parameters(1,6);
 
             % Check results?
             if 1==0
@@ -1160,7 +1319,7 @@ switch continuity_level
 
                 fcn_geometry_plotGeometry('arc',arc1_parameters);
                 fcn_geometry_plotGeometry('arc',arc2_parameters);
-                fcn_geometry_plotGeometry('spiral',desired_spiral_join_parameters);
+                fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters);
             end % Ends plotting
 
             % Find the angle and position that the spiral ends at
@@ -1177,7 +1336,6 @@ switch continuity_level
                 % St_shift = [nan nan];
                 desired_arc1_parameters = nan(size(arc1_parameters));
                 desired_arc2_parameters = nan(size(arc1_parameters));
-                desired_spiral_join_parameters = nan(1,6);
                 flag_spiral_is_bad = 1;
             end
 
@@ -1190,7 +1348,6 @@ switch continuity_level
                 % St_shift = [nan nan];
                 desired_arc1_parameters = nan(size(arc1_parameters));
                 desired_arc2_parameters = nan(size(arc1_parameters));
-                desired_spiral_join_parameters = nan(1,6);
                 flag_spiral_is_bad = 1;
             end
 
@@ -1226,19 +1383,17 @@ switch continuity_level
 
                     revised_arc2_parameters = arc2_parameters;
                     revised_arc2_parameters(1,1:2) = arc2_parameters(1,1:2) + unit_direction_vector_to_shift_arc2*sign_of_vector*(abs(space_between_circles)+0.001);
-                    [desired_arc1_parameters, desired_arc2_parameters, desired_spiral_join_parameters] = ...
+                    [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters] = ...
                         fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
                 else
                     % Not possible
                     desired_arc1_parameters = nan(size(arc1_parameters));
                     desired_arc2_parameters = nan(size(arc1_parameters));
-                    desired_spiral_join_parameters = nan(1,6);
                 end
             else
                 % Not allowed by user entry
                 desired_arc1_parameters = nan(size(arc1_parameters));
                 desired_arc2_parameters = nan(size(arc1_parameters));
-                desired_spiral_join_parameters = nan(1,6);
             end
         end % Ends if statement to check if spiral is possible
     otherwise
@@ -1280,25 +1435,35 @@ if ~isempty(debug_fig_num)
     debug_axis = axis;
 
     subplot(3,2,4);
+    fcn_geometry_plotCircle(desired_arc1_parameters(1,1:2),desired_arc1_parameters(1,3),...
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+    fcn_geometry_plotCircle(desired_arc2_parameters(1,1:2),desired_arc2_parameters(1,3),...
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+
     fcn_geometry_plotGeometry('arc',desired_arc1_parameters);
     fcn_geometry_plotGeometry('arc',desired_arc2_parameters);
-    fcn_geometry_plotGeometry('spiral',desired_spiral_join_parameters);
+    fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters);
     
     axis(debug_axis);
 
     hold on;
     grid on;
     axis equal;
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
+    xlabel('S [meters]');
+    ylabel('t [meters]')
 
     title('Desired St geometries');
 end
 end % Ends fcn_INTERNAL_findShiftToMatchArcToArc
 
 %% fcn_INTERNAL_performShift
-function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_spiral_join_parameters_St] = ...
-    fcn_INTERNAL_performShift(threshold, continuity_level, st_arc1_parameters, st_arc2_parameters, desired_st_arc1_parameters, desired_st_arc2_parameters, spiral_join_parameters, debug_fig_num)
+% desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type
+function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_intermediate_geometry_parameters_St, revised_intermediate_geometry_type] = ...
+    fcn_INTERNAL_performShift(threshold, continuity_level, ...
+    st_arc1_parameters, st_arc2_parameters, ...
+    desired_st_arc1_parameters, desired_st_arc2_parameters, ...
+    desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, ...
+    debug_fig_num)
 
 
 St_shift = st_arc2_parameters(1,1:2)-desired_st_arc2_parameters(1,1:2);
@@ -1307,9 +1472,10 @@ St_shift = st_arc2_parameters(1,1:2)-desired_st_arc2_parameters(1,1:2);
 shift_distance = sum(St_shift.^2,2).^0.5;
 if abs(shift_distance)>=threshold
     % Not possible to shift
-    revised_arc1_parameters_St        = nan(size(st_arc1_parameters));
-    revised_arc2_parameters_St        = nan(size(st_arc2_parameters));
-    revised_spiral_join_parameters_St = nan(size(spiral_join_parameters));
+    revised_arc1_parameters_St         = nan(size(st_arc1_parameters));
+    revised_arc2_parameters_St         = nan(size(st_arc2_parameters));
+    revised_intermediate_geometry_parameters_St = nan(size(desired_intermediate_geometry_join_parameters));
+    revised_intermediate_geometry_type = desired_intermediate_geometry_join_type; 
     return
 end
 
@@ -1382,19 +1548,22 @@ switch continuity_level
         % end
 
     case 1
-        % % For C1 continuity of arc1 to arc2, the closest point of the desired
-        % % joint to arc1 and arc2 is always going to be the point where each arc
-        % % touches the tangent line connecting them. Since arc2 is the only one
-        % % that can be moved, the connecting point is simply the location where
-        % % arc1 is tangent, which by construction is [0 0].
-        % 
-        % desired_closest_arc2_point_to_joint = [0 0];
-        % desired_closest_arc1_point_to_joint = [0 0];
+        % For C1 continuity of arc1 to arc2, the closest point of the desired
+        % joint to arc1 and arc2 is always going to be the point where each arc
+        % touches the tangent line connecting them. Since arc2 is the only one
+        % that can be moved, the connecting point is simply the location where
+        % arc1 is tangent, which by construction is [0 0].
+
+       revised_arc1_parameters_St        = desired_st_arc1_parameters;
+       revised_arc2_parameters_St        = desired_st_arc2_parameters;
+       revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
+       revised_intermediate_geometry_type = 'segment';
 
     case 2
        revised_arc1_parameters_St        = desired_st_arc1_parameters;
        revised_arc2_parameters_St        = desired_st_arc2_parameters;
-       revised_spiral_join_parameters_St = spiral_join_parameters;
+       revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
+       revised_intermediate_geometry_type = 'spiral';
     otherwise
         error('This continuity not possible yet')
 end
@@ -1409,7 +1578,7 @@ if ~isempty(debug_fig_num)
 
     fcn_geometry_plotGeometry('arc',revised_arc1_parameters_St);
     fcn_geometry_plotGeometry('arc',revised_arc2_parameters_St);
-    fcn_geometry_plotGeometry('spiral',revised_spiral_join_parameters_St);
+    fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,revised_intermediate_geometry_parameters_St);
 
     title('St outputs after shift');
     axis(debug_axis);
