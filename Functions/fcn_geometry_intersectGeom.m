@@ -52,7 +52,7 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fcn_geometry_intersectGeom
+% See the script: script_test_fcn_geometry_intersectGeom
 % for a full test suite.
 %
 % This function was written on 2024_05_02 by Aneesh Batchu
@@ -116,16 +116,13 @@ if 0==flag_max_speed
         % Are there the right number of inputs?
         narginchk(4,5);
 
-        % Check the tolerance input is a positive single number
-        % fcn_DebugTools_checkInputsToFunctions(tolerance, 'positive_1column_of_numbers',1);
-
     end
 end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (4<= nargin)
+if (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -737,7 +734,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-     temp_h = figure(fig_num);
+    temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
