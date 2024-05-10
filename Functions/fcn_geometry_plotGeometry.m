@@ -324,9 +324,9 @@ if flag_do_plots
         direction_vector = XY_data(end,:)-XY_data(1,:);
         if plot_type==1
             if length(plot_str)>3
-                eval_string = sprintf('quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,%s)',plot_str);
+                eval_string = sprintf('quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2), 0, %s)',plot_str);
                 eval(eval_string);
-                eval_string = sprintf('quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0%s)',plot_str);
+                eval_string = sprintf('quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2), 0, %s)',plot_str);
                 eval(eval_string);
             elseif ~isempty(plot_str)
                 quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,plot_str);
