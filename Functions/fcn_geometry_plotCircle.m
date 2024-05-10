@@ -95,16 +95,16 @@ if (0==flag_max_speed)
         % Are there the right number of inputs?
         narginchk(2,4);
 
-        % Check the centers input
-        fcn_DebugTools_checkInputsToFunctions(...
-            centers, '2column_of_numbers');
-
-        % Use number of radii to calculate the number of centers
-        Ncircles = length(centers(:,1));
-
-        % Check the radii input
-        fcn_DebugTools_checkInputsToFunctions(...
-            radii, '1column_of_numbers',Ncircles);
+        % % Check the centers input
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     centers, '2column_of_numbers');
+        % 
+        % % Use number of radii to calculate the number of centers
+        % Ncircles = length(centers(:,1));
+        % 
+        % % Check the radii input
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     radii, '1column_of_numbers',Ncircles);
 
     end
 end

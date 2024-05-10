@@ -8,7 +8,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % INPUTS:
 %
 %      plot_type_string: a string indicating the geometry type to plot,
-%      such as 'line', 'segment','spiral, or 'arc'.
+%      such as 'line', 'segment','spiral, or 'arc'. If plot string is
+%      empty, or 'none', then nothing is plotted.
 %
 %      parameters: the parameter set describing the geometry. See
 %      fcn_geometry_fillEmptyDomainStructure for details, as the parameter
@@ -18,7 +19,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %
 %      segment_length: the smallest step to use for plotting, representing
 %      the length (approximately) between points. Default is 0.1 meters.
-% 
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
@@ -30,7 +31,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %      data is returned even if fig_num is empty or set to -1.
 %
 % DEPENDENCIES:
-%      
+%
 %      (none)
 %
 % EXAMPLES:
@@ -57,6 +58,9 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- changed start/end plotting to use dots/circles
 % 2024_05_06 - Aneesh Batchu
 % -- Added line segment as one of the names for the segment case
+% 2024_05_09 - S. Brennan
+% -- added 'none' and empty as allowable geometry types
+
 
 %% Debugging and Input checks
 
@@ -75,7 +79,7 @@ else
     MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); 
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
         flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
@@ -158,102 +162,106 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculate the XY_data depending on type
-switch lower(plot_type_string)
-
-    case {'line'}
-        if ~isempty(parameters) && ~any(isnan(parameters))
-            line_vector          = parameters(1,1:2);
-            base_point_xy        = parameters(1,3:4);
-
-            station_distance_min = -10;
-            station_distance_max = 10;
-
-            stations = (station_distance_min:segment_length:station_distance_max)';
-            
-            if stations(end)~=station_distance_max
-                stations = [stations; station_distance_max];
-            end
-
-            XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
-        else
+if isempty(plot_type_string)
+    XY_data = [nan nan; nan nan];
+else
+    switch lower(plot_type_string)
+        case {'none'}
             XY_data = [nan nan; nan nan];
-        end
+        case {'line'}
+            if ~isempty(parameters) && ~any(isnan(parameters))
+                line_vector          = parameters(1,1:2);
+                base_point_xy        = parameters(1,3:4);
 
-    case {'segment','vector regression segment fit', 'line segment'}
-        if ~isempty(parameters) && ~any(isnan(parameters))
-            line_vector          = parameters(1,1:2);
-            base_point_xy        = parameters(1,3:4);
-            station_distance_min = parameters(1,5);
-            station_distance_max = parameters(1,6);
+                station_distance_min = -10;
+                station_distance_max = 10;
 
-            if station_distance_max>station_distance_min
                 stations = (station_distance_min:segment_length:station_distance_max)';
+
+                if stations(end)~=station_distance_max
+                    stations = [stations; station_distance_max];
+                end
+
+                XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
             else
-                stations = (station_distance_min:(-1*segment_length):station_distance_max)';
-            end
-            if stations(end)~=station_distance_max
-                stations = [stations; station_distance_max];
+                XY_data = [nan nan; nan nan];
             end
 
-            XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
-        else
-            XY_data = [nan nan; nan nan];
-        end
+        case {'segment','vector regression segment fit', 'line segment'}
+            if ~isempty(parameters) && ~any(isnan(parameters))
+                line_vector          = parameters(1,1:2);
+                base_point_xy        = parameters(1,3:4);
+                station_distance_min = parameters(1,5);
+                station_distance_max = parameters(1,6);
 
-    case {'circle'}
-        if ~isempty(parameters) && ~any(isnan(parameters))
-            circleCenter         = parameters(1,1:2);
-            circleRadius         = parameters(1,3);
-            arcAngles            = [0 2*pi];
+                if station_distance_max>station_distance_min
+                    stations = (station_distance_min:segment_length:station_distance_max)';
+                else
+                    stations = (station_distance_min:(-1*segment_length):station_distance_max)';
+                end
+                if stations(end)~=station_distance_max
+                    stations = [stations; station_distance_max];
+                end
 
-            start_angle_in_radians = arcAngles(1);
-            end_angle_in_radians   = arcAngles(2);
-            degree_step = (segment_length/circleRadius)*180/pi;
-            flag_arc_is_counterclockwise = 1;
+                XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;
+            else
+                XY_data = [nan nan; nan nan];
+            end
 
-            XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
-        else
-            XY_data = [nan nan; nan nan];
-        end
+        case {'circle'}
+            if ~isempty(parameters) && ~any(isnan(parameters))
+                circleCenter         = parameters(1,1:2);
+                circleRadius         = parameters(1,3);
+                arcAngles            = [0 2*pi];
 
-    case {'arc','regression arc'}
-        if ~isempty(parameters) && ~any(isnan(parameters))
-            circleCenter         = parameters(1,1:2);
-            circleRadius         = parameters(1,3);
-            arcAngles            = parameters(1,4:5);
-            flag_arc_is_counterclockwise = parameters(1,7);
+                start_angle_in_radians = arcAngles(1);
+                end_angle_in_radians   = arcAngles(2);
+                degree_step = (segment_length/circleRadius)*180/pi;
+                flag_arc_is_counterclockwise = 1;
 
-            start_angle_in_radians = arcAngles(1);
-            end_angle_in_radians   = arcAngles(2);
-            degree_step = (segment_length/circleRadius)*180/pi;
+                XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
+            else
+                XY_data = [nan nan; nan nan];
+            end
 
-            XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
-        else
-            XY_data = [nan nan; nan nan];            
-        end
-    case {'spiral'}
-        if ~isempty(parameters) && ~any(isnan(parameters))
-            spiralLength      = parameters(1,1);
-            h0                = parameters(1,2);
-            x0                = parameters(1,3);
-            y0                = parameters(1,4);
-            K0                = parameters(1,5);
-            Kf                = parameters(1,6);
+        case {'arc','regression arc'}
+            if ~isempty(parameters) && ~any(isnan(parameters))
+                circleCenter         = parameters(1,1:2);
+                circleRadius         = parameters(1,3);
+                arcAngles            = parameters(1,4:5);
+                flag_arc_is_counterclockwise = parameters(1,7);
 
-            s_range = linspace(0,spiralLength,20);
-            [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s_range,spiralLength,h0,x0,y0,K0,Kf);
+                start_angle_in_radians = arcAngles(1);
+                end_angle_in_radians   = arcAngles(2);
+                degree_step = (segment_length/circleRadius)*180/pi;
 
-            XY_data = [x_spiral,y_spiral];
-        else
-            XY_data = [nan nan; nan nan];
-        end
+                XY_data = fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step),[],[]);
+            else
+                XY_data = [nan nan; nan nan];
+            end
+        case {'spiral'}
+            if ~isempty(parameters) && ~any(isnan(parameters))
+                spiralLength      = parameters(1,1);
+                h0                = parameters(1,2);
+                x0                = parameters(1,3);
+                y0                = parameters(1,4);
+                K0                = parameters(1,5);
+                Kf                = parameters(1,6);
 
-    otherwise
-        warning('on','backtrace');
-        warning('An error will now be thrown because a geometry string was not recognized.');
-        error('Unknown plotting type: %s', plot_type_string);
-end
+                s_range = linspace(0,spiralLength,20);
+                [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s_range,spiralLength,h0,x0,y0,K0,Kf);
 
+                XY_data = [x_spiral,y_spiral];
+            else
+                XY_data = [nan nan; nan nan];
+            end
+
+        otherwise
+            warning('on','backtrace');
+            warning('An error will now be thrown because a geometry string was not recognized.');
+            error('Unknown plotting type: %s', plot_type_string);
+    end
+end % Ends check if string is empty
 
 
 %% Plot the results (for debugging)?
@@ -285,8 +293,8 @@ if flag_do_plots
 
     if strcmp(plot_type_string,'line')
         direction_vector = XY_data(end,:)-XY_data(1,:);
-        quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);        
-        quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);        
+        quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
+        quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
     else
         % Plot the XY data
         plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);

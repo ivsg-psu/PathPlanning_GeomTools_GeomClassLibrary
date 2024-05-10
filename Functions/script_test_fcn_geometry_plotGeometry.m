@@ -8,6 +8,20 @@
 
 close all;
 
+%% BASIC test - 'none' plotting
+fig_num = 10;
+figure(fig_num); clf;
+
+
+segment_length = [];
+XY_data = fcn_geometry_plotGeometry('none', [],segment_length, (fig_num));
+
+% Check that a figure opened with this number, and that outputs are right
+% sizes
+assert(ishandle(fig_num));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
+
 %% BASIC test - line plotting
 fig_num = 1;
 figure(fig_num); clf;

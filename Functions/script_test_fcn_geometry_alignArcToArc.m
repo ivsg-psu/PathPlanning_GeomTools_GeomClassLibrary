@@ -65,30 +65,23 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking that arc1 is joined to arc2: C2 continuous');
+sgtitle('Checking that arc1 is joined to arc2: C1 continuous');
 
-
-% Check size of results
+% Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
-% Check that line results
-fitted_line_params = round(revised_arc1_parameters,4);
-% true_line_params   = round([true_line_unit_tangent_vector true_start_point_xy 0 line_s_end-line_s_start],4);
-assert(isequal([1.0000         0   -1.0000         0         0    0.2326], round(fitted_line_params,4)));
-
-% Check the arc results
-fitted_arc_params = round([revised_arc2_parameters(1,1:3) mod(revised_arc2_parameters(1,4:5),2*pi) revised_arc2_parameters(1,6:7)],4);
-% true_arc_params = round([true_arc_center_xy arc_radius mod(true_arc_angles,2*pi) arc_is_circle true_arc_is_counter_clockwise],4);
-assert(isequal([ 0    1.1000    1.0000    5.4955         0         0    1.0000], round(fitted_arc_params,4)));
-
-% Check the spiral results
-assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
-
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 %% Basic test 1.2 - checking plot inputs of arcs, arc1 is incorrectly oriented
 fig_num = 12;
@@ -131,34 +124,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking that arc1 is joined to arc2: C2 continuous');
-
-% 
-% % Check size of results
-% assert(isequal(size(revised_arc1_parameters),[1 7]));
-% assert(isequal(size(revised_arc2_parameters),[1 7]));
-% 
-% % Check that line results
-% fitted_line_params = round(revised_arc1_parameters,4);
-% % true_line_params   = round([true_line_unit_tangent_vector true_start_point_xy 0 line_s_end-line_s_start],4);
-% assert(isequal([1.0000         0   -1.0000         0         0    0.2326], round(fitted_line_params,4)));
-% 
-% % Check the arc results
-% fitted_arc_params = round([revised_arc2_parameters(1,1:3) mod(revised_arc2_parameters(1,4:5),2*pi) revised_arc2_parameters(1,6:7)],4);
-% % true_arc_params = round([true_arc_center_xy arc_radius mod(true_arc_angles,2*pi) arc_is_circle true_arc_is_counter_clockwise],4);
-% assert(isequal([ 0    1.1000    1.0000    5.4955         0         0    1.0000], round(fitted_arc_params,4)));
-% 
-% % Check the spiral results
-% assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
+sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 in bad orientation');
 
 
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 %% Basic test 1.3 - checking plot inputs of arcs, arc2 is incorrectly oriented
 fig_num = 13;
@@ -201,32 +187,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking that arc1 is joined to arc2: C2 continuous');
+sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 2 in bad orientation');
 
-% 
-% % Check size of results
-% assert(isequal(size(revised_arc1_parameters),[1 7]));
-% assert(isequal(size(revised_arc2_parameters),[1 7]));
-% 
-% % Check that line results
-% fitted_line_params = round(revised_arc1_parameters,4);
-% % true_line_params   = round([true_line_unit_tangent_vector true_start_point_xy 0 line_s_end-line_s_start],4);
-% assert(isequal([1.0000         0   -1.0000         0         0    0.2326], round(fitted_line_params,4)));
-% 
-% % Check the arc results
-% fitted_arc_params = round([revised_arc2_parameters(1,1:3) mod(revised_arc2_parameters(1,4:5),2*pi) revised_arc2_parameters(1,6:7)],4);
-% % true_arc_params = round([true_arc_center_xy arc_radius mod(true_arc_angles,2*pi) arc_is_circle true_arc_is_counter_clockwise],4);
-% assert(isequal([ 0    1.1000    1.0000    5.4955         0         0    1.0000], round(fitted_arc_params,4)));
-% 
-% % Check the spiral results
-% assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 
 %% Basic test 1.4 - checking plot inputs of arcs, arc1 and arc2 is incorrectly oriented
@@ -270,32 +251,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle('Checking that arc1 is joined to arc2: C2 continuous');
+sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 and arc2 in bad orientation');
 
-% 
-% % Check size of results
-% assert(isequal(size(revised_arc1_parameters),[1 7]));
-% assert(isequal(size(revised_arc2_parameters),[1 7]));
-% 
-% % Check that line results
-% fitted_line_params = round(revised_arc1_parameters,4);
-% % true_line_params   = round([true_line_unit_tangent_vector true_start_point_xy 0 line_s_end-line_s_start],4);
-% assert(isequal([1.0000         0   -1.0000         0         0    0.2326], round(fitted_line_params,4)));
-% 
-% % Check the arc results
-% fitted_arc_params = round([revised_arc2_parameters(1,1:3) mod(revised_arc2_parameters(1,4:5),2*pi) revised_arc2_parameters(1,6:7)],4);
-% % true_arc_params = round([true_arc_center_xy arc_radius mod(true_arc_angles,2*pi) arc_is_circle true_arc_is_counter_clockwise],4);
-% assert(isequal([ 0    1.1000    1.0000    5.4955         0         0    1.0000], round(fitted_arc_params,4)));
-% 
-% % Check the spiral results
-% assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 
 %% check conversions into St coordinates
@@ -364,14 +340,26 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are + to + ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0    3.0000    1.0000   -2.0944   -0.7980         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.5830    3.0098    0.6000   -0.7980    1.0472         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.7160    0.6981    0.6981    2.2840         0    0.4243]));
 
 
 %% Basic test 2.20 - checking the + to - cross product combination, no intersection
@@ -425,14 +413,26 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are + to - ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944   -0.7273         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 1.7954    2.3098    0.8000    2.4143    1.0472         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6649    0.7469    0.7469    2.3351         0    0.6782]));
 
 %% Basic test 2.21 - checking the + to - cross product combination, intersection
 fig_num = 221;
@@ -485,14 +485,26 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are + to - ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    3.0000    1.0000   -2.0944   -0.3489         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 1.6915    2.3846    0.8000    2.7927    1.0472         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3419    0.9397    0.9397    2.6581         0         0]));
 
 %% Basic test 2.30 - checking the - to + cross product combination, no intersection
 fig_num = 230;
@@ -553,14 +565,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0    3.0000    1.0000   -2.0944    2.8217         0         0]));
+assert(isequal(round(revised_arc2_parameters,4),[ -1.4954    4.2098    0.8000   -0.3199    1.0472         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3144    0.9493   -0.9493    3.3144         0    0.6782]));
+
 
 %% Basic test 2.311 - checking the - to + cross product combination, intersecting circles, no intersecting arcs
 fig_num = 2311;
@@ -621,14 +646,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
+assert(isequal(round(revised_arc2_parameters,4),[ -1.3787    4.1572    0.8000   -0.6983    1.0472         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429    0.7660   -0.7660    3.6429         0         0]));
+
 
 %% Basic test 2.312 - checking the - to + cross product combination, intersecting circles, no intersecting arcs
 fig_num = 2312;
@@ -689,14 +727,27 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
+assert(isequal(round(revised_arc2_parameters,4),[ -1.3787    4.1572    0.8000   -0.6983    1.0472         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429    0.7660   -0.7660    3.6429         0         0]));
+
 
 %% Basic test 2.313 - checking the - to + cross product combination, intersecting circles, two intersecting arcs
 fig_num = 233;
@@ -757,14 +808,26 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
+assert(isequal(round(revised_arc2_parameters,4),[ -1.3787    4.1572    0.8000   -0.6983    1.0472         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429    0.7660   -0.7660    3.6429         0         0]));
 
 
 
@@ -819,14 +882,27 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 
-continuity_level = 2;
+continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle('Checking ST conversion: cross-products are - to - ');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944    1.6115         0         0]));
+assert(isequal(round(revised_arc2_parameters,4),[0.2366    3.2098    0.8000    1.6115    1.0472         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.9992    0.0407   -0.0407    3.9992         0    0.2449]));
+
 
 
 %% check C0 intersections
@@ -849,6 +925,1038 @@ sgtitle('Checking ST conversion: cross-products are - to - ');
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Checking%20C0%0AIntersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 3
+
+
+%% Basic test 3.11 - checking the + to + cross product combination, large to small, feasible
+fig_num = 311;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = 0.05;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+% revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3464    2.8000    0.6000   -0.5236    1.5708         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+
+%% Basic test 3.12 - checking the + to + cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
+fig_num = 312;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+%% Basic test 3.131 - checking the + to + cross product combination, large to small with shift allowed, no intersection
+fig_num = 3131;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3464    2.8000    0.6000   -0.5236    1.5708         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+%% Basic test 3.132 - checking the + to + cross product combination, large to small with shift allowed, one intersection
+fig_num = 3131;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = 30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_start_angle          = -30*pi/180;
+arc2_vector_start         = [cos(arc2_start_angle) sin(arc2_start_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -1.0472    0.0501         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3995    3.0201    0.6000    0.0501    2.6180         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+%% Basic test 3.133 - checking the + to + cross product combination, large to small with shift allowed, two intersections
+fig_num = 3133;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = 30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle +50*pi/180) sin(arc1_end_angle +50*pi/180)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_start_angle          = -30*pi/180;
+arc2_vector_start         = [cos(arc2_start_angle) sin(arc2_start_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -1.0472    0.0501         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3995    3.0201    0.6000    0.0501    2.6180         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+
+%% Basic test 3.21 - checking the + to + cross product combination, small to large, feasible
+fig_num = 321;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7321    1.6000    3.0000   -0.5236    1.5708         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.22 - checking the + to + cross product combination, small to large, with shift blocked
+fig_num = 322;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.23 - checking the + to + cross product combination, small to large, with shift allowed
+fig_num = 323;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start - arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180) sin(arc1_end_angle + 120*pi/180)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 1;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7321    1.6000    3.0000   -0.5236    1.5708         0    1.0000]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+
+%% Basic test 3.31 - checking the + to - cross product combination, large to small, feasible
+fig_num = 331;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.05;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 1.3856    2.2000    0.6000    2.6180   -1.5708         0         0]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.32 - checking the + to - cross product combination, large to small with shift blocked
+% Setting tolerance to empty makes shift blocked
+fig_num = 332;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.33 - checking the + to - cross product combination, large to small with shift allowed
+fig_num = 333;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 3];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 0.6;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.3856    2.2000    0.6000    2.6180   -1.5708         0         0]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
+
+
+%% Basic test 3.41 - checking the + to + cross product combination, small to large, feasible
+fig_num = 341;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0.05;
+offset_t = -0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, feasible');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 3.4641   -1.4000    3.0000    2.6180   -1.5708         0         0]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.42 - checking the + to + cross product combination, small to large, with shift blocked
+fig_num = 342;
+figure(fig_num); clf;
+
+tolerance = []; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(all(isnan(revised_arc1_parameters)));
+assert(all(isnan(revised_arc2_parameters)));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+%% Basic test 3.43 - checking the + to + cross product combination, small to large, with shift allowed
+fig_num = 343;
+figure(fig_num); clf;
+
+tolerance = 0.4; % meters
+
+
+% Fill in arc 1
+arc1_center_xy            = [0 0.6];
+arc1_radius               = 1;
+arc1_end_angle            = -30*pi/180;
+arc1_vector_start         = [cos(arc1_end_angle -90*pi/180) sin(arc1_end_angle -90*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle) sin(arc1_end_angle)];
+arc1_is_circle            = 0;
+arc1_is_counter_clockwise = 1;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+% Fill in arc 2
+offset_s = 0;
+offset_t = 0.1;
+
+start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
+start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
+
+end_point_arc1 = arc1_center_xy + start_unit_radial_vector*arc1_radius;
+offset_point_arc2_start = end_point_arc1 + start_unit_tangent_vector*offset_s -start_unit_radial_vector*offset_t;
+arc2_radius               = 3;
+arc2_center_xy            = offset_point_arc2_start + arc2_radius*start_unit_radial_vector;
+
+arc2_vector_start         = [cos(arc1_end_angle+pi) sin(arc1_end_angle+pi)];
+arc2_vector_end           = [cos(arc1_end_angle + 120*pi/180+pi) sin(arc1_end_angle + 120*pi/180+pi)];
+arc2_is_circle            = 0;
+arc2_is_counter_clockwise = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+continuity_level = 0;
+
+
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcToArc(...
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
+
+
+% Check sizes
+assert(isequal(size(revised_arc1_parameters),[1 7]));
+assert(isequal(size(revised_arc2_parameters),[1 7]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 3.4641   -1.4000    3.0000    2.6180   -1.5708         0         0]));
+assert(isempty(revised_intermediate_geometry_join_type));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
 
 %% check C1 intersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -924,8 +2032,9 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 continuity_level = 1;
 
+% revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -934,12 +2043,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0.7311    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.3817         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.3712    2.8510    0.6000   -0.3817    1.5708         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3725    0.9280    0.9280    2.6275         0         0]));
 
 %% Basic test 4.12 - checking the + to + cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -947,7 +2058,6 @@ fig_num = 412;
 figure(fig_num); clf;
 
 tolerance = []; % meters
-
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -969,7 +2079,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = -0.1;
+offset_t = 0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
@@ -996,7 +2106,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1005,12 +2115,15 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
 
 %% Basic test 4.13 - checking the + to + cross product combination, large to small with shift allowed
 fig_num = 413;
@@ -1066,7 +2179,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1076,12 +2189,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[0.3455    2.8005    0.6000   -0.3654    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -1.1671         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[0.4330    2.7500    0.6000   -1.1671    1.5708         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.9196    0.3928    0.3928    2.0804         0    0.3000]));
 
 
 
@@ -1140,7 +2255,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1149,12 +2264,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[-1.6204    1.5933    3.0000   -0.2366    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    0.6000    1.0000   -2.0944   -0.5499         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7051    1.6452    3.0000   -0.5499    1.5708         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5226    0.8526    0.8526    0.0774         0         0]));
 
 %% Basic test 4.22 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 422;
@@ -1183,7 +2300,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0.1;
+offset_t = -0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
@@ -1210,7 +2327,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1219,12 +2336,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.23 - checking the + to + cross product combination, small to large, with shift allowed
 fig_num = 423;
@@ -1253,7 +2372,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
 offset_s = 0;
-offset_t = 0.1;
+offset_t = -0.1;
 
 start_unit_radial_vector  = [cos(arc1_end_angle) sin(arc1_end_angle)];
 start_unit_tangent_vector = start_unit_radial_vector*[0 1; -1 0];
@@ -1280,7 +2399,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1290,12 +2409,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[-1.7312    1.5995    3.0000   -0.4920    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[-1.7321    1.6000    3.0000   -0.5236    1.5708         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5000    0.8660    0.8660    0.1000         0    0.0000]));
 
 
 
@@ -1353,7 +2474,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1362,12 +2483,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.0852   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944   -0.7419         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.3997   -1.5708         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6757    0.7372    0.7372    2.3243         0    0.4062]));
 
 %% Basic test 4.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -1424,7 +2547,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1433,12 +2556,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.33 - checking the + to - cross product combination, large to small with shift allowed
 fig_num = 433;
@@ -1494,7 +2619,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1504,12 +2629,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[1.3865    2.1995    0.6000    2.5389   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
+assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[1.3856    2.2000    0.6000    2.6180   -1.5708         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5000    0.8660    0.8660    2.5000         0         0]));
 
 
 
@@ -1568,7 +2695,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1577,12 +2704,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4083   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
+assert(isequal(round(revised_arc1_parameters,4),[ 0    0.6000    1.0000   -2.0944   -0.7330         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4085   -1.5708         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6691    0.7431    0.7431   -0.0691         0    0.9014]));
 
 %% Basic test 4.42 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 442;
@@ -1638,7 +2767,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1647,12 +2776,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.43 - checking the + to + cross product combination, small to large, with shift allowed
 fig_num = 443;
@@ -1708,7 +2839,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 1;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1718,12 +2849,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));
-assert(isequal(round(revised_arc2_parameters,4),[ 3.4650   -1.4005    3.0000    2.5956   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
+assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
+assert(isequal(round(revised_arc2_parameters,4),[ 3.4641   -1.4000    3.0000    2.6180   -1.5708         0         0]));
+assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.5000    0.8660    0.8660    0.1000         0         0]));
 
 
 
@@ -1802,7 +2935,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1811,12 +2944,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0.7311    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
 
 %% Basic test 5.12 - checking the + to + cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -1873,7 +3008,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1882,12 +3017,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.13 - checking the + to + cross product combination, large to small with shift allowed
 fig_num = 513;
@@ -1943,7 +3080,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -1953,12 +3090,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.3455    2.8005    0.6000   -0.3654    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
 
 
 
@@ -2017,7 +3156,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2026,12 +3165,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[-1.6204    1.5933    3.0000   -0.2366    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
 
 %% Basic test 5.22 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 522;
@@ -2087,7 +3228,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2096,12 +3237,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.23 - checking the + to + cross product combination, small to large, with shift allowed
 fig_num = 523;
@@ -2157,7 +3300,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2167,12 +3310,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[-1.7312    1.5995    3.0000   -0.4920    1.5708         0    1.0000]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
 
 
 
@@ -2230,7 +3375,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2239,12 +3384,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.0852   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
 
 %% Basic test 5.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -2301,7 +3448,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2310,12 +3457,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.33 - checking the + to - cross product combination, large to small with shift allowed
 fig_num = 533;
@@ -2371,7 +3520,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2381,12 +3530,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[1.3865    2.1995    0.6000    2.5389   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
 
 
 
@@ -2445,7 +3596,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2454,12 +3605,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4083   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
 
 %% Basic test 5.42 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 542;
@@ -2515,7 +3668,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2524,12 +3677,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
 assert(all(isnan(revised_arc2_parameters)));
-assert(all(isnan(revised_spiral_join_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.43 - checking the + to + cross product combination, small to large, with shift allowed
 fig_num = 543;
@@ -2585,7 +3740,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 continuity_level = 2;
 
 
-[revised_arc1_parameters, revised_arc2_parameters, revised_spiral_join_parameters] = ...
+[revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcToArc(...
     arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
 
@@ -2595,12 +3750,14 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 % Check sizes
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
-assert(isequal(size(revised_spiral_join_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[ 3.4650   -1.4005    3.0000    2.5956   -1.5708         0         0]));
-assert(isequal(round(revised_spiral_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
+assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
 
 
 
@@ -2609,7 +3766,7 @@ assert(isequal(round(revised_spiral_join_parameters,4),[0.1342    0.9801    0.83
 
 %% Fail conditions
 if 1==0
-    %% FAIL 1: points not long enough
+    % FAIL 1: points not long enough
     points = [2 3];
     [slope,intercept] = fcn_geometry_alignArcToArc(points,fig_num);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);

@@ -1,9 +1,12 @@
-%% script_test_fcn_orientGeometryXY2St
-% Exercises the function: fcn_orientGeometryXY2St
+%% script_test_fcn_geometry_orientGeometryXY2St
+% Exercises the function: fcn_geometry_orientGeometryXY2St
 
 % Revision history:
 % 2024_05_02 - S. Brennan
 % -- wrote the code
+% 2024_05_09 - S. Brennan
+% -- fixed bug in segment calculation wherein unit vector gives NaN if
+% start and end points are same
 
 close all;
 
@@ -30,7 +33,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 6]));
@@ -45,6 +48,76 @@ assert(isequal(round(st_primary_parameters,4),[1.0000    0.0000   -4.0000   -0.0
 assert(isempty(st_secondary_parameters{1}));
 assert(dist(St_transform,se2([0.8660    0.5000  -10.2321;    -0.5000    0.8660   -1.5981;   0         0    1.0000]))<0.001);
 assert(isequal(round(rotation_angle*180/pi,4),-30));
+assert(isequal(flag_primary_parameter_is_flipped,0));
+
+%% Basic test 1.11 - a line segment of zero length
+fig_num = 111;
+figure(fig_num); clf;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_angle = 30*pi/180;
+segment_base_point_xy = [ 2 3];
+segment_unit_vector = [cos(segment_angle) sin(segment_angle)];
+segment_s_start = 3;
+segment_s_end   = 3;
+
+segment_parameters(1,1:2) = segment_unit_vector;
+segment_parameters(1,3:4) = segment_base_point_xy;
+segment_parameters(1,5)   = segment_s_start;
+segment_parameters(1,6)   = segment_s_end;
+
+primary_parameters_type_string = 'segment';
+primary_parameters = segment_parameters;
+secondary_parameters_type_strings = [];
+secondary_parameters = [];
+
+% Call the function
+[st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+
+% Check size of results
+assert(isequal(size(st_primary_parameters),[1 6]));
+assert(isequal(size(st_secondary_parameters),[1 1]));
+assert(isequal(size(St_transform),[1 1]));
+assert(isequal(size(rotation_angle),[1 1]));
+assert(isequal(size(flag_primary_parameter_is_flipped),[1 1]));
+
+
+% Check results
+assert(isequal(round(st_primary_parameters,4),[1.0000    0.0000   0.0000   -0.0000         0    0.0000]));
+assert(isempty(st_secondary_parameters{1}));
+assert(dist(St_transform,se2([0.8660    0.5000   -6.2321;    -0.5000    0.8660   -1.5981;   0         0    1.0000]))<0.001);
+assert(isequal(round(rotation_angle*180/pi,4),-30));
+assert(isequal(flag_primary_parameter_is_flipped,0));
+
+%% Basic test 1.12 - a NaN line segment
+fig_num = 112;
+figure(fig_num); clf;
+
+segment_parameters   = nan(1,6);
+
+primary_parameters_type_string = 'segment';
+primary_parameters = segment_parameters;
+secondary_parameters_type_strings = [];
+secondary_parameters = [];
+
+% Call the function
+[st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+
+% Check size of results
+assert(isequal(size(st_primary_parameters),[1 6]));
+assert(isequal(size(st_secondary_parameters),[1 1]));
+assert(isequal(size(St_transform),[1 1]));
+assert(isequal(size(rotation_angle),[1 1]));
+assert(isequal(size(flag_primary_parameter_is_flipped),[1 1]));
+
+
+% Check results
+assert(all(isnan(st_primary_parameters)));
+assert(isempty(st_secondary_parameters{1}));
+assert(isnan(dist(St_transform,se2([nan nan nan;   nan nan nan;   0         0    nan]))));
+assert(isnan(rotation_angle)); 
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 1.21 - an arc alone, counter-clockwise
@@ -74,7 +147,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -119,7 +192,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -206,6 +279,7 @@ arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_e
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
 arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 secondary_parameters_type_strings{3} = 'arc';
@@ -240,7 +314,7 @@ secondary_parameters{6}              = [4 -40*pi/180 5 5 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 6]));
@@ -337,6 +411,7 @@ arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_e
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
 arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 secondary_parameters_type_strings{3} = 'arc';
@@ -371,7 +446,7 @@ secondary_parameters{6}              = [4 -40*pi/180 5 5 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -502,7 +577,7 @@ secondary_parameters{6}              = [4 -40*pi/180 5 5 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -529,6 +604,6 @@ assert(isequal(flag_primary_parameter_is_flipped,1));
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_orientGeometryXY2St(points,fig_num);
+    [slope,intercept] = fcn_geometry_orientGeometryXY2St(points,fig_num);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

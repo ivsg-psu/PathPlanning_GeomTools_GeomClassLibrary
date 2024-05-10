@@ -1,6 +1,6 @@
 function [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, varargin)
-%% fcn_orientGeometryXY2St
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, varargin)
+%% fcn_geometry_orientGeometryXY2St
 % Rotates geometries from XY into ST coordinates so that the ending
 % geometry of a primary parameter set is tangent to the X-axis and ends at
 % the origin. 
@@ -11,7 +11,7 @@ fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, vara
 %
 % Format:
 % [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-% fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num))
+% fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num))
 %
 % INPUTS:
 %
@@ -77,7 +77,7 @@ fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, vara
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_orientGeometryXY2St
+% See the script: script_test_fcn_geometry_orientGeometryXY2St
 % for a full test suite.
 %
 % This function was written on 2024_05_02 by S. Brennan
@@ -86,6 +86,10 @@ fcn_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, vara
 % Revision history:
 % 2024_05_02 - S. Brennan
 % -- wrote the code
+% 2024_05_09 - S. Brennan
+% -- fixed bug in segment calculation wherein unit vector gives NaN if
+% start and end points are same
+% -- fixed bug where NaN inputs cause it to crash
 
 %% Debugging and Input checks
 
@@ -284,166 +288,175 @@ end
 % Loop through all the parameters, converting each depending on their
 % respective type
 for ith_parameter_set = 1:N_conversions
-    
+
     % Get the current parameter set
     current_parameters = parameters_to_convert{ith_parameter_set};
-    current_parameters_type = parameters_to_convert_type_strings{ith_parameter_set};
 
-    switch current_parameters_type
-        case 'line'
-            % A test line
-            % [unit_projection_vector_x,
-            %     unit_projection_vector_y,
-            %     base_point_x,
-            %     base_point_y,
-            %     ]
+    % Check if parameters contain NaN values
+    if any(isnan(current_parameters))
+        St_current_parameters = nan(size(current_parameters));
+    else
+        current_parameters_type = parameters_to_convert_type_strings{ith_parameter_set};
 
-            % Get the line details from parameters
-            line_unit_tangent_vector   = current_parameters(1,1:2);
-            line_base_point_xy         = current_parameters(1,3:4);
+        switch current_parameters_type
+            case 'line'
+                % A test line
+                % [unit_projection_vector_x,
+                %     unit_projection_vector_y,
+                %     base_point_x,
+                %     base_point_y,
+                %     ]
 
-            %%%%%
-            % Fix line
-            line_unit_tangent_vector_end    = line_base_point_xy+line_unit_tangent_vector;
-            line_unit_tangent_vector_end_St = transform(St_transform,line_unit_tangent_vector_end);
-            line_base_point_St              = transform(St_transform,line_base_point_xy);
+                % Get the line details from parameters
+                line_unit_tangent_vector   = current_parameters(1,1:2);
+                line_base_point_xy         = current_parameters(1,3:4);
 
-            st_line_parameters(1,1:2)       = line_unit_tangent_vector_end_St - line_base_point_St;
-            st_line_parameters(1,3:4)       = line_base_point_St;
+                %%%%%
+                % Fix line
+                line_unit_tangent_vector_end    = line_base_point_xy+line_unit_tangent_vector;
+                line_unit_tangent_vector_end_St = transform(St_transform,line_unit_tangent_vector_end);
+                line_base_point_St              = transform(St_transform,line_base_point_xy);
 
-            St_current_parameters = st_line_parameters;
+                st_line_parameters(1,1:2)       = line_unit_tangent_vector_end_St - line_base_point_St;
+                st_line_parameters(1,3:4)       = line_base_point_St;
 
-        case 'segment'
-            % Get the segment details from parameters
-            segment_unit_tangent_vector   = current_parameters(1,1:2);
-            segment_base_point_xy         = current_parameters(1,3:4);
-            segment_s_start               = current_parameters(1,5);
-            segment_s_end                 = current_parameters(1,6);
-            segment_length                = segment_s_end - segment_s_start;
+                St_current_parameters = st_line_parameters;
 
-            %%%%%
-            % Fix segment
-            segment_start_point_xy        = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
-            segment_start_point_St        = transform(St_transform,segment_start_point_xy);
-            segment_end_point_xy          = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
-            segment_end_point_St          = transform(St_transform,segment_end_point_xy);
+            case 'segment'
+                % Get the segment details from parameters
+                segment_unit_tangent_vector   = current_parameters(1,1:2);
+                segment_base_point_xy         = current_parameters(1,3:4);
+                segment_s_start               = current_parameters(1,5);
+                segment_s_end                 = current_parameters(1,6);
+                segment_length                = segment_s_end - segment_s_start;
 
-            st_segment_parameters(1,1:2)  = fcn_geometry_calcUnitVector(segment_end_point_St - segment_start_point_St);
-            st_segment_parameters(1,3:4)  = segment_start_point_St;
-            st_segment_parameters(1,5)    = 0;
-            st_segment_parameters(1,6)    = segment_length;
+                %%%%%
+                % Fix segment
+                segment_start_point_xy        = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
+                segment_start_point_St        = transform(St_transform,segment_start_point_xy);
+                segment_unit_vector_start_point_xy        = [0 0];
+                segment_unit_vector_start_point_St        = transform(St_transform,segment_unit_vector_start_point_xy);
+                segment_unit_vector_end_point_xy          = segment_unit_tangent_vector;
+                segment_unit_vector_end_point_St          = transform(St_transform,segment_unit_vector_end_point_xy);
 
-            St_current_parameters = st_segment_parameters;
+                st_segment_parameters(1,1:2)  = fcn_geometry_calcUnitVector(segment_unit_vector_end_point_St - segment_unit_vector_start_point_St);
+                st_segment_parameters(1,3:4)  = segment_start_point_St;
+                st_segment_parameters(1,5)    = 0;
+                st_segment_parameters(1,6)    = segment_length;
 
-        case 'circle'
-            % A test circle
-            % [circleCenter_x.
-            %     circleCenter_y,
-            %     radius]
+                St_current_parameters = st_segment_parameters;
 
-            % Get the circle details from parameters
-            circle_center_xy                = current_parameters(1,1:2);
-            circle_radius                   = current_parameters(1,3);
-            
-            %%%%%
-            % Fix circle
-            circle_center_St                 = transform(St_transform,circle_center_xy);
+            case 'circle'
+                % A test circle
+                % [circleCenter_x.
+                %     circleCenter_y,
+                %     radius]
 
+                % Get the circle details from parameters
+                circle_center_xy                = current_parameters(1,1:2);
+                circle_radius                   = current_parameters(1,3);
 
-            circle_parameters(1,1:2)      = circle_center_St;
-            circle_parameters(1,3)        = circle_radius;
-
-            St_current_parameters = circle_parameters;
-
-       
-        case 'arc'
-            % Get the arc details from parameters
-            arc1_center_xy                = current_parameters(1,1:2);
-            arc1_radius                   = current_parameters(1,3);
-            arc1_start_angle_in_radians   = current_parameters(1,4);
-            arc1_end_angle_in_radians     = current_parameters(1,5);
-            arc1_is_circle                = current_parameters(1,6);
-            arc1_is_counter_clockwise     = current_parameters(1,7);
-
-            %%%%%
-            % Fix arc
-            arc1_center_St                 = transform(St_transform,arc1_center_xy);
-            arc1_start_xy                  = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-            arc1_end_xy                    = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)];
-            arc1_start_St                  = transform(St_transform,arc1_start_xy);
-            arc1_end_St                    = transform(St_transform,arc1_end_xy);
-            arc1_start_vector_St           = arc1_start_St - arc1_center_St;
-            arc1_end_vector_St             = arc1_end_St   - arc1_center_St;
+                %%%%%
+                % Fix circle
+                circle_center_St                 = transform(St_transform,circle_center_xy);
 
 
-            st_arc1_parameters(1,1:2)      = arc1_center_St;
-            st_arc1_parameters(1,3)        = arc1_radius;
-            st_arc1_parameters(1,4)        = atan2(arc1_start_vector_St(2),arc1_start_vector_St(1));
-            st_arc1_parameters(1,5)        = atan2(arc1_end_vector_St(2),  arc1_end_vector_St(1));
-            st_arc1_parameters(1,6)        = arc1_is_circle;
-            if  flag_primary_parameter_is_flipped ~= 1
-                st_arc1_parameters(1,7)        = arc1_is_counter_clockwise;
-            else
-                if arc1_is_counter_clockwise
-                    st_arc1_parameters(1,7)        = 0;
+                circle_parameters(1,1:2)      = circle_center_St;
+                circle_parameters(1,3)        = circle_radius;
+
+                St_current_parameters = circle_parameters;
+
+
+            case 'arc'
+                % Get the arc details from parameters
+                arc1_center_xy                = current_parameters(1,1:2);
+                arc1_radius                   = current_parameters(1,3);
+                arc1_start_angle_in_radians   = current_parameters(1,4);
+                arc1_end_angle_in_radians     = current_parameters(1,5);
+                arc1_is_circle                = current_parameters(1,6);
+                arc1_is_counter_clockwise     = current_parameters(1,7);
+
+                %%%%%
+                % Fix arc
+                arc1_center_St                 = transform(St_transform,arc1_center_xy);
+                arc1_start_xy                  = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+                arc1_end_xy                    = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)];
+                arc1_start_St                  = transform(St_transform,arc1_start_xy);
+                arc1_end_St                    = transform(St_transform,arc1_end_xy);
+                arc1_start_vector_St           = arc1_start_St - arc1_center_St;
+                arc1_end_vector_St             = arc1_end_St   - arc1_center_St;
+
+
+                st_arc1_parameters(1,1:2)      = arc1_center_St;
+                st_arc1_parameters(1,3)        = arc1_radius;
+                st_arc1_parameters(1,4)        = atan2(arc1_start_vector_St(2),arc1_start_vector_St(1));
+                st_arc1_parameters(1,5)        = atan2(arc1_end_vector_St(2),  arc1_end_vector_St(1));
+                st_arc1_parameters(1,6)        = arc1_is_circle;
+                if  flag_primary_parameter_is_flipped ~= 1
+                    st_arc1_parameters(1,7)        = arc1_is_counter_clockwise;
                 else
-                    st_arc1_parameters(1,7)        = 1;
+                    if arc1_is_counter_clockwise
+                        st_arc1_parameters(1,7)        = 0;
+                    else
+                        st_arc1_parameters(1,7)        = 1;
+                    end
                 end
-            end
 
-            St_current_parameters = st_arc1_parameters;
+                St_current_parameters = st_arc1_parameters;
 
-        case 'spiral'
-            % A test spiral
-            %  [spiralLength,  % the s-coordinate length allowed
-            %   h0,  % The initial heading
-            %   x0,  % The initial x value
-            %   y0,  % The initial y value
-            %   K0,  % The initial curvature
-            %   Kf   % The final curvature
-            % ]
+            case 'spiral'
+                % A test spiral
+                %  [spiralLength,  % the s-coordinate length allowed
+                %   h0,  % The initial heading
+                %   x0,  % The initial x value
+                %   y0,  % The initial y value
+                %   K0,  % The initial curvature
+                %   Kf   % The final curvature
+                % ]
 
-            % Get the spiral details from parameters
-            spiral_length                = current_parameters(1,1);
-            spiral_heading               = current_parameters(1,2);
-            spiral_center_xy             = current_parameters(1,3:4);
-            spiral_K0                    = current_parameters(1,5);
-            spiral_Kf                    = current_parameters(1,6);
+                % Get the spiral details from parameters
+                spiral_length                = current_parameters(1,1);
+                spiral_heading               = current_parameters(1,2);
+                spiral_center_xy             = current_parameters(1,3:4);
+                spiral_K0                    = current_parameters(1,5);
+                spiral_Kf                    = current_parameters(1,6);
 
-            %%%%%
-            % Fix spiral
-            spiral_heading_vector_root_xy = [0 0];
-            spiral_heading_vector_root_St = transform(St_transform,spiral_heading_vector_root_xy);
-            spiral_heading_vector_head_xy = [cos(spiral_heading) sin(spiral_heading)];
-            spiral_heading_vector_head_St = transform(St_transform,spiral_heading_vector_head_xy);
-            spiral_heading_vector_St      = spiral_heading_vector_head_St - spiral_heading_vector_root_St;
-            spiral_heading_St             = atan2(spiral_heading_vector_St(2),spiral_heading_vector_St(1));
+                %%%%%
+                % Fix spiral
+                spiral_heading_vector_root_xy = [0 0];
+                spiral_heading_vector_root_St = transform(St_transform,spiral_heading_vector_root_xy);
+                spiral_heading_vector_head_xy = [cos(spiral_heading) sin(spiral_heading)];
+                spiral_heading_vector_head_St = transform(St_transform,spiral_heading_vector_head_xy);
+                spiral_heading_vector_St      = spiral_heading_vector_head_St - spiral_heading_vector_root_St;
+                spiral_heading_St             = atan2(spiral_heading_vector_St(2),spiral_heading_vector_St(1));
 
-            spiral_center_St              = transform(St_transform,spiral_center_xy);
+                spiral_center_St              = transform(St_transform,spiral_center_xy);
 
-            if  flag_primary_parameter_is_flipped ~= 1
-                spiral_K0_St    = spiral_K0;
-                spiral_Kf_St    = spiral_Kf;
-            else
-                spiral_K0_St    = -spiral_K0;
-                spiral_Kf_St    = -spiral_Kf;
-            end
-
-
-            spiral_parameters(1,1)        = spiral_length;
-            spiral_parameters(1,2)        = spiral_heading_St;
-            spiral_parameters(1,3:4)      = spiral_center_St;
-            spiral_parameters(1,5)        = spiral_K0_St;
-            spiral_parameters(1,6)        = spiral_Kf_St;
-
-            St_current_parameters = spiral_parameters;
+                if  flag_primary_parameter_is_flipped ~= 1
+                    spiral_K0_St    = spiral_K0;
+                    spiral_Kf_St    = spiral_Kf;
+                else
+                    spiral_K0_St    = -spiral_K0;
+                    spiral_Kf_St    = -spiral_Kf;
+                end
 
 
-        otherwise
-            warning('on','backtrace');
-            warning('An error will be thrown at this point due to unknown parameter type.');
-            error('Alignments are not yet supported for curves from fit type: %s',current_parameters_type);
-    end
+                spiral_parameters(1,1)        = spiral_length;
+                spiral_parameters(1,2)        = spiral_heading_St;
+                spiral_parameters(1,3:4)      = spiral_center_St;
+                spiral_parameters(1,5)        = spiral_K0_St;
+                spiral_parameters(1,6)        = spiral_Kf_St;
+
+                St_current_parameters = spiral_parameters;
+
+
+            otherwise
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to unknown parameter type.');
+                error('Alignments are not yet supported for curves from fit type: %s',current_parameters_type);
+        end
+
+    end % Ends check if parameters contain NaN values
 
     St_parameters{ith_parameter_set} = St_current_parameters;
 end % Ends looping through the parameter sets.
@@ -488,7 +501,7 @@ if flag_do_plots
     grid on;
     axis equal;
     sgtitle(sprintf('Converting XY to ST for base parameter: %s',primary_parameters_type_string));
-    title('Inputs');
+    title('XY inputs');
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
@@ -521,9 +534,9 @@ if flag_do_plots
     hold on;
     grid on;
     axis equal;
-    title('Revised');
-    xlabel('X [meters]');
-    ylabel('Y [meters]')
+    title('St outputs');
+    xlabel('S [meters]');
+    ylabel('t [meters]')
 
     % Plot the outputs
     % Loop through all the parameters

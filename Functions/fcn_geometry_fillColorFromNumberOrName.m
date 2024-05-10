@@ -69,7 +69,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % -- added points type
 % 2024_05_06 - Aneesh Batchu
 % -- added line segment as one of the names for the segment case
-
+% 2024_05_09 - S. Brennan
+% -- added none type
 
 %% Debugging and Input checks
 
@@ -175,6 +176,8 @@ if isempty(string_identifier)
     color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
 else
     switch lower(string_identifier)
+        case {'none',''}  % Nones are white
+            color_vector = [1 1 1];
         case {'points'}  % Points are black
             color_vector = [0 0 0];
         case {'circle'}  % Circles are dark
