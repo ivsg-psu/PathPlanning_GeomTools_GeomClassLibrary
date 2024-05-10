@@ -1,21 +1,23 @@
 function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, varargin) 
 %% fcn_geometry_intersectGeom
-% 
 % This function finds the intersection point(s) of two geometries, such as
-% line-arc, line-circle, line segment-arc, arc-arc, arc-circle, arc-line, etc.
+% line-arc, line-circle, line segment-arc, arc-arc, arc-circle, arc-line,
+% etc.
 % 
-% For segments, arcs, and spirals that have multiple intersection points,
-% return the point that is nearest to the start of the segment, arc, or
-% spiral, with "nearest" meaning in station distance, not geometric
-% position. In other words, returns the intersection that is encountered
-% first when traversing the "from" geometry starting at its "start"
-% position.
+% For segments, arcs, and spirals that may have multiple intersection
+% points, the function always returns the point that is nearest to the
+% start of the first segment, arc, or spiral, with "nearest" meaning in
+% station distance, not geometric position. In other words, returns the
+% intersection that is encountered first when traversing the "from"
+% geometry starting at its "start" position.
 %
 % For circles and lines that are the "starting" geometry, the intersection
 % point is returned that is the first point encountered in the 2nd geometry
 % if the 2nd geometry is a segment, arc, or spiral.
 %
-% For circles intersecting with circles or lines, both points are returned.
+% For geometries where both the first and second geometries have no start
+% or end, for example circles intersecting with circles or lines, both
+% intersection points are returned if there are more than 1 intersections.
 %
 % FORMAT: 
 %
@@ -23,13 +25,21 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % 
 % INPUTS:
 %
-% firstFitType: The string input of the first geometry
+%      firstFitType: The string input of the first geometry. Can be one of the
+%      following strings:
+%   
+%           'arc', 'line', 'circle', 'line segment' or 'segment'
+%           (Pending: 'spiral')
 %
-% firstFitType_parameters: The parameters of the first geometry
+%      firstFitType_parameters: The parameters of the first geometry as a
+%      [1xN] vector.  See fcn_geometry_fillEmptyDomainStructure for details
+%      on how to fill the vector for different geometry types.
 %
-% secondFitType: The string input of the second geometry
+%      secondFitType: The string input of the second geometry that uses the
+%      same string inputs as firstFitType.
 %
-% secondFitType_parameters: The parameters of the second geometry
+%      secondFitType_parameters: The parameters of the second geometry,
+%      using the same format as firstFitType_parameters.
 %
 %
 % (OPTIONAL INPUTS)
@@ -55,7 +65,8 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % See the script: script_test_fcn_geometry_intersectGeom
 % for a full test suite.
 %
-% This function was written on 2024_05_02 by Aneesh Batchu
+% This function was written on 2024_05_02 by Aneesh Batchu with minor
+% revisions by Sean Brennan
 % Questions or comments? abb6486@psu.edu or sbrennan@psu.edu
 
 % Revision History
@@ -66,7 +77,19 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % intersection cases. Added a few conditional statements to remove NaNs
 % from the potential_intersection_points to compute the true "intersection
 % points"
+% 2024_05_10 - Sean Brennan
+% -- added some more comments
+% -- added 'segment' alongside 'line segment' option
+% -- added To-do list
+% -- added backtrace on to each error call, to allow fast debugging later
+% -- changed plot style to better see difference between 1st and 2nd input
 
+
+% TO-DO:
+% 2025_05_10 - added by Sean Brennan
+% -- add arc to circle calculations
+% -- main code is hard to read because it is just a long (LONG) combination
+% of cases. Need to functionalize the code.
 
 %% Debugging and Input checks
 
@@ -320,8 +343,10 @@ switch lower(firstFitType)
                 else
                     intersection_points = [nan nan];
                 end
-                
+
             case 'spiral'
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
                 error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
             otherwise
                 warning('on','backtrace');
@@ -444,6 +469,8 @@ switch lower(firstFitType)
                 end
 
             case 'spiral'
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
                 error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
 
             otherwise
@@ -453,7 +480,7 @@ switch lower(firstFitType)
 
         end
 
-    case 'line segment'
+    case {'line segment', 'segment'}
         % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
         line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
         line_base_point_xy           = firstFitType_parameters(1,3:4);
@@ -620,6 +647,8 @@ switch lower(firstFitType)
 
 
             case 'spiral'
+                warning('on','backtrace');
+                warning('An error will be thrown at this point due to missing code.');
                 error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
 
             otherwise
@@ -714,6 +743,8 @@ switch lower(firstFitType)
         end
 
     case 'spiral'
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
         error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
     otherwise
         warning('on','backtrace');
@@ -749,8 +780,8 @@ if flag_do_plots
     ylabel('Y [meters]')
 
     % Plot the inputs
-    fcn_geometry_plotGeometry(lower(firstFitType),firstFitType_parameters);
-    fcn_geometry_plotGeometry(lower(secondFitType),secondFitType_parameters);
+    fcn_geometry_plotGeometry(lower(firstFitType),firstFitType_parameters,[],sprintf(' ''LineWidth'',4 '));
+    fcn_geometry_plotGeometry(lower(secondFitType),secondFitType_parameters,[],sprintf(' ''LineWidth'',2 '));
     plot(intersection_points(:,1),intersection_points(:,2),'k.','MarkerSize',20);
 
     % Make axis slightly larger?
