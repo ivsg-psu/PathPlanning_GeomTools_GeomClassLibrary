@@ -20,6 +20,11 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %      segment_length: the smallest step to use for plotting, representing
 %      the length (approximately) between points. Default is 0.1 meters.
 %
+%      format: A format string, e.g. 'b-', that dictates the plot style or
+%      a color vector, e.g. [1 0 0.23], that dictates the line color. The
+%      format string can also be a complex string - see the test script for
+%      examples.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
@@ -60,6 +65,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- Added line segment as one of the names for the segment case
 % 2024_05_09 - S. Brennan
 % -- added 'none' and empty as allowable geometry types
+% 2024_05_10 - S. Brennan
+% -- added format string input option
 
 
 %% Debugging and Input checks
@@ -68,7 +75,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -111,7 +118,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,4);
+        narginchk(2,5);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -136,11 +143,27 @@ if 3 <= nargin
     end
 end
 
+% Does user want to change the plot style?
+% Set plotting defaults
+plot_str = '';
+plot_type = 1;  % Plot type refers to 1: a string is given or 2: a color is given - default is 1
+
+% Check to see if user passed in a string or color style?
+if 4 <= nargin
+    input = varargin{2};
+    if ~isempty(input)
+        plot_str = input;
+        if isnumeric(plot_str)  % Numbers are a color style
+            plot_type = 2;
+        end
+    end
+end
+
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if 0==flag_max_speed
     flag_do_plots = 1;
-    if 4<= nargin
+    if 5<= nargin
         temp = varargin{end};
         if ~isempty(temp)
             fig_num = temp;
@@ -291,26 +314,57 @@ if flag_do_plots
     % Get the color vector using the name
     color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
 
+    % Plot lines as quiver arrows
     if strcmp(plot_type_string,'line')
         direction_vector = XY_data(end,:)-XY_data(1,:);
-        quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
-        quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
+        if plot_type==1
+            if length(plot_str)>3
+                eval_string = sprintf('quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,%s)',plot_str);
+                eval(eval_string);
+                eval_string = sprintf('quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0%s)',plot_str);
+                eval(eval_string);
+            elseif ~isempty(plot_str)
+                quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,plot_str);
+                quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,plot_str);
+            else
+                % Plot string is empty - use defaults
+                quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
+                quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',color_vector);
+            end
+        elseif plot_type==2
+            quiver(XY_data(1,1),XY_data(1,2),    direction_vector(1,1),direction_vector(1,2),0,'-','LineWidth',3,'Color',plot_str);
+            quiver(XY_data(end,1),XY_data(end,2),-direction_vector(1,1),-direction_vector(1,2),0,'-','LineWidth',3,'Color',plot_str);
+        end
+
     else
-        % Plot the XY data
-        plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
+        % Plot everything else normally as XY data
+        if plot_type==1
+            if length(plot_str)>3
+                eval_string = sprintf('plot(XY_data(:,1),XY_data(:,2),%s)',plot_str);
+                eval(eval_string);
+            elseif ~isempty(plot_str)
+                plot(XY_data(:,1),XY_data(:,2),plot_str);
+            else
+                % Plot string is empty - use defaults
+                plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
+            end
+        elseif plot_type==2
+            plot(XY_data(:,1),XY_data(:,2),'Color',plot_str);
+        end
+
     end
 
     % Plot green/red headers and tailers?
     if ~any(isnan(XY_data))
         if 1==1
             %%%%%%
-            % Plot as points
+            % Plot start and end locations as green/red points
             plot(XY_data(1,1),XY_data(1,2),     '.','Color',[0 1 0],'Linewidth',5,'MarkerSize',20);
             plot(XY_data(end,1),XY_data(end,2), 'o','Color',[1 0 0],'MarkerSize',10);
 
         else
             %%%%%%
-            % Plot as lines
+            % Plot as start and end locations as green/red line segments
 
             % Plot green headers - calculated from vector direction
             maximum_arrow_length = 2*segment_length;

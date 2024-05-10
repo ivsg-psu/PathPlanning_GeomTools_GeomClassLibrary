@@ -164,7 +164,7 @@ if flag_do_plots
     for ith_domain = 1:length(fitSequence_bestFitType)
         plot_type_string = fitSequence_bestFitType{ith_domain};
         parameters       = fitSequence_parameters{ith_domain};
-        fcn_geometry_plotGeometry(plot_type_string, parameters, [], fig_num);
+        fcn_geometry_plotGeometry(plot_type_string, parameters, [], [], fig_num);
         axis normal;
     end
 

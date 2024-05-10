@@ -203,8 +203,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get the reference and test points from the curve plotting function
-reference_points_XY = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, (-1));
-test_points_XY      = fcn_geometry_plotGeometry(test_curve_type_string, test_curve_parameters, curve_test_segment_length, (-1));
+reference_points_XY = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+test_points_XY      = fcn_geometry_plotGeometry(test_curve_type_string, test_curve_parameters, curve_test_segment_length, [], (-1));
 
 points_XY_on_test_curve = test_points_XY;
 
@@ -264,7 +264,7 @@ if flag_do_plots
     Ncolors = length(error_colormap(:,1));
 
     % Plot the inputs
-    fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), (fig_num));
+    fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [],  (fig_num));
 
     % color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(reference_curve_type_string));
 
@@ -325,36 +325,4 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-
-
-
-
-
-
-
-
-
-
-%% fcn_geometry_plotGeometry
-% Plots an individual geometry defined by a string name and parameter set.
-%
-% Format:
-%      XY_data = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (segment_length), (fig_num))
-%
-% INPUTS:
-%
-%      reference_curve_type_string: a string indicating the geometry type to plot,
-%      such as 'line' or 'arc'.
-%
-%      reference_curve_parameters: the parameter set describing the geometry. See
-%      fcn_geometry_fillEmptyDomainStructure for details, as the parameter
-%      set is different for each geometry type.
-%
-%      (OPTIONAL INPUTS)
-%
-%      segment_length: the smallest step to use for plotting, representing
-%      the length (approximately) between points. Default is 0.1 meters.
-% 
-
-
 
