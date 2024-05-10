@@ -70,7 +70,9 @@
 % 2024_05_06 - Aneesh Batchu
 % -- Added codes to calculate intersections between lines and arcs and arcs
 % to arcs
-
+% 2024_05_10 - Sean Brennan
+% -- Finished arc to arc alignment codes, alignArcToArc
+% -- Updated plotGeometry to allow string argument inputs
 
 
 %% To-do items

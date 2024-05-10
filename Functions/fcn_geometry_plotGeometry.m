@@ -314,6 +314,11 @@ if flag_do_plots
     % Get the color vector using the name
     color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(plot_type_string));
 
+    % Check to see if need to ammend color specification to a complex plot_str
+    if length(plot_str)>3 && ~contains(lower(plot_str),'color')
+        plot_str = cat(2,plot_str,',''Color'',color_vector');
+    end
+
     % Plot lines as quiver arrows
     if strcmp(plot_type_string,'line')
         direction_vector = XY_data(end,:)-XY_data(1,:);
@@ -339,7 +344,7 @@ if flag_do_plots
     else
         % Plot everything else normally as XY data
         if plot_type==1
-            if length(plot_str)>3
+            if length(plot_str)>3                
                 eval_string = sprintf('plot(XY_data(:,1),XY_data(:,2),%s)',plot_str);
                 eval(eval_string);
             elseif ~isempty(plot_str)
@@ -349,7 +354,7 @@ if flag_do_plots
                 plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',color_vector);
             end
         elseif plot_type==2
-            plot(XY_data(:,1),XY_data(:,2),'Color',plot_str);
+            plot(XY_data(:,1),XY_data(:,2),'-','LineWidth',3,'Color',plot_str);
         end
 
     end

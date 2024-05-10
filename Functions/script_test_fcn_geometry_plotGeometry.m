@@ -140,6 +140,63 @@ assert(ishandle(fig_num));
 assert(length(XY_data(1,:))==2)
 assert(length(XY_data(:,1))>1)
 
+%% BASIC example - color number string
+fig_num = 8;
+figure(fig_num); clf;
+
+% Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_center_xy            = [0 1];
+arc_radius               = 1;
+arc_vector_start         = [ 0 -1];
+arc_vector_end           = [ 1  0];
+arc_is_circle            = 0;
+arc_is_counter_clockwise = 1;
+arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
+
+arc_parameters(1,1:2) = arc_center_xy;
+arc_parameters(1,3)   = arc_radius;
+arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
+arc_parameters(1,7)   = arc_is_counter_clockwise;
+
+segment_length = [];
+format_string = [1 0 1];
+XY_data = fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, format_string, (fig_num));
+
+% Check that a figure opened with this number, and that outputs are right
+% sizes
+assert(ishandle(fig_num));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
+
+%% BASIC example - linewidth plot string (show it fills color automatically)
+fig_num = 7;
+figure(fig_num); clf;
+
+% Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_center_xy            = [0 1];
+arc_radius               = 1;
+arc_vector_start         = [ 0 -1];
+arc_vector_end           = [ 1  0];
+arc_is_circle            = 0;
+arc_is_counter_clockwise = 1;
+arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
+
+arc_parameters(1,1:2) = arc_center_xy;
+arc_parameters(1,3)   = arc_radius;
+arc_parameters(1,4:5) = arc_angles;
+arc_parameters(1,6)   = arc_is_circle;
+arc_parameters(1,7)   = arc_is_counter_clockwise;
+
+segment_length = [];
+format_string = sprintf(' ''LineWidth'',7 ');
+XY_data = fcn_geometry_plotGeometry('arc', arc_parameters,segment_length, format_string, (fig_num));
+
+% Check that a figure opened with this number, and that outputs are right
+% sizes
+assert(ishandle(fig_num));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
 
 %% Fail conditions
 if 1==0
