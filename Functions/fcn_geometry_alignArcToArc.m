@@ -60,7 +60,7 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %      geometry type as a string type.
 %
 %      revised_intermediate_geometry_join_parameters: the parameter set describing the
-%      spiral segment geometry that joins the line and arc geometries if C2
+%      spiral segment geometry that joins the arc1 and arc2 geometries if C2
 %      continuity is specified. See fcn_geometry_fillEmptyDomainStructure
 %      for details, specifically the structure for 'spiral'.
 %
@@ -200,10 +200,7 @@ fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
 intersection_point1 = fcn_INTERNAL_ArcArcIntersection(arc1_parameters, arc2_parameters, 1, debug_fig_num);
 
 %% Rearrange parameters so line is always the 1st input, arc is 2nd
-% Fix the parameters to make the line segment first, arc second, and make
-% sure the line and arc point into and then out of the junction
-% respectively. For situations where arc is actually the first input, this
-% is fixed in later steps using a flag.
+% Fix the parameters to make the ordering is correct
 [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point1, debug_fig_num);
 
 %% Get new intersection point, if arcs changed shape

@@ -80,16 +80,23 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % 2024_05_10 - Sean Brennan
 % -- added some more comments
 % -- added 'segment' alongside 'line segment' option
-% -- added To-do list
+% -- added TO-DO list
 % -- added backtrace on to each error call, to allow fast debugging later
 % -- changed plot style to better see difference between 1st and 2nd input
-
+% -- functionalized the arc inputs codes (need to do the rest)
+% -- added arc to segment case 
+% -- reordered functions to make cross-dependencies easier, for example
+% arc-to-segment calls circle-to-line, then arc-to-line, before doing
+% arc-to-segment check. That way, if bugs are found/fixed in
+% circle-to-line, they automatically get fixed in arc-to-segment.
 
 % TO-DO:
 % 2025_05_10 - added by Sean Brennan
-% -- add arc to circle calculations
+% -- add arc to circle calculations, and many others that are missing. See
+% test script which reveals many missing cases
 % -- main code is hard to read because it is just a long (LONG) combination
-% of cases. Need to functionalize the code.
+% of cases. Need to functionalize the code. I started fixing this on arc, but
+% organization is needed for all the other cases.
 
 %% Debugging and Input checks
 
@@ -165,587 +172,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 switch lower(firstFitType)
-
-    case 'arc'
-
-        % Calculate needed values from parameter sets
-        % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-        arc1_center_xy                = firstFitType_parameters(1,1:2);
-        arc1_radius                   = firstFitType_parameters(1,3);
-        arc1_start_angle_in_radians   = firstFitType_parameters(1,4);
-        arc1_end_angle_in_radians     = firstFitType_parameters(1,5);
-        arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-        arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
-        arc1_is_counter_clockwise     = firstFitType_parameters(1,7);
-
-        switch lower(secondFitType)
-
-            case 'line'
-                % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-                line_unit_tangent_vector     = secondFitType_parameters(1,1:2);
-                line_base_point_xy           = secondFitType_parameters(1,3:4);
-                % line_s_start               = clean_line_parameters(1,5);
-                % line_s_end                 = clean_line_parameters(1,6);
-                % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-                % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
-
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,arc1_center_xy(1,1),arc1_center_xy(1,2),arc1_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    two_intersection_points = [xout', yout'];
-
-                    % Are the intersections within the arc range that we were given? To
-                    % check this, we use the three points on the arc - the start, the
-                    % intersection, and the end to calculate the arc direction. We then
-                    % check to see if it is the same as the given direction - if it is, the
-                    % point is on the arc.
-                    potential_intersection_points = nan(size(two_intersection_points));
-                    for ith_row = 1:length(two_intersection_points(:,1))
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, two_intersection_points(ith_row,:), arc1_end_xy,-1);
-                        if arc1_is_counter_clockwise == intersection_is_counterClockwise
-                            potential_intersection_points(ith_row,:) = two_intersection_points(ith_row,:);
-                        else
-                            potential_intersection_points(ith_row,:) = [nan nan];
-                        end
-                    end
-
-                    if isequal(potential_intersection_points(1,:),potential_intersection_points(2,:))
-                        intersection_points = potential_intersection_points(1,:);
-                    else
-                        % Find which point is closest to the line's start point
-                        vectors_from_line_base_point = potential_intersection_points - [1;1]*line_base_point_xy;
-
-                        % Distances are dot product with the line's vector
-                        distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
-                        if distances(1)<distances(2)
-                            intersection_points = potential_intersection_points(1,:);
-                        elseif distances(2)<distances(1)
-                            intersection_points = potential_intersection_points(2,:);
-                        else
-                            nan_indices = any(isnan(potential_intersection_points), 2);
-                            potential_intersection_points = potential_intersection_points(~nan_indices,:);
-                            if ~isempty(potential_intersection_points)
-                                intersection_points = potential_intersection_points;
-                            else
-                                intersection_points = [nan nan];
-                            end
-                        end
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-                
-
-            case 'arc'
-
-                % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-                arc2_center_xy                = secondFitType_parameters(1,1:2);
-                arc2_radius                   = secondFitType_parameters(1,3);
-                arc2_start_angle_in_radians   = secondFitType_parameters(1,4);
-                arc2_end_angle_in_radians     = secondFitType_parameters(1,5);
-                arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-                arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-                arc2_is_counter_clockwise     = secondFitType_parameters(1,7);
-
-                % Use MATLAB's circcirc algorithm to find intersections between two circles
-                [xout,yout] = circcirc(arc1_center_xy(1,1),arc1_center_xy(1,2),arc1_radius,arc2_center_xy(1,1),arc2_center_xy(1,2),arc2_radius);
-
-                % % Check results of above
-                % if 1==1
-                %     figure(233);
-                %     clf;
-                %     hold on;
-                %     grid on;
-                %     axis equal
-                % 
-                %     % Plot the circles
-                %     fcn_geometry_plotCircle(arc1_center_xy, arc1_radius,'g-',(233));
-                %     fcn_geometry_plotCircle(arc2_center_xy, arc2_radius,'r-',(233));
-                % 
-                %     intersections = [xout', yout'];
-                %     plot(intersections(:,1),intersections(:,2),'k.','MarkerSize',20);
-                % end
-
-                if ~isnan(xout)
-                    % intersection points were found! To be an intersection, the point must
-                    % be on both arc1 and arc2
-
-                    % Which point(s) to keep?
-                    circle_intersection_points = [xout', yout'];
-
-                    % Are the intersections within the arc range that we were given? To
-                    % check this, we use the three points on each arc - the start, the
-                    % intersection, and the end to calculate the arc direction. We then
-                    % check to see if it is the same as the given direction for that arc -
-                    % if it is, the point is on the arc. The way we search is to initialize
-                    % the potential arc intersection points to the circle intersections,
-                    % and remove any of the arc intersection points that are not on both of
-                    % the arcs.
-                    potential_arc_intersection_points = circle_intersection_points;
-                    for ith_row = 1:length(circle_intersection_points(:,1))
-
-                        % Check arc1
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, circle_intersection_points(ith_row,:), arc1_end_xy,-1);
-                        if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
-                            potential_arc_intersection_points(ith_row,:) = [nan nan];
-                        end
-
-                        % Check arc2
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, circle_intersection_points(ith_row,:), arc2_end_xy,-1);
-                        if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
-                            potential_arc_intersection_points(ith_row,:) = [nan nan];
-                        end
-
-                    end
-
-                    if isequal(potential_arc_intersection_points(1,:),potential_arc_intersection_points(2,:))
-                        intersection_points = potential_arc_intersection_points(1,:);
-                    else
-                        % Find which point is closest to arc1's start point
-                        if ~any(isnan(potential_arc_intersection_points(1,:)))
-                            arc_angle_point1  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(1,:), arc1_end_xy,(-1));
-                        else
-                            arc_angle_point1 = nan;
-                        end
-                        if ~any(isnan(potential_arc_intersection_points(2,:)))
-                            arc_angle_point2  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(2,:), arc1_end_xy,(-1));
-                        else
-                            arc_angle_point2 = nan;
-                        end
-
-                        if arc_angle_point1<arc_angle_point2
-                            intersection_points = potential_arc_intersection_points(1,:);
-                        elseif arc_angle_point2<arc_angle_point1
-                            intersection_points = potential_arc_intersection_points(2,:);
-                        else
-                            nan_indices = any(isnan(potential_arc_intersection_points), 2);
-                            potential_arc_intersection_points = potential_arc_intersection_points(~nan_indices,:);
-                            if ~isempty(potential_arc_intersection_points)
-                                 intersection_points = potential_arc_intersection_points;
-                            else
-                                intersection_points = [nan nan];
-                            end
-                        end
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-
-            case 'spiral'
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
-            otherwise
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
-
-        end
-
-    case 'line'
-
-        % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-        line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
-        line_base_point_xy           = firstFitType_parameters(1,3:4);
-        % line_s_start               = clean_line_parameters(1,5);
-        % line_s_end                 = clean_line_parameters(1,6);
-        % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-        % line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
-        switch lower(secondFitType)
-            case 'circle'
-                circle_center_xy                = secondFitType_parameters(1,1:2);
-                circle_radius                   = secondFitType_parameters(1,3);
-
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    intersection_points = [xout', yout'];
-                    if isnan(intersection_points(1,:))
-                        intersection_points = intersection_points(2,:);
-                    elseif isnan(intersection_points(2,:))
-                        intersection_points = intersection_points(1,:);
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-
-            case 'arc'
-                % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-                arc_center_xy                = secondFitType_parameters(1,1:2);
-                arc_radius                   = secondFitType_parameters(1,3);
-                arc_start_angle_in_radians   = secondFitType_parameters(1,4);
-                arc_end_angle_in_radians     = secondFitType_parameters(1,5);
-                arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
-                arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
-                % arc_is_circle                = clean_arc_parameters(1,6);
-                arc_is_counter_clockwise     = secondFitType_parameters(1,7);
-
-                % flag_intersection_points_found = 0;
-                % Check if the line and circle intersect
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,arc_center_xy(1,1),arc_center_xy(1,2),arc_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    two_intersection_points = [xout', yout'];
-
-                    % Are the intersections within the arc range that we were given? To
-                    % check this, we use the three points on the arc - the start, the
-                    % intersection, and the end to calculate the arc direction. We then
-                    % check to see if it is the same as the given direction - if it is, the
-                    % point is on the arc.
-                    potential_intersection_points = nan(size(two_intersection_points));
-                    for ith_row = 1:length(two_intersection_points(:,1))
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, two_intersection_points(ith_row,:), arc_end_xy,-1);
-                        if arc_is_counter_clockwise == intersection_is_counterClockwise
-                            potential_intersection_points(ith_row,:) = two_intersection_points(ith_row,:);
-                        else
-                            potential_intersection_points(ith_row,:) = [nan nan];
-                        end
-                    end
-
-                    if isequal(potential_intersection_points(1,:),potential_intersection_points(2,:))
-                        intersection_points = potential_intersection_points(1,:);
-                    else
-                        % Find which point is closest to the line's start point
-                        vectors_from_line_base_point = potential_intersection_points - [1;1]*line_base_point_xy;
-
-                        % Distances are dot product with the line's vector
-                        distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
-                        if distances(1)<distances(2)
-                            intersection_points = potential_intersection_points(1,:);
-                        elseif distances(2)<distances(1)
-                            intersection_points = potential_intersection_points(2,:);
-                        else
-                            nan_indices = any(isnan(potential_intersection_points), 2);
-                            potential_intersection_points = potential_intersection_points(~nan_indices,:);
-                            if ~isempty(potential_intersection_points)
-                                intersection_points = potential_intersection_points;
-                            else
-                                intersection_points = [nan nan];
-                            end
-
-
-                        end
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-
-            case 'spiral'
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
-
-            otherwise
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
-
-        end
-
-    case {'line segment', 'segment'}
-        % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-        line_unit_tangent_vector     = firstFitType_parameters(1,1:2);
-        line_base_point_xy           = firstFitType_parameters(1,3:4);
-        line_s_start               = firstFitType_parameters(1,5);
-        line_s_end                 = firstFitType_parameters(1,6);
-        line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-        line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
-
-        switch lower(secondFitType)
-            case 'arc'
-                % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-                arc_center_xy                = secondFitType_parameters(1,1:2);
-                arc_radius                   = secondFitType_parameters(1,3);
-                arc_start_angle_in_radians   = secondFitType_parameters(1,4);
-                arc_end_angle_in_radians     = secondFitType_parameters(1,5);
-                arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
-                arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
-                % arc_is_circle                = secondFitType_parameters(1,6);
-                arc_is_counter_clockwise     = secondFitType_parameters(1,7);
-                % change_in_arc_angle = arc_end_angle_in_radians-arc_start_angle_in_radians; % Find the change in angle of the arc
-
-                % With the cleaned parameters, the line vector always
-                % points toward the joint of the line and the arc.
-                % to_joint_line_unit_tangent_vector = line_unit_tangent_vector;
-                % to_joint_line_unit_ortho_vector= to_joint_line_unit_tangent_vector*[0 1; -1 0];
-
-
-                % flag_intersection_points_found = 0;
-                % Check if the line and circle intersect
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,arc_center_xy(1,1),arc_center_xy(1,2),arc_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    two_intersection_points = [xout', yout'];
-
-                    % Are the intersections within the arc range that we were given? To
-                    % check this, we use the three points on the arc - the start, the
-                    % intersection, and the end to calculate the arc direction. We then
-                    % check to see if it is the same as the given direction - if it is, the
-                    % point is on the arc.
-                    potential_intersection_points = nan(size(two_intersection_points));
-                    for ith_row = 1:length(two_intersection_points(:,1))
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, two_intersection_points(ith_row,:), arc_end_xy,-1);
-                        if arc_is_counter_clockwise == intersection_is_counterClockwise
-                            potential_intersection_points(ith_row,:) = two_intersection_points(ith_row,:);
-                        else
-                            potential_intersection_points(ith_row,:) = [nan nan];
-                        end
-                    end
-
-                    if isequal(potential_intersection_points(1,:),potential_intersection_points(2,:))
-                        intersection_points = potential_intersection_points(1,:);
-                    else
-                        % Find which point is closest to the line's start point
-                        vectors_from_line_base_point = potential_intersection_points - [1;1]*line_base_point_xy;
-
-                        % Distances are dot product with the line's vector
-                        distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
-                        % line_base_point_xy_matrix = [1; 1]*line_base_point_xy;
-                        % distances = (sum((two_intersection_points - line_base_point_xy_matrix).^2, 2)).^0.5;
-                        if distances(1)<distances(2)
-
-                            distance = distances(1);
-                            intersection_point_index = 1;
-                            % intersection_points = potential_intersection_points(1,:);
-                        elseif distances(2)<distances(1)
-                            distance = distances(2);
-                            intersection_point_index = 2;
-                            % intersection_points = potential_intersection_points(2,:);
-                        else
-                            nan_indices = any(isnan(distances), 2);
-                            distance = distances(~nan_indices,:);
-                            if ~isempty(distance)
-                                intersection_point_index = ~nan_indices;
-                            else
-                                distance = nan;
-                            end
-                        end
-
-                        % Find the vector for start point to the end point
-                        distance_btw_line_start_point_and_line_end_point = (sum((line_start_xy - line_end_xy).^2, 2)).^0.5;
-                        
-                        % Check if the distance of the intersection points
-                        % are less than the length of the line segment
-                        flag_compare_dist_of_intersection_points_to_length = distance <= distance_btw_line_start_point_and_line_end_point;
-
-                        if ~isequal(flag_compare_dist_of_intersection_points_to_length, 0)
-                            intersection_points = potential_intersection_points(intersection_point_index,:);
-                        else
-                            intersection_points = [nan nan];
-                        end
-
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-
-            case 'circle'
-                circle_center_xy                = secondFitType_parameters(1,1:2);
-                circle_radius                   = secondFitType_parameters(1,3);
-
-                if line_unit_tangent_vector(1)==0
-                    slope = inf;
-                    intercept = line_base_point_xy(1);
-                else
-                    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
-                    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
-                end
-                % Use MATLAB's linecirc algorithm to find intersections
-                [xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found!
-
-                    % Which point(s) to keep?
-                    two_intersection_points = [xout', yout'];
-    
-                    % Find which point is closest to the line's start point
-                    % vectors_from_line_base_point = two_intersection_points - [1;1]*line_base_point_xy;
-
-                    % Distances are dot product with the line's vector
-                    % distances = sum([1; 1]*line_unit_tangent_vector.*vectors_from_line_base_point,2).^0.5;
-                    
-                    line_base_point_xy_matrix = [1; 1]*line_base_point_xy;
-
-                    distances = (sum((two_intersection_points - line_base_point_xy_matrix).^2, 2)).^0.5;
-
-
-                    % Find the vector for start point to the end point
-                    distance_btw_line_start_point_and_line_end_point = (sum((line_start_xy - line_end_xy).^2, 2)).^0.5;
-
-                    % Check if the distance of the intersection points
-                    % are less than the length of the line segment
-                    flag_compare_dist_of_intersection_points_to_length = distances <= distance_btw_line_start_point_and_line_end_point;
-
-                    if ~isequal(flag_compare_dist_of_intersection_points_to_length, [0;0])
-                        intersection_points = two_intersection_points(flag_compare_dist_of_intersection_points_to_length,:);
-                    else
-                        intersection_points = [nan nan];
-                    end
-
-                    % if isnan(intersection_points(1,:))
-                    %     intersection_points = intersection_points(2,:);
-                    % elseif isnan(intersection_points(2,:))
-                    %     intersection_points = intersection_points(1,:);
-                    % end
-
-                else
-                    intersection_points = [nan nan];
-                end
-
-
-
-            case 'spiral'
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
-
-            otherwise
-                warning('on','backtrace');
-                warning('An error will be thrown at this point due to missing code.');
-                error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
-        end
     case 'circle'
-
-        circle_center_xy                = firstFitType_parameters(1,1:2);
-        circle_radius                   = firstFitType_parameters(1,3);
-
-        switch lower(secondFitType)
-            case 'arc'
-                % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-                arc2_center_xy                = secondFitType_parameters(1,1:2);
-                arc2_radius                   = secondFitType_parameters(1,3);
-                arc2_start_angle_in_radians   = secondFitType_parameters(1,4);
-                arc2_end_angle_in_radians     = secondFitType_parameters(1,5);
-                arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-                arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-                arc2_is_counter_clockwise     = secondFitType_parameters(1,7);
-
-                % Use MATLAB's circcirc algorithm to find intersections between two circles
-                [xout,yout] = circcirc(circle_center_xy(1,1),circle_center_xy(1,2),circle_radius,arc2_center_xy(1,1),arc2_center_xy(1,2),arc2_radius);
-
-                if ~isnan(xout)
-                    % intersection points were found! To be an intersection, the point must
-                    % be on both arc1 and arc2
-
-                    % Which point(s) to keep?
-                    circle_intersection_points = [xout', yout'];
-
-                    % Are the intersections within the arc range that we were given? To
-                    % check this, we use the three points on each arc - the start, the
-                    % intersection, and the end to calculate the arc direction. We then
-                    % check to see if it is the same as the given direction for that arc -
-                    % if it is, the point is on the arc. The way we search is to initialize
-                    % the potential arc intersection points to the circle intersections,
-                    % and remove any of the arc intersection points that are not on both of
-                    % the arcs.
-                    potential_arc_intersection_points = circle_intersection_points;
-                    for ith_row = 1:length(circle_intersection_points(:,1))
-
-                        % % Check arc1
-                        % intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, circle_intersection_points(ith_row,:), arc1_end_xy,-1);
-                        % if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
-                        %     potential_arc_intersection_points(ith_row,:) = [nan nan];
-                        % end
-
-                        % Check arc2
-                        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, circle_intersection_points(ith_row,:), arc2_end_xy,-1);
-                        if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
-                            potential_arc_intersection_points(ith_row,:) = [nan nan];
-                        end
-
-                    end
-
-                    if isequal(potential_arc_intersection_points(1,:),potential_arc_intersection_points(2,:))
-                        intersection_points = potential_arc_intersection_points(1,:);
-                    else
-                        
-                        if isnan(potential_arc_intersection_points(2,:))
-                            intersection_points = potential_arc_intersection_points(1,:);
-                        elseif isnan(potential_arc_intersection_points(1,:))
-                            intersection_points = potential_arc_intersection_points(2,:);
-                        else
-                            intersection_points = potential_arc_intersection_points;
-                        end
-                        % % Find which point is closest to arc1's start point
-                        % if ~any(isnan(potential_arc_intersection_points(1,:)))
-                        %     arc_angle_point1  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(1,:), arc1_end_xy,(-1));
-                        % else
-                        %     arc_angle_point1 = nan;
-                        % end
-                        % if ~any(isnan(potential_arc_intersection_points(2,:)))
-                        %     arc_angle_point2  = fcn_geometry_arcAngleFrom3Points(arc1_start_xy, potential_arc_intersection_points(2,:), arc1_end_xy,(-1));
-                        % else
-                        %     arc_angle_point2 = nan;
-                        % end
-                        % 
-                        % if arc_angle_point1<arc_angle_point2
-                        %     intersection_points = potential_arc_intersection_points(1,:);
-                        % else
-                        %     intersection_points = potential_arc_intersection_points(2,:);
-                        % end
-                    end
-
-                else
-                    intersection_points = [nan nan];
-                end
-        end
-
+        intersection_points = fcn_INTERNAL_intersectCircleGeomtries(secondFitType, firstFitType_parameters, secondFitType_parameters); 
+    case 'arc'
+        intersection_points = fcn_INTERNAL_intersectArcGeomtries(secondFitType, firstFitType_parameters, secondFitType_parameters); 
+    case 'line'
+        intersection_points = fcn_INTERNAL_intersectLineGeometries(secondFitType, first_line_parameters, secondFitType_parameters);
+    case {'segment'}
+        intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, first_line_parameters, secondFitType_parameters);          
     case 'spiral'
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
-        error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
+        error('fcn_geometry_intersectionGeom case is not yet ready for any spiral start case');
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
@@ -814,4 +252,384 @@ end
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+%% fcn_INTERNAL_intersectCircleGeomtries
+function  intersection_points = fcn_INTERNAL_intersectCircleGeomtries(secondFitType, first_circle_parameters, secondFitType_parameters)
+switch lower(secondFitType)
+    case 'circle'
+        intersection_points = fcn_INTERNAL_intersectCircleCircle(first_circle_parameters, secondFitType_parameters);
+    case 'arc'
+        intersection_points = fcn_INTERNAL_intersectCircleArc(first_circle_parameters, secondFitType_parameters);
+    case 'line'
+        intersection_points = fcn_INTERNAL_intersectLineCircle(secondFitType_parameters, first_circle_parameters);
+    case 'segment'        
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom case is not yet ready for circle-segment case');
+    case 'spiral'
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom case is not yet ready for circle-spiral case');
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
+end
+end % Ends fcn_INTERNAL_intersectCircleGeomtries
 
+%% fcn_INTERNAL_intersectCircleCircle
+function intersection_points = fcn_INTERNAL_intersectCircleCircle(firstFitType_parameters, secondFitType_parameters)
+% Calculate needed values from parameter sets
+
+% Get the circle1 fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle1_center_xy                = firstFitType_parameters(1,1:2);
+circle1_radius                   = firstFitType_parameters(1,3);
+
+% Get the circle2 fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle2_center_xy                = secondFitType_parameters(1,1:2);
+circle2_radius                   = secondFitType_parameters(1,3);
+
+% Are the circles the same to 8 decimal places?
+if isequal(round(circle1_center_xy,8),round(circle2_center_xy,8)) && isequal(round(circle1_radius,8),round(circle2_radius,8))
+    intersection_points = [inf inf];
+else
+    % Use MATLAB's circcirc algorithm to find intersections between two circles
+    [xout,yout] = circcirc(circle1_center_xy(1,1),circle1_center_xy(1,2),circle1_radius,circle2_center_xy(1,1),circle2_center_xy(1,2),circle2_radius);
+
+    if ~isnan(xout)
+        % intersection points were found! To be an intersection, the point must
+        % be on both arc1 and arc2
+
+        % Which point(s) to keep?
+        intersection_points = [xout', yout'];
+
+        % Is the point duplicated?
+        if isequal(intersection_points(1,:),intersection_points(2,:))
+            intersection_points = intersection_points(1,:);
+        end
+    else
+        intersection_points = [nan nan];
+    end
+end
+end % ends fcn_INTERNAL_intersectCircleCircle
+
+%% fcn_INTERNAL_intersectCircleArc
+function intersection_points = fcn_INTERNAL_intersectCircleArc(circle_parameters, arc_parameters)
+
+intersection_points = fcn_INTERNAL_intersectCircleCircle(circle_parameters, arc_parameters);
+
+if ~any(isnan(intersection_points))
+    % Keep only the closet point on the arc. Returns nan if there are none
+    [~, intersection_points] = fcn_INTERNAL_findPointsInArc(arc_parameters,intersection_points);
+end
+
+end % ends fcn_INTERNAL_intersectCircleArc
+
+%% fcn_INTERNAL_findPointsInArc
+function [points_in_arc, closest_point_to_start_of_arc] = fcn_INTERNAL_findPointsInArc(arc_parameters,points_to_test)
+% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_center_xy                = arc_parameters(1,1:2);
+arc_radius                   = arc_parameters(1,3);
+arc_start_angle_in_radians   = arc_parameters(1,4);
+arc_end_angle_in_radians     = arc_parameters(1,5);
+arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+arc_is_counter_clockwise     = arc_parameters(1,7);
+
+% Are the intersections within the arc range that we were given? To
+% check this, we use the three points on each arc - the start, the
+% intersection, and the end to calculate the arc direction. We then
+% check to see if it is the same as the given direction for that arc -
+% if it is, the point is on the arc. The way we search is to initialize
+% the potential arc intersection points to the circle intersections,
+% and remove any of the arc intersection points that are not on both of
+% the arcs.
+points_in_arc = points_to_test;
+for ith_row = 1:length(points_to_test(:,1))
+    % Check arc
+    intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy,-1);
+    if arc_is_counter_clockwise ~= intersection_is_counterClockwise
+        points_in_arc(ith_row,:) = [nan nan];
+    end
+
+end
+
+% Remove the nan rows
+points_in_arc = points_in_arc(~isnan(points_in_arc(:,1)),:);
+
+% Make sure something remains
+if isempty(points_in_arc)
+    points_in_arc = [nan nan];
+end
+
+% Remove repeats
+points_in_arc = unique(points_in_arc,'rows');
+
+% At this point, there may be 2 intersection points. Are there 2?
+% NOTE: the points may contain nan values, and if so, then nan is
+% returned
+closest_point_to_start_of_arc = fcn_INTERNAL_findPointClosestToArcStart(arc_parameters, points_in_arc);
+
+end % Ends fcn_INTERNAL_findPointsInArc
+
+%% fcn_INTERNAL_findPointClosestToArcStart
+function closest_point = fcn_INTERNAL_findPointClosestToArcStart(arc_parameters, points_to_test)
+
+% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+arc_center_xy                = arc_parameters(1,1:2);
+arc_radius                   = arc_parameters(1,3);
+arc_start_angle_in_radians   = arc_parameters(1,4);
+arc_end_angle_in_radians     = arc_parameters(1,5);
+arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
+arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+
+N_points = length(points_to_test(:,1));
+arc_angles = nan(N_points,1);
+
+% Calculate arc angles for each point
+for ith_point = 1:N_points
+    if ~any(isnan(points_to_test(ith_point,:)))
+        arc_angles(ith_point,1)  = fcn_geometry_arcAngleFrom3Points(arc_start_xy, points_to_test(ith_point,:), arc_end_xy,(-1));
+    end
+end
+
+[~, min_point_index] = min(arc_angles);
+
+closest_point = points_to_test(min_point_index,:);
+end % Ends fcn_INTERNAL_findPointClosestToArcStart
+
+%% fcn_INTERNAL_intersectArcGeomtries
+function  intersection_points = fcn_INTERNAL_intersectArcGeomtries(secondFitType, first_arc_parameters, secondFitType_parameters)
+switch lower(secondFitType)
+    case 'circle'
+        intersection_points = fcn_INTERNAL_intersectArcCircle(first_arc_parameters, secondFitType_parameters);
+    case 'arc'
+        intersection_points = fcn_INTERNAL_intersectArcArc(first_arc_parameters, secondFitType_parameters);
+    case 'line'
+        intersection_points = fcn_INTERNAL_intersectArcLine(first_arc_parameters, secondFitType_parameters);
+    case 'segment'        
+        intersection_points = fcn_INTERNAL_intersectArcSegment(first_arc_parameters,secondFitType_parameters);
+    case 'spiral'
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
+end
+end % Ends fcn_INTERNAL_intersectArcGeomtries
+
+
+%% fcn_INTERNAL_intersectArcCircle
+function intersection_points = fcn_INTERNAL_intersectArcCircle(firstArc_parameters, circle_parameters)
+
+% First, calculate circle to circle intersections
+intersection_points = fcn_INTERNAL_intersectCircleCircle(firstArc_parameters, circle_parameters);
+
+if ~all(isnan(intersection_points))
+    % Keep only the closest point to start of the arc
+    [~, intersection_points] = fcn_INTERNAL_findPointsInArc(firstArc_parameters,intersection_points);
+end
+end % Ends fcn_INTERNAL_intersectArcCircle
+
+%% fcn_INTERNAL_intersectArcArc
+function intersection_points = fcn_INTERNAL_intersectArcArc(firstArc_parameters, secondArc_parameters)
+
+% First, calculate circle to circle intersections
+intersection_points = fcn_INTERNAL_intersectCircleCircle(firstArc_parameters, secondArc_parameters);
+
+if ~all(isnan(intersection_points))
+    % Keep only the points on the second arc
+    intersection_points = fcn_INTERNAL_findPointsInArc(secondArc_parameters,intersection_points);
+
+    if ~all(isnan(intersection_points))
+        % Keep only the closest point to start of the first arc
+        [~, intersection_points] = fcn_INTERNAL_findPointsInArc(firstArc_parameters,intersection_points);
+    end
+end
+end % Ends fcn_INTERNAL_intersectArcArc
+
+%% fcn_INTERNAL_intersectArcLine
+function intersection_points = fcn_INTERNAL_intersectArcLine(arc_parameters, line_parameters)
+
+% First, calculate circle to line intersections
+intersection_points = fcn_INTERNAL_intersectLineCircle(line_parameters, arc_parameters);
+
+if ~all(isnan(intersection_points))
+
+    % Keep only the closest point on the arc
+    [~, intersection_points] = fcn_INTERNAL_findPointsInArc(arc_parameters,intersection_points);
+end
+end % Ends fcn_INTERNAL_intersectArcLine
+
+
+%% fcn_INTERNAL_intersectArcSegment
+function  intersection_points = fcn_INTERNAL_intersectArcSegment(arc_parameters, segment_parameters)
+
+% First, calculate arc to line intersections
+intersection_points = fcn_INTERNAL_intersectLineCircle(segment_parameters, arc_parameters);
+
+if ~all(isnan(intersection_points))
+    % Keep only the points on the segment
+    intersection_points = fcn_INTERNAL_findPointsInSegment(segment_parameters,intersection_points);
+
+    if ~all(isnan(intersection_points))
+        % Keep only the closest point on the arc
+        [~, intersection_points] = fcn_INTERNAL_findPointsInArc(arc_parameters,intersection_points);
+    end
+end
+end % Ends fcn_INTERNAL_intersectArcSegment
+
+
+%% fcn_INTERNAL_intersectLineGeomtries
+function  intersection_points = fcn_INTERNAL_intersectLineGeometries(secondFitType, first_line_parameters, secondFitType_parameters)
+switch lower(secondFitType)
+    case 'circle'
+        intersection_points = fcn_INTERNAL_intersectLineCircle(first_line_parameters, secondFitType_parameters);
+    case 'arc'
+        intersection_points = fcn_INTERNAL_intersectLineArc(first_line_parameters, secondFitType_parameters);
+    case 'line'
+        intersection_points = fcn_INTERNAL_intersectLineLine(first_line_parameters, secondFitType_parameters);
+    case 'segment'        
+        intersection_points = fcn_INTERNAL_intersectLineSegment(first_line_parameters,secondFitType_parameters);
+    case 'spiral'
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
+end
+end % Ends fcn_INTERNAL_intersectLineGeomtries
+
+%% fcn_INTERNAL_intersectLineCircle
+function intersection_points = fcn_INTERNAL_intersectLineCircle(line_parameters, circle_parameters)
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector     = line_parameters(1,1:2);
+line_base_point_xy           = line_parameters(1,3:4);
+
+% Get the line circle details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle_center_xy                = circle_parameters(1,1:2);
+circle_radius                   = circle_parameters(1,3);
+
+if line_unit_tangent_vector(1)==0
+    slope = inf;
+    intercept = line_base_point_xy(1);
+else
+    slope = line_unit_tangent_vector(2)/line_unit_tangent_vector(1);
+    intercept = line_base_point_xy(2) - slope*line_base_point_xy(1); % b = y - m*x
+end
+% Use MATLAB's linecirc algorithm to find intersections
+[xout,yout] = linecirc(slope,intercept,circle_center_xy(1,1),circle_center_xy(1,2),circle_radius);
+
+if ~all(isnan(xout))
+    % intersection points were found!
+    intersection_points = [xout', yout'];
+
+    % Keep only the points that are not nan
+    intersection_points = intersection_points(~isnan(intersection_points(:,1)),:);
+
+else
+    intersection_points = [nan nan];
+end
+
+end % Ends fcn_INTERNAL_intersectLineCircle
+
+
+%% fcn_INTERNAL_intersectLineArc
+function intersection_points = fcn_INTERNAL_intersectLineArc(line_parameters, arc_parameters)
+
+intersection_points = fcn_INTERNAL_intersectLineCircle(line_parameters, arc_parameters); 
+
+if ~any(isnan(intersection_points))
+    % Keep only the closet point on the arc. Returns nan if there are none
+    [~, intersection_points] = fcn_INTERNAL_findPointsInArc(arc_parameters,intersection_points);
+end
+
+end % Ends fcn_INTERNAL_intersectLineArc
+
+%% fcn_INTERNAL_intersectSegmentGeomtries
+function  intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, first_segment_parameters, secondFitType_parameters)
+switch lower(secondFitType)
+    case 'circle'
+        intersection_points = fcn_INTERNAL_intersectSegmentCircle(first_segment_parameters, secondFitType_parameters);
+    case 'arc'
+        intersection_points = fcn_INTERNAL_intersectSegmentArc(first_segment_parameters, secondFitType_parameters);
+    case 'line'
+        error('need to write this')
+        intersection_points = fcn_INTERNAL_intersectSegmentLine(first_segment_parameters, secondFitType_parameters);
+    case 'segment'        
+        error('need to write this')
+        intersection_points = fcn_INTERNAL_intersectSegmentSegment(first_segment_parameters,secondFitType_parameters);
+    case 'spiral'
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom case is not yet ready for spiral case');
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('fcn_geometry_intersectionGeom is not yet ready for curves from fit type: %s',firstFitType);
+end
+end % Ends fcn_INTERNAL_intersectSegmentGeomtries
+
+%% fcn_INTERNAL_intersectSegmentCircle
+function intersection_points = fcn_INTERNAL_intersectSegmentCircle(segment_parameters, circle_parameters)
+intersection_points = fcn_INTERNAL_intersectLineCircle(segment_parameters, circle_parameters); 
+
+if ~any(isnan(intersection_points))
+    % Keep only the closet point on the segment. Returns nan if there are none
+    [~, intersection_points] = fcn_INTERNAL_findPointsInSegment(segment_parameters,intersection_points);
+end
+end % Ends fcn_INTERNAL_intersectSegmentCircle
+
+%% fcn_INTERNAL_findPointsInSegment
+function [points_to_test, closest_point_to_start_of_segment] = fcn_INTERNAL_findPointsInSegment(segment_parameters, points_to_test)
+% Get the segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_unit_tangent_vector   = segment_parameters(1,1:2);
+segment_base_point_xy         = segment_parameters(1,3:4);
+segment_s_start               = segment_parameters(1,5);
+segment_s_end                 = segment_parameters(1,6);
+% segment_start_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
+% segment_end_xy                = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
+
+% Are the intersections within the segment's range?
+N_intersections = length(points_to_test(:,1));
+
+% Find distances to the segment's start point
+vectors_from_segment_base_point = points_to_test - ones(N_intersections,1)*segment_base_point_xy;
+
+% Distances are dot product with the line's vector
+s_distances = sum(ones(N_intersections,1)*segment_unit_tangent_vector.*vectors_from_segment_base_point,2);
+    
+good_distance_indicies = intersect(find(s_distances>=segment_s_start),find(s_distances<=segment_s_end));
+if isempty(good_distance_indicies)
+    points_to_test = [nan nan];
+else
+    points_to_test = points_to_test(good_distance_indicies,:);
+
+    good_s_distances = s_distances(good_distance_indicies,1);
+    closest_to_start = min(good_s_distances);
+    closest_point_to_start_of_segment = segment_base_point_xy + segment_unit_tangent_vector*closest_to_start;
+end
+
+end % Ends fcn_INTERNAL_findPointsInSegment
+
+
+%% fcn_INTERNAL_intersectSegmentArc
+function intersection_points = fcn_INTERNAL_intersectSegmentArc(segment_parameters, arc_parameters)
+intersection_points = fcn_INTERNAL_intersectLineCircle(segment_parameters, arc_parameters); 
+
+if ~all(isnan(intersection_points))
+
+    % Keep only the points on the arc
+    intersection_points = fcn_INTERNAL_findPointsInArc(arc_parameters,intersection_points);
+
+    if ~all(isnan(intersection_points))
+
+        % Keep only the closet point on the segment. Returns nan if there are none
+        [~, intersection_points] = fcn_INTERNAL_findPointsInSegment(segment_parameters,intersection_points);
+    end
+end
+end % Ends fcn_INTERNAL_intersectSegmentArc
