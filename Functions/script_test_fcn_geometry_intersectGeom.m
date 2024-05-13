@@ -879,9 +879,9 @@ secondFitType_parameters = line_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
-assert(isequal(size(intersection_points),[1 2]));
-assert(all(isnan(intersection_points)));
 
+assert(isequal(size(intersection_points),[1 2]));
+assert(isequal(round(intersection_points,4), [3 0]));
 
 %% Basic Test: Arc to Segment Intersection - one intersection
 fig_num = 24101;
@@ -931,7 +931,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3 0]));
 
-%% Basic Test: Arc to Segment Intersection  - one intersection
+%% Basic Test: Arc to Segment Intersection  - one intersection 
 fig_num = 24102;
 
 % Fill in arc 1
@@ -952,13 +952,13 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [4 2];
+true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([4 2]);
 true_start_point_xy = [1 1];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
 line_s_start             = 0;
-line_s_end               = 1;
+line_s_end               = 5;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -977,6 +977,55 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [2.7889 1.8944]));
+
+%% Basic Test: Arc to Segment Intersection  - one intersection 
+fig_num = 24103;
+
+% % Fill in arc 1
+% arc1_center_xy            = [0 -1];
+% circle_radius               = 1;
+% arc1_vector_start         = [cos(-90*pi/180) sin(-90*pi/180)];
+% arc1_vector_end           = [cos(0*pi/180) sin(0*pi/180)];
+% arc1_is_circle            = 0;
+% arc1_is_counter_clockwise = 1;
+% arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+% 
+% 
+% % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+% arc1_parameters(1,1:2) = arc1_center_xy;
+% arc1_parameters(1,3)   = circle_radius;
+% arc1_parameters(1,4:5) = arc1_angles;
+% arc1_parameters(1,6)   = arc1_is_circle;
+% arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+arc1_parameters = [0, -1, 1, 2.9671, 1.5708, 0, 0]; 
+
+% true_line_unit_tangent_vector = [4 2];
+% true_start_point_xy = [1 1];
+% 
+% line_unit_tangent_vector = true_line_unit_tangent_vector;
+% line_base_point_xy       = true_start_point_xy;
+% line_s_start             = 0;
+% line_s_end               = 1;
+% 
+% 
+% % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+% line_parameters(1,1:2) = line_unit_tangent_vector;
+% line_parameters(1,3:4) = line_base_point_xy;
+% line_parameters(1,5)   = line_s_start;
+% line_parameters(1,6)   = line_s_end;
+
+line_parameters = [1, 0, -0.5, -0.1, 0, 2];
+
+firstFitType = 'arc';
+firstFitType_parameters = arc1_parameters;
+secondFitType = 'segment';
+secondFitType_parameters = line_parameters;
+
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+
+assert(isequal(size(intersection_points),[1 2]));
+assert(isequal(round(intersection_points,4), [-0.4359, -0.1000]));
 
 %% Basic Test: Arc to Segment Intersection - no intersection
 fig_num = 24003;

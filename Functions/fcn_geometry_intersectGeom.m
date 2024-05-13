@@ -89,6 +89,12 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % arc-to-segment calls circle-to-line, then arc-to-line, before doing
 % arc-to-segment check. That way, if bugs are found/fixed in
 % circle-to-line, they automatically get fixed in arc-to-segment.
+% 2024_05_13 - Aneesh Batchu
+% -- Fixed a bug in the arc-segment case where the arc direction (when
+% arc_parameters(1,7) is undefined (=0)). The function
+% "fcn_INTERNAL_findPointsInArc" calculates the arc angle using arc_start,
+% arc_intersection, and arc_end, and outputs the intersection point that is
+% closest to the arc.
 
 % TO-DO:
 % 2025_05_10 - added by Sean Brennan
@@ -344,13 +350,25 @@ arc_is_counter_clockwise     = arc_parameters(1,7);
 % and remove any of the arc intersection points that are not on both of
 % the arcs.
 points_in_arc = points_to_test;
-for ith_row = 1:length(points_to_test(:,1))
-    % Check arc
-    intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy,-1);
-    if arc_is_counter_clockwise ~= intersection_is_counterClockwise
-        points_in_arc(ith_row,:) = [nan nan];
-    end
 
+if ~isequal(arc_is_counter_clockwise,0)
+    for ith_row = 1:length(points_to_test(:,1))
+        % Check arc
+        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy,-1);
+        if arc_is_counter_clockwise ~= intersection_is_counterClockwise
+            points_in_arc(ith_row,:) = [nan nan];
+        end
+    end
+else
+    arc_angle_in_radians_1_to_3 = zeros(length(points_to_test(:,1)),1);
+    for ith_row = 1:length(points_to_test(:,1))
+        [~, arc_angle_in_radians_1_to_3(ith_row,1), ~, ~, ~] = fcn_geometry_arcAngleFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy, -1);
+    end
+    if abs(arc_angle_in_radians_1_to_3(1)) < abs(arc_angle_in_radians_1_to_3(2))
+        points_in_arc(2,:) = [nan nan];
+    else
+        points_in_arc(1,:) = [nan nan];
+    end
 end
 
 % Remove the nan rows
