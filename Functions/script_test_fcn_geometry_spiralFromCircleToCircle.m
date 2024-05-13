@@ -203,3 +203,64 @@ assert(isequal(size(spiral_join_parameters),[1 6]));
 % Check results
 assert(isequal(round(spiral_join_parameters,4),[0.1897   -0.0949   -0.0947    0.0045    1.0000    0.3333]));
 assert(space_between_circles>0);
+
+%% Circle to line tests
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   _____ _          _             _          _      _
+%  / ____(_)        | |           | |        | |    (_)
+% | |     _ _ __ ___| | ___  ___  | |_ ___   | |     _ _ __   ___  ___
+% | |    | | '__/ __| |/ _ \/ __| | __/ _ \  | |    | | '_ \ / _ \/ __|
+% | |____| | | | (__| |  __/\__ \ | || (_) | | |____| | | | |  __/\__ \
+%  \_____|_|_|  \___|_|\___||___/  \__\___/  |______|_|_| |_|\___||___/
+%
+%
+% http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Circles%20to%20Lines
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Line test - circle 1 and line, line below x-axis - feasible
+% Show that if line is outside, it will join
+fig_num = 101;
+figure(fig_num); clf;
+
+
+% Try positive curvature
+circle1_radius = 1;
+circle2_radius = inf;
+circle2_center_XY = [0 -0.2];
+flag_circle2_is_counterclockwise = [];
+
+
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
+
+% Check size of results
+assert(isequal(size(spiral_join_parameters),[1 6]));
+
+% Check results
+assert(isequal(round(spiral_join_parameters,4),[2.2403   -1.1202   -0.9002    0.5645    1.0000         0]));
+assert(space_between_circles==0.2);
+
+
+%% Line test - circle 1 and line, line above x-axis - not feasible
+% Show that if line is not outside, it will not join
+fig_num = 102;
+figure(fig_num); clf;
+
+
+% Try positive curvature
+circle1_radius = 1;
+circle2_radius = inf;
+circle2_center_XY = [0 0.2];
+flag_circle2_is_counterclockwise = [];
+
+
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
+
+% Check size of results
+assert(isequal(size(spiral_join_parameters),[1 6]));
+
+% Check results
+assert(all(isnan(spiral_join_parameters)));
+assert(space_between_circles<0);

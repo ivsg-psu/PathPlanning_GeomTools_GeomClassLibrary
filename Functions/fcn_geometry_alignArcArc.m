@@ -1,5 +1,5 @@
-function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcToArc(arc1_parameters, arc2_parameters, varargin)
-%% fcn_geometry_alignArcToArc
+function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, varargin)
+%% fcn_geometry_alignArcArc
 % Revises the geometric parameters of an arc connecting to another arc such
 % that they align where they join. It does this by checking the offset
 % between the two objects at the join location. If the offset is less than
@@ -9,7 +9,7 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %
 % Format:
 % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-% fcn_geometry_alignArcToArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+% fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
 %
 % INPUTS:
 %
@@ -70,7 +70,7 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_geometry_alignArcToArc
+% See the script: script_test_fcn_geometry_alignArcArc
 % for a full test suite.
 %
 % This function was written on 2024_04_21 by S. Brennan
@@ -1044,37 +1044,53 @@ switch continuity_level
         % For C0 continuity of arc1 to arc2, the closest point of the
         % desired joint to the arc is simply the end of arc1
 
-        desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
+        desired_intermediate_geometry_join_type       = ''; % Intermediate geometry will be a line segement
         desired_intermediate_geometry_join_parameters = nan(1,6);
 
-        if flag_perform_shift_of_arc2==1
-            if abs(space_between_circles)<threshold
-                % Yes, arc2 can be moved enough to be tangent. So put
-                % arc2's center in correct place
-                desired_arc1_parameters        = arc1_parameters;
-                desired_arc1_parameters(1,5)   = -pi/2;
+        if ~any(isnan(intersection_point))
+            % Arc1 will end at the intersection, which is at the origin
+            vector_from_arc1_center_to_intersection_joint = [0 0] - arc1_center_xy;
+            angle_of_intersection_arc1 = atan2(vector_from_arc1_center_to_intersection_joint(2),vector_from_arc1_center_to_intersection_joint(1));
 
-                desired_arc2_parameters        = arc2_parameters;
-                if (1==arc2_is_counter_clockwise)
-                    desired_arc2_parameters(1,1:2) = [0 arc2_radius]; % Move arc2's center to align correctly
-                    desired_arc2_parameters(1,4)   = -pi/2;
-                else
-                    desired_arc2_parameters(1,1:2) = [0 -arc2_radius]; % Move arc2's center to align correctly
-                    desired_arc2_parameters(1,4)   = pi/2;
-                end
+            vector_from_arc2_center_to_intersection_joint = [0 0] - arc2_center_xy;
+            angle_of_intersection_arc2 = atan2(vector_from_arc2_center_to_intersection_joint(2),vector_from_arc2_center_to_intersection_joint(1));
 
+            desired_arc1_parameters        = arc1_parameters;
+            desired_arc1_parameters(1,5)   = angle_of_intersection_arc1; % Update where the spiral ends
 
-            else
-                % Not possible to shift enough to allow connection
-                desired_arc1_parameters        = nan(size(arc1_parameters));
-                desired_arc2_parameters        = nan(size(arc1_parameters));
-            end
+            desired_arc2_parameters        = arc2_parameters;
+            desired_arc2_parameters(1,4)   = angle_of_intersection_arc2; % Update where the spiral starts
+
         else
-            % No shift allowed by user entry, so not possible
-            desired_arc1_parameters            = nan(size(arc1_parameters));
-            desired_arc2_parameters            = nan(size(arc1_parameters));
-        end
 
+            if flag_perform_shift_of_arc2==1
+                if abs(space_between_circles)<threshold
+                    % Yes, arc2 can be moved enough to be tangent. So put
+                    % arc2's center in correct place
+                    desired_arc1_parameters        = arc1_parameters;
+                    desired_arc1_parameters(1,5)   = -pi/2;
+
+                    desired_arc2_parameters        = arc2_parameters;
+                    if (1==arc2_is_counter_clockwise)
+                        desired_arc2_parameters(1,1:2) = [0 arc2_radius]; % Move arc2's center to align correctly
+                        desired_arc2_parameters(1,4)   = -pi/2;
+                    else
+                        desired_arc2_parameters(1,1:2) = [0 -arc2_radius]; % Move arc2's center to align correctly
+                        desired_arc2_parameters(1,4)   = pi/2;
+                    end
+
+
+                else
+                    % Not possible to shift enough to allow connection
+                    desired_arc1_parameters        = nan(size(arc1_parameters));
+                    desired_arc2_parameters        = nan(size(arc1_parameters));
+                end
+            else
+                % No shift allowed by user entry, so not possible
+                desired_arc1_parameters            = nan(size(arc1_parameters));
+                desired_arc2_parameters            = nan(size(arc1_parameters));
+            end
+        end
 
     case 1
         % For C1 continuity of arc1 to arc2, the closest point of the desired
@@ -1379,7 +1395,6 @@ end
 end % Ends fcn_INTERNAL_findShiftToMatchArcToArc
 
 %% fcn_INTERNAL_performShift
-% desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type
 function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_intermediate_geometry_type, revised_intermediate_geometry_parameters_St] = ...
     fcn_INTERNAL_performShift(threshold, continuity_level, ...
     st_arc1_parameters, st_arc2_parameters, ...
@@ -1399,39 +1414,30 @@ if abs(shift_distance)>=threshold
     revised_arc2_parameters_St         = nan(size(st_arc2_parameters));
     revised_intermediate_geometry_parameters_St = nan(size(desired_intermediate_geometry_join_parameters));
     revised_intermediate_geometry_type = desired_intermediate_geometry_join_type; 
-    return
+else
+    revised_arc1_parameters_St        = desired_st_arc1_parameters;
+    revised_arc2_parameters_St        = desired_st_arc2_parameters;
+    revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
+    
+    switch continuity_level
+        case 0
+            % For C0 continuity of arc1 to arc2, the closest point of the
+            % desired joint to the arc is either the intersection of arc1
+            % arc2, or where arc1 ends
+            revised_intermediate_geometry_type = '';
+        case 1
+            % For C1 continuity of arc1 to arc2, the closest point of the desired
+            % joint to arc1 and arc2 is always going to be the point where each arc
+            % touches the tangent line connecting them. Since arc2 is the only one
+            % that can be moved, the connecting point is simply the location where
+            % arc1 is tangent, which by construction is [0 0].
+            revised_intermediate_geometry_type = 'segment';
+        case 2
+            revised_intermediate_geometry_type = 'spiral';
+        otherwise
+            error('This continuity not possible yet')
+    end
 end
-switch continuity_level
-    case 0
-        % For C0 continuity of arc1 to arc2, the closest point of the
-        % desired joint to the arc is either the intersection of arc1
-        % arc2, or where arc1 ends
-        revised_arc1_parameters_St        = desired_st_arc1_parameters;
-        revised_arc2_parameters_St        = desired_st_arc2_parameters;
-        revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
-        revised_intermediate_geometry_type = '';
-
-    case 1
-        % For C1 continuity of arc1 to arc2, the closest point of the desired
-        % joint to arc1 and arc2 is always going to be the point where each arc
-        % touches the tangent line connecting them. Since arc2 is the only one
-        % that can be moved, the connecting point is simply the location where
-        % arc1 is tangent, which by construction is [0 0].
-
-       revised_arc1_parameters_St        = desired_st_arc1_parameters;
-       revised_arc2_parameters_St        = desired_st_arc2_parameters;
-       revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
-       revised_intermediate_geometry_type = 'segment';
-
-    case 2
-       revised_arc1_parameters_St        = desired_st_arc1_parameters;
-       revised_arc2_parameters_St        = desired_st_arc2_parameters;
-       revised_intermediate_geometry_parameters_St = desired_intermediate_geometry_join_parameters;
-       revised_intermediate_geometry_type = 'spiral';
-    otherwise
-        error('This continuity not possible yet')
-end
-
 if ~isempty(debug_fig_num)
     % Plot the results
     figure(debug_fig_num);
@@ -1450,6 +1456,42 @@ end
 
 end % Ends fcn_INTERNAL_performShift
 
+%% fcn_INTERNAL_convertParametersOutOfStOrientation
+function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_INTERNAL_convertParametersOutOfStOrientation(...
+    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_fig_num)
+
+% Call the function to convert from ST back to XY
+st_parameters_type_strings{1} = 'arc';
+st_parameters_type_strings{2} = 'arc';
+st_parameters_type_strings{3} = revised_intermediate_geometry_join_type;
+st_parameters{1} = revised_arc1_parameters_St;
+st_parameters{2} = revised_arc2_parameters_St;
+st_parameters{3} = revised_intermediate_geometry_join_parameters_St;
+
+[XY_parameters] = ...
+fcn_geometry_orientGeometrySt2XY(st_parameters_type_strings, st_parameters, St_transform_XYtoSt, flag_arc1_is_flipped, (-1));
+
+revised_arc1_parameters = XY_parameters{1};
+revised_arc2_parameters = XY_parameters{2};
+revised_intermediate_geometry_join_parameters = XY_parameters{3};
+
+if ~isempty(debug_fig_num)
+    % Plot the results
+    figure(debug_fig_num);
+    subplot(3,2,1);
+    debug_axis = axis;
+
+    subplot(3,2,6);
+
+    fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
+    fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
+    fcn_geometry_plotGeometry(revised_intermediate_geometry_join_type,revised_intermediate_geometry_join_parameters);
+    
+    title('Final outputs');
+    axis(debug_axis);
+end
+end % Ends fcn_INTERNAL_convertParametersOutOfStOrientation
 
 %% fcn_INTERNAL_prepDebugFigure
 function fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num)
@@ -1489,40 +1531,5 @@ if ~isempty(debug_fig_num)
 end 
 end % Ends fcn_INTERNAL_prepDebugFigure
 
-%% fcn_INTERNAL_convertParametersOutOfStOrientation
-function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
-    fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_fig_num)
 
-% Call the function to convert from ST back to XY
-st_parameters_type_strings{1} = 'arc';
-st_parameters_type_strings{2} = 'arc';
-st_parameters_type_strings{3} = revised_intermediate_geometry_join_type;
-st_parameters{1} = revised_arc1_parameters_St;
-st_parameters{2} = revised_arc2_parameters_St;
-st_parameters{3} = revised_intermediate_geometry_join_parameters_St;
-
-[XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(st_parameters_type_strings, st_parameters, St_transform_XYtoSt, flag_arc1_is_flipped, (-1));
-
-revised_arc1_parameters = XY_parameters{1};
-revised_arc2_parameters = XY_parameters{2};
-revised_intermediate_geometry_join_parameters = XY_parameters{3};
-
-if ~isempty(debug_fig_num)
-    % Plot the results
-    figure(debug_fig_num);
-    subplot(3,2,1);
-    debug_axis = axis;
-
-    subplot(3,2,6);
-
-    fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
-    fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
-    fcn_geometry_plotGeometry(revised_intermediate_geometry_join_type,revised_intermediate_geometry_join_parameters);
-    
-    title('Final outputs');
-    axis(debug_axis);
-end
-end % Ends fcn_INTERNAL_convertParametersOutOfStOrientation
 

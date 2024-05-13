@@ -5,6 +5,8 @@
 % -- wrote the code
 % 2024_04_15
 % -- fixed assertions
+% 2024_05_12
+% -- added more examples
 
 close all;
 
@@ -23,26 +25,21 @@ assert(ishandle(fig_num));
 assert(length(XY_data(1,:))==2)
 assert(length(XY_data(:,1))>1)
 
-%% BASIC test - line plotting
+%% BASIC test - circle plotting
 fig_num = 1;
 figure(fig_num); clf;
 
-line_unit_tangent_vector = [1 0];
-line_base_point_xy       = [-1 0];
-line_s_start             = 0;
-line_s_end               = 1;
+% Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle_center_xy            = [0 1];
+circle_radius               = 1;
 
-
-% Fill the line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+circle_parameters(1,1:2) = circle_center_xy;
+circle_parameters(1,3)   = circle_radius;
 
 segment_length = [];
 format_string  = [];
-XY_data = fcn_geometry_plotGeometry('line', line_parameters,segment_length, format_string, (fig_num));
-axis equal
+
+XY_data = fcn_geometry_plotGeometry('circle', circle_parameters,segment_length, format_string, (fig_num));
 
 % Check that a figure opened with this number, and that outputs are right
 % sizes
@@ -80,6 +77,56 @@ assert(ishandle(fig_num));
 assert(length(XY_data(1,:))==2)
 assert(length(XY_data(:,1))>1)
 
+
+%% BASIC test - line plotting
+fig_num = 3;
+figure(fig_num); clf;
+
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-1 0];
+
+% Fill the line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_parameters(1,1:2) = line_unit_tangent_vector;
+line_parameters(1,3:4) = line_base_point_xy;
+
+segment_length = [];
+format_string  = [];
+XY_data = fcn_geometry_plotGeometry('line', line_parameters,segment_length, format_string, (fig_num));
+axis equal
+
+% Check that a figure opened with this number, and that outputs are right
+% sizes
+assert(ishandle(fig_num));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
+
+
+%% BASIC test - segment plotting
+fig_num = 4;
+figure(fig_num); clf;
+
+segment_unit_tangent_vector = [1 0];
+segment_base_point_xy       = [-1 0];
+segment_s_start             = 0;
+segment_s_end               = 1;
+
+
+% Fill the line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_parameters(1,1:2) = segment_unit_tangent_vector;
+segment_parameters(1,3:4) = segment_base_point_xy;
+segment_parameters(1,5)   = segment_s_start;
+segment_parameters(1,6)   = segment_s_end;
+
+segment_length = [];
+format_string  = [];
+XY_data = fcn_geometry_plotGeometry('segment', segment_parameters,segment_length, format_string, (fig_num));
+axis equal
+
+% Check that a figure opened with this number, and that outputs are right
+% sizes
+assert(ishandle(fig_num));
+assert(length(XY_data(1,:))==2)
+assert(length(XY_data(:,1))>1)
 
 %% BASIC example  - simple plot string
 fig_num = 6;

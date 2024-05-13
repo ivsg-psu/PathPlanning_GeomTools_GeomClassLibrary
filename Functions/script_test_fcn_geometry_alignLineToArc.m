@@ -25,7 +25,7 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 1
 
-%% Basic test 1.1 - an arc nearby the line segment joined with C0 continuity
+%% Basic test 1.14 - an arc nearby the line segment joined with C0 continuity, arc backwards, line is backwards
 fig_num = 11;
 figure(fig_num); clf;
 

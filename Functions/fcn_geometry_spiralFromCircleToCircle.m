@@ -66,6 +66,8 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % 2024_05_05 - S. Brennan
 % -- fixed bug where, with symmetric setup, will return negative value
 % incorrectly instead of positive value.
+% 2024_05_11 - Sean Brennan
+% -- Modified to allow line definitions, e.g. with Kf = 0 
 
 %% Debugging and Input checks
 
@@ -165,31 +167,29 @@ end
 
 circle1_center_xy = [0 circle1_radius];
 
+% Check to see if circle2 is a line
+flag_circle2_is_a_line = 0;
+if isinf(circle2_radius)
+    flag_circle2_is_a_line = 1;
+end
+
+
 % Calculate the space that the spiral must fit within for feasibility. The
 % smaller circle MUST fit within the larger circle - otherwise, no feasible
-% spiral is possble.
-center_to_center_distance_between_circles = sum((circle2_center_xy - circle1_center_xy).^2,2).^0.5;
-% 
-% if circle1_radius>circle2_radius
-%     larger_radius = circle1_radius;
-%     smaller_radius = circle2_radius;
-% else
-%     larger_radius = circle2_radius;
-%     smaller_radius = circle1_radius;
-% end
-% 
-% if 1==flag_circle2_is_counterclockwise
-%     % Small circle must be completely inside the large circle
-%     space_between_circles = larger_radius - center_to_center_distance_between_circles - smaller_radius;
-% else
-%     % Small circle must be completely outside the large circle
-%     space_between_circles = center_to_center_distance_between_circles - larger_radius - smaller_radius;
-% end
-
-space_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, flag_circle2_is_counterclockwise,-1);
+% spiral is possble. 
+if 1==flag_circle2_is_a_line
+    Kf = 0;
+    space_between_circles = -circle2_center_xy(1,2);
+    center_to_center_distance_between_circles = circle1_radius - circle2_center_xy(1,2);
+else
+    % circle2 is a circle
+    Kf = 1/(circle2_radius*flag_circle2_is_counterclockwise);
+    space_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, flag_circle2_is_counterclockwise,-1);
+    center_to_center_distance_between_circles = sum((circle2_center_xy - circle1_center_xy).^2,2).^0.5;
+end
 
 if space_between_circles>0
-    spiralLength = fcn_INTERNAL_findLengthFromOffset(circle1_radius, circle2_radius*flag_circle2_is_counterclockwise, center_to_center_distance_between_circles);
+    spiralLength = fcn_INTERNAL_findLengthFromOffset(1/circle1_radius, Kf, center_to_center_distance_between_circles);
 
     % Make sure to keep the positive value
     if spiralLength<0
@@ -215,35 +215,44 @@ if space_between_circles>0
         x0 = 0;
         y0 = 0;
         K0 = 1/circle1_radius;
-        Kf = 1/(circle2_radius*flag_circle2_is_counterclockwise);
 
         [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s,spiralLength,h0,x0,y0,K0,Kf,(1234));
 
 
-        % Find the center of the circle tangent at the end of the spiral
-        % Find the unit vector (need to do this analytically!)
-        s_tangent = [0.99999999 1]'*spiralLength;
-        [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,spiralLength,h0,x0,y0,K0,Kf);
-        unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
-        approximate_end_angle = atan2(unit_tangent(2),unit_tangent(1));
-        analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
-        disp([approximate_end_angle analytical_end_angle]);
-        unit_tangent           = [cos(analytical_end_angle) sin(analytical_end_angle)];
-        unit_orthogonal = unit_tangent*[0 1; -1 0];
-        calculated_circle2_center_xy = circle2_radius*flag_circle2_is_counterclockwise*unit_orthogonal + [x_spiral(end) y_spiral(end)];
-
-        % Plot the circle's centers
+       % Plot the circle's centers
         plot(0,circle1_radius,'b+');
-        plot(circle2_center_xy(:,1),circle2_center_xy(:,2),'r+');
-        plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');
 
         % Plot the circles
-        fcn_geometry_plotCircle([0 circle1_radius], circle1_radius,'g-',(1234));
-        fcn_geometry_plotCircle([0 circle1_radius], center_to_center_distance_between_circles,'g--',(1234));
+        if 1==flag_circle2_is_a_line
 
-        fcn_geometry_plotCircle(calculated_circle2_center_xy, circle2_radius,'r-',(1234));
-        fcn_geometry_plotCircle(circle2_center_xy, circle2_radius,'r-',(1234));
-        
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], sprintf(' ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('line',[1 0 0 circle2_center_xy(1,2)], sprintf(' ''LineWidth'',2'));
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], sprintf('''Color'',[1 1 0], ''LineWidth'',4'));
+
+        else
+
+            % Find the center of the circle tangent at the end of the spiral
+            % Find the unit vector (need to do this analytically!)
+            s_tangent = [0.99999999 1]'*spiralLength;
+            [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,spiralLength,h0,x0,y0,K0,Kf);
+            unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
+            approximate_end_angle = atan2(unit_tangent(2),unit_tangent(1));
+            analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+            disp([approximate_end_angle analytical_end_angle]);
+            unit_tangent           = [cos(analytical_end_angle) sin(analytical_end_angle)];
+            unit_orthogonal = unit_tangent*[0 1; -1 0];
+            calculated_circle2_center_xy = circle2_radius*flag_circle2_is_counterclockwise*unit_orthogonal + [x_spiral(end) y_spiral(end)];
+
+            plot(circle2_center_xy(:,1),circle2_center_xy(:,2),'r+');
+            plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');
+
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], sprintf('''Color'',[0 1 0], ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], sprintf(' ''LineWidth'',2'));
+            
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('circle',[calculated_circle2_center_xy, circle2_radius], sprintf('''Color'',[1 1 0], ''LineWidth'',4'));
+
+        end
 
 
     end % Ends plotting
@@ -260,7 +269,6 @@ if space_between_circles>0
     x0 = 0;
     y0 = 0;
     K0 = 1/circle1_radius;
-    Kf = 1/(circle2_radius*flag_circle2_is_counterclockwise);
     if 1==flag_do_debug
         [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,(1234));
     else
@@ -270,15 +278,25 @@ if space_between_circles>0
     analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
     unit_tangent           = [cos(analytical_end_angle) sin(analytical_end_angle)];
     unit_orthogonal = unit_tangent*[0 1; -1 0];
-    calculated_circle2_center_xy = circle2_radius*flag_circle2_is_counterclockwise*unit_orthogonal + [x_spiral(end) y_spiral(end)];
-    vector_from_center1_to_calculated_center2 = calculated_circle2_center_xy - circle1_center_xy;
-    unit_vector_from_center1_to_calculated_center2 = fcn_geometry_calcUnitVector(vector_from_center1_to_calculated_center2);
-    cross_product = cross([unit_vector_from_center1_to_center2 0],[unit_vector_from_center1_to_calculated_center2 0]);
-    dot_product   = dot(unit_vector_from_center1_to_center2,unit_vector_from_center1_to_calculated_center2);
-    angle_magnitude = acos(dot_product);
-    rotation_angle = sign(cross_product(3))*angle_magnitude;
+
+    % Calculate the angle where spiral must join the circle. To do this, we
+    % calculate the angle from one circle to another
+    if 1==flag_circle2_is_a_line
+        % Circle 2 is a line
+        rotation_angle = analytical_end_angle;
+    else
+        % Circle 2 is a circle
+        calculated_circle2_center_xy = circle2_radius*flag_circle2_is_counterclockwise*unit_orthogonal + [x_spiral(end) y_spiral(end)];
+        vector_from_center1_to_calculated_center2 = calculated_circle2_center_xy - circle1_center_xy;
+        unit_vector_from_center1_to_calculated_center2 = fcn_geometry_calcUnitVector(vector_from_center1_to_calculated_center2);
+        cross_product = cross([unit_vector_from_center1_to_center2 0],[unit_vector_from_center1_to_calculated_center2 0]);
+        dot_product   = dot(unit_vector_from_center1_to_center2,unit_vector_from_center1_to_calculated_center2);
+        angle_magnitude = acos(dot_product);
+        rotation_angle = sign(cross_product(3))*angle_magnitude;
+    end
     circle1_start_xy = circle1_center_xy + circle1_radius*[cos(-90*pi/180 - rotation_angle) sin(-90*pi/180 - rotation_angle)];
 
+    % Fill the spiral parameters with the results
     spiral_join_parameters(1,1) = spiralLength;
     spiral_join_parameters(1,2) = -rotation_angle;
     spiral_join_parameters(1,3) = circle1_start_xy(1,1);
@@ -319,11 +337,19 @@ if flag_do_plots
     ylabel('Y [meters]')
 
     % Plot the circles
-    fcn_geometry_plotCircle(circle1_center_xy, circle1_radius,'b-');
-    fcn_geometry_plotCircle(circle2_center_xy, circle2_radius,'r-');
+    if 1==flag_circle2_is_a_line
+        fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
+        fcn_geometry_plotGeometry('line',[1 0 0 circle2_center_xy(1,2)], [], sprintf(' ''LineWidth'',2'));
+        fcn_geometry_plotGeometry('spiral',spiral_join_parameters, sprintf(' ''LineWidth'',3'));
+    else
+        fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
+        fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf(' ''LineWidth'',2'));
+        fcn_geometry_plotGeometry('spiral',spiral_join_parameters, [], sprintf(' ''LineWidth'',3'));
+
+    end
 
     % Plot the spiral result
-    fcn_geometry_plotGeometry('spiral',spiral_join_parameters);
+    fcn_geometry_plotGeometry('spiral',spiral_join_parameters, sprintf(' ''LineWidth'',3'));
 
 
     % Make axis slightly larger?
@@ -358,8 +384,8 @@ end % Ends main function
 
 
 %% fcn_INTERNAL_findLengthFromOffset
-function sprialLength = fcn_INTERNAL_findLengthFromOffset(arc1_radius, arc2_radius, center_to_center_distance)
-function_to_optimize = @(x)fcn_INTERNAL_calcSpiralOffsetError(x, arc1_radius, arc2_radius, center_to_center_distance);
+function sprialLength = fcn_INTERNAL_findLengthFromOffset(K0, Kf, center_to_center_distance)
+function_to_optimize = @(x)fcn_INTERNAL_calcSpiralOffsetError(x, K0, Kf, center_to_center_distance);
 % options = optimset('Display','iter','PlotFcns',@optimplotfval);
 % sprialLength = fminsearch(function_to_optimize,1,options);
 X0 = 1;
@@ -371,7 +397,7 @@ end % Ends fcn_INTERNAL_findLengthFromOffset
 
 
 %% fcn_INTERNAL_calcSpiralOffsetError
-function error = fcn_INTERNAL_calcSpiralOffsetError(X, circle1_radius, circle2_radius, center_to_center_distance)
+function spiral_offset_error = fcn_INTERNAL_calcSpiralOffsetError(X, K0, Kf, center_to_center_distance)
 
 % Pull out the optimization inputs
 spiralLength = X;
@@ -380,8 +406,19 @@ spiralLength = X;
 h0 = 0;
 x0 = 0;
 y0 = 0;
-K0 = 1/circle1_radius;
-Kf = 1/circle2_radius;
+
+% Are we handling circles, or lines?
+flag_circle1_is_line = 0;
+if K0==0
+    flag_circle1_is_line = 1;
+end
+
+% Are we handling circles, or lines?
+flag_circle2_is_line = 0;
+if Kf==0
+    flag_circle2_is_line = 1;
+end
+
 
 % Call the function
 [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf,-1);
@@ -393,9 +430,29 @@ analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
 unit_tangent_where_spiral_joins_circle2    = [cos(analytical_end_angle) sin(analytical_end_angle)];
 unit_orthogonal_where_spiral_joins_circle2 = unit_tangent_where_spiral_joins_circle2*[0 1; -1 0];
 
-circle1_center = [0 circle1_radius];
-circle2_center_from_spiral = circle2_radius*unit_orthogonal_where_spiral_joins_circle2 + [x_spiral(end) y_spiral(end)];
-spiral_predicted_center_to_center_distance = sum((circle1_center-circle2_center_from_spiral).^2,2).^0.5;
+if flag_circle1_is_line
+    % Circle 1 is a line
+    if flag_circle2_is_line
+        % Circle 2 is a line
+        error('Spirals cannot be formed from lines to lines');        
+    else
+        error('This is not coded yet.');
+    end
+else
+    % Circle 1 is a circle
+    circle1_center = [0 1/K0];
+
+    if flag_circle2_is_line
+        % Circle 2 is a line
+        vector_from_spiral_end_to_circle1_center = circle1_center - [x_spiral(end) y_spiral(end)]; 
+        spiral_predicted_center_to_center_distance = sum(unit_orthogonal_where_spiral_joins_circle2.*vector_from_spiral_end_to_circle1_center,2);
+        % spiral_predicted_center_to_center_distance = circle1_center(1,2)-y_spiral(end);
+    else
+        % Circle 2 is a circle
+        circle2_center_from_spiral = 1/Kf*unit_orthogonal_where_spiral_joins_circle2 + [x_spiral(end) y_spiral(end)];
+        spiral_predicted_center_to_center_distance = sum((circle1_center-circle2_center_from_spiral).^2,2).^0.5;
+    end
+end
 
 flag_do_debug = 0;
 if 1==flag_do_debug
@@ -415,27 +472,71 @@ if 1==flag_do_debug
     h0 = 0;
     x0 = 0;
     y0 = 0;
-    K0 = 1/circle1_radius;
-    Kf = 1/circle2_radius;
-
     fcn_geometry_extractXYfromSTSpiral(s,spiralLength,h0,x0,y0,K0,Kf,(1234));
 
 
-    % Plot the circle's centers
-    plot(0,circle1_radius,'b+','MarkerSize',20);
-    plot(circle2_center_from_spiral(:,1),circle2_center_from_spiral(:,2),'m+','MarkerSize',20);
+    % Plot circle1 
+    if flag_circle1_is_line
+        % Circle 1 is a line
+        if 1==flag_circle2_is_line
+            x_limit = 1/Kf;
+            plot([-x_limit x_limit],[0 0],'b-');
+        end
+    else
+        % Circle 1 is a circle
+        plot(0,1/K0,'b+','MarkerSize',20);
+        fcn_geometry_plotCircle([0 1/K0], 1/K0,'b-');
+    end
 
-    % Plot the circles
-    fcn_geometry_plotCircle([0 circle1_radius], circle1_radius,'b-');
-    fcn_geometry_plotCircle(circle2_center_from_spiral, circle2_radius,'b-');
+    % Plot circle2
+    if flag_circle2_is_line
+        % Circle 2 is a line
+        if 1==flag_circle1_is_line
+            x_limit = 1/Kf;
+            plot([-x_limit x_limit],[y_spiral(end) y_spiral(end)],'b-');
+        end    
+    else
+        % Circle 2 is a circle
+        plot(circle2_center_from_spiral(:,1),circle2_center_from_spiral(:,2),'m+','MarkerSize',20);
+        fcn_geometry_plotCircle(circle2_center_from_spiral, 1/Kf,'b-');
+    end
 
-    fcn_geometry_plotCircle([0 circle1_radius], center_to_center_distance,'b--');
+    % Plot the expected distance between them
+    fcn_geometry_plotCircle([0 1/K0], center_to_center_distance,'b--');
 
 end % Ends plotting
 
 
-error = abs(center_to_center_distance - spiral_predicted_center_to_center_distance);
+spiral_offset_error = abs(center_to_center_distance - spiral_predicted_center_to_center_distance);
 
 
 end % Ends fcn_INTERNAL_calcSpiralOffsetError
 
+%%
+function fcn_INTERNAL_plotCircles(flag_circle1_is_line, flag_circle2_is_line,K0,Kf, circle2_center, circle1_plot_format, circle2_plot_format)
+    % Plot circle1 
+    if flag_circle1_is_line
+        % Circle 1 is a line
+        if 0==flag_circle2_is_line
+            x_limit = 1/Kf;
+            plot([-x_limit x_limit],[0 0],circle1_plot_format);
+        end
+    else
+        % Circle 1 is a circle
+        plot(0,1/K0,'b+','MarkerSize',20);
+        fcn_geometry_plotCircle([0 1/K0], 1/K0,circle1_plot_format);
+    end
+
+    % Plot circle2
+    if flag_circle2_is_line
+        % Circle 2 is a line
+        if 0==flag_circle1_is_line
+            x_limit = 1/Kf;
+            plot([-x_limit x_limit],[y_spiral(end) y_spiral(end)],circle2_plot_format);
+        end    
+    else
+        % Circle 2 is a circle
+        plot(circle2_center(:,1),circle2_center(:,2),circle2_plot_format,'MarkerSize',20);
+        fcn_geometry_plotCircle(circle2_center, 1/Kf,circle2_plot_format);
+    end
+end
