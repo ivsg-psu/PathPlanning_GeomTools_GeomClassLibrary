@@ -183,9 +183,9 @@ switch lower(firstFitType)
     case 'arc'
         intersection_points = fcn_INTERNAL_intersectArcGeomtries(secondFitType, firstFitType_parameters, secondFitType_parameters); 
     case 'line'
-        intersection_points = fcn_INTERNAL_intersectLineGeometries(secondFitType, first_line_parameters, secondFitType_parameters);
+        intersection_points = fcn_INTERNAL_intersectLineGeometries(secondFitType, firstFitType_parameters, secondFitType_parameters);
     case {'segment'}
-        intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, first_line_parameters, secondFitType_parameters);          
+        intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, firstFitType_parameters, secondFitType_parameters);          
     case 'spiral'
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
@@ -624,6 +624,7 @@ s_distances = sum(ones(N_intersections,1)*segment_unit_tangent_vector.*vectors_f
 good_distance_indicies = intersect(find(s_distances>=segment_s_start),find(s_distances<=segment_s_end));
 if isempty(good_distance_indicies)
     points_to_test = [nan nan];
+    closest_point_to_start_of_segment = [nan nan];
 else
     points_to_test = points_to_test(good_distance_indicies,:);
 
