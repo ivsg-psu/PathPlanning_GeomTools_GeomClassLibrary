@@ -268,9 +268,7 @@ switch lower(secondFitType)
     case 'line'
         intersection_points = fcn_INTERNAL_intersectLineCircle(secondFitType_parameters, first_circle_parameters);
     case 'segment'        
-        warning('on','backtrace');
-        warning('An error will be thrown at this point due to missing code.');
-        error('fcn_geometry_intersectionGeom case is not yet ready for circle-segment case');
+        intersection_points = fcn_INTERNAL_intersectCircleSegment(first_circle_parameters, secondFitType_parameters); 
     case 'spiral'
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
@@ -415,6 +413,19 @@ end
 closest_point = points_to_test(min_point_index,:);
 end % Ends fcn_INTERNAL_findPointClosestToArcStart
 
+%% fcn_INTERNAL_intersectCircleSegment
+function intersection_points = fcn_INTERNAL_intersectCircleSegment(circle_parameters, segment_parameters)
+
+intersection_points = fcn_INTERNAL_intersectLineCircle(segment_parameters, circle_parameters);
+
+if ~all(isnan(intersection_points))
+    % Keep only the closest point on the segment. Returns nan if there are none
+    [~, intersection_points] = fcn_INTERNAL_findPointsInSegment(segment_parameters,intersection_points);
+
+end
+end
+
+
 %% fcn_INTERNAL_intersectArcGeomtries
 function  intersection_points = fcn_INTERNAL_intersectArcGeomtries(secondFitType, first_arc_parameters, secondFitType_parameters)
 switch lower(secondFitType)
@@ -553,6 +564,12 @@ else
     intersection_points = [nan nan];
 end
 
+% Remove repeats
+if isequal(length(intersection_points(:,1)),2)
+    if isequal(intersection_points(1,:),intersection_points(2,:))
+        intersection_points = unique(intersection_points,'rows');
+    end
+end
 end % Ends fcn_INTERNAL_intersectLineCircle
 
 
