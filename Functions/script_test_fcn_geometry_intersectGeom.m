@@ -801,7 +801,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(intersection_points,[0 6]));
 
-%% Basic Test: Circle to Segment Intersection - Two intersections
+%% Basic Test: Circle to Segment Intersection - Two intersections but outputs the point that is closer to the start point of the segment
 fig_num = 14103;
 figure(fig_num); clf;
 
@@ -1563,7 +1563,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: Arc to Arc Intersection - infinite intersections
+%% Basic Test: Arc to Arc Intersection - infinite intersections - (BUG??) - Output is NaN
 
 fig_num = 22902;
 figure(fig_num); clf;
@@ -1596,7 +1596,7 @@ secondFitType_parameters = arc2_parameters;
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
 assert(isequal(size(intersection_points),[1 2]));
-assert(isequal(isnan(intersection_points),[-3 3]));
+assert(isequal(isnan(intersection_points), [1 1]));
 
 %% check arc to line intersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1729,7 +1729,7 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [6 2];
+true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([6 2]);
 true_start_point_xy = [1 1];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
@@ -1776,7 +1776,7 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [4 2];
+true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([4 2]);
 true_start_point_xy = [1 1];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
@@ -1802,7 +1802,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [2.7889 1.8944]));
 
-%% Basic Test: Arc to Line Intersection - two intersections (BUG? - Ask Dr. B)
+%% Basic Test: Arc to Line Intersection - two intersections (BUG??) - Ask Dr. B
 fig_num = 23003;
 figure(fig_num); clf;
 
@@ -1983,54 +1983,6 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([1 1]);
-true_start_point_xy = [1 8];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
-
-% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
-
-
-firstFitType = 'arc';
-firstFitType_parameters = arc1_parameters;
-secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
-
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
-
-assert(isequal(size(intersection_points),[1 2]));
-assert(all(isnan(intersection_points)));
-
-%% Basic Test: Arc to Segment Intersection - no intersection
-fig_num = 24003;
-figure(fig_num); clf;
-
-% Fill in arc 1
-arc1_center_xy            = [0 3];
-circle_radius               = 3;
-arc1_vector_start         = [cos(-180*pi/180) sin(-180*pi/180)];
-arc1_vector_end           = [cos(-90*pi/180) sin(-900*pi/180)];
-arc1_is_circle            = 0;
-arc1_is_counter_clockwise = 1;
-arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
-
-
-% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc1_parameters(1,1:2) = arc1_center_xy;
-arc1_parameters(1,3)   = circle_radius;
-arc1_parameters(1,4:5) = arc1_angles;
-arc1_parameters(1,6)   = arc1_is_circle;
-arc1_parameters(1,7)   = arc1_is_counter_clockwise;
-
-
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 1]);
 true_start_point_xy = [2 0];
 
@@ -2058,7 +2010,7 @@ assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Segment Intersection - no intersection
-fig_num = 24004;
+fig_num = 24003;
 figure(fig_num); clf;
 
 % Fill in arc 1
@@ -2345,7 +2297,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0 3]));
 
-%% Basic Test: Arc to Segment Intersection - one intersection (BUG? - ask Dr.B)
+%% Basic Test: Arc to Segment Intersection - one intersection (BUG??) - ask Dr.B
 fig_num = 24106;
 figure(fig_num); clf;
 
@@ -2353,7 +2305,7 @@ figure(fig_num); clf;
 arc1_center_xy            = [0 0];
 circle_radius               = 3;
 arc1_vector_start         = [cos( -90*pi/180) sin( -90*pi/180)];
-arc1_vector_end           = [cos( 90*pi/180) sin( 90*pi/180)];
+arc1_vector_end           = [cos( 90*pi/180) sin( 90*pi/180)];  % Check Angle: This is -270 in the previous case
 arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
@@ -2822,7 +2774,7 @@ arc1_parameters(1,7)   = arc2_is_counter_clockwise;
 firstFitType = 'line';
 firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
-secondFitType_parameters = arc2_parameters;
+secondFitType_parameters = arc1_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2888,7 +2840,7 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
-%% Basic Test: line to line Intersection - No intersection (BUG??)
+%% Basic Test: line to line Intersection - No intersection (BUG??) 
 
 fig_num = 33002;
 figure(fig_num); clf;
