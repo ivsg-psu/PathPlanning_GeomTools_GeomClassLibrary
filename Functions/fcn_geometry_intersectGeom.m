@@ -585,6 +585,58 @@ end
 
 end % Ends fcn_INTERNAL_intersectLineArc
 
+%% fcn_INTERNAL_intersectSegmentLine
+function intersection_points = fcn_INTERNAL_intersectLineLine(first_segment_parameters, second_segment_parameters)
+
+% Get the first segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+first_segment_unit_tangent_vector   = first_segment_parameters(1,1:2);
+first_segment_base_point_xy         = first_segment_parameters(1,3:4);
+first_segment_s_start               = first_segment_parameters(1,5);
+first_segment_s_end                 = first_segment_parameters(1,6);
+first_segment_start_xy              = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_start;
+first_segment_end_xy                = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_end;
+
+% Get the second segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+second_segment_unit_tangent_vector   = second_segment_parameters(1,1:2);
+second_segment_base_point_xy         = second_segment_parameters(1,3:4);
+second_segment_s_start               = second_segment_parameters(1,5);
+second_segment_s_end                 = second_segment_parameters(1,6);
+second_segment_start_xy              = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_start;
+second_segment_end_xy                = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_end;
+
+% For segment to segment interesection
+flag_search_type = 4;
+
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+
+end % Ends fcn_INTERNAL_intersectLineLine
+
+%% fcn_INTERNAL_intersectSegmentLine
+function intersection_points = fcn_INTERNAL_intersectLineSegment(first_segment_parameters, second_segment_parameters)
+
+% Get the first segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+first_segment_unit_tangent_vector   = first_segment_parameters(1,1:2);
+first_segment_base_point_xy         = first_segment_parameters(1,3:4);
+first_segment_s_start               = first_segment_parameters(1,5);
+first_segment_s_end                 = first_segment_parameters(1,6);
+first_segment_start_xy              = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_start;
+first_segment_end_xy                = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_end;
+
+% Get the second segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+second_segment_unit_tangent_vector   = second_segment_parameters(1,1:2);
+second_segment_base_point_xy         = second_segment_parameters(1,3:4);
+second_segment_s_start               = second_segment_parameters(1,5);
+second_segment_s_end                 = second_segment_parameters(1,6);
+second_segment_start_xy              = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_start;
+second_segment_end_xy                = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_end;
+
+% For segment to segment interesection
+flag_search_type = 3;
+
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+
+end % Ends fcn_INTERNAL_intersectLineSegment
+
 %% fcn_INTERNAL_intersectSegmentGeomtries
 function  intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, first_segment_parameters, secondFitType_parameters)
 switch lower(secondFitType)
@@ -593,10 +645,9 @@ switch lower(secondFitType)
     case 'arc'
         intersection_points = fcn_INTERNAL_intersectSegmentArc(first_segment_parameters, secondFitType_parameters);
     case 'line'
-        error('need to write this')
+        % error('need to write this')
         intersection_points = fcn_INTERNAL_intersectSegmentLine(first_segment_parameters, secondFitType_parameters);
-    case 'segment'        
-        error('need to write this')
+    case 'segment'       
         intersection_points = fcn_INTERNAL_intersectSegmentSegment(first_segment_parameters,secondFitType_parameters);
     case 'spiral'
         warning('on','backtrace');
@@ -669,3 +720,56 @@ if ~all(isnan(intersection_points))
     end
 end
 end % Ends fcn_INTERNAL_intersectSegmentArc
+
+%% fcn_INTERNAL_intersectSegmentLine
+function intersection_points = fcn_INTERNAL_intersectSegmentLine(first_segment_parameters, second_segment_parameters)
+
+% Get the first segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+first_segment_unit_tangent_vector   = first_segment_parameters(1,1:2);
+first_segment_base_point_xy         = first_segment_parameters(1,3:4);
+first_segment_s_start               = first_segment_parameters(1,5);
+first_segment_s_end                 = first_segment_parameters(1,6);
+first_segment_start_xy              = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_start;
+first_segment_end_xy                = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_end;
+
+% Get the second segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+second_segment_unit_tangent_vector   = second_segment_parameters(1,1:2);
+second_segment_base_point_xy         = second_segment_parameters(1,3:4);
+second_segment_s_start               = second_segment_parameters(1,5);
+second_segment_s_end                 = second_segment_parameters(1,6);
+second_segment_start_xy              = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_start;
+second_segment_end_xy                = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_end;
+
+% For segment to segment interesection
+flag_search_type = 1;
+
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+
+end % Ends fcn_INTERNAL_intersectSegmentLine
+
+%% fcn_INTERNAL_intersectSegmentSegment
+function intersection_points = fcn_INTERNAL_intersectSegmentSegment(first_segment_parameters, second_segment_parameters)
+
+% Get the first segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+first_segment_unit_tangent_vector   = first_segment_parameters(1,1:2);
+first_segment_base_point_xy         = first_segment_parameters(1,3:4);
+first_segment_s_start               = first_segment_parameters(1,5);
+first_segment_s_end                 = first_segment_parameters(1,6);
+first_segment_start_xy              = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_start;
+first_segment_end_xy                = first_segment_base_point_xy + first_segment_unit_tangent_vector*first_segment_s_end;
+
+% Get the second segment fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+second_segment_unit_tangent_vector   = second_segment_parameters(1,1:2);
+second_segment_base_point_xy         = second_segment_parameters(1,3:4);
+second_segment_s_start               = second_segment_parameters(1,5);
+second_segment_s_end                 = second_segment_parameters(1,6);
+second_segment_start_xy              = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_start;
+second_segment_end_xy                = second_segment_base_point_xy + second_segment_unit_tangent_vector*second_segment_s_end;
+
+% For segment to segment interesection
+flag_search_type = 0;
+
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+
+end % Ends fcn_INTERNAL_intersectSegmentSegment
+
