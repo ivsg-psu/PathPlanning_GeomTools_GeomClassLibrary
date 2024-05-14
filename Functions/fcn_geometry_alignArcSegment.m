@@ -1,5 +1,5 @@
-function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine( arc_parameters, segment_parameters, varargin)
-%% fcn_geometry_alignArcLine
+function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcSegment( arc_parameters, segment_parameters, varargin)
+%% fcn_geometry_alignArcSegment
 % Revises the geometric parameters of an arc and line segment such that
 % they align where they join. It does this by checking the offset between
 % the two objects at the join location. 
@@ -19,7 +19,7 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %
 % Format:
 % [revised_line_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-% fcn_geometry_alignArcLine(arc_parameters, segment_parameters, (threshold), (continuity_level),  (fig_num))
+% fcn_geometry_alignArcSegment(arc_parameters, segment_parameters, (threshold), (continuity_level),  (fig_num))
 %
 % INPUTS:
 %
@@ -78,7 +78,7 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_geometry_alignArcLine
+% See the script: script_test_fcn_geometry_alignArcSegment
 % for a full test suite.
 %
 % This function was written on 2024_04_12 by S. Brennan
