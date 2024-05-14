@@ -1,4 +1,5 @@
-function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc( arc_parameters, segment_parameters, varargin)
+function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, varargin)
 %% fcn_geometry_alignSegmentArc
 % Revises the geometric parameters of an arc and line segment such that
 % they align where they join. It does this by checking the offset between
@@ -239,6 +240,17 @@ end
 
 %% Find transform that moves the line segment to desired solution
 
+% Find how much the arc moved
+segment_old_base_point = segment_parameters(1,3:4);
+segment_new_base_point = revised_inverse_segment_parameters(1,3:4);
+translation_vector = segment_new_base_point - segment_old_base_point;
+
+% create a transformation that moves one to the other
+transformMatrix_translation_into_origin = se2(0,'theta',translation_vector);
+St_transform_XYtoSt = transformMatrix_translation_into_origin;
+
+%%%%%
+% FORMAT:
 % % Perform the rotation
 % desired_arc1_parameters = arc_parameters;
 % desired_arc1_parameters(1,5) = desired_angle_arc_end;
@@ -253,36 +265,36 @@ end
 % 
 % st_arc_parameters = st_secondary_parameters{1};
 % st_segment_parameters = st_secondary_parameters{2};
-
-
-
-desired_segment_parameters = revised_inverse_segment_parameters;
-
-secondary_parameters_type_strings{1} = 'segment';
-secondary_parameters{1}              = segment_parameters;
-secondary_parameters_type_strings{2} = 'arc';
-secondary_parameters{2}              = arc_parameters;
-
-[~, st_secondary_parameters, St_transform_XYtoSt, ~, ~] = ...
-    fcn_geometry_orientGeometryXY2St('segment', desired_segment_parameters, (secondary_parameters_type_strings), (secondary_parameters), (-1));
-
-st_arc_parameters = st_secondary_parameters{1};
-st_segment_parameters = st_secondary_parameters{2};
-
-if ~isempty(debug_fig_num)
-    % Plot the results
-    figure(debug_fig_num);
-    subplot(3,2,1);
-    debug_axis = axis;
-
-    subplot(3,2,3);
-
-    fcn_geometry_plotGeometry('arc',st_segment_parameters);
-    fcn_geometry_plotGeometry('segment',st_arc_parameters);
-  
-    title('Shifted inverse outputs');
-    axis(debug_axis);
-end
+% 
+% 
+% 
+% desired_segment_parameters = revised_inverse_segment_parameters;
+% 
+% secondary_parameters_type_strings{1} = 'segment';
+% secondary_parameters{1}              = segment_parameters;
+% secondary_parameters_type_strings{2} = 'arc';
+% secondary_parameters{2}              = arc_parameters;
+% 
+% [~, st_secondary_parameters, St_transform_XYtoSt, ~, ~] = ...
+%     fcn_geometry_orientGeometryXY2St('segment', desired_segment_parameters, (secondary_parameters_type_strings), (secondary_parameters), (-1));
+% 
+% st_arc_parameters = st_secondary_parameters{1};
+% st_segment_parameters = st_secondary_parameters{2};
+% 
+% if ~isempty(debug_fig_num)
+%     % Plot the results
+%     figure(debug_fig_num);
+%     subplot(3,2,1);
+%     debug_axis = axis;
+% 
+%     subplot(3,2,3);
+% 
+%     fcn_geometry_plotGeometry('arc',st_segment_parameters);
+%     fcn_geometry_plotGeometry('segment',st_arc_parameters);
+% 
+%     title('Shifted inverse outputs');
+%     axis(debug_axis);
+% end
 
 %% Apply the inverse of the transform to the results
 

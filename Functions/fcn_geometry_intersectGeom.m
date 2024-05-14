@@ -362,10 +362,12 @@ else
     for ith_row = 1:length(points_to_test(:,1))
         [~, arc_angle_in_radians_1_to_3(ith_row,1), ~, ~, ~] = fcn_geometry_arcAngleFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy, -1);
     end
-    if abs(arc_angle_in_radians_1_to_3(1)) < abs(arc_angle_in_radians_1_to_3(2))
-        points_in_arc(2,:) = [nan nan];
-    else
-        points_in_arc(1,:) = [nan nan];
+    if length(points_to_test(:,1))>1
+        if abs(arc_angle_in_radians_1_to_3(1)) < abs(arc_angle_in_radians_1_to_3(2))
+            points_in_arc(2,:) = [nan nan];
+        else
+            points_in_arc(1,:) = [nan nan];
+        end
     end
 end
 
