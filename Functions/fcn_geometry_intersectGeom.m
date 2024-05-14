@@ -338,6 +338,12 @@ arc_end_angle_in_radians     = arc_parameters(1,5);
 arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
 arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
 arc_is_counter_clockwise     = arc_parameters(1,7);
+if 1==arc_is_counter_clockwise
+    cross_arc_direction = 1;
+else
+    cross_arc_direction = -1;
+end
+
 
 % Are the intersections within the arc range that we were given? To
 % check this, we use the three points on each arc - the start, the
@@ -347,27 +353,22 @@ arc_is_counter_clockwise     = arc_parameters(1,7);
 % the potential arc intersection points to the circle intersections,
 % and remove any of the arc intersection points that are not on both of
 % the arcs.
-points_in_arc = points_to_test;
 
-if ~isequal(arc_is_counter_clockwise,0)
-    for ith_row = 1:length(points_to_test(:,1))
-        % Check arc
-        intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy,-1);
-        if arc_is_counter_clockwise ~= intersection_is_counterClockwise
-            points_in_arc(ith_row,:) = [nan nan];
-        end
-    end
-else
-    arc_angle_in_radians_1_to_3 = zeros(length(points_to_test(:,1)),1);
-    for ith_row = 1:length(points_to_test(:,1))
-        [~, arc_angle_in_radians_1_to_3(ith_row,1), ~, ~, ~] = fcn_geometry_arcAngleFrom3Points(arc_start_xy, points_to_test(ith_row,:), arc_end_xy, -1);
-    end
-    if length(points_to_test(:,1))>1
-        if abs(arc_angle_in_radians_1_to_3(1)) < abs(arc_angle_in_radians_1_to_3(2))
-            points_in_arc(2,:) = [nan nan];
-        else
-            points_in_arc(1,:) = [nan nan];
-        end
+% Check which points are on the arc
+N_points_to_test = length(points_to_test(:,1));
+intersections_are_counterClockwise = fcn_geometry_arcDirectionFrom3Points(ones(N_points_to_test,1)*arc_start_xy, points_to_test, ones(N_points_to_test,1)*arc_end_xy,-1);
+points_in_arc = points_to_test;
+bad_indicies = find(ones(N_points_to_test,1)*cross_arc_direction~=intersections_are_counterClockwise);
+points_in_arc(bad_indicies,:) = ones(length(bad_indicies),1)*[nan nan];
+
+
+% More than 2 points? then keep only the point closest to the start
+if N_points_to_test>1
+    arc_angle_in_radians_1_to_2 = fcn_geometry_arcAngleFrom3Points(ones(N_points_to_test,1)*arc_start_xy, points_to_test, ones(N_points_to_test,1)*arc_end_xy, -1);    
+    if abs(arc_angle_in_radians_1_to_2(1)) < abs(arc_angle_in_radians_1_to_2(2))
+        points_in_arc(2,:) = [nan nan];
+    else
+        points_in_arc(1,:) = [nan nan];
     end
 end
 
