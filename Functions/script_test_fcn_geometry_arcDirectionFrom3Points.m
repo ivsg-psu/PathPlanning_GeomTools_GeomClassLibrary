@@ -40,7 +40,28 @@ is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, poi
 
 assert(isequal(is_counterClockwise,[-1; 1]))
 
+%% BASIC example 11 - CCW arc, with test point exactly at start point (gives 0)
+fig_num = 1;
+figure(fig_num);clf;
 
+points1 = [0 0];
+points2 = [0 0];
+points3 = [0 5];
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+
+assert(isequal(is_counterClockwise,0))
+
+
+%% BASIC example 12 - CCW arc, with test point exactly at start point (gives 0)
+fig_num = 1;
+figure(fig_num);clf;
+
+points1 = [0 0];
+points2 = [0 5];
+points3 = [0 5];
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+
+assert(isequal(is_counterClockwise,0))
 %% Debugging case
 fig_num = 1232;
 figure(fig_num);clf;

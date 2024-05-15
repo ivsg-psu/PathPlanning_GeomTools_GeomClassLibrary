@@ -25,7 +25,9 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 %      corresponding row of points creates a counter-clockwise arc
 %      (positive) or -1 if it would create a clockwise arc (e.g. negative).
 %      It returns 0 if the direction is undefined (if points are repeated,
-%      colinear, etc.).
+%      colinear, exactly on start or end, etc.). To be defined, the
+%      cross-product between the vector12 and vector 13 must have magnitude
+%      greater than 1E-10.
 %
 % DEPENDENCIES:
 %
@@ -51,6 +53,11 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 % -- fixed bug with cross function call to force it to cross column-wise
 % 2024_04_14 - S. Brennan
 % -- added fcn_geometry_fillColorFromNumberOrName to plotting
+% 2024_05_15 - S. Brennan
+% -- fixed bug where gives wrong answer if test points are on start or end
+% points, or VERY close to zero. Added check on numerical tolerance to fix
+% this, returning 0 as result if points are at end.
+
 
 %% Debugging and Input checks
 
@@ -144,8 +151,13 @@ projection_points1_to_points3 = points3 - points1;
 
 % Do the cross product from segment 1-2 to segment 1-3
 cross_product = cross([projection_points1_to_points2 zeros(N_points,1)],[projection_points1_to_points3 zeros(N_points,1)],2);
+cross_product_direction = cross_product(:,3);
 
-is_counterClockwise = sign(cross_product(:,3));
+% If barely positive or negative, within numerical tolerance of 1E-10, then
+% it is indeterminate and force it to be zero
+cross_product_direction(abs(cross_product_direction)<1E-10) = 0;
+
+is_counterClockwise = sign(cross_product_direction);
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

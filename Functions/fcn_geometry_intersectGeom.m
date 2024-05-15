@@ -95,6 +95,11 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % "fcn_INTERNAL_findPointsInArc" calculates the arc angle using arc_start,
 % arc_intersection, and arc_end, and outputs the intersection point that is
 % closest to the arc.
+% 2024_05_15 - S. Brennan
+% -- fixed bug where the arc intersection calculations is given a
+% counter-clockwise result when intersection points are exactly at
+% start/end of segments. In these cases, the results should count as
+% intersections but were not being noted correctly.
 
 % TO-DO:
 % 2025_05_10 - added by Sean Brennan
@@ -357,20 +362,17 @@ end
 % Check which points are on the arc
 N_points_to_test = length(points_to_test(:,1));
 intersections_are_counterClockwise = fcn_geometry_arcDirectionFrom3Points(ones(N_points_to_test,1)*arc_start_xy, points_to_test, ones(N_points_to_test,1)*arc_end_xy,-1);
+
 points_in_arc = points_to_test;
-bad_indicies = find(ones(N_points_to_test,1)*cross_arc_direction~=intersections_are_counterClockwise);
+bad_indicies  = find(ones(N_points_to_test,1)*cross_arc_direction~=intersections_are_counterClockwise);
 points_in_arc(bad_indicies,:) = ones(length(bad_indicies),1)*[nan nan];
 
+% Sometimes points are input that are exactly at the start or end of an
+% arc. In these cases, the cross products are zero (e.g. indeterminate). In
+% these cases, count them as an intersection.
+zero_indicies = find(0==intersections_are_counterClockwise);
+points_in_arc(zero_indicies,:) = points_to_test(zero_indicies,:);
 
-% More than 2 points? then keep only the point closest to the start
-if N_points_to_test>1
-    arc_angle_in_radians_1_to_2 = fcn_geometry_arcAngleFrom3Points(ones(N_points_to_test,1)*arc_start_xy, points_to_test, ones(N_points_to_test,1)*arc_end_xy, -1);    
-    if abs(arc_angle_in_radians_1_to_2(1)) < abs(arc_angle_in_radians_1_to_2(2))
-        points_in_arc(2,:) = [nan nan];
-    else
-        points_in_arc(1,:) = [nan nan];
-    end
-end
 
 % Remove the nan rows
 points_in_arc = points_in_arc(~isnan(points_in_arc(:,1)),:);
@@ -379,9 +381,6 @@ points_in_arc = points_in_arc(~isnan(points_in_arc(:,1)),:);
 if isempty(points_in_arc)
     points_in_arc = [nan nan];
 end
-
-% Remove repeats
-points_in_arc = unique(points_in_arc,'rows');
 
 % At this point, there may be 2 intersection points. Are there 2?
 % NOTE: the points may contain nan values, and if so, then nan is
@@ -400,6 +399,7 @@ arc_start_angle_in_radians   = arc_parameters(1,4);
 arc_end_angle_in_radians     = arc_parameters(1,5);
 arc_start_xy                 = arc_center_xy + arc_radius*[cos(arc_start_angle_in_radians) sin(arc_start_angle_in_radians)];
 arc_end_xy                   = arc_center_xy + arc_radius*[cos(arc_end_angle_in_radians) sin(arc_end_angle_in_radians)];
+arc_is_counter_clockwise     = arc_parameters(1,7);
 
 N_points = length(points_to_test(:,1));
 arc_angles = nan(N_points,1);
@@ -411,9 +411,23 @@ for ith_point = 1:N_points
     end
 end
 
-[~, min_point_index] = min(arc_angles);
+% Make sure we only have real parts, and convert to only angles between 0
+% and 2pi
+arc_angles = mod(real(arc_angles),2*pi);
 
-closest_point = points_to_test(min_point_index,:);
+% Find the arc closest to the start point. For an arc that is
+% counter-clockwise, it will be the point with the smallest angle. For
+% an arc that is clockwise, it will be the point with the largest
+% angle.
+if 1==arc_is_counter_clockwise
+    % Counter-clockwise - keep smallest angle, so set largest angle to nan
+    [~, closest_point_index] = min(arc_angles);
+else
+    % Clockwise - keep largest angle, so set smallest angle to nan
+    [~, closest_point_index] = max(arc_angles);
+end
+
+closest_point = points_to_test(closest_point_index,:);
 end % Ends fcn_INTERNAL_findPointClosestToArcStart
 
 %% fcn_INTERNAL_intersectCircleSegment
@@ -610,7 +624,7 @@ second_segment_end_xy                = second_segment_base_point_xy + second_seg
 % For segment to segment interesection
 flag_search_type = 4;
 
-[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type);
 
 end % Ends fcn_INTERNAL_intersectLineLine
 
@@ -636,7 +650,7 @@ second_segment_end_xy                = second_segment_base_point_xy + second_seg
 % For segment to segment interesection
 flag_search_type = 3;
 
-[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,[]);
 
 end % Ends fcn_INTERNAL_intersectLineSegment
 
@@ -746,7 +760,7 @@ second_segment_end_xy                = second_segment_base_point_xy + second_seg
 % For segment to segment interesection
 flag_search_type = 1;
 
-[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,[]);
 
 end % Ends fcn_INTERNAL_intersectSegmentLine
 
@@ -772,7 +786,7 @@ second_segment_end_xy                = second_segment_base_point_xy + second_seg
 % For segment to segment interesection
 flag_search_type = 0;
 
-[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,(-1));
+[~,intersection_points] = fcn_Path_findProjectionHitOntoPath([first_segment_start_xy; first_segment_end_xy],second_segment_start_xy,second_segment_end_xy,flag_search_type,[]);
 
 end % Ends fcn_INTERNAL_intersectSegmentSegment
 

@@ -1274,17 +1274,17 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.3333    1.1144]));
 
-%% Basic Test: Arc to Arc Intersection - 2 intersections
+%% Basic Test: Arc to Arc Intersection - 2 intersections, arc1 CW, arc2 CW, intersecting arc2 at 2nd intersection
 fig_num = 22103;
 figure(fig_num); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
 arc1_radius               = 3;
-arc1_vector_start         = [cos(90*pi/180) sin(90*pi/180)];
-arc1_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
+arc1_vector_start         = [cos(-30*pi/180) sin(-30*pi/180)];
+arc1_vector_end           = [cos( 90*pi/180) sin( 90*pi/180)];
 arc1_is_circle            = 0;
-arc1_is_counter_clockwise = 1;
+arc1_is_counter_clockwise = 0;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
 
@@ -1296,12 +1296,12 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
-arc2_center_xy            = [-4 3];
-circle_radius               = 2;
-arc2_vector_start         = [cos(-90*pi/180) sin(-90*pi/180)];
-arc2_vector_end           = [cos(90*pi/180) sin(90*pi/180)];
+arc2_center_xy            = [-2 0];
+circle_radius             = 2;
+arc2_vector_start         = [cos(180*pi/180) sin(180*pi/180)];
+arc2_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
 arc2_is_circle            = 0;
-arc2_is_counter_clockwise = 1;
+arc2_is_counter_clockwise = 0;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
 
@@ -1320,17 +1320,17 @@ secondFitType_parameters = arc2_parameters;
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
 assert(isequal(size(intersection_points),[1 2]));
-assert(isequal(round(intersection_points,4),[-2.6250    4.4524]));
+assert(isequal(round(intersection_points,4),[0    0]));
 
-%% Basic Test: Arc to Arc Intersection - 2 intersections - Same as previous case but the arc parameters are interchanged
+%% Basic Test: Arc to Arc Intersection - 2 intersections, arc1 CW, arc2 CW, intersecting arc2 at 2nd intersection
 fig_num = 22104;
 figure(fig_num); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
 arc1_radius               = 3;
-arc1_vector_start         = [cos(90*pi/180) sin(90*pi/180)];
-arc1_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
+arc1_vector_end           = [cos(-30*pi/180) sin(-30*pi/180)];
+arc1_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
@@ -1344,10 +1344,10 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % Fill in arc 2
-arc2_center_xy            = [-4 3];
-circle_radius               = 2;
+arc2_center_xy            = [-2 0];
+circle_radius             = 2;
+arc2_vector_end           = [cos(180*pi/180) sin(180*pi/180)];
 arc2_vector_start         = [cos(-90*pi/180) sin(-90*pi/180)];
-arc2_vector_end           = [cos(90*pi/180) sin(90*pi/180)];
 arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
@@ -1368,7 +1368,9 @@ secondFitType_parameters = arc1_parameters;
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
 assert(isequal(size(intersection_points),[1 2]));
-assert(isequal(round(intersection_points,4),[-2.6250    1.5476]));
+assert(isequal(round(intersection_points,4),[0    0]));
+
+
 
 %% Basic Test: Arc to Arc Intersection - 1 intersection at a tangent
 fig_num = 22105;
@@ -1807,7 +1809,7 @@ fig_num = 23003;
 figure(fig_num); clf;
 
 % Fill in arc 1
-arc1_center_xy            = [0 3];
+arc1_center_xy            = [3 0];
 circle_radius               = 3;
 arc1_vector_start         = [cos(-180*pi/180) sin(-180*pi/180)];
 arc1_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
@@ -1848,7 +1850,7 @@ secondFitType_parameters = line_parameters;
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
 assert(isequal(size(intersection_points),[1 2]));
-assert(all(isnan(intersection_points)));
+assert(isequal(round(intersection_points,4), [0 0]));
 
 %% Basic Test: Arc to Line Intersection - two intersections
 fig_num = 23103;
@@ -2297,12 +2299,12 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0 3]));
 
-%% Basic Test: Arc to Segment Intersection - one intersection (BUG??) - ask Dr.B
+%% Basic Test: Arc to Segment Intersection - one intersection EXACTLY at end of arc
 fig_num = 24106;
 figure(fig_num); clf;
 
 % Fill in arc 1
-arc1_center_xy            = [0 0];
+arc1_center_xy            = [0 -3];
 circle_radius               = 3;
 arc1_vector_start         = [cos( -90*pi/180) sin( -90*pi/180)];
 arc1_vector_end           = [cos( 90*pi/180) sin( 90*pi/180)];  % Check Angle: This is -270 in the previous case
@@ -2320,7 +2322,7 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
 true_line_unit_tangent_vector = [1 0];
-true_start_point_xy = [0 3];
+true_start_point_xy = [0 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
@@ -2343,7 +2345,7 @@ secondFitType_parameters = line_parameters;
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
 assert(isequal(size(intersection_points),[1 2]));
-assert(isequal(round(intersection_points,4), [0 3]));
+assert(isequal(round(intersection_points,4), [0 0]));
 
 %% check line to XXXX intersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
