@@ -96,6 +96,7 @@
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
+% 2025_05_15 - add spiral and polynomial types to the alignment options
 
 
 %% Prep the workspace

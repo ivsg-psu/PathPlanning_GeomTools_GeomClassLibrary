@@ -209,7 +209,7 @@ if (length(intersection_point1(:,1))>1)&&(0==continuity_level)
 end
 
 %% Call alignArcSegment to get inverse solution
-% Flip the arc ordering
+% Flip the arc's ordering
 arc_parameters_flipped = arc_parameters;
 arc_parameters_flipped(1,4) = arc_parameters(1,5);
 arc_parameters_flipped(1,5) = arc_parameters(1,4);
@@ -219,7 +219,8 @@ else
     arc_parameters_flipped(1,7) = 1;
 end
 
-[revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = fcn_geometry_alignArcSegment(...
+[revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = ...
+    fcn_geometry_alignArcSegment(...
     arc_parameters_flipped, segment_parameters, (threshold), (continuity_level), (-1));
 
 if ~isempty(debug_fig_num)
@@ -298,10 +299,30 @@ St_transform_XYtoSt = transformMatrix_translation_into_origin;
 
 %% Apply the inverse of the transform to the results
 
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+[revised_flipped_arc_parameters, revised_flipped_segment_parameters, revised_flipped_intermediate_geometry_join_type, revised_flipped_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
     revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters, St_transform_XYtoSt, 0, debug_fig_num);
 
+%% Flip the direction of the segment and arcs
+% Flip the arc ordering
+revised_arc_parameters      = revised_flipped_arc_parameters;
+revised_arc_parameters(1,4) = revised_flipped_arc_parameters(1,5);
+revised_arc_parameters(1,5) = revised_flipped_arc_parameters(1,4);
+if 1==revised_flipped_arc_parameters(1,7)
+    revised_arc_parameters(1,7) = 0;
+else
+    revised_arc_parameters(1,7) = 1;
+end
+
+% Flip the segment ordering
+revised_arc_parameters      = revised_flipped_arc_parameters;
+revised_arc_parameters(1,4) = revised_flipped_arc_parameters(1,5);
+revised_arc_parameters(1,5) = revised_flipped_arc_parameters(1,4);
+if 1==revised_flipped_arc_parameters(1,7)
+    revised_arc_parameters(1,7) = 0;
+else
+    revised_arc_parameters(1,7) = 1;
+end
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
