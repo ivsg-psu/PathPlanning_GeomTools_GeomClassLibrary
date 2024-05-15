@@ -136,13 +136,25 @@ switch lower(geomType)
         geomParameters_flipped = arc_parameters_flipped;
 
     case 'line'
-        intersection_points = fcn_INTERNAL_intersectLineGeometries(secondFitType, firstFitType_parameters, secondFitType_parameters);
+        line_parameters_flipped         = geomParameters;
+        line_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
+
+        geomParameters_flipped = line_parameters_flipped;
     case {'segment'}
-        intersection_points = fcn_INTERNAL_intersectSegmentGeomtries(secondFitType, firstFitType_parameters, secondFitType_parameters);          
+        segment_parameters_flipped         = geomParameters;
+        segment_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
+        segment_parameters_flipped(1,5)    = -geomParameters(1,6);
+        segment_parameters_flipped(1,6)    = -geomParameters(1,5);
+
+        geomParameters_flipped = segment_parameters_flipped;
     case 'spiral'
-        warning('on','backtrace');
-        warning('An error will be thrown at this point due to missing code.');
-        error('fcn_geometry_intersectionGeom case is not yet ready for any spiral start case');
+        URHERE
+        spiral_join_parameters(1,1) = spiralLength;
+        spiral_join_parameters(1,2) = -rotation_angle;
+        spiral_join_parameters(1,3) = circle1_start_xy(1,1);
+        spiral_join_parameters(1,4) = circle1_start_xy(1,2);
+        spiral_join_parameters(1,5) = K0;
+        spiral_join_parameters(1,6) = Kf;
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
