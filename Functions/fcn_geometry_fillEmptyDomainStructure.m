@@ -43,6 +43,9 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %
 %            'spiral' - an Euler spiral curve such that the curvature is
 %            linearly changing versus the station coordinate.
+%    
+%            'Hough cubic polynomial' - A Hough fit of cubic polynomial
+%            type
 %            
 %      emptyDomain.points_in_domain = [nan nan];
 %
@@ -137,6 +140,14 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                Kf   % The final curvature
 %              ] 
 %
+%            'Hough Cubic Polynomial' - 
+% 
+%             [ coeff_x^3, % cubic term coeffiecient
+%               coeff_x^2, % square term coeffiecient
+%               coeff_x^1, % linear term coeffiecient
+%               coeff_x^0, % constant term coeffiecient
+%              ]
+%
 %            
 %      emptyDomain.best_fit_domain_box = [];
 %
@@ -175,6 +186,8 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 % Revision history:
 % 2024_01_15 - S. Brennan
 % -- wrote the code
+% 2024_05_15 - Aneesh Batchu
+% -- added comments for 'Hough cubic polynomial'
 
 %% Debugging and Input checks
  
