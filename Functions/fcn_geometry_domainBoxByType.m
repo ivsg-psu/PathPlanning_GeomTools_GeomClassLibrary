@@ -62,6 +62,8 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 % Revision History:
 % 2024_01_17 - S. Brennan
 % -- wrote the function
+% 2024_05_15 - Aneesh Batchu
+% -- Added a case for "cubic polynomial"
 
 
 %% Debugging and Input checks
@@ -113,6 +115,8 @@ if (0==flag_max_speed)
             case {'line', 'segment'}
                 % Are there the right number of inputs for a line or segment?
                 narginchk(5,6);
+            case {'cubic polynomial'}
+                narginchk(2,3);
             otherwise
                 error('Unknown domain type given: %s',type_of_domain);
         end
@@ -131,6 +135,9 @@ switch type_of_domain
         base_point_on_line          = varargin{2};
         transverse_distance_range   = varargin{3};
         distance_from_line_to_boundary = varargin{4};
+
+    case {'cubic polynomial'}
+        polygon_vertices = varargin{1};
 
     otherwise
         error('Unknown domain type given: %s',type_of_domain);
@@ -214,6 +221,8 @@ switch type_of_domain
             max_box_point + distance_from_line_to_boundary*unit_converted_orthogonal_vector;
             min_box_point + distance_from_line_to_boundary*unit_converted_orthogonal_vector;
             ];
+    case {'cubic polynomial'}
+        domain_box = polygon_vertices;
 
     otherwise
         error('Unknown domain type given: %s',type_of_domain)

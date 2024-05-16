@@ -71,6 +71,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % -- added line segment as one of the names for the segment case
 % 2024_05_09 - S. Brennan
 % -- added none type
+% 2024_05_15 - Aneesh Batchu
+% -- added a case for "cubic polynomial"
 
 %% Debugging and Input checks
 
@@ -188,6 +190,8 @@ else
             color_vector = [0 0 1];
         case {'spiral'} % Spiral fits are magenta
             color_vector = [1 0 1];
+        case {'cubic polynomial'} % Cubic polynomial fits are cyan
+            color_vector = [0 1 1];
         otherwise
             warning('on','backtrace');
             warning('Unrecognized plot color string: %s. Reverting to default.', string_identifier);

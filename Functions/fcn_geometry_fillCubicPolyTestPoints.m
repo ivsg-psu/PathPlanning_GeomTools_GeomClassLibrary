@@ -8,7 +8,7 @@ function [test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints (coef
 %
 % FORMAT: 
 %
-% [test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints (coeff_x3, coeff_x2, coeff_x1, coeff_x0, x_range, num_points, sigma, varargin) 
+% [test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints (coeff_x3, coeff_x2, coeff_x1, coeff_x0, x_range, num_points, sigma, (fig_num)) 
 % 
 % INPUTS:
 %

@@ -1,4 +1,4 @@
-function agreement_indices = fcn_geometry_findAgreementOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, varargin)
+function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, varargin)
 %% fcn_geometry_findAgreementOfPointsToCubicPoly 
 %
 % Given a set of XY points, source points, and fitted parameters, finds the
@@ -11,7 +11,7 @@ function agreement_indices = fcn_geometry_findAgreementOfPointsToCubicPoly(point
 %
 % INPUTS:
 %
-%      points: a Nx2 vector where N is the number of points, but at least 2\
+%      points: a Nx2 vector where N is the number of points, but at least 2
 %      rows.
 %
 %      source_points: These are the points that are used to fit a cubic
@@ -50,8 +50,11 @@ function agreement_indices = fcn_geometry_findAgreementOfPointsToCubicPoly(point
 % Questions or comments? abb6486@psu.edu or sbrennan@psu.edu
 
 % Revision history:
-% 2024_05_10 - Aneesh 
+% 2024_05_10 - Aneesh Batchu
 % -- wrote the code
+% 2024_05_13 - Aneesh Batchu
+% -- "polygon_vertices" are included as the output to plot the polygon
+% domain
 
 %% Debugging and Input checks
 
