@@ -458,8 +458,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_arc_parameters,4),[0.4359    0.9000    1.0000   -2.0218   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -586,9 +586,9 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0.1];
 segment_s_start             = 0;
-segment_s_end               = 2;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -629,8 +629,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.4000    0.9000    1.0000   -0.9273   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -2.0000    0.1000         0    3.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -643,7 +643,9 @@ tolerance = 0.01; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0.1];
+segment_s_start             = 0;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -711,11 +713,11 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius-0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
-arc_is_counter_clockwise = 0;
+arc_is_counter_clockwise = 0; % Arc is clockwise
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
 arc_parameters(1,1:2) = arc_center_xy;
@@ -741,8 +743,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -768,9 +770,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius - 0.3];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -825,9 +827,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius - 0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -869,9 +871,9 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
+segment_base_point_xy       = [-2 0];
 segment_s_start             = 0;
-segment_s_end               = 2;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -882,9 +884,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius+0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -898,7 +900,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 % Set parameters
 continuity_level = 0;
 
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -914,8 +915,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.5641   -0.9000    1.0000    1.1198    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000    0.0000   -2.0000         0         0    3.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -929,7 +930,9 @@ tolerance = 0.01; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0];
+segment_s_start             = 0;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -940,9 +943,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius+0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -955,8 +958,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 % Set parameters
 continuity_level = 0;
-
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -1054,8 +1055,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    1.0000    1.0000   -1.5708   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1081,7 +1082,8 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-x_offset = 0; y_offset = -0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
+x_offset = 0; y_offset = +0.1; 
+arc_center_xy            = [x_offset arc_radius+y_offset];
 arc_vector_start         = [cos(-120*pi/180) sin(-120*pi/180)];
 arc_vector_end           = [cos(- 20*pi/180) sin(- 20*pi/180)];
 arc_is_circle            = 0;
@@ -1138,7 +1140,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-x_offset = 0; y_offset = -0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
+x_offset = 0; y_offset = +0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
 arc_vector_start         = [cos(-120*pi/180) sin(-120*pi/180)];
 arc_vector_end           = [cos(- 20*pi/180) sin(- 20*pi/180)];
 arc_is_circle            = 0;
@@ -1182,7 +1184,7 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0];
 segment_s_start             = 0;
 segment_s_end               = 2;
 
@@ -1225,8 +1227,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    1.0000    1.0000   -1.5708   -0.3491         0    1.000]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1239,7 +1241,7 @@ tolerance = 0.01; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0];
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -1307,9 +1309,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius-0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1337,8 +1339,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1364,9 +1366,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius-0.2];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1421,9 +1423,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius-0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1465,9 +1467,9 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
+segment_base_point_xy       = [-2 0];
 segment_s_start             = 0;
-segment_s_end               = 2;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -1478,9 +1480,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius+0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1494,7 +1496,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 % Set parameters
 continuity_level = 1;
 
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -1510,7 +1511,7 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
+close aassert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
 assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
@@ -1525,7 +1526,9 @@ tolerance = 0.01; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0];
+segment_s_start             = 0;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -1536,9 +1539,9 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_center_xy            = [0 -arc_radius+0.1];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1551,8 +1554,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 % Set parameters
 continuity_level = 1;
-
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -1616,7 +1617,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-x_offset = 0; y_offset = -0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
+x_offset = 0; y_offset = 0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
 arc_vector_start         = [cos(-120*pi/180) sin(-120*pi/180)];
 arc_vector_end           = [cos(- 20*pi/180) sin(- 20*pi/180)];
 arc_is_circle            = 0;
@@ -1900,8 +1901,8 @@ segment_parameters(1,6)   = segment_s_end;
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
 arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -1958,8 +1959,8 @@ segment_parameters(1,6)   = segment_s_end;
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
 arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -2015,8 +2016,8 @@ segment_parameters(1,6)   = segment_s_end;
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
 arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -2072,8 +2073,8 @@ segment_parameters(1,6)   = segment_s_end;
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
 arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
@@ -2130,8 +2131,8 @@ segment_parameters(1,6)   = segment_s_end;
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
 arc_center_xy            = [0 -arc_radius];
-arc_vector_start         = [cos( 170*pi/180) sin( 170*pi/180)];
-arc_vector_end           = [cos(  90*pi/180) sin(  90*pi/180)];
+arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
+arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];

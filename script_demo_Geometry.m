@@ -75,7 +75,7 @@
 % -- Updated plotGeometry to allow string argument inputs
 % 2024_05_14 - Sean Brennan
 % -- Finished alignArcSegment
-% 
+% -- Added flipGeom functionality. Starting to use this in codes.
 
 %% To-do items
 % 2024_04_15 - S. Brennan

@@ -67,7 +67,8 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % -- added 'none' and empty as allowable geometry types
 % 2024_05_10 - S. Brennan
 % -- added format string input option
-
+% 2024_05_16
+% -- Fixed bug that happens when XY data is empty
 
 %% Debugging and Input checks
 
@@ -360,7 +361,7 @@ if flag_do_plots
     end
 
     % Plot green/red headers and tailers?
-    if ~any(isnan(XY_data))
+    if ~any(isnan(XY_data),'all') && ~isempty(XY_data)
         if 1==1
             %%%%%%
             % Plot start and end locations as green/red points
