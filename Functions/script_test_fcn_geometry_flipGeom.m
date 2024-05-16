@@ -109,29 +109,36 @@ assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), round([-line_unit_tangent_vector line_base_point_xy -line_s_end -line_s_start],4)));
 
 %% Basic Test: spiral - flips start and end stations, flips direction, but otherwise the same
-fig_num = 4;
+fig_num = 5;
 figure(fig_num); clf;
 
-% Fill in line
-line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 5]);
-line_base_point_xy       = [-4 3];
-line_s_start             = 0;
-line_s_end               = 1;
-
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-clear segment_parameters
-segment_parameters(1,1:2) = line_unit_tangent_vector;
-segment_parameters(1,3:4) = line_base_point_xy;
-segment_parameters(1,5)   = line_s_start;
-segment_parameters(1,6)   = line_s_end;
+clear spiral_parameters
+spiral_parameters = [2.2403   -1.1202   -0.9002    0.5645    1.0000         0];
 
-geomType = 'segment';
-geomParameters = segment_parameters;
+geomType = 'spiral';
+geomParameters = spiral_parameters;
 
 geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
-assert(isequal(round(geomParameters_flipped,4), round([-line_unit_tangent_vector line_base_point_xy -line_s_end -line_s_start],4)));
+assert(isequal(round(geomParameters_flipped,4), round([2.2403    3.1415    1.0748   -0.2000         0   -1.0000],4)));
+
+%% Basic Test: 'none' - does nothing
+fig_num = 6;
+figure(fig_num); clf;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear none_parameters
+none_parameters = [nan nan];
+
+geomType = 'none';
+geomParameters = none_parameters;
+
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+
+assert(isequal(size(geomParameters),size(geomParameters_flipped)));
+assert(all(isnan(none_parameters)));
 
 
 

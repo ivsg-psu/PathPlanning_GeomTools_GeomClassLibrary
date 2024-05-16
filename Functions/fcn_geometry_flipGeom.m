@@ -13,8 +13,8 @@ function geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameter
 %      geomType: The string input of the geometry. Can be one of the
 %      following strings:
 %   
-%           'circle', 'arc', 'line', 'line segment' or 'segment'
-%           (Pending: 'spiral')
+%           'circle', 'arc', 'line', 'line segment','segment',
+%           'spiral,'none', or '' (empty)
 %
 %      geomParameters: The parameters of the geometry as a
 %      [1xN] vector.  See fcn_geometry_fillEmptyDomainStructure for details
@@ -122,7 +122,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 switch lower(geomType)
-    case 'circle'
+    case {'circle','none',''}
         geomParameters_flipped = geomParameters; 
     case 'arc'
         arc_parameters_flipped      = geomParameters;
@@ -140,7 +140,7 @@ switch lower(geomType)
         line_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
 
         geomParameters_flipped = line_parameters_flipped;
-    case {'segment'}
+    case {'segment', 'line segment'}
         segment_parameters_flipped         = geomParameters;
         segment_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
         segment_parameters_flipped(1,5)    = -geomParameters(1,6);
@@ -148,13 +148,28 @@ switch lower(geomType)
 
         geomParameters_flipped = segment_parameters_flipped;
     case 'spiral'
-        URHERE
-        spiral_join_parameters(1,1) = spiralLength;
-        spiral_join_parameters(1,2) = -rotation_angle;
-        spiral_join_parameters(1,3) = circle1_start_xy(1,1);
-        spiral_join_parameters(1,4) = circle1_start_xy(1,2);
-        spiral_join_parameters(1,5) = K0;
-        spiral_join_parameters(1,6) = Kf;
+        spiral_parameters_flipped   = geomParameters;
+        spiralLength = geomParameters(1,1);
+        h0           = geomParameters(1,2);
+        x0           = geomParameters(1,3);
+        y0           = geomParameters(1,4);
+        K0           = geomParameters(1,5);
+        Kf           = geomParameters(1,6);
+        [x_end,y_end] = fcn_geometry_extractXYfromSTSpiral(spiralLength,spiralLength,h0,x0,y0,K0,Kf);
+        analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+
+        % spiral_parameters_flipped(1,1) = spiralLength;
+        % spiral_parameters_flipped(1,2) = -rotation_angle;
+        % spiral_parameters_flipped(1,3) = circle1_start_xy(1,1);
+        % spiral_parameters_flipped(1,4) = circle1_start_xy(1,2);
+        % spiral_parameters_flipped(1,5) = K0;
+        % spiral_parameters_flipped(1,6) = Kf;
+        spiral_parameters_flipped(1,2) = analytical_end_angle+pi;
+        spiral_parameters_flipped(1,3) = x_end;
+        spiral_parameters_flipped(1,4) = y_end;
+        spiral_parameters_flipped(1,5) = -Kf;
+        spiral_parameters_flipped(1,6) = -K0;
+        geomParameters_flipped = spiral_parameters_flipped;
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
