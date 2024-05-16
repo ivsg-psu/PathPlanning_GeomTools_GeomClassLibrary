@@ -100,14 +100,12 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 % counter-clockwise result when intersection points are exactly at
 % start/end of segments. In these cases, the results should count as
 % intersections but were not being noted correctly.
+% 2024_05_15 - Aneesh Batchu
+% -- Added all the missing calculations (line-line, line-segment,
+% segment-seg...etc.). See test script for examples
+% -- I organized "line and segment" cases in this function following the
+% other cases Dr.B has organized.
 
-% TO-DO:
-% 2025_05_10 - added by Sean Brennan
-% -- add arc to circle calculations, and many others that are missing. See
-% test script which reveals many missing cases
-% -- main code is hard to read because it is just a long (LONG) combination
-% of cases. Need to functionalize the code. I started fixing this on arc, but
-% organization is needed for all the other cases.
 
 %% Debugging and Input checks
 

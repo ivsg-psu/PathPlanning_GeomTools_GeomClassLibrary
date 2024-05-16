@@ -18,8 +18,6 @@
 % 2024 - Xinyu Cao
 
 
-
-
 %% Revision History:
 % 2023_11_21 - sbrennan@psu.edu
 % -- started a demo code set
