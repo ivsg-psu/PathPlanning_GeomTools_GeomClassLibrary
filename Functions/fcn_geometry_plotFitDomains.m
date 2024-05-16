@@ -274,7 +274,7 @@ if flag_do_plots
                     x_range_to_plot = linspace(min_xcoordinate, max_xcoordinate, length(domain_to_plot.points_in_domain(:,1)))';
                     y_range = x3_coeff*(x_range_to_plot.^3) + x2_coeff*(x_range_to_plot.^2) + x1_coeff*(x_range_to_plot) + x0_coeff;
                     cubic_poly = [x_range_to_plot, y_range];
-                    plot(cubic_poly(:,1),cubic_poly(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
+                    plot(cubic_poly(:,1),cubic_poly(:,2),'-','Linewidth',1,'MarkerSize',15,'Color',current_color);
 
                 otherwise
                     error('Unknown fit type detected: %s - unable to continue!', domain_to_plot.best_fit_type);

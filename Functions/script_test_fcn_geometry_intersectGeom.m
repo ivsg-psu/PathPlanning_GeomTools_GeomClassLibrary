@@ -1747,7 +1747,7 @@ assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
 
 %% Overlap 4: Arc to Arc Intersection - arc1 is inside arc 2
-fig_num = 220003;
+fig_num = 220004;
 figure(fig_num); clf;
 
 % Fill in arc 1
