@@ -76,6 +76,9 @@
 % 2024_05_14 - Sean Brennan
 % -- Finished alignArcSegment
 % -- Added flipGeom functionality. Starting to use this in codes.
+% 2024_05_16 - Aneesh Batchu
+% -- Created "fcn_geometry_fitHoughTransform" to find a cubic polynomial
+% hough domain
 
 %% To-do items
 % 2024_04_15 - S. Brennan
