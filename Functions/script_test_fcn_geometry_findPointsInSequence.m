@@ -34,6 +34,18 @@ sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_poin
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
 
+%% Example - 2 - BASIC call
+fig_num = 1;
+
+input_distances = [-1 0 3 4 5 6 7 8.5 9 10 11.5 13 14 15 16 17 18 19 20 21 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+
+assert(length(sequence_indicies) > 1);
+assert(length(sequence_indicies(1,:)) == 1);
+
 %% Example 3
 input_distances = [
     0
