@@ -48,6 +48,8 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % Revision history:
 % 2024_01_18
 % -- wrote the code
+% 2024_05_17 - Aneesh Batchu
+% -- Added a case for 'Hough cubic polynomial'
 
 %% Debugging and Input checks
 
@@ -280,6 +282,9 @@ switch best_fit_type
         % Check circle fitting
         regression_domain = ...
             fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
+    case {'Hough cubic polynomial'}
+        % Check cubic polynomial fitting
+        regression_domain = fcn_INTERNAL_fitCubicPolynomial(Hough_domain);
 
     otherwise
         error('Unknown fit type detected - unable to continue!: %s', best_fit_type);
@@ -288,6 +293,29 @@ end
 end % Ends fcn_INTERNAL_regressionFitByType
 
 
+function regression_domain = fcn_INTERNAL_fitCubicPolynomial(Hough_domain)
 
+% Initialze the domain structure for output
+regression_domain = fcn_geometry_fillEmptyDomainStructure;
+
+% Pull out key variables
+best_fit_type            = Hough_domain.best_fit_type;
+points_in_domain         = Hough_domain.points_in_domain;
+best_fit_domain_box      = Hough_domain.best_fit_domain_box;
+
+if isequal(best_fit_type, 'Hough cubic polynomial')
+    regression_domain.best_fit_type = 'Cubic polynomial poly fit';
+end
+
+regression_domain.points_in_domain = Hough_domain.points_in_domain;
+% Find fitted curve - use the function "polyfit"
+fittedParameters = polyfit(points_in_domain(:,1), points_in_domain(:,2), 3);
+
+regression_domain.best_fit_parameters = fittedParameters;
+
+% Best fit domain box
+regression_domain.best_fit_domain_box = best_fit_domain_box;
+
+end
 
 
