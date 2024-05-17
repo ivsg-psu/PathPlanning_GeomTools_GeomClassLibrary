@@ -178,6 +178,8 @@ else
     agreement_indices = indices_in_transverse_agreement;
 end
 
+% sort the agreement indices
+agreement_indices = sort(agreement_indices); 
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

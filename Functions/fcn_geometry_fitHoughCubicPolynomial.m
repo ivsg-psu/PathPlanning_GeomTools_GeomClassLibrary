@@ -144,8 +144,8 @@ if (4<= nargin)
     temp = varargin{2};
     if ~isempty(temp)
         points_required_for_agreement = temp;
-        if points_required_for_agreement<3
-            error('The input points_required_for_agreement must be greater than or equal to 3.')
+        if points_required_for_agreement<4
+            error('The input points_required_for_agreement must be greater than or equal to 4.')
         end
     end
 end
