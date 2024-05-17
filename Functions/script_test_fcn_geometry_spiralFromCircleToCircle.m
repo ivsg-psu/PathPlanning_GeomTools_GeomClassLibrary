@@ -204,6 +204,29 @@ assert(isequal(size(spiral_join_parameters),[1 6]));
 assert(isequal(round(spiral_join_parameters,4),[0.1897   -0.0949   -0.0947    0.0045    1.0000    0.3333]));
 assert(space_between_circles>0);
 
+%% FAIL test - not sure why this is not working well?
+% Show that if circle is outside, it will not join
+fig_num = 99988;
+figure(fig_num); clf;
+
+
+% Try positive curvature
+circle1_radius = 162.3452;
+circle2_radius = 367.6955;
+circle2_center_XY = [-36.3698  364.4481];
+flag_circle2_is_counterclockwise = 1;
+
+
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
+
+% Check size of results
+assert(isequal(size(spiral_join_parameters),[1 6]));
+
+% Check results
+assert(isequal(round(spiral_join_parameters,4),[0.1897   -0.0949   -0.0947    0.0045    1.0000    0.3333]));
+assert(space_between_circles>0);
+
 %% Circle to line tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %

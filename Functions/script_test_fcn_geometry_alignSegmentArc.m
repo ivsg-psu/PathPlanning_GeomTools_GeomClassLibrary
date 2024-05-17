@@ -62,7 +62,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0d continuous',continuity_level));
@@ -118,7 +118,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
@@ -174,7 +174,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0d continuous',continuity_level));
@@ -232,7 +232,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
@@ -307,7 +307,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0d continuous',continuity_level));
@@ -363,7 +363,7 @@ close all;
 % continuity_level = 1;
 % 
 % % Call function
-% [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+% [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
 %     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 % 
 % sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0d continuous',continuity_level));
@@ -445,7 +445,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
@@ -502,7 +502,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
@@ -559,7 +559,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -616,7 +616,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
@@ -673,7 +673,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
@@ -730,7 +730,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
@@ -787,7 +787,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
@@ -844,7 +844,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -902,7 +902,7 @@ continuity_level = 0;
 
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
@@ -960,7 +960,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
@@ -1042,7 +1042,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
@@ -1100,7 +1100,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
@@ -1157,7 +1157,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -1214,7 +1214,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
@@ -1269,7 +1269,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
@@ -1326,7 +1326,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
@@ -1383,7 +1383,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
@@ -1440,7 +1440,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -1498,7 +1498,7 @@ continuity_level = 1;
 
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
@@ -1556,7 +1556,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
@@ -1634,7 +1634,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
@@ -1691,7 +1691,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
@@ -1748,7 +1748,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -1805,7 +1805,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
@@ -1860,7 +1860,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
@@ -1917,7 +1917,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
@@ -1975,7 +1975,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
@@ -2032,7 +2032,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
@@ -2089,7 +2089,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
@@ -2145,7 +2145,7 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+[revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));

@@ -1,4 +1,4 @@
-function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
+function [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, varargin)
 %% fcn_geometry_alignSegmentArc
 % Revises the geometric parameters of an arc and line segment such that
@@ -19,7 +19,7 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % C2 continuity which creates a spiral connection between the geometries.
 %
 % Format:
-% [revised_line_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
+% [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
 % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
 %
 % INPUTS:
@@ -54,15 +54,15 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %
 % OUTPUTS:
 %
-%      revised_arc_parameters: the parameter set describing the arc
-%      segment geometry that joins the geometries. See
-%      fcn_geometry_fillEmptyDomainStructure for details, specifically the
-%      structure for 'Regression arc'.
-%
 %      revised_segment_parameters: the parameter set describing the line
 %      segment geometry that joins the geometries. See
 %      fcn_geometry_fillEmptyDomainStructure for details, specifically the
 %      structure for 'Vector regression segment fit'.
+%
+%      revised_arc_parameters: the parameter set describing the arc
+%      segment geometry that joins the geometries. See
+%      fcn_geometry_fillEmptyDomainStructure for details, specifically the
+%      structure for 'Regression arc'.
 %
 %      revised_intermediate_geometry_join_type: for type C2 continuity, an
 %      intermediate geometry is often inserted in the form of a spiral.
@@ -113,7 +113,7 @@ else
     end
 end
 
-% flag_do_debug = 1;
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -234,7 +234,7 @@ end
 
 [revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcSegment(...
-    arc_parameters_flipped, segment_parameters, (threshold), (continuity_level), (-1));
+    arc_parameters_flipped, segment_parameters, (threshold), (continuity_level), (2345));
 
 if ~isempty(debug_fig_num)
     % Plot the results
@@ -463,6 +463,12 @@ function [desired_arc_parameters, desired_segment_parameters, desired_intermedia
 % Calculates the delta amount to match the segment to the arc. The delta
 % values are measured FROM desired point TO actual point
 
+if length(threshold)==1
+    transverse_threshold = threshold;
+else
+    transverse_threshold = threshold(2);
+end
+
 % Calculate needed values from parameter sets
 % Calculate needed values from parameter sets
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -534,7 +540,7 @@ switch continuity_level
 
         else
             if flag_perform_shift_of_segment==1
-                if abs(space_between_arc_and_segment)<=threshold
+                if abs(space_between_arc_and_segment)<=transverse_threshold
                     % Yes, segment can be moved enough to be tangent. So put
                     % segment's start at the end of the arc. Do not change the
                     % arc.
@@ -568,7 +574,7 @@ switch continuity_level
         desired_intermediate_geometry_join_parameters = nan(1,6);
 
         if flag_perform_shift_of_segment==1
-            if abs(space_between_arc_and_segment)<=threshold
+            if abs(space_between_arc_and_segment)<=transverse_threshold
                 % Yes, arc2 can be moved enough to be tangent. So put
                 % arc2's center in correct place
                 desired_arc_parameters        = arc_parameters;
@@ -612,7 +618,7 @@ switch continuity_level
             % Not enough space between arc and segment for a spiral, not
             % without modifying it
             if flag_perform_shift_of_segment==1
-                if abs(space_between_arc_and_segment)<=threshold
+                if abs(space_between_arc_and_segment)<=transverse_threshold
                     unit_direction_vector_to_shift_segment = [0 -1];
 
                     revised_segment_parameters = segment_parameters;

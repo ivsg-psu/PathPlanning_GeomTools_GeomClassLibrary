@@ -165,9 +165,10 @@ if flag_do_plots
         plot_type_string = fitSequence_bestFitType{ith_domain};
         parameters       = fitSequence_parameters{ith_domain};
         fcn_geometry_plotGeometry(plot_type_string, parameters, [], [], fig_num);
-        axis normal;
     end
 
+    axis equal;
+    
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;

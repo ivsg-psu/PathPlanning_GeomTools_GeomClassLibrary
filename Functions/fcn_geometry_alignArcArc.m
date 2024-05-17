@@ -104,12 +104,12 @@ else
     end
 end
 
-% flag_do_debug = 1;
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 999978;
 else
     debug_fig_num = [];
 end
@@ -986,6 +986,12 @@ function [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate
 % Calculates the delta amount to match the arc to the arc. The delta
 % values are measured FROM desired point TO actual point
 
+if length(threshold)==1 || isempty(threshold)
+    transverse_threshold = threshold;
+else
+    transverse_threshold = threshold(2);
+end
+
 desired_intermediate_geometry_join_parameters = nan(1,6); % Initialize output to be a "blank" spiral
 desired_intermediate_geometry_join_type       = 'spiral';
 
@@ -1064,7 +1070,7 @@ switch continuity_level
         else
 
             if flag_perform_shift_of_arc2==1
-                if abs(space_between_circles)<threshold
+                if abs(space_between_circles)<transverse_threshold
                     % Yes, arc2 can be moved enough to be tangent. So put
                     % arc2's center in correct place
                     desired_arc1_parameters        = arc1_parameters;
@@ -1108,7 +1114,7 @@ switch continuity_level
             % check to see if arc2 can be moved to create an external
             % tangent.
             if flag_perform_shift_of_arc2==1
-                if abs(space_between_circles)<threshold
+                if abs(space_between_circles)<transverse_threshold
                     % Yes, arc2 can be moved enough to be tangent. So put
                     % arc2's center in correct place
                     desired_arc1_parameters        = arc1_parameters;
@@ -1177,7 +1183,7 @@ switch continuity_level
 
         elseif (space_between_circles<=0) && (1~=arc2_is_counter_clockwise)
             if flag_perform_shift_of_arc2==1
-                if abs(space_between_circles)<threshold
+                if abs(space_between_circles)<transverse_threshold
                     % Yes, arc2 can be moved enough to be tangent. So put
                     % arc2's arc start and center in correct place.
                     desired_arc1_parameters        = arc1_parameters;
@@ -1233,8 +1239,9 @@ switch continuity_level
         if space_between_circles>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
+            URHERE - debug this
             [desired_intermediate_geometry_join_parameters, ~] = ...
-                fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, -1);
+                fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, 2626);
 
             spiralLength = desired_intermediate_geometry_join_parameters(1,1);
             h0           = desired_intermediate_geometry_join_parameters(1,2);
@@ -1307,7 +1314,7 @@ switch continuity_level
             % Not enough space between circles for a spiral, not without
             % modifying it
             if flag_perform_shift_of_arc2==1
-                if abs(space_between_circles)<threshold
+                if abs(space_between_circles)<transverse_threshold
                     direction_vector_to_shift_arc2 = arc2_center_xy - arc1_center_xy;
                     unit_direction_vector_to_shift_arc2 = fcn_geometry_calcUnitVector(direction_vector_to_shift_arc2);
 
@@ -1321,6 +1328,35 @@ switch continuity_level
 
                     revised_arc2_parameters = arc2_parameters;
                     revised_arc2_parameters(1,1:2) = arc2_parameters(1,1:2) + unit_direction_vector_to_shift_arc2*sign_of_vector*(abs(space_between_circles)+0.001);
+
+                    if ~isempty(debug_fig_num)
+                        plotting_fig_num = 454545;
+                        figure(plotting_fig_num);
+                        clf;
+
+                        subplot(1,2,1);
+                        hold on;
+                        axis equal
+                        grid on;
+                        fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
+                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_fig_num);
+                        fcn_geometry_plotCircle(arc2_parameters(1,1:2),arc2_parameters(1,3),...
+                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_fig_num);
+                        fcn_geometry_plotGeometry('arc',arc1_parameters);
+                        fcn_geometry_plotGeometry('arc',arc2_parameters);
+
+                        subplot(1,2,2);
+                        hold on;
+                        axis equal
+                        grid on;
+                        fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
+                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_fig_num);
+                        fcn_geometry_plotCircle(revised_arc2_parameters(1,1:2),revised_arc2_parameters(1,3),...
+                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_fig_num);
+                        fcn_geometry_plotGeometry('arc',arc1_parameters);
+                        fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
+                    end
+
                     [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters] = ...
                         fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
                 else
@@ -1407,8 +1443,22 @@ function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_interme
 St_shift = st_arc2_parameters(1,1:2)-desired_st_arc2_parameters(1,1:2);
 
 % Check to see if shift is even possible
-shift_distance = sum(St_shift.^2,2).^0.5;
-if abs(shift_distance)>=threshold
+flag_shift_is_possible = 0;
+
+% The threshold can be a [1 x 2] representing S and t tolerances or [1 x 1]
+% representing total distances. Check each.
+if length(threshold)==1
+    shift_distance = abs(sum(St_shift.^2,2).^0.5);
+    if shift_distance<=threshold
+        flag_shift_is_possible = 1;
+    end
+else
+    if abs(St_shift(1))<=threshold(1) && abs(St_shift(2))<=threshold(2)
+        flag_shift_is_possible = 1;
+    end
+
+end
+if 0==flag_shift_is_possible    
     % Not possible to shift
     revised_arc1_parameters_St         = nan(size(st_arc1_parameters));
     revised_arc2_parameters_St         = nan(size(st_arc2_parameters));

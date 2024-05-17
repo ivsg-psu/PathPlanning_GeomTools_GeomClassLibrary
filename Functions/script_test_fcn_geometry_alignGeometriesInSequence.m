@@ -10,14 +10,14 @@
 
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
-fig_num = 237492;
+fig_num = 1;
 figure(fig_num);
 clf;
 
 % Check to see if the fits were calculated earlier
 if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parameters_forward','var')
 
-    % Check to see if data was loaded earlier
+    % Check to see if XY data for the centerline of the original track lane was loaded earlier
     mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
     if exist(mat_filename,'file')
         load(mat_filename,'XY_data');
@@ -33,17 +33,25 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
     fitting_tolerance = [1 10]; % Units are meters
     flag_fit_backwards = 0;
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, 1);
 
 end
 
 
-% Connect the fits so that the lines perfectly align with the arcs
-fig_num = 23456;
+%% Connect the fits so that the lines perfectly align with the arcs
+fig_num = 2;
 figure(fig_num);clf;
-fitting_tolerance = [1 10];
+fitting_tolerance = [10 2];
+
+clear fits_to_check_types fits_to_check_parameters
+for ith_fit = 1:4
+    fits_to_check_types{ith_fit}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
+    fits_to_check_parameters{ith_fit} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
+end
+
+fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(fig_num));
 
 revised_fitSequence_parameters_forward  = ...
-    fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, fitting_tolerance*2, fig_num);
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, fig_num);
 
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
+% fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));

@@ -1,5 +1,5 @@
-function revised_fitSequence_parameters = ...
-    fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, varargin)
+function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
+    fcn_geometry_alignGeometriesInSequence(input_types, input_parameters, threshold, varargin)
 %% fcn_geometry_alignGeometriesInSequence
 % Given the results of regression fits that are used to fit a set of data
 % in sequence, this function proceeds from the first fit to the second,
@@ -32,16 +32,17 @@ function revised_fitSequence_parameters = ...
 %  not have to instantaneously change from one setting to another in order
 %  for a vehicle to remain on a path.
 %
-% The following matches are supported:
+% The following matches are supported with either C0, C1, and C2
+% continuity, and user-defined tolerances:
 %
-% * connections from arcs to lines
+% * connections from line segments to arcs using
+%   fcn_geometry_alignSegmentArc 
 %
-%   fcn_geometry_alignLineToArc is used so that C1 continous connections are
-%   supported. Specifically, if the tangent point of the line to the arc is
-%   within the user-given distance from the line to the circle, then the arc
-%   or the line is shifted such that the endpoints match.
+% * connections from arcs to line segments using
+%   fcn_geometry_alignArcSegment
 %
-% *
+% * connections from line arcs to arcs, using
+%   fcn_geometry_alignArcArc 
 %
 % Format:
 % revised_fitSequence_parameters = ...
@@ -110,6 +111,8 @@ else
     end
 end
 
+flag_do_debug = 1;
+
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
@@ -174,76 +177,82 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+fitSequence_bestFitType = input_types;
+fitSequence_parameters = input_parameters;
+
 % How many fits are we aligning?
 NfitsInSequence = length(fitSequence_bestFitType);
 
-% Fill in starter values for the output parameters by copying over the
-% input parameters
-revised_fitSequence_parameters = fitSequence_parameters;
+% Fill in starter values for the output parameters by using an empty cell
+% array
+N_revisedFits                     = 0;
+revised_fitSequence_types{1}      = '';
+revised_fitSequence_parameters{1} = [];
+
+continuity_level = 2;
+
 
 % Loop through fits, connecting them together
 for ith_fit = 1:NfitsInSequence-1
     current_fit_type = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(fitSequence_bestFitType{ith_fit});
     next_fit_type    = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(fitSequence_bestFitType{ith_fit+1});
 
-    switch current_fit_type
-        case 'line'
-            switch next_fit_type
-                case 'line'
-                    warning('on','backtrace');
-                    warning('An error will be thrown at this point due to missing code.');
-                    error('Alignments from line to line are not yet supported.');
-                case 'arc'
-                    % Fix connections of lines to arcs
-                    line_index = ith_fit;
-                    arc_index  = ith_fit+1;
-                    flag_arc_is_first = 0;
-                    continuity_level = 1;
-                    [revised_fitSequence_parameters{line_index}, revised_fitSequence_parameters{arc_index}] = ...
-                        fcn_geometry_alignLineToArc(...
-                        fitSequence_parameters{line_index}, ...
-                        fitSequence_parameters{arc_index}, ...
-                        flag_arc_is_first, (threshold), (continuity_level), (fig_num));
-                otherwise
-                    warning('on','backtrace');
-                    warning('An error will be thrown at this point due to missing code.');
-                    error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
-            end
-        case 'arc'
-            switch next_fit_type
-                case 'line'
-                    % Fix connections of arcs to lines
-                    line_index = ith_fit+1;
-                    arc_index  = ith_fit;
-                    flag_arc_is_first = 1;
-                    continuity_level = 1;
-                    [revised_fitSequence_parameters{line_index}, revised_fitSequence_parameters{arc_index}] = ...
-                        fcn_geometry_alignLineToArc(...
-                        fitSequence_parameters{line_index}, ...
-                        fitSequence_parameters{arc_index}, ...
-                        flag_arc_is_first, (threshold), (continuity_level), (fig_num));
+    current_fit_parameters = fitSequence_parameters{ith_fit};
+    next_fit_parameters    = fitSequence_parameters{ith_fit+1};
 
-                case 'arc'
-                    warning('on','backtrace');
-                    warning('An error will be thrown at this point due to missing code.');
-                    error('Alignments from arc to arc are not yet supported.');
-                otherwise
-                    warning('on','backtrace');
-                    warning('An error will be thrown at this point due to missing code.');
-                    error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
-            end
+    switch current_fit_type
+        case 'segment'
+            [revised_sequence_types, revised_sequence_parameters, flag_fit_failed] = fcn_INTERNAL_alignSegmentToX(current_fit_parameters, next_fit_parameters, next_fit_type, continuity_level, threshold);            
+        case 'arc'
+            [revised_sequence_types, revised_sequence_parameters, flag_fit_failed] = fcn_INTERNAL_alignArcToX(current_fit_parameters, next_fit_parameters, next_fit_type, continuity_level, threshold);
         otherwise
             warning('on','backtrace');
             warning('An error will be thrown at this point due to missing code.');
-
             error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+    end
+    
+    if flag_fit_failed
+        revised_fitSequence_types = [];
+        revised_fitSequence_parameters = [];
+        return;
+    end
+
+    % Save the results
+    for ith_result = 1:length(revised_sequence_types)-1
+        N_revisedFits = N_revisedFits+1;
+        revised_fitSequence_types{N_revisedFits}      = revised_sequence_types{ith_result}; %#ok<AGROW>
+        revised_fitSequence_parameters{N_revisedFits} = revised_sequence_parameters{ith_result}; %#ok<AGROW>
+    end
+
+    if flag_do_debug
+        
+        debug_fig_num_iterated = ith_fit+56575;
+        figure(debug_fig_num_iterated);
+
+        sgtitle('Debugging')
+        subplot(1,2,2);
+        fcn_geometry_plotFitSequences(revised_sequence_types, revised_sequence_parameters,(debug_fig_num_iterated));
+        temp_axis = axis;
+        title('Results from last joint alignment');
+
+        subplot(1,2,1);
+        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(debug_fig_num_iterated));
+        axis(temp_axis);
+        title('Cumulative alignments')
+
+        
     end
 
     % Need to update the fit sequence of the parameters so that the next
     % fit is starting in the correct location
-    fitSequence_parameters{ith_fit+1} = revised_fitSequence_parameters{ith_fit+1};
+    fitSequence_parameters{ith_fit+1} = revised_sequence_parameters{end};
 
 end % Ends looping through fits
+
+% Save the last result
+N_revisedFits = N_revisedFits+1;
+revised_fitSequence_types{N_revisedFits}      = revised_sequence_types{end}; 
+revised_fitSequence_parameters{N_revisedFits} = revised_sequence_parameters{end}; 
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -316,7 +325,7 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+    fcn_geometry_plotFitSequences(input_types, input_parameters,(fig_num));
 
 
     % Make axis slightly larger?
@@ -339,7 +348,7 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    fcn_geometry_plotFitSequences(fitSequence_bestFitType, revised_fitSequence_parameters,(fig_num));
+    fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(fig_num));
 
     % Match axis
     axis(good_axis);
@@ -372,7 +381,7 @@ switch lower(complex_name_string)
     case {'regression arc'}
         simple_name_string = 'arc';
     case {'vector regression segment fit'}
-        simple_name_string = 'line';
+        simple_name_string = 'segment';
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown due to unrecognized fitting name type, inside fcn_INTERNAL_covertComplexShapeNamesToSimpleNames.');
@@ -380,4 +389,109 @@ switch lower(complex_name_string)
 end
 
 end % Ends fcn_INTERNAL_covertComplexShapeNamesToSimpleNames
+
+%% fcn_INTERNAL_alignArcToX
+function [revised_sequence_types, revised_sequence_parameters, flag_fit_failed] = fcn_INTERNAL_alignArcToX(arc_parameters, X_parameters, X_fitType, continuity_level, threshold)
+switch X_fitType
+    case 'segment'
+        % Arc to Segment
+        % Call function
+        [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcSegment(...
+            arc_parameters, X_parameters, (threshold), (continuity_level), (-1));
+
+    case 'arc'
+        % Arc to Arc
+        % Call function
+        % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
+        % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+        
+        [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
+            arc_parameters, X_parameters, (threshold), (continuity_level), (77777));
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+end
+
+% Check to see if any of the functions return NaN values. If so, this is a
+% failed fit
+flag_fit_failed = 0;
+if any(isnan(revised_arc_parameters),'all')
+    flag_fit_failed = 1;
+elseif any(isnan(revised_X_parameters),'all')
+    flag_fit_failed = 1;
+else
+    if ~any(isnan(revised_intermediate_geometry_join_parameters),'all')
+        revised_sequence_types{1}      = 'arc';
+        revised_sequence_types{2}      = revised_intermediate_geometry_join_type;
+        revised_sequence_types{3}      = X_fitType;
+
+        revised_sequence_parameters{1} = revised_arc_parameters;
+        revised_sequence_parameters{2} = revised_intermediate_geometry_join_parameters;
+        revised_sequence_parameters{3} = revised_X_parameters;
+    else
+        revised_sequence_types{1}      = 'arc';
+        revised_sequence_types{2}      = X_fitType;
+
+        revised_sequence_parameters{1} = revised_arc_parameters;
+        revised_sequence_parameters{2} = revised_X_parameters;
+
+    end
+end
+end % Ends fcn_INTERNAL_alignArcToX
+
+
+%% fcn_INTERNAL_alignSegmentToX
+function [revised_sequence_types, revised_sequence_parameters, flag_fit_failed] = fcn_INTERNAL_alignSegmentToX(segment_parameters, X_parameters, X_fitType, continuity_level, threshold)
+switch X_fitType
+    case 'segment'
+        % Segment to Segment
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('Alignments from segment to segment are not yet supported.');
+
+    case 'arc'
+        % Segment to Arc
+        % Format:
+        % [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
+        % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
+        %
+        % Call function
+        [revised_segment_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
+            segment_parameters, X_parameters, (threshold), (continuity_level), (-1));
+
+    otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown at this point due to missing code.');
+        error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+end
+
+% Check to see if any of the functions return NaN values. If so, this is a
+% failed fit
+flag_fit_failed = 0;
+if any(isnan(revised_segment_parameters),'all')
+    flag_fit_failed = 1;
+elseif any(isnan(revised_X_parameters),'all')
+    flag_fit_failed = 1;
+else
+    if ~any(isnan(revised_intermediate_geometry_join_parameters),'all')
+        revised_sequence_types{1}      = 'segment';
+        revised_sequence_types{2}      = revised_intermediate_geometry_join_type;
+        revised_sequence_types{3}      = X_fitType;
+
+        revised_sequence_parameters{1} = revised_segment_parameters;
+        revised_sequence_parameters{2} = revised_intermediate_geometry_join_parameters;
+        revised_sequence_parameters{3} = revised_X_parameters;
+    else
+        revised_sequence_types{1}      = 'segment';
+        revised_sequence_types{2}      = X_fitType;
+
+        revised_sequence_parameters{1} = revised_segment_parameters;
+        revised_sequence_parameters{2} = revised_X_parameters;
+
+    end
+end
+end % Ends fcn_INTERNAL_alignArcToX
+
+
 
