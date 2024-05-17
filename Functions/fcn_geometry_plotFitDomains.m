@@ -39,7 +39,8 @@ function fcn_geometry_plotFitDomains(domains, varargin)
 % 2024_04_14 - S. Brennan
 % -- added fcn_geometry_fillColorFromNumberOrName for plotting
 % 2024_04_15 - Aneesh Batchu
-% -- added a case for "Hough cubic polynomial"
+% -- added a case for "Hough cubic polynomial" and "Cubic polynomial poly
+% fit"
 
 
 %% Debugging and Input checks
@@ -263,7 +264,7 @@ if flag_do_plots
                     fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, flag_arc_is_counterclockwise, degree_step, current_color, fig_num);
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
-                case {'Hough cubic polynomial'}
+                case {'Hough cubic polynomial','Cubic polynomial poly fit'}
                     % plot the best-fit cubic polynomial
                     x3_coeff = domain_to_plot.best_fit_parameters(1,1);
                     x2_coeff = domain_to_plot.best_fit_parameters(1,2);
