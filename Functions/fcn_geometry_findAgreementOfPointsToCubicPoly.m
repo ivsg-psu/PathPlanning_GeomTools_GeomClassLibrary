@@ -1,4 +1,4 @@
-function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, varargin)
+function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, base_point_index, station_tolerance, varargin)
 %% fcn_geometry_findAgreementOfPointsToCubicPoly 
 %
 % Given a set of XY points, source points, and fitted parameters, finds the
@@ -39,7 +39,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPoi
 % 
 % DEPENDENCIES:
 %  
-%      (NONE)
+%      fcn_DebugTools_checkInputsToFunctions
 %
 % EXAMPLES:
 %
@@ -55,6 +55,10 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPoi
 % 2024_05_13 - Aneesh Batchu
 % -- "polygon_vertices" are included as the output to plot the polygon
 % domain
+% 2024_05_17 - Aneesh Batchu
+% -- Added station_tolerance to the code. This code finds the agreement
+% indices that are not just in transverse agreement but also in station
+% agreement
 
 %% Debugging and Input checks
 
@@ -62,7 +66,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPoi
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -102,7 +106,19 @@ end
 if 0==flag_max_speed
     if flag_check_inputs
         % Are there the right number of inputs?
-        narginchk(5,6);
+        narginchk(6,7);
+
+        % Check the points input to be length greater than or equal to 2
+        fcn_DebugTools_checkInputsToFunctions(...
+            points, '2column_of_numbers',[2 3]);
+
+        % Check the transverse_tolerance input is a positive single number
+        fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
+
+        % Check the station_tolerance input is a positive single number
+        if ~isempty(station_tolerance)
+            fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+        end
 
     end
 end
@@ -110,7 +126,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (5<= nargin)
+if (0==flag_max_speed) && (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -129,7 +145,7 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Find the slopes of cubic polynomial at each test source point
+% Find the slopes (first derivative) of cubic polynomial at each test source point
 slopes_at_each_test_source_point = 3*fittedParameters(1,1)*source_points(:,1).^2 + 2*fittedParameters(1,2)*source_points(:,1) + fittedParameters(1,3);
 
 % Find angle of inclination to find the unit_tangent_vector
@@ -152,8 +168,16 @@ polygon_vertices = [upper_boundary_points; lower_boundary_points(end:-1:1,:)];
 inlier_indices = inpolygon(points(:,1), points(:,2), polygon_vertices(:,1), polygon_vertices(:,2));
 % outliers_indices = ~inliers_indices;
 
-% Find the agreement indices based on inlier_indices
-agreement_indices = find(inlier_indices==1);
+% Find the transverse agreement indices based on inlier_indices
+indices_in_transverse_agreement = find(inlier_indices==1);
+
+% If the station distance is given
+if ~isempty(station_tolerance)
+    agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, base_point_index, station_tolerance); 
+else
+    agreement_indices = indices_in_transverse_agreement;
+end
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,4 +255,38 @@ end
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
+function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, base_point_index, station_tolerance)
 
+% Grab only the points in transverse agreement
+points_in_transverse_agreement = points(indices_in_transverse_agreement,:);
+
+% Find index of the source point in the rearranged list
+index_source_point_in_transverse_agreement = find(indices_in_transverse_agreement == base_point_index,1);
+
+% Find the length of the points in transverse agreement
+N = length(points_in_transverse_agreement(:,1));
+
+% Find the point pairs of the points in transverse agreement to compute
+% the station distances between them.
+point_pairs = [1:N-1; 2:N]';
+
+% Find the differences (vectors) of point_pairs(:,2) and
+% point_pairs(:,1)
+diff_between_pts_in_points_pair = points_in_transverse_agreement(point_pairs(:,2),:) - points_in_transverse_agreement(point_pairs(:,1),:);
+
+% Station distance calculation
+station_distances_of_points_in_transverse_agreement = sum(diff_between_pts_in_points_pair.^2,2).^0.5;
+
+% Sort the station distances and find those in agreement with station
+% tolerance
+indices_in_station_agreement = ...
+    fcn_geometry_findPointsInSequence(...
+    station_distances_of_points_in_transverse_agreement, ...
+    index_source_point_in_transverse_agreement, ...
+    station_tolerance, -1);
+
+indices_in_both_transverse_and_station_agreement = indices_in_transverse_agreement(indices_in_station_agreement);
+
+agreement_indices = indices_in_both_transverse_and_station_agreement;
+
+end
