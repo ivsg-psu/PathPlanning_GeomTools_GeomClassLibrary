@@ -756,7 +756,7 @@ function [desired_arc_parameters, desired_segment_parameters, desired_intermedia
 % Calculates the delta amount to match the segment to the arc. The delta
 % values are measured FROM desired point TO actual point
 
-if length(threshold)==1
+if length(threshold)==1 || isempty(threshold)
     transverse_threshold = threshold;
 else
     transverse_threshold = threshold(2);

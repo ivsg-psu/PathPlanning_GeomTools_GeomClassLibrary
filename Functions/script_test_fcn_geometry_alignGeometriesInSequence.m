@@ -44,7 +44,7 @@ figure(fig_num);clf;
 fitting_tolerance = [10 2];
 
 clear fits_to_check_types fits_to_check_parameters
-for ith_fit = 1:4
+for ith_fit = 1:6
     fits_to_check_types{ith_fit}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
     fits_to_check_parameters{ith_fit} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
 end
@@ -54,4 +54,4 @@ fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(fig
 revised_fitSequence_parameters_forward  = ...
     fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, fig_num);
 
-% fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));

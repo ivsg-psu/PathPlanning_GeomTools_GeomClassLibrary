@@ -1239,7 +1239,6 @@ switch continuity_level
         if space_between_circles>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
-            URHERE - debug this
             [desired_intermediate_geometry_join_parameters, ~] = ...
                 fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, 2626);
 
@@ -1251,10 +1250,9 @@ switch continuity_level
             Kf           = desired_intermediate_geometry_join_parameters(1,6);
 
             % Check results?
-            if 1==0
+            if 1==1
 
-                % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
-                % spiral and calculate the offsets, plotting the results in
+                % Plot the results in
                 % figure 1234
                 figure(1234);
                 clf;
@@ -1270,13 +1268,22 @@ switch continuity_level
             % Find the angle and position that the spiral ends at
             analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
 
-
+            % The checks should confirm that the
+            % arc's start and end is after the start of arc1 (not within) and before the
+            % end of arc2 (not within)
             flag_spiral_is_bad = 0;
-            % Make sure the spiral's start position is within the angle range
-            % of arc1. If not, return Nan values for everything
+
+            % Precalculate some quantities
             arc1_angle_where_spiral_starts = h0 - pi/2;
             spiral_arc1_join_xy = arc1_center_xy + arc1_radius*[cos(arc1_angle_where_spiral_starts) sin(arc1_angle_where_spiral_starts)];
-            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, spiral_arc1_join_xy, arc1_end_xy,-1);
+            arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
+            spiral_arc2_join_xy = arc2_center_xy + arc2_radius*[cos(arc2_angle_where_spiral_ends) sin(arc2_angle_where_spiral_ends)];
+
+
+            % Make sure the spiral's start position is within the angle range
+            % of arc1's start to the spiral end. If not, return Nan values for everything
+
+            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc1_start_xy, spiral_arc1_join_xy, spiral_arc2_join_xy,-1);
             if arc1_is_counter_clockwise ~= intersection_is_counterClockwise
                 % St_shift = [nan nan];
                 desired_arc1_parameters = nan(size(arc1_parameters));
@@ -1284,11 +1291,10 @@ switch continuity_level
                 flag_spiral_is_bad = 1;
             end
 
-            % Make sure the spiral's start position is within the angle range
-            % of arc1. If not, return Nan values for everything
-            arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
-            spiral_arc2_join_xy = arc2_center_xy + arc2_radius*[cos(arc2_angle_where_spiral_ends) sin(arc2_angle_where_spiral_ends)];
-            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(arc2_start_xy, spiral_arc2_join_xy, arc2_end_xy,-1);
+            % Make sure the spiral's end position is within the angle range
+            % of arc2's end. If not, return Nan values for everything
+
+            intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(spiral_arc1_join_xy, spiral_arc2_join_xy, arc2_end_xy,-1);
             if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
                 % St_shift = [nan nan];
                 desired_arc1_parameters = nan(size(arc1_parameters));
