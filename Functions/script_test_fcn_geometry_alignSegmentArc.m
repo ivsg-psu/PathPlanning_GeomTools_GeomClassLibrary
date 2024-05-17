@@ -1469,7 +1469,7 @@ tolerance = 0.7; % meters
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
 segment_s_start             = 0;
-segment_s_end               = 3;
+segment_s_end               = 2;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -1480,7 +1480,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius+0.1];
+arc_center_xy            = [0 -arc_radius-0.1];
 arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
@@ -1511,8 +1511,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-close aassert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1     0    -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1647,16 +1647,16 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[ 0    1.0000    1.0000   -2.9671   -2.6910         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000         0    1.0749   -0.2000         0    0.4251]));
+assert(isequal(round(revised_arc_parameters,4),[-0.5000    1.1000    1.0000   -0.7877   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -2.0000         0         0    0.7326]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[2.2403   -1.1202   -0.9002    0.5645    1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.5662         0   -1.2674    0.0000         0    1.0000]));
 
 %% Basic test 5.12 - checking the (-) cross product, NOT feasible, no intersection
 fig_num = 512;
 figure(fig_num); clf;
 
-tolerance = 0.1; % meters
+tolerance = 0.01; % meters
 
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -1775,9 +1775,9 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-3 0];
 segment_s_start             = 0;
-segment_s_end               = 2;
+segment_s_end               = 3;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -1818,10 +1818,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.6483         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000         0    0.0775   -0.0010         0    0.9225]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    1.0010    1.0000   -1.4933   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -3.0000         0         0    2.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550   -0.0775   -0.0774    0.0030    1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.1550   -0.0000   -0.0775    0.0000         0    1.0000]));
 
 %% Basic test 5.22 - checking the (-) cross product, feasible, intersection, not feasible
 fig_num = 522;
@@ -1930,10 +1930,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[ 0   -1.0000    1.0000    2.9671    1.6483         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[ 1.0000         0    0.0775    0.0010         0    0.9225]));
+assert(isequal(round(revised_arc_parameters,4),[  0   -1.0010    1.0000    1.4933    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -2.0000         0         0    1.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550    0.0775   -0.0774   -0.0030   -1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550   -0.0000   -0.0775   -0.0000         0   -1.0000]));
 
 
 %% Basic test 5.32 - checking the (+) cross product, NOT feasible, no intersection
@@ -1958,7 +1958,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
+arc_center_xy            = [0 -arc_radius+0.2];
 arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
@@ -2015,7 +2015,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
+arc_center_xy            = [0 -arc_radius+0.2];
 arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
@@ -2059,9 +2059,9 @@ tolerance = 0.7; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
+segment_base_point_xy       = [-2 0];
 segment_s_start             = 0;
-segment_s_end               = 2;
+segment_s_end               = 2.5;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
@@ -2072,7 +2072,7 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
+arc_center_xy            = [0 -arc_radius+0.1];
 arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
@@ -2087,8 +2087,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 % Set parameters
 continuity_level = 2;
-
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -2104,10 +2102,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.5000   -1.0010    1.0000    1.4933    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -2.0000         0         0    2.4225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550   -0.0000    0.4225   -0.0000         0   -1.0000]));
 
 
 %% Basic test 5.42 - checking the (+) cross product, feasible, intersection, not feasible
@@ -2119,18 +2117,18 @@ tolerance = 0.01; % meters
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+segment_base_point_xy       = [-2 0];
+segment_s_start             = 0;
+segment_s_end               = 2.5;
 
 segment_parameters(1,1:2) = segment_unit_tangent_vector;
 segment_parameters(1,3:4) = segment_base_point_xy;
 segment_parameters(1,5)   = segment_s_start;
 segment_parameters(1,6)   = segment_s_end;
 
-
-
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-arc_center_xy            = [0 -arc_radius];
+arc_center_xy            = [0 -arc_radius+0.1];
 arc_vector_start         = [cos( 90*pi/180) sin( 90*pi/180)];
 arc_vector_end           = [cos( 10*pi/180) sin( 10*pi/180)];
 arc_is_circle            = 0;
@@ -2145,8 +2143,6 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 
 % Set parameters
 continuity_level = 2;
-
-error('this has a bug')
 
 % Call function
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
@@ -2168,8 +2164,6 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
-%%
-URHERE
 %% Fail conditions
 if 1==0
     %% FAIL 1: points not long enough

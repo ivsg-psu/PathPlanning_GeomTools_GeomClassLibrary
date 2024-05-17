@@ -77,17 +77,13 @@
 % 2024_05_16 - Aneesh Batchu
 % -- Created "fcn_geometry_fitHoughTransform" to find a cubic polynomial
 % hough domain
+% 2024_05_17 - Sean Brennan
+% -- Fixed fcn_geometry_alignSegmentArc
 
 %% To-do items
 % 2024_04_15 - S. Brennan
 % -- need to check the fcn_geometry_fitSequentialArcs closely. There are
 % larger errors at the end points and not sure why.
-% 2024_04_14 - S. Brennan
-% -- In joinLineToArc, need to develop methods to reflect geometries about
-% a vector, and flip a geometry's direction. Then need to push those
-% methods into the testing script and this function for better clearity.
-% -- in joinLineToArc, need to allow joins of line to arcs via spirals
-% -- pull out functions from script_demo_VelodyneLIDARFitting
 % 2024_04_11 - Aneesh Batchu
 % -- Some functions are missing on the ReadME.md file. It is not up to
 % date.

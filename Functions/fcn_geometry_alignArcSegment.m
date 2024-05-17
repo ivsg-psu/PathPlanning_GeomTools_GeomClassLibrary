@@ -711,13 +711,18 @@ switch continuity_level
 
         end
 
-    case 1
+    case {1, 2}
         % For C1 continuity of the arc to the segment, the arc and segment
         % are tangent to each other. So the rotation will need to be the
         % one that produces the arc such that it is tangent with the x-axis at
         % exactly the point where the arc touches the tangent line to the
         % segement. In some cases, this will not exist and in these cases
         % the equivalent line must be found.
+
+        % For C2 continuity of an arc to a segment, this will involve a
+        % spiral.  For a connection to a segment, orient the arc such that
+        % the segment is horizontal.
+
 
         % First, calculate all the tangent point. To do this,
         % project from the center of the arc orthogonal to the line segment
@@ -744,10 +749,6 @@ switch continuity_level
 
         desired_angle_arc_end = atan2(arc_vector_center_to_desired_arc_end(2),arc_vector_center_to_desired_arc_end(1));
 
-    case 2
-        % For C2 continuity of an arc to a segment, this will involve a
-        % spiral.  For now, just use the arc to align
-        desired_angle_arc_end = arc_end_angle_in_radians;
 
     otherwise
         error('This continuity not possible yet')
