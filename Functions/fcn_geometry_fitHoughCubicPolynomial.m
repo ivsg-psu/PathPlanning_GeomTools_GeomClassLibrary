@@ -59,17 +59,19 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 
 % Revision history:
 % 2024_05_11 - Aneesh Batchu
-% -- started the code
+% -- Started the code
 % 2024_05_12 - Aneesh Batchu
-% -- functionalized a code that finds agreement indices
+% -- Functionalized a code that finds agreement indices
 % 2024_05_14 - Aneesh Batchu
-% -- prepared parameters for domains and formed the domains
+% -- Prepared parameters for domains and formed the domains
 % 2024_05_15 - Aneesh Batchu
 % -- Added a case for cubic polynomial in fcn_geometry_plotFitDomains
 % 2024_05_16 - Aneesh Batchu
 % -- Functionalized this code. 
 % 2024_05_17 - Aneesh Batchu
-% -- added station tolerance as one of the inputs
+% -- Added station tolerance as one of the inputs
+% 2024_05_20 - Aneesh Batchu
+% -- Added wait bar
 
 %% Debugging and Input checks
 
@@ -77,7 +79,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==9 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -163,7 +165,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (5<=nargin)
+if (0==flag_max_speed) && (6<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -199,7 +201,19 @@ fitted_parameters = zeros(N_permutations,4);
 
 agreements = zeros(N_permutations,1);
 
+% Loop through all the combos, recording agreement with each combo
+if 0==flag_max_speed
+    h_waitbar = waitbar(0,'Calculating cubic polynomial fits...');
+end
+
 for ith_combo = 1:N_permutations
+
+    % fprintf(1,'Checking %.0d of %.0d\n',ith_combo,N_permutations);
+    if 0==flag_max_speed
+        if 0==mod(ith_combo,1000)
+            waitbar(ith_combo/N_permutations);
+        end
+    end
 
     % Extract the source points
     test_source_points = points(combos_paired(ith_combo,:),:);
@@ -221,6 +235,10 @@ for ith_combo = 1:N_permutations
         break;
     end
 
+end
+
+if 0==flag_max_speed
+    close(h_waitbar)
 end
 
 %% Step 2: take the top agreements, accumulate them in prep for domains

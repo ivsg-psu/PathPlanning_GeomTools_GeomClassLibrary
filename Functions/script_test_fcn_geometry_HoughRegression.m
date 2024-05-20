@@ -286,6 +286,83 @@ assert(isnan(regression_domain.best_fit_parameters));
 assert(isnan(regression_domain.best_fit_source_indicies));
 assert(isnan(regression_domain.best_fit_domain_box));
 
+%% Basic example: find cubic polynomial (y = x^3)
+
+rng(123)
+
+fig_num = 11111;
+figure(fig_num); clf;
+
+
+a = 1; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-2, 2]; % Range of x values
+M = 10; % Number of test points to generate
+sigma = 0.15; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+
+% Corrupt the results
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+inputPoints = corrupted_test_points;
+transverse_tolerance = 0.3;
+
+points_required_for_agreement = 5;
+
+flag_find_only_best_agreement = 1; 
+
+station_tolerance = 0.1;
+
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (-1));
+
+
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(domains, transverse_tolerance, fig_num);
+
+% Check the output type and size
+for ith_domain = 1:length(regression_domains)-1
+    regression_domain = regression_domains{ith_domain};
+    assert(isstruct(regression_domain));
+    assert(isfield(regression_domain,'best_fit_type'));
+    assert(isfield(regression_domain,'points_in_domain'));
+    assert(isfield(regression_domain,'best_fit_parameters'));
+    assert(isfield(regression_domain,'best_fit_domain_box'));
+    assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+    assert(ischar(regression_domain.best_fit_type));
+    assert(strcmp('Cubic polynomial poly fit',regression_domain.best_fit_type));
+    assert(length(regression_domain.points_in_domain(:,1))>1);
+    assert(length(regression_domain.points_in_domain(1,:))==2);
+    assert(isequal(size(regression_domain.best_fit_parameters),[1 4]));
+    % assert(issimplified(regression_domain.best_fit_domain_box));
+    % assert(issimplified(regression_domain.best_fit_1_sigma_box));
+    % assert(issimplified(regression_domain.best_fit_2_sigma_box));
+    % assert(issimplified(regression_domain.best_fit_3_sigma_box));
+end
+
+% Check the last domain (unfitted points)
+regression_domain = regression_domains{end};
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(ischar(regression_domain.best_fit_type));
+assert(strcmp('unfitted',regression_domain.best_fit_type));
+assert(length(regression_domain.points_in_domain(:,1))>1);
+assert(length(regression_domain.points_in_domain(1,:))==2);
+assert(isnan(regression_domain.best_fit_parameters));
+
 %% Basic example 3: find arc data
 
 fig_num = 50;
