@@ -178,6 +178,9 @@ for ith_plot = 1:NfitsInSequence
 end
 
 %% Connect the fits so that the lines perfectly align with the arcs
+%
+% Check Line 189: The backward parameter inputs are not actually backward
+% paramters. Check the inputs. 
 
 fig_num = 23456;
 figure(fig_num);clf;
