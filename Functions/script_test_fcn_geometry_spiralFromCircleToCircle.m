@@ -95,7 +95,7 @@ assert(all(isnan(spiral_join_parameters)));
 %% Basic test - circle 1 and circle 2 are large and small, CLOCKWISE
 % If clockwise, the small circle must be completely outside the large
 % circle
-% fig_num = 5;
+fig_num = 5;
 figure(fig_num); clf;
 
 

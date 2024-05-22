@@ -38,7 +38,7 @@ figure(fig_num); clf;
 circle1_radius = 3;
 circle2_radius = 1;
 circle2_center_XY = [0.2 0.8];
-
+flag_circle2_is_inside = 1;
 
 gap_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_inside, fig_num);
 
@@ -61,6 +61,7 @@ figure(fig_num); clf;
 circle1_radius = 1;
 circle2_radius = 2;
 circle2_center_XY = [0.2 1.8];
+flag_circle2_is_inside = 1;
 
 gap_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_inside, fig_num);
 
@@ -80,7 +81,7 @@ figure(fig_num); clf;
 circle1_radius = 1;
 circle2_radius = 2;
 circle2_center_XY = [0.2 2.2];
-
+flag_circle2_is_inside = 1;
 
 gap_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_inside, fig_num);
 

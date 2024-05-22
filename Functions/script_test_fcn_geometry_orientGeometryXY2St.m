@@ -15,6 +15,32 @@ fig_num = 11;
 figure(fig_num); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_angle = 45*pi/180;
+segment_base_point_xy = [ 0 0];
+segment_unit_vector = [cos(segment_angle) sin(segment_angle)];
+segment_s_start = 3;
+segment_s_end   = 5;
+
+segment_parameters(1,1:2) = segment_unit_vector;
+segment_parameters(1,3:4) = segment_base_point_xy;
+segment_parameters(1,5)   = segment_s_start;
+segment_parameters(1,6)   = segment_s_end;
+
+primary_parameters_type_string = 'segment';
+primary_parameters = segment_parameters;
+secondary_parameters_type_strings = [];
+secondary_parameters = [];
+
+% Call the function
+[st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+
+
+%% Basic test 1.1 - a line segment alone
+fig_num = 11;
+figure(fig_num); clf;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_angle = 30*pi/180;
 segment_base_point_xy = [ 2 3];
 segment_unit_vector = [cos(segment_angle) sin(segment_angle)];

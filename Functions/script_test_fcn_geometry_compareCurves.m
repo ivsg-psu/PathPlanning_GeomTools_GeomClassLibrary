@@ -121,7 +121,7 @@ assert(isequal(size(max_error),[1 1]));
 assert(isequal(size(std_dev_error),[1 1]));
 
 % Test contents of variables
-assert(flag_is_similar);
+assert(~flag_is_similar);
 
 %% Test 3: a line as reference curve, another line as the test curve, low threshold
 fig_num = 3;
@@ -299,7 +299,7 @@ assert(isequal(size(max_error),[1 1]));
 assert(isequal(size(std_dev_error),[1 1]));
 
 % Test contents of variables
-assert(flag_is_similar);
+assert(~flag_is_similar);
 
 %% Test of fast implementation mode
 

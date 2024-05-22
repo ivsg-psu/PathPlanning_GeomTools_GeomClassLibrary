@@ -50,7 +50,7 @@ end_angles = [-45]*pi/180;
 end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
 cross_products = [-1];
 
-% true_angle = start_angles - end_angles;
+true_angle = start_angles - end_angles;
 
 [angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
     centers,...
@@ -81,7 +81,7 @@ end_angles = [45]*pi/180;
 end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
 cross_products = [1];
 
-% true_angle = start_angles - end_angles;
+true_angle = start_angles - end_angles;
 
 [angles] = fcn_geometry_findAngleUsing2PointsOnCircle(...
     centers,...
