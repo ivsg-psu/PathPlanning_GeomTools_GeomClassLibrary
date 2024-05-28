@@ -4,6 +4,8 @@
 % Revision history:
 % 2024_04_24 - S. Brennan
 % -- wrote the code
+% 2024_05_28 - S. Brennan
+% -- modified for parameter inputs, instead of raw inputs
 
 close all
 
@@ -19,8 +21,10 @@ circle1_radius = 3;
 circle2_radius = 1;
 circle2_center_XY = [0.2 1.1];
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -39,8 +43,11 @@ circle1_radius = 3;
 circle2_radius = 1;
 circle2_center_XY = [0.2 0.8];
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, [], fig_num);
+
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -62,7 +69,10 @@ circle1_radius = 1;
 circle2_radius = 2;
 circle2_center_XY = [0.2 1.8];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, [], fig_num);
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
+
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -81,8 +91,10 @@ circle1_radius = 1;
 circle2_radius = 2;
 circle2_center_XY = [0.2 2.2];
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -105,8 +117,11 @@ circle2_radius = 1;
 circle2_center_XY = [0.2 -1.1];
 flag_circle2_is_counterclockwise = -1;
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -126,8 +141,10 @@ circle2_radius = 1;
 circle2_center_XY = [0.2 -0.9];
 flag_circle2_is_counterclockwise = -1;
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -150,7 +167,10 @@ circle2_radius = 2;
 circle2_center_XY = [0.2 -2.2];
 flag_circle2_is_counterclockwise = -1;
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
+
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -170,8 +190,11 @@ circle2_radius = 2;
 circle2_center_XY = [0.2 -1.8];
 flag_circle2_is_counterclockwise = -1;
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 
 % Check size of results
@@ -193,8 +216,10 @@ circle2_radius = 3;
 circle2_center_XY = [0 2.999];
 flag_circle2_is_counterclockwise = 1;
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 
 % Check size of results
@@ -216,15 +241,17 @@ circle2_radius = 367.6955;
 circle2_center_XY = [-36.3698  364.4481];
 flag_circle2_is_counterclockwise = 1;
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[0.1897   -0.0949   -0.0947    0.0045    1.0000    0.3333]));
+assert(isequal(round(spiral_join_parameters,4),[2.6105    0.1700   27.4677    2.3405    0.0062    0.0027]));
 assert(space_between_circles>0);
 
 %% Circle to line tests
@@ -253,8 +280,10 @@ circle2_radius = inf;
 circle2_center_XY = [0 -0.2];
 flag_circle2_is_counterclockwise = [];
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 
 % Check size of results
@@ -277,8 +306,10 @@ circle2_radius = inf;
 circle2_center_XY = [0 0.2];
 flag_circle2_is_counterclockwise = [];
 
+circle1_parameters = [0 circle1_radius  circle1_radius];
+circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_XY, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
 
 
 % Check size of results

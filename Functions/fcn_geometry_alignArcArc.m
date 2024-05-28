@@ -81,6 +81,10 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 % -- wrote the code
 % 2024_05_09 - S. Brennan
 % -- added intermediate type outputs to allow line segments or spirals
+% 2024_05_28 - S. Brennan
+% -- fixed call to spiralFromCircleToCircle to use parameter vectors
+% -- fixed bug related to angle checks in arcs when oriented opposite
+
 
 %% Debugging and Input checks
 
@@ -104,7 +108,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -1001,9 +1005,9 @@ desired_intermediate_geometry_join_type       = 'spiral';
 arc1_center_xy                = arc1_parameters(1,1:2);
 arc1_radius                   = arc1_parameters(1,3);
 arc1_start_angle_in_radians   = arc1_parameters(1,4);
-arc1_end_angle_in_radians     = arc1_parameters(1,5);
+% arc1_end_angle_in_radians     = arc1_parameters(1,5);
 arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
+% arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
 arc1_is_counter_clockwise     = arc1_parameters(1,7);
 
 % Find the change in angle of the arc
@@ -1020,24 +1024,24 @@ end
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc2_center_xy                = arc2_parameters(1,1:2);
 arc2_radius                   = arc2_parameters(1,3);
-arc2_start_angle_in_radians   = arc2_parameters(1,4);
+% arc2_start_angle_in_radians   = arc2_parameters(1,4);
 arc2_end_angle_in_radians     = arc2_parameters(1,5);
-arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+% arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
 arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-arc2_is_counter_clockwise     = arc2_parameters(1,7);
+flag_arc2_is_counter_clockwise     = arc2_parameters(1,7);
 
 % Find the change in angle of the arc
 % arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
 % arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
-if 1==arc2_is_counter_clockwise
-    arc2_is_counter_clockwise = 1;
+if 1==flag_arc2_is_counter_clockwise
+    arc2_sign_counter_clockwise = 1;
 else
-    arc2_is_counter_clockwise = -1;
+    arc2_sign_counter_clockwise = -1;
 end
 % arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, arc2_is_counter_clockwise);
 
 % Calculate the distance between the circles and the join point
-space_between_circles = fcn_geometry_gapCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise,-1);
+space_between_circles = fcn_geometry_gapCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_sign_counter_clockwise,-1);
 
 
 % With the cleaned parameters, the line vector always
@@ -1077,7 +1081,7 @@ switch continuity_level
                     desired_arc1_parameters(1,5)   = -pi/2;
 
                     desired_arc2_parameters        = arc2_parameters;
-                    if (1==arc2_is_counter_clockwise)
+                    if (1==arc2_sign_counter_clockwise)
                         desired_arc2_parameters(1,1:2) = [0 arc2_radius]; % Move arc2's center to align correctly
                         desired_arc2_parameters(1,4)   = -pi/2;
                     else
@@ -1108,7 +1112,7 @@ switch continuity_level
         % which by construction is the radius distance below the center of
         % the circle
 
-        if (space_between_circles>0) && (1==arc2_is_counter_clockwise)
+        if (space_between_circles>0) && (1==flag_arc2_is_counter_clockwise)
             % In this case, one circle is inside the other and an external
             % tangent is requested - and this is not possible. So need to
             % check to see if arc2 can be moved to create an external
@@ -1145,7 +1149,7 @@ switch continuity_level
                 desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
                 desired_intermediate_geometry_join_parameters = nan(1,6);  % "empty" line
             end
-        elseif (space_between_circles<=0) && (1==arc2_is_counter_clockwise)
+        elseif (space_between_circles<=0) && (1==flag_arc2_is_counter_clockwise)
             % In this case, one circle is OUTSIDE the other and an external
             % tangent is requested - and this is always possible.
             
@@ -1164,7 +1168,7 @@ switch continuity_level
             desired_intermediate_geometry_join_parameters = segment_parameters;
 
             
-        elseif (space_between_circles>0)  && (1~=arc2_is_counter_clockwise)
+        elseif (space_between_circles>0)  && (1~=flag_arc2_is_counter_clockwise)
             % The circles do not overlap, and an outside tangent is
             % requested. This is always possible.
             
@@ -1183,7 +1187,7 @@ switch continuity_level
             desired_intermediate_geometry_join_parameters = segment_parameters;
             
 
-        elseif (space_between_circles<=0) && (1~=arc2_is_counter_clockwise)
+        elseif (space_between_circles<=0) && (1~=flag_arc2_is_counter_clockwise)
             % The circles overlap, and an outside tangent is requested.
             % This isn't possible unless arc2 can be moved
             if flag_perform_shift_of_arc2==1
@@ -1243,8 +1247,11 @@ switch continuity_level
         if space_between_circles>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
+            circle1_parameters = [0 arc1_radius  arc1_radius];
+            circle2_parameters = [arc2_center_xy arc2_radius];
+
             [desired_intermediate_geometry_join_parameters, ~] = ...
-                fcn_geometry_spiralFromCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_is_counter_clockwise, 2626);
+                fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, arc2_sign_counter_clockwise, -1);
 
             spiralLength = desired_intermediate_geometry_join_parameters(1,1);
             h0           = desired_intermediate_geometry_join_parameters(1,2);
@@ -1254,7 +1261,7 @@ switch continuity_level
             Kf           = desired_intermediate_geometry_join_parameters(1,6);
 
             % Check results?
-            if 1==1
+            if 1==0
 
                 % Plot the results in
                 % figure 1234
@@ -1280,7 +1287,11 @@ switch continuity_level
             % Precalculate some quantities
             arc1_angle_where_spiral_starts = h0 - pi/2;
             spiral_arc1_join_xy = arc1_center_xy + arc1_radius*[cos(arc1_angle_where_spiral_starts) sin(arc1_angle_where_spiral_starts)];
-            arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
+            if 1==flag_arc2_is_counter_clockwise
+                arc2_angle_where_spiral_ends = analytical_end_angle - pi/2;
+            else
+                arc2_angle_where_spiral_ends = pi/2+analytical_end_angle;
+            end
             spiral_arc2_join_xy = arc2_center_xy + arc2_radius*[cos(arc2_angle_where_spiral_ends) sin(arc2_angle_where_spiral_ends)];
 
 
@@ -1299,7 +1310,7 @@ switch continuity_level
             % of arc2's end. If not, return Nan values for everything
 
             intersection_is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(spiral_arc1_join_xy, spiral_arc2_join_xy, arc2_end_xy,-1);
-            if arc2_is_counter_clockwise ~= intersection_is_counterClockwise
+            if arc2_sign_counter_clockwise ~= intersection_is_counterClockwise
                 % St_shift = [nan nan];
                 desired_arc1_parameters = nan(size(arc1_parameters));
                 desired_arc2_parameters = nan(size(arc1_parameters));
@@ -1312,12 +1323,9 @@ switch continuity_level
                 desired_arc1_parameters = arc1_parameters;
                 desired_arc1_parameters(1,4)   = arc1_start_angle_in_radians;
                 desired_arc1_parameters(1,5)   = arc1_angle_where_spiral_starts;
+
                 desired_arc2_parameters        = arc2_parameters;
-                if 1==arc2_is_counter_clockwise
-                    desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends;
-                else
-                    desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends+pi;
-                end
+                desired_arc2_parameters(1,4)   = arc2_angle_where_spiral_ends;
                 desired_arc2_parameters(1,5)   = arc2_end_angle_in_radians;
             end
         else
@@ -1328,7 +1336,7 @@ switch continuity_level
                     direction_vector_to_shift_arc2 = arc2_center_xy - arc1_center_xy;
                     unit_direction_vector_to_shift_arc2 = fcn_geometry_calcUnitVector(direction_vector_to_shift_arc2);
 
-                    if 1==arc2_is_counter_clockwise
+                    if 1==flag_arc2_is_counter_clockwise
                         % Small circle must be completely inside the large circle
                         sign_of_vector = -1;
                     else

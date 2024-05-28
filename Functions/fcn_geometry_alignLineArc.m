@@ -1,4 +1,4 @@
-function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignLineArc( arc_parameters, segment_parameters, varargin)
+function [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignLineArc( arc_parameters, segment_parameters, varargin)
 %% fcn_geometry_alignLineArc
 % Revises the geometric parameters of an arc and line segment such that
 % they align where they join. It does this by checking the offset between
@@ -114,22 +114,22 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % number.
 flag_max_speed = 0;
 if (nargin==5 && isequal(varargin{end},-1))
-    flag_do_debug = 0; %#ok<NASGU> % % % Flag to plot the results for debugging
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
-    flag_do_debug = 0; %#ok<NASGU> % % % Flag to plot the results for debugging
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); %#ok<NASGU>
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); 
         flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -455,7 +455,7 @@ firstFitType_parameters = arc_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_point_arc_to_segment = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, 345);
+intersection_point_arc_to_segment = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, -1);
 
 
 if ~isempty(debug_fig_num)
@@ -806,8 +806,6 @@ function [desired_arc_parameters, desired_segment_parameters, desired_intermedia
 % Calculates the delta amount to match the segment to the arc. The delta
 % values are measured FROM desired point TO actual point
 
-desired_intermediate_geometry_join_parameters = nan(1,6); % Initialize output to be a "blank" spiral
-desired_intermediate_geometry_join_type       = 'spiral';
 
 % Calculate needed values from parameter sets
 % Calculate needed values from parameter sets
@@ -950,9 +948,12 @@ switch continuity_level
         flag_spiral_was_calculated = 0;
         if space_between_arc_and_segment>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
+            circle1_parameters = [0 arc_radius  arc_radius];
+            circle2_parameters = [[0 -space_between_arc_and_segment], inf];
 
             [desired_intermediate_geometry_join_parameters, ~] = ...
-                fcn_geometry_spiralFromCircleToCircle(arc_radius, inf, [0 -space_between_arc_and_segment], [], -1);
+                fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], -1);
+
             flag_spiral_was_calculated = 1;
         else
             % Not enough space between arc and segment for a spiral, not

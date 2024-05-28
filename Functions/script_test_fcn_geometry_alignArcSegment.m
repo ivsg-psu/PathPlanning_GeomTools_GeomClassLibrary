@@ -632,7 +632,7 @@ assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359  
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 3.22 - checking the (-) cross product, feasible, intersection, not feasible
+%% Basic test 3.22 - checking the (-) cross product, intersection, not feasible
 fig_num = 322;
 figure(fig_num); clf;
 
@@ -682,8 +682,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 

@@ -68,6 +68,12 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.4500    0.4500]
 
 %%%% 
 % Show that alignment is not possible with original
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+
+% Check results - show this is not feasible
+assert(all(isnan(spiral_join_parameters)));
+
+
 
 %%%% 
 % Show that alignment is possible with modified

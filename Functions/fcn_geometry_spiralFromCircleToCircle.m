@@ -1,4 +1,4 @@
-function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, varargin)
+function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, varargin)
 %% fcn_geometry_spiralFromCircleToCircle
 % Calculates the spiral parameters that join one circle to another. The
 % spiral is assumed to leave the first circle in a counter-clockwise
@@ -9,16 +9,18 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % spiral.
 %
 % Format:
-% spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_radius, circle2_radius, circle2_center_xy, (flag_circle2_is_counterclockwise),  (fig_num))
+% spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, (flag_circle2_is_counterclockwise),  (fig_num))
 %
 % INPUTS:
 %
-%      circle1_radius: the radius of the first circle.
 %
-%      circle2_radius: the radius of the second circle.
+%      circle1_parameters: a vector of circle or arc parameters consistent
+%      with arc or circle type geometries. See
+%      fcn_geometry_fillEmptyDomainStructure for details
 %
-%      circle2_center_xy: the center XY point of the second circle in [X Y]
-%      format 
+%      circle2_parameters: a vector of circle or arc parameters consistent
+%      with arc or circle type geometries. See
+%      fcn_geometry_fillEmptyDomainStructure for details
 %
 %
 %      (OPTIONAL INPUTS)
@@ -68,6 +70,9 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % incorrectly instead of positive value.
 % 2024_05_11 - Sean Brennan
 % -- Modified to allow line definitions, e.g. with Kf = 0 
+% 2024_05_28 - Sean Brennan
+% -- Modified to use circle or arc parameters, not raw entries of radius
+% and center
 
 %% Debugging and Input checks
 
@@ -75,7 +80,7 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -91,7 +96,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -118,7 +123,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,5);
+        narginchk(2,4);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -136,7 +141,7 @@ end
 
 % Does user want to specify best_fit_domain_box_projection_distance?
 flag_circle2_is_counterclockwise = 1; 
-if (4<=nargin)
+if (3<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
         flag_circle2_is_counterclockwise = temp; 
@@ -145,7 +150,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if 5<= nargin && 0==flag_max_speed
+if 0==flag_max_speed && 4<=nargin
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -165,7 +170,25 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-circle1_center_xy = [0 circle1_radius];
+%%%
+% Load circle parameters
+
+% Extract needed values from parameter sets
+% Get the details from arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle1_center_xy                = circle1_parameters(1,1:2);
+circle1_radius                   = circle1_parameters(1,3);
+
+% Get the details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle2_center_xy                = circle2_parameters(1,1:2);
+circle2_radius                   = circle2_parameters(1,3);
+
+%%% 
+% Perform calculations
+expected_circle1_center_xy = [0 circle1_radius];
+
+if ~isequal(expected_circle1_center_xy, circle1_center_xy)
+    error('Circle1 should be centered on y-axis with the center at (0,radius1)')
+end
 
 % Check to see if circle2 is a line
 flag_circle2_is_a_line = 0;
@@ -233,24 +256,26 @@ if space_between_circles>0
 
             % Find the center of the circle tangent at the end of the spiral
             % Find the unit vector (need to do this analytically!)
-            s_tangent = [0.99999999 1]'*spiralLength;
-            [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,spiralLength,h0,x0,y0,K0,Kf);
-            unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
-            approximate_end_angle = atan2(unit_tangent(2),unit_tangent(1));
+            % s_tangent = [0.99999999 1]'*spiralLength;
+            % [x_tangent,y_tangent] = fcn_geometry_extractXYfromSTSpiral(s_tangent,spiralLength,h0,x0,y0,K0,Kf);
+            % unit_tangent = fcn_geometry_calcUnitVector([diff(x_tangent) diff(y_tangent)]);
+            % approximate_end_angle = atan2(unit_tangent(2),unit_tangent(1));
             analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
-            disp([approximate_end_angle analytical_end_angle]);
+            % disp([approximate_end_angle analytical_end_angle]);
             unit_tangent           = [cos(analytical_end_angle) sin(analytical_end_angle)];
             unit_orthogonal = unit_tangent*[0 1; -1 0];
             calculated_circle2_center_xy = circle2_radius*flag_circle2_is_counterclockwise*unit_orthogonal + [x_spiral(end) y_spiral(end)];
 
-            plot(circle2_center_xy(:,1),circle2_center_xy(:,2),'r+');
-            plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');
+            plot(circle1_center_xy(:,1),circle1_center_xy(:,2),'r+');
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf('''Color'',[1 0 0], ''LineWidth'',4'));
 
-            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf('''Color'',[0 1 0], ''LineWidth'',4'));
-            fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf(' ''LineWidth'',2'));
-            
-            fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], [], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
-            fcn_geometry_plotGeometry('circle',[calculated_circle2_center_xy, circle2_radius], [], sprintf('''Color'',[1 1 0], ''LineWidth'',4'));
+            plot(circle2_center_xy(:,1),circle2_center_xy(:,2),'g+');
+            fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf('''Color'',[0 1 0], ''LineWidth'',2'));
+
+            plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');            
+            fcn_geometry_plotGeometry('circle',[calculated_circle2_center_xy, circle2_radius], [], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
+
+            % fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], [], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
 
         end
 
@@ -336,16 +361,13 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
-    % Plot the circles
+    % Plot the inputs (circles or lines)
     if 1==flag_circle2_is_a_line
         fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
         fcn_geometry_plotGeometry('line',[1 0 0 circle2_center_xy(1,2)], [], sprintf(' ''LineWidth'',2'));
-        fcn_geometry_plotGeometry('spiral',spiral_join_parameters, sprintf(' ''LineWidth'',3'));
     else
         fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
         fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf(' ''LineWidth'',2'));
-        fcn_geometry_plotGeometry('spiral',spiral_join_parameters, [], sprintf(' ''LineWidth'',3'));
-
     end
 
     % Plot the spiral result
@@ -512,31 +534,31 @@ spiral_offset_error = abs(center_to_center_distance - spiral_predicted_center_to
 
 end % Ends fcn_INTERNAL_calcSpiralOffsetError
 
-%%
-function fcn_INTERNAL_plotCircles(flag_circle1_is_line, flag_circle2_is_line,K0,Kf, circle2_center, circle1_plot_format, circle2_plot_format)
-    % Plot circle1 
-    if flag_circle1_is_line
-        % Circle 1 is a line
-        if 0==flag_circle2_is_line
-            x_limit = 1/Kf;
-            plot([-x_limit x_limit],[0 0],circle1_plot_format);
-        end
-    else
-        % Circle 1 is a circle
-        plot(0,1/K0,'b+','MarkerSize',20);
-        fcn_geometry_plotCircle([0 1/K0], 1/K0,circle1_plot_format);
-    end
-
-    % Plot circle2
-    if flag_circle2_is_line
-        % Circle 2 is a line
-        if 0==flag_circle1_is_line
-            x_limit = 1/Kf;
-            plot([-x_limit x_limit],[y_spiral(end) y_spiral(end)],circle2_plot_format);
-        end    
-    else
-        % Circle 2 is a circle
-        plot(circle2_center(:,1),circle2_center(:,2),circle2_plot_format,'MarkerSize',20);
-        fcn_geometry_plotCircle(circle2_center, 1/Kf,circle2_plot_format);
-    end
-end
+% %%
+% function fcn_INTERNAL_plotCircles(flag_circle1_is_line, flag_circle2_is_line,K0,Kf, circle2_center, circle1_plot_format, circle2_plot_format)
+%     % Plot circle1 
+%     if flag_circle1_is_line
+%         % Circle 1 is a line
+%         if 0==flag_circle2_is_line
+%             x_limit = 1/Kf;
+%             plot([-x_limit x_limit],[0 0],circle1_plot_format);
+%         end
+%     else
+%         % Circle 1 is a circle
+%         plot(0,1/K0,'b+','MarkerSize',20);
+%         fcn_geometry_plotCircle([0 1/K0], 1/K0,circle1_plot_format);
+%     end
+% 
+%     % Plot circle2
+%     if flag_circle2_is_line
+%         % Circle 2 is a line
+%         if 0==flag_circle1_is_line
+%             x_limit = 1/Kf;
+%             plot([-x_limit x_limit],[y_spiral(end) y_spiral(end)],circle2_plot_format);
+%         end    
+%     else
+%         % Circle 2 is a circle
+%         plot(circle2_center(:,1),circle2_center(:,2),circle2_plot_format,'MarkerSize',20);
+%         fcn_geometry_plotCircle(circle2_center, 1/Kf,circle2_plot_format);
+%     end
+% end

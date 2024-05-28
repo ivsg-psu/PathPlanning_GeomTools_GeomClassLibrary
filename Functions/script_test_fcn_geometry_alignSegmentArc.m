@@ -485,7 +485,8 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-x_offset = 0; y_offset = -0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
+x_offset = 0; y_offset = -0.3; 
+arc_center_xy            = [x_offset arc_radius+y_offset];
 arc_vector_start         = [cos(-120*pi/180) sin(-120*pi/180)];
 arc_vector_end           = [cos(- 20*pi/180) sin(- 20*pi/180)];
 arc_is_circle            = 0;
@@ -542,7 +543,8 @@ segment_parameters(1,6)   = segment_s_end;
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
-x_offset = 0; y_offset = -0.1; arc_center_xy            = [x_offset arc_radius+y_offset];
+x_offset = 0; y_offset = -0.2; 
+arc_center_xy            = [x_offset arc_radius+y_offset];
 arc_vector_start         = [cos(-120*pi/180) sin(-120*pi/180)];
 arc_vector_end           = [cos(- 20*pi/180) sin(- 20*pi/180)];
 arc_is_circle            = 0;
@@ -634,7 +636,7 @@ assert(isequal(round(revised_segment_parameters,4),[1.0000         0   -2.0000  
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 3.22 - checking the (-) cross product, feasible, intersection, not feasible
+%% Basic test 3.22 - checking the (-) cross product, intersection, not feasible
 fig_num = 322;
 figure(fig_num); clf;
 

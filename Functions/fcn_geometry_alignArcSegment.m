@@ -107,6 +107,8 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % which was first
 % 2024_05_26 - Sean Brennan
 % -- fixed comments to indicate threshold in St, not tS coordinates
+% 2024_05_28 - S. Brennan
+% -- fixed call to spiralFromCircleToCircle to use parameter vectors
 
 %% Debugging and Input checks
 
@@ -130,7 +132,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -906,8 +908,12 @@ switch continuity_level
         if space_between_arc_and_segment>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
+            circle1_parameters = [0 arc_radius  arc_radius];
+            circle2_parameters = [[0 -space_between_arc_and_segment], inf];
+
             [desired_intermediate_geometry_join_parameters, ~] = ...
-                fcn_geometry_spiralFromCircleToCircle(arc_radius, inf, [0 -space_between_arc_and_segment], [], -1);
+                fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], -1);
+
             flag_spiral_was_calculated = 1;
         else
             % Not enough space between arc and segment for a spiral, not
