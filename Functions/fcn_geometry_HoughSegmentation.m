@@ -202,9 +202,9 @@ if (5<= nargin) && (0==flag_max_speed)
 end
 
 if flag_do_debug
-    fig_debug = 8484;
+    fig_debug = 8484; %#ok<NASGU>
 else
-    fig_debug = [];
+    fig_debug = []; %#ok<NASGU>
 end
 
 %% Solve for the circle
