@@ -9,8 +9,8 @@ function gap_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, ci
 % If one circle is meant to be completely inside, the gap is positive if
 % there is no overlap of one circle to another, and the gap is a measure of
 % the distance from the edge of the inner circle to the edge of the outer
-% circle. If the circles overlap or one is outside the other, the gap is
-% negative.
+% circle. If the circles overlap or one has a center and circumference
+% outside the other, the gap is negative.
 %
 % If one circle is meant to be completely outside the other, the gap is
 % positive if there is no overlap of one circle to another, and the gap is
@@ -43,18 +43,7 @@ function gap_between_circles = fcn_geometry_gapCircleToCircle(circle1_radius, ci
 %
 % OUTPUTS:
 %
-%      spiral_join_parameters: the parameter set describing the
-%      spiral segment geometry that joins the circles. See
-%      fcn_geometry_fillEmptyDomainStructure for details, specifically the
-%      structure for 'spiral'. If a spiral is not possible, then nan values
-%      are returned for all parameters.
-%
-%      space_between_circles: the amount of space between the circles if a
-%      spiral is to be joined between them. Positive values will generate
-%      feasible spirals, negative values are not feasible. This
-%      space_between_circles is a useful measure to determine how "close"
-%      in physical distance a configuration that does NOT work would be to
-%      a configuration that does work.
+%      gap_between_circles: the distance between the circles.
 %
 % DEPENDENCIES:
 %

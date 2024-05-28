@@ -91,7 +91,7 @@ else
     end
 end
 
-% flag_do_debug = 1;
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -246,11 +246,11 @@ if space_between_circles>0
             plot(circle2_center_xy(:,1),circle2_center_xy(:,2),'r+');
             plot(calculated_circle2_center_xy(:,1),calculated_circle2_center_xy(:,2),'m+');
 
-            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], sprintf('''Color'',[0 1 0], ''LineWidth'',4'));
-            fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], sprintf(' ''LineWidth'',2'));
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf('''Color'',[0 1 0], ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf(' ''LineWidth'',2'));
             
-            fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
-            fcn_geometry_plotGeometry('circle',[calculated_circle2_center_xy, circle2_radius], sprintf('''Color'',[1 1 0], ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('circle',[circle1_center_xy, center_to_center_distance_between_circles], [], sprintf('''Color'',[1 0 1], ''LineWidth'',4'));
+            fcn_geometry_plotGeometry('circle',[calculated_circle2_center_xy, circle2_radius], [], sprintf('''Color'',[1 1 0], ''LineWidth'',4'));
 
         end
 

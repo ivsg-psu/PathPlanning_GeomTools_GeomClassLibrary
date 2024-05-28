@@ -35,12 +35,12 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %
 %      threshold: the offset, in meters, between the arc and the line such
 %      that this offset is removed by shifting. If the offset is larger
-%      than this, then the outputs are set to empty.If this is
-%      entered as a 2x1 or 1x2, then this specifies the threshold first in
-%      the transverse direction, and then in the station direction. For
-%      example, an entry of [0.02 3] would have 0.02 meters threshold in
-%      the transverse direction, but 3 meters threshold in the station
-%      direction.
+%      than this, then the outputs are set to empty. If this is entered as
+%      a 2x1 or 1x2, then this specifies the threshold in St coordinates,
+%      e.g. first in the station direction, and then in the transverse
+%      direction. For example, an entry of [3 0.2] would have 3 meters
+%      threshold in the station direction, but 0.2 meters threshold in the
+%      transverse direction
 %
 %      continuity_level: the level of continuity desired in the alignment.
 %      Input values include 0 for C0 continuity, 1 for C1 continuity
@@ -105,7 +105,8 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % -- changed code to force line to arc functionality only (per name of fcn)
 % -- renamed function to ArcLine because LineToArc was confusing as to
 % which was first
-
+% 2024_05_26 - Sean Brennan
+% -- fixed comments to indicate threshold in St, not tS coordinates
 
 %% Debugging and Input checks
 
@@ -172,7 +173,7 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify best_fit_domain_box_projection_distance?
+% Does user want to specify threshold?
 threshold = 0.1;
 flag_perform_shift_of_segment = 1;
 if (3<=nargin)
@@ -832,6 +833,7 @@ switch continuity_level
             desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
 
         else
+            % A shift is required
             if flag_perform_shift_of_segment==1
                 if abs(space_between_arc_and_segment)<=transverse_threshold
                     % Yes, segment can be moved enough to be tangent. So put

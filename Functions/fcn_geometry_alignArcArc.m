@@ -1165,6 +1165,8 @@ switch continuity_level
 
             
         elseif (space_between_circles>0)  && (1~=arc2_is_counter_clockwise)
+            % The circles do not overlap, and an outside tangent is
+            % requested. This is always possible.
             
             % Put arcs start/end angles in correct places
             desired_arc1_parameters        = arc1_parameters;
@@ -1182,6 +1184,8 @@ switch continuity_level
             
 
         elseif (space_between_circles<=0) && (1~=arc2_is_counter_clockwise)
+            % The circles overlap, and an outside tangent is requested.
+            % This isn't possible unless arc2 can be moved
             if flag_perform_shift_of_arc2==1
                 if abs(space_between_circles)<transverse_threshold
                     % Yes, arc2 can be moved enough to be tangent. So put
