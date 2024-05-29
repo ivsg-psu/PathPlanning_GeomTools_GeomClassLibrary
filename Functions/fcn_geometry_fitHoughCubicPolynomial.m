@@ -44,7 +44,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % DEPENDENCIES:
 %
 %      fcn_DebugTools_checkInputsToFunctions
-%      fcn_geometry_findAgreementOfPointsToCubicPoly
+%      fcn_geometry_findAgreementsOfPointsToCubicPoly
 %      fcn_geometry_fillEmptyDomainStructure
 %      fcn_geometry_fillColorFromNumberOrName
 %
@@ -224,7 +224,7 @@ for ith_combo = 1:N_permutations
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = fittedParameters;
     
-    [agreement_indices,~] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, combos_paired(ith_combo,1), station_tolerance,(-1));
+    [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, combos_paired(ith_combo,1), station_tolerance,(-1));
 
     % Save the count of points in agreement
     agreement_count = length(agreement_indices);
@@ -250,7 +250,7 @@ best_fit_source_indicies         = {};
 best_fit_polygon_vertices        = {};
 
 % Find best agreements
-if flag_find_only_best_agreement ==1
+if 1 == flag_find_only_best_agreement
     N_fits = 0;
     remaining_agreements = agreements;
 
@@ -263,7 +263,7 @@ if flag_find_only_best_agreement ==1
     only_best_fit_fittedCoefficients  = fitted_parameters(best_agreement_index,:);
     
     % Find the indicies in transverse agreement with this best fit
-    [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
+    [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
 
     % Accumulate results from best fits to prep for domain formation
     N_fits = N_fits+1;
@@ -286,7 +286,7 @@ else
         fittedCoefficients  = fitted_parameters(best_agreement_index,:);
 
         % Find the indicies in transverse agreement with this best fit
-        [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementOfPointsToCubicPoly(points, fit_source_points, fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
+        [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fit_source_points, fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
 
         % Accumulate results from best fits to prep for domain formation
         N_fits = N_fits+1;
