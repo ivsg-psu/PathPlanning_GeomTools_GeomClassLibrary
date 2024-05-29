@@ -152,7 +152,7 @@ end
 % Does user want to specify station_tolerance?
 station_tolerance = [];
 if 6<= nargin
-    temp = varargin{1};
+    temp = varargin{2};
     if ~isempty(temp)
         station_tolerance = temp;
     end
