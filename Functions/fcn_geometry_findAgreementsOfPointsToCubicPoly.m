@@ -1,4 +1,5 @@
-function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, varargin)
+% function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, base_point_index, station_tolerance, varargin)
+function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, station_tolerance, varargin)
 %% fcn_geometry_findAgreementsOfPointsToCubicPoly 
 %
 % Given a set of XY points, source points, and fitted parameters, finds the
@@ -9,7 +10,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 %
 % FORMAT:
 %
-% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num))
+% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, station_tolerance, (fig_num))
 %
 % INPUTS:
 %
@@ -27,16 +28,13 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 %      fit. A point belongs to the fit if the transverse distance is less
 %      than or equal to the transverse_tolerance
 %
-%      (OPTIONAL INPUTS)
-%
-%      base_point_index: the index of the point to use as a base point,
-%      among the input points.
-%
 %      station_tolerance: the projection distance between the points in a
 %      curve fit, along the direction of the line, that indicate whether a
 %      point "belongs" to the circle fit (if distance is less than or equal
 %      to the tolerance), or is "outside" the fit (if distance is greater
 %      than the tolerance).
+%
+%      (OPTIONAL INPUTS)
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -76,6 +74,14 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 % box around the area of interest.
 % -- Added polyfit to the upper and lower boundary points to get a better
 % domain
+% 2024_05_30 - Aneesh Batchu 
+% -- If the slope at any point (source/interpolated) point is zero, the
+% corresponding unit tangent vectors is multiplied with transverse
+% tolerance (instead of orthogonal vectors to find the domain boundaries)
+% -- Added a conditional statement 
+% (&& length(indices_in_transverse_agreement)>=2) for finding the points
+% that are within the station_tolerance limit.
+% -- Removed base_point_index from the inputs
 
 %% Debugging and Input checks
 
@@ -83,7 +89,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==7 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -123,7 +129,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs
         % Are there the right number of inputs?
-        narginchk(4,7);
+        narginchk(5,6);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -136,32 +142,41 @@ if 0==flag_max_speed
         % Check the transverse_tolerance input is a positive single number
         fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
 
+        % % Check the base_point_index input to be [1x1] positive integer 
+        % 
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     base_point_index, 'positive_1column_of_integers',[1 1]);
+        % if base_point_index<1 || base_point_index>length(points(:,1))
+        %     error('The input base_point_index must be in the length of points, namely between: %.0d and %.0d',1,length(points(:,1)));
+        % end
+
+
 
     end
 end
 
-% Does user want to specify base_point_index?
-base_point_index = [];
-if 5<= nargin
-    temp = varargin{1};
-    if ~isempty(temp)
-        base_point_index = temp;
-    end
-end
-
-% Does user want to specify station_tolerance?
-station_tolerance = [];
-if 6<= nargin
-    temp = varargin{2};
-    if ~isempty(temp)
-        station_tolerance = temp;
-    end
-end
+% % Does user want to specify base_point_index?
+% base_point_index = [];
+% if 5<= nargin
+%     temp = varargin{1};
+%     if ~isempty(temp)
+%         base_point_index = temp;
+%     end
+% end
+% 
+% % Does user want to specify station_tolerance?
+% station_tolerance = [];
+% if 6<= nargin
+%     temp = varargin{2};
+%     if ~isempty(temp)
+%         station_tolerance = temp;
+%     end
+% end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (7<= nargin)
+if (0==flag_max_speed) && (6<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -200,6 +215,9 @@ interpolated_source_points = [x_interpolated_source_points, y_interpolated_sourc
 % Find the slopes (first derivative) of cubic polynomial at each test source point
 slopes_at_each_test_source_point = 3*fittedParameters(1,1)*interpolated_source_points(:,1).^2 + 2*fittedParameters(1,2)*interpolated_source_points(:,1) + fittedParameters(1,3);
 
+% round off the slopes to a 4th decimal
+slopes_at_each_test_source_point = round(slopes_at_each_test_source_point,4); 
+
 % Find angle of inclination to find the unit_tangent_vector
 theta = atan(slopes_at_each_test_source_point); 
 % theta = atan2(slopes_at_each_test_source_point, interpolated_source_points(:,1)); 
@@ -210,15 +228,20 @@ unit_tangent_vectors = [sin(theta), cos(theta)];
 % Pre-allocate unit_orthogonal_vectors with zeros
 unit_orthogonal_vectors = zeros(size(unit_tangent_vectors));
 
-% If the slopes are negative,  rotate the unit tangent vector in anti
-% clockwise direction.
+% If the slopes are negative, rotate the unit tangent vector in clockwise
+% direction.
 indices_slope_is_negative = slopes_at_each_test_source_point < 0;
 unit_orthogonal_vectors(indices_slope_is_negative,:) = unit_tangent_vectors(indices_slope_is_negative,:)*[0 -1; 1 0];
 
-% If the slopes are positive,  rotate the unit tangent vector in clockwise
-% direction
-indices_slope_is_positive = slopes_at_each_test_source_point >= 0;
+% If the slopes are positive, rotate the unit tangent vector in anti
+% clockwise direction
+indices_slope_is_positive = slopes_at_each_test_source_point > 0;
 unit_orthogonal_vectors(indices_slope_is_positive,:) = unit_tangent_vectors(indices_slope_is_positive,:)*[0 1; -1 0];
+
+% If the slopes are zero, use tangent vectors to give transverse tolerance
+% to generate the domain box
+indices_slope_is_zero = slopes_at_each_test_source_point == 0;
+unit_orthogonal_vectors(indices_slope_is_zero,:) = unit_tangent_vectors(indices_slope_is_zero,:);
 
 % Find the points on upper and lower boundaries
 upper_boundary_points = interpolated_source_points + unit_orthogonal_vectors*transverse_tolerance;
@@ -228,16 +251,16 @@ lower_boundary_points = interpolated_source_points - unit_orthogonal_vectors*tra
 fit_upper_boundary_parameters = polyfit(upper_boundary_points(:,1), upper_boundary_points(:,2), 3);
 fit_lower_boundary_parameters = polyfit(lower_boundary_points(:,1), lower_boundary_points(:,2), 3);
 
-% Plot the upper and lower fitted polynomial
+% Plot the upper and lower fitted polynomial to fix the vertices of domain
 y_values_upperboundary = polyval(fit_upper_boundary_parameters, interpolated_source_points(:,1));
 y_values_lowerboundary = polyval(fit_lower_boundary_parameters, interpolated_source_points(:,1));
 
 % % Define the domain. These are the boundary vertices
 % polygon_vertices = [upper_boundary_points; lower_boundary_points(end:-1:1,:)];
 
+% Define the domain. These are the boundary vertices
 upper_polygon_vertices = [interpolated_source_points(:,1), y_values_upperboundary];
 lower_polygon_vertices = [interpolated_source_points(:,1), y_values_lowerboundary];
-% Define the domain. These are the boundary vertices
 polygon_vertices = [upper_polygon_vertices; lower_polygon_vertices(end:-1:1,:)];
 
 % Determine which points lie inside the polygonal region (domain)
@@ -246,10 +269,10 @@ inlier_indices = inpolygon(points(:,1), points(:,2), polygon_vertices(:,1), poly
 
 % Find the transverse agreement indices based on inlier_indices
 indices_in_transverse_agreement = find(inlier_indices==1);
-
+% indices_in_transverse_agreement
 % If the station distance is given
-if ~isempty(station_tolerance)
-    agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, base_point_index, station_tolerance); 
+if ~isempty(station_tolerance) && length(indices_in_transverse_agreement)>=2
+    agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, station_tolerance); 
 else
     agreement_indices = indices_in_transverse_agreement;
 end
@@ -361,10 +384,11 @@ end
 
 function interpolated_source_points = fcn_INTERNAL_interpolateSourcePoints(source_points, n_points)
 
-% Define your 4 numbers
+% Sort the x_coordinates of source points
 x_coordinates_source_points = sort(source_points(:,1),1);
 
-% Generate the positions for the 4 given numbers within the 20 points
+% Generate the positions for the 4 x_coordinates of source points within
+% the (n_points: 2 to (n_points -1)) 
 indices = round(linspace(1, n_points, length(x_coordinates_source_points)));
 
 % Initialize the result vector with NaNs (or any placeholder)
@@ -379,11 +403,14 @@ nan_indices = find(isnan(interpolated_source_points));
 % Interpolate the NaNs
 interpolated_source_points(nan_indices) = interp1(indices, x_coordinates_source_points, nan_indices, 'makima'); 
 
+% The interpolated points are transposed
 interpolated_source_points = interpolated_source_points';
 
 end
 
-function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, base_point_index, station_tolerance)
+% function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, base_point_index, station_tolerance)
+function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, station_tolerance)
+base_point_index = indices_in_transverse_agreement(1,1);
 
 % Grab only the points in transverse agreement
 points_in_transverse_agreement = points(indices_in_transverse_agreement,:);
@@ -404,6 +431,8 @@ diff_between_pts_in_points_pair = points_in_transverse_agreement(point_pairs(:,2
 
 % Station distance calculation
 station_distances_of_points_in_transverse_agreement = sum(diff_between_pts_in_points_pair.^2,2).^0.5;
+% index_source_point_in_transverse_agreement
+% length_of_input_distances = length(station_distances_of_points_in_transverse_agreement)
 
 % Sort the station distances and find those in agreement with station
 % tolerance
