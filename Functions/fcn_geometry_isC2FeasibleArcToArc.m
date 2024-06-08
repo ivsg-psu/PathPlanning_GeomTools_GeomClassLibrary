@@ -6,7 +6,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % Format:
 % [flag_is_feasible, feasibility_distance] = ...
 %    arc1_parameters, arc2_parameters, ...
-%    (threshold), (fig_num))
+%    (threshold), (in_boundary_margin), (fig_num))
 %
 % INPUTS:
 %
@@ -29,7 +29,13 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 %      0.2] would have 3 meters threshold in the station direction, but 0.2
 %      meters threshold in the transverse direction. Note that only the
 %      transverse distances are used to determine feasibility. The default
-%      threshold is 0.
+%      threshold is 0
+%
+%      in_boundary_margin: the distance, in meters, that the offset must be
+%      moved within the boundary for feasibility. This margin is added
+%      because feasible solutions that exact exactly on the boundary
+%      (within the tolerance) may still yield solutions that are
+%      technically not feasible spiral connections. Default is 0.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -61,6 +67,8 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % Revision history:
 % 2024_05_26 - S Brennan
 % -- wrote the code
+% 2024_06_08 - S Brennan
+% -- added in_boundary_margin input option
 
 %% Debugging and Input checks
 
@@ -68,7 +76,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -111,7 +119,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,4);
+        narginchk(2,5);
 
     end
 end
@@ -126,10 +134,20 @@ if (3<=nargin)
     end
 end
 
+% Does user want to specify in_boundary_margin?
+in_boundary_margin = 0;
+if (4<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        in_boundary_margin = temp;
+    end
+end
+
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if  (0==flag_max_speed) && (4<= nargin)
+if  (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -275,16 +293,16 @@ distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
 [closest_distance,case_number] = min(distances_by_case);
 
 if closest_distance<=0
+    % In this case, the join is fully feasible without correction
     flag_is_feasible = 1;
     feasibility_distance = closest_distance;
     closest_feasible_arc2_parameters = arc2_parameters;
     corrected_parameters_r2_d12 = [r2 d12];
 else
-    flag_is_feasible = 0;
-    feasibility_distance = closest_distance;
+    % Some correction is necessary for the join to be feasible
 
     % Find closest parameters
-    corrected_parameters_r2_d12 = query_point -cases_unit_projection_vectors(case_number,:)*closest_distance;
+    corrected_parameters_r2_d12 = query_point - cases_unit_projection_vectors(case_number,:)*(closest_distance + in_boundary_margin);
     closest_feasible_arc2_parameters = arc2_parameters;
 
     % The radius is the first value
@@ -296,7 +314,13 @@ else
     unit_vector_center1_to_center2 = fcn_geometry_calcUnitVector(vector_center1_to_center2);
     updated_arc2_center_xy = arc1_center_xy + unit_vector_center1_to_center2*updated_d12;
     closest_feasible_arc2_parameters(1,1:2) = updated_arc2_center_xy;
+    feasibility_distance = closest_distance;
 
+    if closest_distance <= threshold
+        flag_is_feasible = 1;
+    else
+        flag_is_feasible = 0;
+    end
 end
 
 %% Plot the results (for debugging)?

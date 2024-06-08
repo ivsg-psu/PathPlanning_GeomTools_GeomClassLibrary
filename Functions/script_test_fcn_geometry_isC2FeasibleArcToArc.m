@@ -26,7 +26,7 @@
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Illustrative%20Test%20Cases
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% 1.1 Basic test
+%% 1.1 Basic test - circle2 in circle1
 
 fig_num = 1101;
 figure(fig_num);
@@ -50,11 +50,12 @@ circle2_center_xy            = [x_offset circle2_radius+y_offset];
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
-% Set threshold
+% Set threshold and margin
 threshold = 0;
+in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -68,7 +69,7 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.4500    0.4500]
 
 %%%% 
 % Show that alignment is not possible with original
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], []);
 
 % Check results - show this is not feasible
 assert(all(isnan(spiral_join_parameters)));
@@ -76,7 +77,116 @@ assert(all(isnan(spiral_join_parameters)));
 
 
 %%%% 
-% Show that alignment is possible with modified
+% Show that alignment again is not possible with modified parameters that
+% are exactly on feasible boundary
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, closest_feasible_arc2_parameters, [], []);
+
+% Check results - show this is not feasible
+assert(all(isnan(spiral_join_parameters)));
+
+%%%
+% Call function with a user-defined margin that is small
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = 0.01; % Units are meters
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+assert(isequal(round(flag_is_feasible,4),0));
+assert(isequal(round(feasibility_distance,4),0.0707));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.4571    0.4429]));
+
+%%%% 
+% Show that alignment again is possible with modified parameters that
+% are inside feasible boundary
+spiral_fig_num = 5858;
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, closest_feasible_arc2_parameters, [], spiral_fig_num);
+
+% Check results - show this is not feasible
+assert(~all(isnan(spiral_join_parameters)));
+
+
+
+%% 1.2 Basic test - circle1 in circle2
+
+fig_num = 1201;
+figure(fig_num);
+clf;
+
+% Fill in circle1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle1_radius               = 20;
+x_offset = 0; 
+y_offset = 0; 
+circle1_center_xy            = [x_offset circle1_radius+y_offset];
+
+circle1_parameters(1,1:2) = circle1_center_xy;
+circle1_parameters(1,3)   = circle1_radius;
+
+% Fill in circle2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+circle2_radius               = 30;
+x_offset = 0; 
+y_offset = -0.1; 
+circle2_center_xy            = [x_offset circle2_radius+y_offset];
+
+circle2_parameters(1,1:2) = circle2_center_xy;
+circle2_parameters(1,3)   = circle2_radius;
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = [];
+URHERE
+
+% Call function
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+% Check sizes
+assert(isequal(size(flag_is_feasible),[1 1]));
+assert(isequal(size(feasibility_distance),[1 1]));
+assert(isequal(size(closest_feasible_arc2_parameters),[1 3]));
+
+% Check values
+assert(isequal(round(flag_is_feasible,4),0));
+assert(isequal(round(feasibility_distance,4),0.0707));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.4500    0.4500]));
+
+%%%% 
+% Show that alignment is not possible with original
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], []);
+
+% Check results - show this is not feasible
+assert(all(isnan(spiral_join_parameters)));
+
+
+
+%%%% 
+% Show that alignment again is not possible with modified parameters that
+% are exactly on feasible boundary
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, closest_feasible_arc2_parameters, [], []);
+
+% Check results - show this is not feasible
+assert(all(isnan(spiral_join_parameters)));
+
+%%%
+% Call function with a user-defined margin that is small
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = 0.01; % Units are meters
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+assert(isequal(round(flag_is_feasible,4),0));
+assert(isequal(round(feasibility_distance,4),0.0707));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.4571    0.4429]));
+
+%%%% 
+% Show that alignment again is possible with modified parameters that
+% are inside feasible boundary
+spiral_fig_num = 5858;
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, closest_feasible_arc2_parameters, [], spiral_fig_num);
+
+% Check results - show this is not feasible
+assert(~all(isnan(spiral_join_parameters)));
+
 
 
 %% 2.2 Arc is the first geometry, Arc is the second geometry
