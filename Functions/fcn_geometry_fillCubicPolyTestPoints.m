@@ -60,6 +60,10 @@ function [test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints (coef
 % 2024_05_08 - Aneesh Batchu
 % -- wrote the code 
 
+% To-Do
+%
+% 2024_05_31
+% -- Add noise orthogonally, not just vertically. 
 
 
 %% Debugging and Input checks
