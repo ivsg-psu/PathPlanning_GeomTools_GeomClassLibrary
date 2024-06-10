@@ -7,7 +7,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 %
 % FORMAT: 
 %
-% domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (fig_num)) 
+% domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num)) 
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -72,6 +72,8 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % -- Added station tolerance as one of the inputs
 % 2024_05_20 - Aneesh Batchu
 % -- Added wait bar
+% 2024_06_05 - Aneesh Batchu
+% -- Added "total_points_including_source_points" as one of the inputs
 
 %% Debugging and Input checks
 
@@ -79,7 +81,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -119,7 +121,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,6);
+        narginchk(2,7);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
@@ -161,11 +163,22 @@ if (5<=nargin)
     end
 end
 
+% Does user specify total_points_including_source_points?
+total_points_including_source_points = 20;
+if (6<= nargin)
+    temp = varargin{4};
+    if ~isempty(temp)
+        total_points_including_source_points = temp;
+        if total_points_including_source_points<4
+            error('The input points_required_for_agreement must be greater than or equal to 4.')
+        end
+    end
+end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (6<=nargin)
+if (0==flag_max_speed) && (7<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -226,7 +239,7 @@ for ith_combo = 1:N_permutations
     % ith_combo
     % conbo_pair = combos_paired(ith_combo,:)
     % [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, combos_paired(ith_combo,1), station_tolerance,(-1));
-    [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, station_tolerance,(-1));
+    [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance),(total_points_including_source_points),(-1));
 
     % Save the count of points in agreement
     agreement_count = length(agreement_indices);
@@ -266,7 +279,7 @@ if 1 == flag_find_only_best_agreement
     
     % Find the indicies in transverse agreement with this best fit
     % [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
-    [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, station_tolerance, (-1));
+    [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (-1));
 
     % Accumulate results from best fits to prep for domain formation
     N_fits = N_fits+1;
@@ -290,7 +303,7 @@ else
 
         % Find the indicies in transverse agreement with this best fit
         % [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fit_source_points, fittedCoefficients, transverse_tolerance, combos_paired(best_agreement_index,1), station_tolerance, (-1));
-        [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fit_source_points, fittedCoefficients, transverse_tolerance, station_tolerance, (-1));
+        [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fit_source_points, fittedCoefficients, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (-1));
 
         % Accumulate results from best fits to prep for domain formation
         N_fits = N_fits+1;
