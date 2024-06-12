@@ -3,6 +3,8 @@
 % Revision history:
 % 2024_05_29 - Aneesh Batchu
 % -- wrote the code
+% 2024_06_05 - Aneesh Batcu
+% -- Modified the assertions for better demonstration
 
 close all
 
@@ -16,6 +18,7 @@ close all
 % /_/    \_\___/___/\___|_|   \__|_|\___/|_| |_|___/
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Assertions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% Test linear polynomials
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  _      _                         _____      _                             _       _
@@ -28,14 +31,17 @@ close all
 %                                                |___/
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Linear%20Polynomial%20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Test 1: a basic linear polynomial (y = 2x)
+
+%% Test 1: a basic linear polynomial (y = 0.5x)
+
+rng(123)
 
 fig_num = 1121;
 figure(fig_num); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
-c = 2; % Coefficient for x
+c = 0.5; % Coefficient for x
 d = 0; % Constant term
 x_range = [-1, 1]; % Range of x values
 M = 2; % Number of test points to generate
@@ -53,8 +59,11 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Did not corrupt the test points to get the same result everytime
 points = corrupted_test_points;
 
+
+current_combo = [1, 2, 3, 4]; 
+
 % Select the first four points as the source points
-test_source_points = points(1:4,:);
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
@@ -68,39 +77,43 @@ transverse_tolerance = 0.5;
 % Station tolerance
 station_tolerance = 0.1; 
 
-total_points_including_source_points = 20; 
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-assert(isequal(agreement_indices,[1; 2; 3]));
-assert(isequal(size(agreement_indices),[3 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
 
-%% Test 2: a basic linear polynomial (y = 2x)
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize', 20)
+
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(isequal(agreement_indices,[1; 2; 3; 4]));
+assert(isequal(size(agreement_indices),[4 1]));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% Test 2: a basic linear polynomial (y = 0.5x)
+
+rng(123)
 
 fig_num = 1131;
 figure(fig_num); clf;
 
-points_required_for_agreement = 10;
- 
-flag_find_only_best_agreement = 0; 
-flag_do_plots = 1;
-
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
-c = 2; % Coefficient for x
+c = 0.5; % Coefficient for x
 d = 0; % Constant term
-x_range = [-1, 1]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+x_range = [-2, 2]; % Range of x values
+M = 7; % Number of test points to generate
+sigma = 0.15; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -109,31 +122,35 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 
-% Select any four points as the source points
-combo = [1, 3, 4, 5];
-test_source_points = points(combo,:);
+current_combo = [1, 11, 18, 29]; 
+
+% Select the first four points as the source points
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% Base point index
-% base_point_index = 1; 
+transverse_tolerance = 0.1;
 
 % Station tolerance
-station_tolerance = 0.1; 
+station_tolerance = 1; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,[1; 2; 3; 4]));
-assert(isequal(size(agreement_indices),[4 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
 
 %% Test Quadratic Polynomial
 
@@ -149,7 +166,9 @@ assert(isequal(size(polygon_vertices,2),2));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Quadratic%20Polynomial%20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Test 1: a basic quadratic polynomial (y = x^2)
+%% Test 1: a basic quadratic polynomial (y = x^2) 
+
+rng(123)
 
 fig_num = 1211;
 figure(fig_num); clf;
@@ -181,42 +200,49 @@ test_source_points = points(1:4,:);
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
+transverse_tolerance = 0.1;
 
 % Base point index
-% base_point_index = []; 
+current_combo = []; 
 
 % Station tolerance
 station_tolerance = []; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,[1; 2; 3; 4]));
-assert(isequal(size(agreement_indices),[4 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
 
-%% Test 2: a basic quadratic polynomial (y = x^2) (station_tolerance)
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% Test 2: a basic quadratic polynomial (y = 0.2x^2) (station_tolerance)
+
+rng(123)
 
 fig_num = 1311;
 figure(fig_num); clf;
 
 a = 0; % Coefficient for x^3
-b = 1; % Coefficient for x^2
+b = 0.2; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 5; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -225,32 +251,37 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select any four points as the source points
-combo = [1, 3, 5, 9];
-test_source_points = points(combo,:);
+current_combo = [1, 3, 5, 9];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
+transverse_tolerance = 0.1;
 
 % Base point index
 % base_point_index = 1; 
 
 % Station tolerance
-station_tolerance = 0.5; 
+station_tolerance = 1; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(1:8)'));
-assert(isequal(size(agreement_indices),[8 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
 
-%% Test test: a basic quadratic polynomial (y = x^2) (station_tolerance)
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% Test3: a basic quadratic polynomial (y = 0.2x^2) (station_tolerance)
 
 rng(123)
 
@@ -258,12 +289,12 @@ fig_num = 1311;
 figure(fig_num); clf;
 
 a = 0; % Coefficient for x^3
-b = 1; % Coefficient for x^2
+b = 0.2; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 3; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 5; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
@@ -278,8 +309,8 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select any four points as the source points
-combo = [3, 5, 9, 12];
-test_source_points = points(combo,:);
+current_combo = [3, 5, 9, 12];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
@@ -293,66 +324,20 @@ transverse_tolerance = 0.3;
 % Station tolerance
 station_tolerance = 5; 
 
-total_points_including_source_points = 20;
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(3:11)'));
-assert(isequal(size(agreement_indices),[9 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
 
-%% Test 3: a basic quadratic polynomial (y = x^2) (station_tolerance)
-
-fig_num = 1411;
-figure(fig_num); clf;
-
-a = 0; % Coefficient for x^3
-b = 1; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
-
-% Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-% Did not corrupt the test points to get the same result everytime
-points = corrupted_test_points;
-
-% Select any four points as the source points
-combo = [3, 5, 6, 7];
-test_source_points = points(combo,:);
-
-% Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
-
-% Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% Base point index
-% base_point_index = 3; 
-
-% Station tolerance
-station_tolerance = 0.5; 
-
-total_points_including_source_points = 20; 
-
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
-
-assert(isequal(agreement_indices,(3:6)'));
-assert(isequal(size(agreement_indices),[4 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 %% Test Cubic Polynomial
 
@@ -370,6 +355,8 @@ assert(isequal(size(polygon_vertices,2),2));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Test 1: a basic cubic polynomial (y = x^3)
+
+rng(123)
 
 fig_num = 2111;
 figure(fig_num); clf;
@@ -395,8 +382,8 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [1, 2, 3, 4];
-test_source_points = points(combo,:);
+current_combo = [1, 2, 3, 4];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
@@ -404,40 +391,47 @@ fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 % Tranverse tolerance
 transverse_tolerance = 0.5;
 
-% Base point index
-% base_point_index = []; 
+% current_combo
+current_combo = [];
 
 % Station tolerance
 station_tolerance = []; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,[1; 2; 3; 4]));
-assert(isequal(size(agreement_indices),[4 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
 
-%% Test 2: a basic cubic polynomial (y = x^3)
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% Test 2: a basic cubic polynomial (y = 0.2x^3)
+
+rng(123)
 
 fig_num = 3111;
 figure(fig_num); clf;
 
-a = 1; % Coefficient for x^3
+a = 0.2; % Coefficient for x^3
 b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 5; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -446,8 +440,8 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [1, 3, 7, 9];
-test_source_points = points(combo,:);
+current_combo = [1, 3, 7, 9];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
@@ -456,39 +450,46 @@ fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 transverse_tolerance = 0.5;
 
 % Base point index
-% base_point_index = []; 
+% current_combo = []; 
 
 % Station tolerance
 station_tolerance = []; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(1:9)'));
-assert(isequal(size(agreement_indices),[9 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
 
-%% Test 2: a basic cubic polynomial (y = x^3) (station_tolerance)
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% Test 3: a basic cubic polynomial (y = x^3) (station_tolerance)
+
+rng(123)
 
 fig_num = 3111;
 figure(fig_num); clf;
 
-a = 1; % Coefficient for x^3
+a = 0.2; % Coefficient for x^3
 b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 0; % Constant term
-x_range = [-2.1, 2.1]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+x_range = [-2, 2]; % Range of x values
+M = 5; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -497,30 +498,32 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [1, 3, 7, 9];
-test_source_points = points(combo,:);
+current_combo = [9, 12, 13, 15];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% Base point index
-% base_point_index = 1; 
+transverse_tolerance = 0.1;
 
 % Station tolerance
-station_tolerance = 1.4; 
+station_tolerance = 0.2; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(1:8)'));
-assert(isequal(size(agreement_indices),[8 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 %% Test constant polynomial
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -537,6 +540,8 @@ assert(isequal(size(polygon_vertices,2),2));
 
 %% Test 1: a basic cubic polynomial (y = 5)
 
+rng(123)
+
 fig_num = 1112;
 figure(fig_num); clf;
 
@@ -545,14 +550,14 @@ b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 5; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 5; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -561,32 +566,40 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [1, 2, 3, 4];
-test_source_points = points(combo,:);
+current_combo = [2, 5, 13, 18];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.2;
+transverse_tolerance = 0.1;
 
 % Base point index
-% base_point_index = []; 
+current_combo = []; 
 
 % Station tolerance
 station_tolerance = []; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,[1; 2; 3; 4]));
-assert(isequal(size(agreement_indices),[4 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
 
 %% Test 2: a basic cubic polynomial (y = 5)
+
+rng(123)
 
 fig_num = 1113;
 figure(fig_num); clf;
@@ -596,14 +609,14 @@ b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 5; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -612,8 +625,8 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [1, 3, 7, 9];
-test_source_points = points(combo,:);
+current_combo = [1, 3, 7, 9];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
@@ -622,22 +635,29 @@ fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 transverse_tolerance = 0.2;
 
 % Base point index
-% base_point_index = []; 
+current_combo = []; 
 
 % Station tolerance
 station_tolerance = []; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(1:9)'));
-assert(isequal(size(agreement_indices),[9 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 %% Test 3: a basic cubic polynomial (y = 5) (station_tolerance)
+
+rng(123)
 
 fig_num = 1114;
 figure(fig_num); clf;
@@ -647,14 +667,14 @@ b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 5; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 2; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0;
-magnitude_of_corruption = 0;
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 1;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -663,27 +683,255 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 points = corrupted_test_points;
 
 % Select first four points as the source points
-combo = [2, 3, 5, 7];
-test_source_points = points(combo,:);
+current_combo = [5, 8, 11, 15];
+test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
 fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
 
 % Tranverse tolerance
-transverse_tolerance = 0.2;
-
-% Base point index
-% base_point_index = 3; 
+transverse_tolerance = 0.1; 
 
 % Station tolerance
 station_tolerance = 0.1; 
 
-total_points_including_source_points = 20; 
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
 
-% [agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (base_point_index), (station_tolerance), (fig_num));
-[agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num));
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
 
-assert(isequal(agreement_indices,(2:6)'));
-assert(isequal(size(agreement_indices),[5 1]));
-assert(length(polygon_vertices(:,1))>1);
-assert(isequal(size(polygon_vertices,2),2));
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+%% MISC - 1
+
+rng(123)
+
+fig_num = 22221;
+figure(fig_num); clf;
+
+
+a = 0.01; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-6, -0.5]; % Range of x values
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points1 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+a = 0; % Coefficient for x^3
+b = -0.1; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 2; % Constant term
+x_range = [0, 4]; % Range of x values
+M = 5; % Number of test points to generate
+sigma = 0; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+points = [corrupted_test_points1; corrupted_test_points2]; 
+
+% Select first four points as the source points
+current_combo = [2, 8, 10, 43];
+test_source_points = points(current_combo,:);
+
+% Find the fitted parameters using polyfit
+fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+% Tranverse tolerance
+transverse_tolerance = 0.1; 
+
+% Station tolerance
+station_tolerance = 0.1;
+
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (station_tolerance), (fig_num));
+
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
+
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+
+%% MISC - 2
+
+rng(123)
+
+fig_num = 22221;
+figure(fig_num); clf;
+
+
+a = 0.01; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-6, -0.5]; % Range of x values
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points1 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+a = 0; % Coefficient for x^3
+b = -0.1; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 2; % Constant term
+x_range = [4, 8]; % Range of x values
+M = 5; % Number of test points to generate
+sigma = 0; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+points = [corrupted_test_points1; corrupted_test_points2]; 
+
+% Select first four points as the source points
+current_combo = [14, 17, 21, 26];
+test_source_points = points(current_combo,:);
+
+% Find the fitted parameters using polyfit
+fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+% Tranverse tolerance
+transverse_tolerance = 0.1; 
+
+% Station tolerance
+station_tolerance = 0.1; 
+
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
+
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
+
+%% CHECK this
+
+
+rng(123)
+
+fig_num = 22221;
+figure(fig_num); clf;
+
+
+a = 0.01; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-6, -0.5]; % Range of x values
+M = 1; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points1 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+a = 0; % Coefficient for x^3
+b = -0.1; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 2; % Constant term
+x_range = [0, 4]; % Range of x values
+M = 1; % Number of test points to generate
+sigma = 0; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+points = [corrupted_test_points1; corrupted_test_points2]; 
+
+% Select first four points as the source points
+current_combo = [1, 2, 4, 11];
+test_source_points = points(current_combo,:);
+
+% Find the fitted parameters using polyfit
+fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+% Tranverse tolerance
+transverse_tolerance = 0.1; 
+
+% Station tolerance
+station_tolerance = [];
+
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (station_tolerance), (fig_num));
+
+% plot the source points of the cubic polynomial curve
+plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
+
+% Plot the fitted polynomial
+x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
+y_fit = polyval(fittedParameters, x_fit);
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
+assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
+assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
+
