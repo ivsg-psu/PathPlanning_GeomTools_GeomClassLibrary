@@ -1,4 +1,4 @@
-function [agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, varargin)
+function [agreement_indices,orothogonal_dist_btw_test_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, varargin)
 %% fcn_geometry_findAgreementsOfPointsToCubicPoly 
 %
 % Given a set of XY points, source points, and fitted parameters, finds the
@@ -94,6 +94,10 @@ function [agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_find
 % Removed inpolygon method to calculate the inliers. Instead, projection
 % distance is used to fidn the points in transverse agreement. This
 % improves the speed of the code. 
+% 2024_06_12 - S. Brennan
+% -- removed weird if statements from
+% fcn_INTERNAL_findUnitOrthogonalVectors that were calculating differently
+% based on slope thresholds
 
 %% Debugging and Input checks
 
@@ -116,6 +120,8 @@ else
         flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
+
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -216,32 +222,49 @@ end
 [y_values_of_points_calculated, slopes_at_each_point] = fcn_INTERNAL_findSlopesAtEachPoint(points(:,1), fittedParameters);
 
 % Calculated points (y values) using fitted parameters. These are not
-% original points
+% original points, but the points that are ON the curve in the form of:
+%  [X_original, Y_calculated]
 points_calculated = [points(:,1), y_values_of_points_calculated]; 
 
 % Find the unit orthogonal vectors at each calculated point based on the
 % slope of the cubic polynomial
 unit_orthogonal_vectors = fcn_INTERNAL_findUnitOrthogonalVectors(slopes_at_each_point);
 
-% Original points in x domain
-points_original = points; 
+% Check results?
+if 1==flag_do_debug
+    figure(debug_fig_num)
+    clf;
+    hold on;
+    grid on;
 
-% Vectors from points_calulated to points_original. These are simply
-% ycoordinates_original - y_values_of_points_calculated
-vectors_calc_original = points_original - points_calculated; 
+    % plot the input points
+    plot(points(:,1), points(:,2), 'k.', 'MarkerSize',30)
+
+
+    % plot the y_values_of_points_calculated
+    plot(points(:,1), y_values_of_points_calculated, 'r.', 'MarkerSize',15)
+
+    % Plot the unit vectors
+    quiver(points(:,1),points(:,2),unit_orthogonal_vectors(:,1),unit_orthogonal_vectors(:,2),0,'r','Linewidth',2);
+
+end
+
+% Find vectors from curve to the test points
+vectors_from_curve_to_test_points = points - points_calculated; 
 
 % Projection of vectors_calc_original on unit_orthogonal_vectors. Simply,
 % approximate perpendicular distance between the test point and cubic
 % polynomial.
-dist_btw_points_and_cubic_curve = dot(vectors_calc_original, unit_orthogonal_vectors,2); 
+orothogonal_dist_btw_test_points_and_cubic_curve = sum(vectors_from_curve_to_test_points.*unit_orthogonal_vectors,2); 
 
 % Find the indices in transverse agreement
-indices_in_transverse_agreement = abs(dist_btw_points_and_cubic_curve) <= transverse_tolerance;
-indices_in_transverse_agreement = find(indices_in_transverse_agreement==1); 
+flags_in_transverse_agreement = abs(orothogonal_dist_btw_test_points_and_cubic_curve) <= transverse_tolerance;
+indices_in_transverse_agreement = find(flags_in_transverse_agreement==1); 
 
 % If the station distance is given
 if ~isempty(station_tolerance)
-    agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, station_tolerance);
+    flags_in_station_agreement = fcn_INTERNAL_findIndicesInStationAgreement(points_calculated(indices_in_transverse_agreement,:), station_tolerance);
+    agreement_indices = indices_in_transverse_agreement(flags_in_station_agreement);
 else
     agreement_indices = indices_in_transverse_agreement;
 end
@@ -282,8 +305,7 @@ if flag_do_plots
     % plot the points in agreement of the cubic polynomial curve
     plot(points(agreement_indices,1), points(agreement_indices,2), 'c.', 'MarkerSize',15)
 
-
-    quiver(points_calculated(:,1),points_calculated(:,2),vectors_calc_original(:,1),vectors_calc_original(:,2),0,'r','Linewidth',2);
+    quiver(points_calculated(:,1),points_calculated(:,2),vectors_from_curve_to_test_points(:,1),vectors_from_curve_to_test_points(:,2),0,'r','Linewidth',2);
 
     quiver(points_calculated(:,1),points_calculated(:,2),unit_orthogonal_vectors(:,1),unit_orthogonal_vectors(:,2),0,'g','Linewidth',1);
 
@@ -327,7 +349,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 
-
+%% fcn_INTERNAL_findSlopesAtEachPoint
 function [y_calculated_values, slopes_at_each_calculated_point] = fcn_INTERNAL_findSlopesAtEachPoint(x_coordinates, fittedParameters)
 % Find the y coordinates of interpolated source points by substituting x
 % coordinates of interpolated source points in cubic polynomial using
@@ -345,60 +367,26 @@ slopes_at_each_calculated_point = 3*fittedParameters(1,1)*x_coordinates.^2 + 2*f
 % round off the slopes to a 4th decimal
 slopes_at_each_calculated_point = round(slopes_at_each_calculated_point,4);
 
-end
+end % Ends fcn_INTERNAL_findSlopesAtEachPoint
 
 
+%% fcn_INTERNAL_findUnitOrthogonalVectors
 function unit_orthogonal_vectors = fcn_INTERNAL_findUnitOrthogonalVectors(slopes_at_each_calculated_point)
 
 % Find angle of inclination to find the unit_tangent_vector
 theta = atan(slopes_at_each_calculated_point); 
 % theta = atan2(slopes_at_each_test_source_point, interpolated_source_points(:,1)); 
 
-% Unit tangent vectors of all test source points
-unit_tangent_vectors = [sin(theta), cos(theta)];
+% Calculate unit tangent vectors of all test source points
+unit_tangent_vectors = [cos(theta), sin(theta)];
 
-% Find the orthogonal vector
+% Find the orthogonal vectors
 unit_orthogonal_vectors = unit_tangent_vectors*[0 1; -1 0];
 
-indices_slope_is_less_than = slopes_at_each_calculated_point  >= 0.09;
-unit_orthogonal_vectors(indices_slope_is_less_than,:) = unit_tangent_vectors(indices_slope_is_less_than,:)*[0 1; -1 0];
+end % ends fcn_INTERNAL_findUnitOrthogonalVectors
 
-indices_slope_is_greater_than = slopes_at_each_calculated_point  <= -0.09;
-unit_orthogonal_vectors(indices_slope_is_greater_than,:) = unit_tangent_vectors(indices_slope_is_greater_than,:)*[0 1; -1 0];
-
-aa = slopes_at_each_calculated_point  <= 0.09; 
-bb = slopes_at_each_calculated_point >= -0.09; 
-
-indices_slope_is = aa == bb; 
-% indices_slope_is = slopes_at_each_calculated_point  <= 0.05 && slopes_at_each_calculated_point >= -0.05; 
-unit_orthogonal_vectors(indices_slope_is,:) = unit_tangent_vectors(indices_slope_is,:);
-
-% % If the slopes are negative, rotate the unit tangent vector in clockwise
-% % direction.
-% indices_slope_is_negative = slopes_at_each_calculated_point < 0;
-% unit_orthogonal_vectors(indices_slope_is_negative,:) = unit_tangent_vectors(indices_slope_is_negative,:)*[0 -1; 1 0];
-% 
-% % If the slopes are positive, rotate the unit tangent vector in anti
-% % clockwise direction
-% indices_slope_is_positive = slopes_at_each_calculated_point > 0;
-% unit_orthogonal_vectors(indices_slope_is_positive,:) = unit_tangent_vectors(indices_slope_is_positive,:)*[0 1; -1 0];
-% 
-% % If the slopes are zero, use tangent vectors to give transverse tolerance
-% % to generate the domain box
-% indices_slope_is_zero = slopes_at_each_calculated_point == 0;
-% unit_orthogonal_vectors(indices_slope_is_zero,:) = unit_tangent_vectors(indices_slope_is_zero,:);
-
-end
-
-% function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, current_combo, station_tolerance)
-function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points, indices_in_transverse_agreement, station_tolerance)
-base_point_index = indices_in_transverse_agreement(1,1);
-
-% Grab only the points in transverse agreement
-points_in_transverse_agreement = points(indices_in_transverse_agreement,:);
-
-% Find index of the source point in the rearranged list
-index_source_point_in_transverse_agreement = find(indices_in_transverse_agreement == base_point_index,1);
+%% fcn_INTERNAL_findIndicesInStationAgreement
+function agreement_indices = fcn_INTERNAL_findIndicesInStationAgreement(points_in_transverse_agreement, station_tolerance)
 
 % Difference bewteen points pair
 diff_between_pts_in_points_pair = diff(points_in_transverse_agreement); 
@@ -408,15 +396,16 @@ station_distances_of_points_in_transverse_agreement = sum(diff_between_pts_in_po
 
 % Sort the station distances and find those in agreement with station
 % tolerance
-indices_in_station_agreement = ...
+URHERE
+agreement_indices = ...
     fcn_geometry_findPointsInSequence(...
     station_distances_of_points_in_transverse_agreement, ...
-    index_source_point_in_transverse_agreement, ...
+    1, ...
     station_tolerance, -1);
 
-% indices in both transverse and station agreement
-indices_in_both_transverse_and_station_agreement = indices_in_transverse_agreement(indices_in_station_agreement);
+% % indices in both transverse and station agreement
+% indices_in_both_transverse_and_station_agreement = indices_in_transverse_agreement(indices_in_station_agreement);
+% 
+% agreement_indices = indices_in_both_transverse_and_station_agreement;
 
-agreement_indices = indices_in_both_transverse_and_station_agreement;
-
-end
+end % Ends fcn_INTERNAL_findIndicesInStationAgreement

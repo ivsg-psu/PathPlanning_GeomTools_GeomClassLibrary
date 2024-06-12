@@ -1,5 +1,5 @@
 function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, varargin)
-% fcn_geometry_findPointsInSequence
+%% fcn_geometry_findPointsInSequence
 % Finds the indicies before and after a base point that are within a
 % tolerance distance sequence of the base point. For example, if the number
 % 7 (index 6 below) is the base point and the tolerance is a distance of 2,
@@ -42,7 +42,7 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 %      
 % See the script: script_test_fcn_geometry_findPointsInSequence
 % for a full test suite.
-
+%
 % This function was written on 2023_12_29 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
@@ -120,7 +120,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 4<= nargin && 0==flag_max_speed
+if 0==flag_max_speed && 4<= nargin
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;

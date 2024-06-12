@@ -860,7 +860,7 @@ assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
 assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 
-%% CHECK this
+%% Working - shows agreement without transverse agreement check
 
 
 rng(123)
