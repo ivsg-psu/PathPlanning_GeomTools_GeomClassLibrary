@@ -93,7 +93,7 @@ assert(length(domain.points_in_domain(:,1))>1);
 assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
-%% Test 2: a basic linear polynomial (y = 0.5x) -  no standard deviation (sigma), station_tolerance = 0.1;
+%% Test 2: a basic linear polynomial (y = 0.3x) - station_tolerance = 0.1;
 
 rng(123)
 
@@ -102,17 +102,17 @@ figure(fig_num); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
-c = 0.5; % Coefficient for x
+c = 0.3; % Coefficient for x
 d = 0; % Constant term
-x_range = [-3, 3]; % Range of x values
+x_range = [-5, 5]; % Range of x values
 M = 5; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
 probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
+magnitude_of_corruption = 3;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
@@ -130,7 +130,7 @@ points_required_for_agreement = 10;
 
 flag_find_only_best_agreement = []; 
 
-total_points_including_source_points = 10;
+total_points_including_source_points = 50;
 
 domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
 
@@ -166,7 +166,7 @@ assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
 
-%% Test 3: a basic linear polynomial (y = 0.5x) - points_required_for_agreement = 20, 
+%% Test 3: a basic linear polynomial (y = 0.3x) - points_required_for_agreement = 20, 
 rng(123)
 
 fig_num = 11213;
@@ -174,16 +174,16 @@ figure(fig_num); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
-c = 0.5; % Coefficient for x
+c = 0.3; % Coefficient for x
 d = 0; % Constant term
-x_range = [-2, 2]; % Range of x values
-M = 7; % Number of test points to generate
-sigma = 0.1; % Standard deviation for randomness
+x_range = [-5, 5]; % Range of x values
+M = 5; % Number of test points to generate
+sigma = 0.2; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
 % Corrupt the results
-probability_of_corruption = 0.1;
+probability_of_corruption = 0.2;
 magnitude_of_corruption = 2;
 
 corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
@@ -196,13 +196,13 @@ inputPoints = corrupted_test_points;
 transverse_tolerance = 0.1;
 
 % Station tolerance
-station_tolerance = [];
+station_tolerance = 0.1;
 
-points_required_for_agreement = 20;
+points_required_for_agreement = 10;
 
-flag_find_only_best_agreement = 0; 
+flag_find_only_best_agreement = []; 
 
-total_points_including_source_points = 20;
+total_points_including_source_points = [];
 
 domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
 
@@ -248,8 +248,8 @@ a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
 c = 0.5; % Coefficient for x
 d = 0; % Constant term
-x_range = [-2, 2]; % Range of x values
-M = 7; % Number of test points to generate
+x_range = [-10, 10]; % Range of x values
+M = 3; % Number of test points to generate
 sigma = 0.2; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
@@ -272,7 +272,7 @@ station_tolerance = [];
 
 points_required_for_agreement = 10;
 
-flag_find_only_best_agreement = 0; 
+flag_find_only_best_agreement = []; 
 
 total_points_including_source_points = 20;
 
@@ -382,80 +382,6 @@ assert(length(domain.points_in_domain(:,1))>1);
 assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
-%% Test 6: a basic linear polynomial (y = 0.5x) - points_required_for_agreement = 4, station_tolerance = 0.2
-
-rng(123)
-
-fig_num = 11216;
-figure(fig_num); clf;
-
-a = 0; % Coefficient for x^3
-b = 0; % Coefficient for x^2
-c = 0.5; % Coefficient for x
-d = 0; % Constant term
-x_range = [-2, 2]; % Range of x values
-M = 7; % Number of test points to generate
-sigma = 0.2; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-inputPoints = corrupted_test_points;
-
-
-% Tranverse tolerance
-transverse_tolerance = 0.1;
-
-% Station tolerance
-station_tolerance = 0.2;
-
-points_required_for_agreement = 4;
-
-flag_find_only_best_agreement = []; 
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-
-
 %% Test Quadratic Polynomial
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -470,7 +396,7 @@ assert(isnan(domain.best_fit_parameters));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Quadratic%20Polynomial%20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Test 1: a basic quadratic polynomial (y = -0.1x^2) - zero std deviation (sigma), no station tolerance
+%% Test 1: a basic quadratic polynomial (y = -0.1x^2) , no station tolerance
 
 rng(123)
 
@@ -482,7 +408,7 @@ b = -0.1; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-4, 0]; % Range of x values
-M = 7; % Number of test points to generate
+M = 10; % Number of test points to generate
 sigma = 0; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
@@ -539,153 +465,12 @@ assert(length(domain.points_in_domain(:,1))>1);
 assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
-%% Test 2: a basic quadratic polynomial (y = -0.1x^2) - zero std deviation (sigma), station_tolerance = 0.1
+%% Test 2: a basic quadratic polynomial (y = 0.1x^2) - station_tolerance = 0.1
 
 rng(123)
 
 fig_num = 12112;
 figure(fig_num); clf;
-
-a = 0; % Coefficient for x^3
-b = -0.1; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-4, 0]; % Range of x values
-M = 7; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.1;
-
-points_required_for_agreement = 10;
-
-flag_find_only_best_agreement = []; 
-
-station_tolerance = 0.1;
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-
-%% Test 3: a basic quadratic polynomial (y = 0.1x^2) 
-
-rng(123)
-
-fig_num = 12113;
-figure(fig_num); clf;
-
-a = 0; % Coefficient for x^3
-b = 0.1; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-1, 5]; % Range of x values
-M = 5; % Number of test points to generate
-sigma = 0.1; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.1;
-
-points_required_for_agreement = 10;
-
-flag_find_only_best_agreement = []; 
-
-station_tolerance = [];
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-%% Test 4: a basic quadratic polynomial (y = 0.1x^2) - station_tolerance = 0.1
-
-rng(123)
-
-fig_num = 12114;
-figure(fig_num); clf;
-
- 
 
 a = 0; % Coefficient for x^3
 b = 0.1; % Coefficient for x^2
@@ -749,14 +534,13 @@ assert(length(domain.points_in_domain(:,1))>1);
 assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
-%% Test 5: a basic quadratic polynomial (y = 0.1x^2) - points_required_for_agreement = 4, station_tolerance = 0.1
+%% Test 4: a basic quadratic polynomial (y = 0.1x^2) - points_required_for_agreement = 4, station_tolerance = 0.1
 
 rng(123)
 
-fig_num = 12115;
+fig_num = 12114;
 figure(fig_num); clf;
 
- 
 
 a = 0; % Coefficient for x^3
 b = 0.1; % Coefficient for x^2
@@ -842,7 +626,6 @@ rng(123)
 fig_num = 21111;
 figure(fig_num); clf;
 
- 
 
 a = 0.01; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -906,7 +689,7 @@ assert(length(domain.points_in_domain(:,1))>1);
 assert(length(domain.points_in_domain(1,:))==2);
 assert(isnan(domain.best_fit_parameters));
 
-%% Test 2: a basic cubic polynomial (y = 0.1x^3) - zero std deviation (sigma), station_tolerance = 0.1
+%% Test 2: a basic cubic polynomial (y = 0.1x^3) station_tolerance = 0.1
 
 rng(123)
 
@@ -921,7 +704,7 @@ c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-6, 6]; % Range of x values
 M = 3; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+sigma = 0.2; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
 
@@ -936,224 +719,11 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 inputPoints = corrupted_test_points;
 transverse_tolerance = 0.1;
 
-points_required_for_agreement = 10;
+points_required_for_agreement = 20;
 
 flag_find_only_best_agreement = []; 
 
 station_tolerance = 0.1;
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-%% Test 3: a basic cubic polynomial (y = 0.1x^3) 
-
-rng(123)
-
-fig_num = 21113;
-figure(fig_num); clf;
-
- 
-
-a = 0.01; % Coefficient for x^3
-b = 0; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-6, 2]; % Range of x values
-M = 4; % Number of test points to generate
-sigma = 0.1; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.1;
-
-points_required_for_agreement = 10;
-
-flag_find_only_best_agreement = []; 
-
-station_tolerance = [];
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-%% Test 4: a basic cubic polynomial (y = 0.1x^3) - station_tolerance = 0.1
-
-rng(123)
-
-fig_num = 21114;
-figure(fig_num); clf;
-
- 
-
-a = 0.01; % Coefficient for x^3
-b = 0; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-6, 2]; % Range of x values
-M = 4; % Number of test points to generate
-sigma = 0.1; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.1;
-
-points_required_for_agreement = 10;
-
-flag_find_only_best_agreement = []; 
-
-station_tolerance = 0.1;
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-%% Test 5: a basic cubic polynomial (y = 0.1x^3) - points_required_for_agreement = 4;
-
-rng(123)
-
-fig_num = 21115;
-figure(fig_num); clf;
-
- 
-
-a = 0.01; % Coefficient for x^3
-b = 0; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 0; % Constant term
-x_range = [-6, 2]; % Range of x values
-M = 4; % Number of test points to generate
-sigma = 0.1; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
-
-% Corrupt the results
-probability_of_corruption = 0.2;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.1;
-
-points_required_for_agreement = 4;
-
-flag_find_only_best_agreement = []; 
-
-station_tolerance = [];
 
 total_points_including_source_points = 20;
 
@@ -1213,8 +783,8 @@ b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 1; % Constant term
 x_range = [-2, 2]; % Range of x values
-M = 5; % Number of test points to generate
-sigma = 0.01; % Standard deviation for randomness
+M = 10; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
 
@@ -1227,80 +797,13 @@ corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 
 
 inputPoints = corrupted_test_points;
-transverse_tolerance = 0.3;
+transverse_tolerance = 0.1;
 
 points_required_for_agreement = [];
 
 flag_find_only_best_agreement = 1; 
 
-station_tolerance = 0.1;
-
-total_points_including_source_points = 20;
-
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num));
-
-% Check the output type and size
-for ith_domain = 1:length(domains)-1
-    domain = domains{ith_domain};
-    assert(isstruct(domain));
-    assert(isfield(domain,'best_fit_type'));
-    assert(isfield(domain,'points_in_domain'));
-    assert(isfield(domain,'best_fit_parameters'));
-    assert(isfield(domain,'best_fit_domain_box'));
-    assert(isfield(domain,'best_fit_1_sigma_box'));
-    assert(isfield(domain,'best_fit_2_sigma_box'));
-    assert(isfield(domain,'best_fit_3_sigma_box'));
-    assert(ischar(domain.best_fit_type));
-    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
-    assert(length(domain.points_in_domain(:,1))>1);
-    assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
-end
-
-% Check the last domain (unfitted points)
-domain = domains{end};
-assert(isstruct(domain));
-assert(isfield(domain,'best_fit_type'));
-assert(isfield(domain,'points_in_domain'));
-assert(isfield(domain,'best_fit_parameters'));
-assert(isfield(domain,'best_fit_domain_box'));
-assert(ischar(domain.best_fit_type));
-assert(strcmp('unfitted',domain.best_fit_type));
-assert(length(domain.points_in_domain(:,1))>1);
-assert(length(domain.points_in_domain(1,:))==2);
-assert(isnan(domain.best_fit_parameters));
-
-%% Test 1: a basic constant (y = 5) 
-
-fig_num = 1113;
-figure(fig_num); clf;
-
-a = 0; % Coefficient for x^3
-b = 0; % Coefficient for x^2
-c = 0; % Coefficient for x
-d = 1; % Constant term
-x_range = [-1, 1]; % Range of x values
-M = 10; % Number of test points to generate
-sigma = 0.01; % Standard deviation for randomness
-
-[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, -1);
-
-% Corrupt the results
-probability_of_corruption = 0.1;
-magnitude_of_corruption = 2;
-
-corrupted_test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (-1));
-
-
-inputPoints = corrupted_test_points;
-transverse_tolerance = 0.3;
-
-points_required_for_agreement = 5;
-
-flag_find_only_best_agreement = 1; 
-
-station_tolerance = [];
+station_tolerance = 0.2;
 
 total_points_including_source_points = 20;
 
@@ -1346,8 +849,6 @@ assert(isnan(domain.best_fit_parameters));
 % | |  | | \__ \ (_|  __/ | | (_| | | | |  __/ (_) | |_| \__ \
 % |_|  |_|_|___/\___\___|_|_|\__,_|_| |_|\___|\___/ \__,_|___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 %% Test 1: a cubic polynomial - zero std deviation (sigma), station_tolerance = 0.1 (takes very long time to run)
 
 rng(123)
@@ -1362,7 +863,7 @@ c = 0; % Coefficient for x
 d = 0; % Constant term
 x_range = [-6, -0.5]; % Range of x values
 M = 4; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
 
@@ -1391,13 +892,189 @@ magnitude_of_corruption = 2;
 corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
 
+
+inputPoints = [corrupted_test_points1; corrupted_test_points2];
+transverse_tolerance = 0.1;
+
+points_required_for_agreement = 20;
+
+flag_find_only_best_agreement = []; 
+
+station_tolerance = 0.1;
+
+total_points_after_interpolating_points_in_domain = 20;
+
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
+%% Test 2: a cubic polynomial - zero std deviation (sigma), station_tolerance = 0.1 (takes very long time to run)
+
+rng(123)
+
+fig_num = 22221;
+figure(fig_num); clf;
+
+
+a = 0.01; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-6, -0.5]; % Range of x values
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points1 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+a = 0; % Coefficient for x^3
+b = -0.1; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 2; % Constant term
+x_range = [4, 8]; % Range of x values
+M = 5; % Number of test points to generate
+sigma = 0; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+inputPoints = [corrupted_test_points1; corrupted_test_points2];
+transverse_tolerance = 0.1;
+
+points_required_for_agreement = 20;
+
+flag_find_only_best_agreement = []; 
+
+station_tolerance = 0.1;
+
+total_points_after_interpolating_points_in_domain = 20;
+
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+
+% Check the output type and size
+for ith_domain = 1:length(domains)-1
+    domain = domains{ith_domain};
+    assert(isstruct(domain));
+    assert(isfield(domain,'best_fit_type'));
+    assert(isfield(domain,'points_in_domain'));
+    assert(isfield(domain,'best_fit_parameters'));
+    assert(isfield(domain,'best_fit_domain_box'));
+    assert(isfield(domain,'best_fit_1_sigma_box'));
+    assert(isfield(domain,'best_fit_2_sigma_box'));
+    assert(isfield(domain,'best_fit_3_sigma_box'));
+    assert(ischar(domain.best_fit_type));
+    assert(strcmp('Hough cubic polynomial',domain.best_fit_type));
+    assert(length(domain.points_in_domain(:,1))>1);
+    assert(length(domain.points_in_domain(1,:))==2);
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
+end
+
+% Check the last domain (unfitted points)
+domain = domains{end};
+assert(isstruct(domain));
+assert(isfield(domain,'best_fit_type'));
+assert(isfield(domain,'points_in_domain'));
+assert(isfield(domain,'best_fit_parameters'));
+assert(isfield(domain,'best_fit_domain_box'));
+assert(ischar(domain.best_fit_type));
+assert(strcmp('unfitted',domain.best_fit_type));
+assert(length(domain.points_in_domain(:,1))>1);
+assert(length(domain.points_in_domain(1,:))==2);
+assert(isnan(domain.best_fit_parameters));
+
+%% Test 1: a cubic polynomial - zero std deviation (sigma), station_tolerance = 0.1 (takes very long time to run)
+
+rng(123)
+
+fig_num = 22221;
+figure(fig_num); clf;
+
+
+a = 0.01; % Coefficient for x^3
+b = 0; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 0; % Constant term
+x_range = [-6, -0.5]; % Range of x values
+M = 4; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points1 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+a = 0; % Coefficient for x^3
+b = -0.1; % Coefficient for x^2
+c = 0; % Coefficient for x
+d = 2; % Constant term
+x_range = [0, 4]; % Range of x values
+M = 3; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
+
+[test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
+
+% Corrupt the results
+probability_of_corruption = 0.2;
+magnitude_of_corruption = 2;
+
+corrupted_test_points2 = fcn_geometry_corruptPointsWithOutliers(test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
 c = 0; % Coefficient for x
 d = 2; % Constant term
-x_range = [4.1, 6.5]; % Range of x values
-M = 5; % Number of test points to generate
-sigma = 0; % Standard deviation for randomness
+x_range = [4.5, 7.5]; % Range of x values
+M = 3; % Number of test points to generate
+sigma = 0.1; % Standard deviation for randomness
 
 [test_points, ~] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, (-1));
 
