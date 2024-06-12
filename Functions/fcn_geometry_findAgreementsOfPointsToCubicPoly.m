@@ -360,18 +360,19 @@ unit_tangent_vectors = [sin(theta), cos(theta)];
 % Find the orthogonal vector
 unit_orthogonal_vectors = unit_tangent_vectors*[0 1; -1 0];
 
-% indices_slope_is_less_than = slopes_at_each_calculated_point  >= 0.09;
-% unit_orthogonal_vectors(indices_slope_is_less_than,:) = unit_tangent_vectors(indices_slope_is_less_than,:)*[0 1; -1 0];
-% 
-% indices_slope_is_greater_than = slopes_at_each_calculated_point  <= -0.09;
-% unit_orthogonal_vectors(indices_slope_is_greater_than,:) = unit_tangent_vectors(indices_slope_is_greater_than,:)*[0 1; -1 0];
-% 
-% aa = slopes_at_each_calculated_point  <= 0.09; 
-% bb = slopes_at_each_calculated_point >= -0.09; 
-% 
-% indices_slope_is = aa == bb; 
-% % indices_slope_is = slopes_at_each_calculated_point  <= 0.05 && slopes_at_each_calculated_point >= -0.05; 
-% unit_orthogonal_vectors(indices_slope_is,:) = unit_tangent_vectors(indices_slope_is,:);
+indices_slope_is_less_than = slopes_at_each_calculated_point  >= 0.09;
+unit_orthogonal_vectors(indices_slope_is_less_than,:) = unit_tangent_vectors(indices_slope_is_less_than,:)*[0 1; -1 0];
+
+indices_slope_is_greater_than = slopes_at_each_calculated_point  <= -0.09;
+unit_orthogonal_vectors(indices_slope_is_greater_than,:) = unit_tangent_vectors(indices_slope_is_greater_than,:)*[0 1; -1 0];
+
+aa = slopes_at_each_calculated_point  <= 0.09; 
+bb = slopes_at_each_calculated_point >= -0.09; 
+
+indices_slope_is = aa == bb; 
+% indices_slope_is = slopes_at_each_calculated_point  <= 0.05 && slopes_at_each_calculated_point >= -0.05; 
+unit_orthogonal_vectors(indices_slope_is,:) = unit_tangent_vectors(indices_slope_is,:);
+
 % % If the slopes are negative, rotate the unit tangent vector in clockwise
 % % direction.
 % indices_slope_is_negative = slopes_at_each_calculated_point < 0;
