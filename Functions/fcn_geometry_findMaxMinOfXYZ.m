@@ -4,7 +4,7 @@ function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(N_
 % 
 % FORMAT:
 %
-%      [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_Geometry_findMaxMinOfXYZ(N_points,varargin)
+%      [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(N_points,varargin)
 %
 % INPUTS:     
 %       
@@ -154,15 +154,28 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Min_x = min(N_points(:,1));
-Max_x = max(N_points(:,1));
-Min_y = min(N_points(:,2));
-Max_y = max(N_points(:,2));
-Min_z = min(N_points(:,3));
-Max_z = max(N_points(:,3));
-
-
+if 1 == length(N_points(1,:)) %% N by 1 
+    Min_x = min(N_points(:,1));
+    Max_x = max(N_points(:,1));
+    Min_y = [];
+    Max_y = [];
+    Min_z = [];
+    Max_z = [];
+elseif 2 == length(N_points(1,:)) % N by 2
+    Min_x = min(N_points(:,1));
+    Max_x = max(N_points(:,1));
+    Min_y = min(N_points(:,2));
+    Max_y = max(N_points(:,2));
+    Min_z = [];
+    Max_z = [];
+elseif 3 == length(N_points(1,:)) % N by 3 
+    Min_x = min(N_points(:,1));
+    Max_x = max(N_points(:,1));
+    Min_y = min(N_points(:,2));
+    Max_y = max(N_points(:,2));
+    Min_z = min(N_points(:,3));
+    Max_z = max(N_points(:,3));
+end 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -186,24 +199,45 @@ if flag_do_plots
     axis equal
 
     %plot of points
-  
-    [~, idx_min_x] = min(N_points(:,1));
-    [~, idx_max_x] = max(N_points(:,1));
-    [~, idx_min_y] = min(N_points(:,2));
-    [~, idx_max_y] = max(N_points(:,2));
-    [~, idx_min_z] = min(N_points(:,3));
-    [~, idx_max_z] = max(N_points(:,3));
-    x = (N_points(:,1));
-    y = (N_points(:,2));
-    z = (N_points(:,3));
-    scatter3(x,y,z);
-    scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r', 'filled'); % Min x
-    scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r', 'filled'); % max x
-    scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),100, 'g', 'filled'); % min y
-    scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),100, 'g', 'filled'); % max y
-    scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),100, 'b', 'filled'); % min z
-    scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),100, 'g', 'filled'); % max z
-    view(3)
+    if 1 == length(N_points(1,:))  % N by 1 
+        [~, idx_min_x] = min(N_points(:,1));
+        [~, idx_max_x] = max(N_points(:,1));
+        x = (N_points(:,1));
+        plot(x,'-o');
+        plot(x(idx_min_x),100,'r'); % Min x
+        plot(x(idx_max_x),100,'r'); % max x
+
+    elseif 2 == length(N_points(1,:)) % N by 2
+        [~, idx_min_x] = min(N_points(:,1));
+        [~, idx_max_x] = max(N_points(:,1));
+        [~, idx_min_y] = min(N_points(:,2));
+        [~, idx_max_y] = max(N_points(:,2));
+        x = (N_points(:,1));
+        y = (N_points(:,2));
+        scatter(x,y);
+        scatter(x(idx_min_x),y(idx_min_x), 'r'); % Min x
+        scatter(x(idx_max_x),y(idx_max_x), 'r'); % max x
+        scatter(x(idx_min_y),y(idx_min_y), 'g'); % min y
+        scatter(x(idx_max_y),y(idx_max_y), 'g'); % max y
+    elseif 3 == length(N_points(1,:))  % N by 3 
+        [~, idx_min_x] = min(N_points(:,1));
+        [~, idx_max_x] = max(N_points(:,1));
+        [~, idx_min_y] = min(N_points(:,2));
+        [~, idx_max_y] = max(N_points(:,2));
+        [~, idx_min_z] = min(N_points(:,3));
+        [~, idx_max_z] = max(N_points(:,3));
+        x = (N_points(:,1));
+        y = (N_points(:,2));
+        z = (N_points(:,3));
+        scatter3(x,y,z);
+        scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
+        scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
+        scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),100, 'g'); % min y
+        scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),100, 'g'); % max y
+        scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),100, 'b'); % min z
+        scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),100, 'g'); % max z
+        view(3)
+    end
     hold off
     % Make axis slightly larger?
     if flag_rescale_axis
