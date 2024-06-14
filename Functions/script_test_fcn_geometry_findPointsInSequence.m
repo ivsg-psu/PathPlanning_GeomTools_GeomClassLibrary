@@ -22,6 +22,20 @@ close all
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Example - 0 - BASIC call
+fig_num = 1;
+
+input_distances = [-100 -99 0 3 6 7 8.5 9 22]';
+base_point_index = 6;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+
+assert(length(sequence_indicies) > 1);
+assert(length(sequence_indicies(1,:)) == 1);
+assert(isequal(sequence_indicies,[5 6 7 8]'))
+
+
 %% Example - 1 - BASIC call
 fig_num = 1;
 
@@ -173,6 +187,30 @@ fprintf(1,'Fast mode fastest speed over all calls (seconds): %.8f\n',minTimeFast
 fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
+
+%% Example - 999 - DEBUGGING
+fig_num = 999;
+
+input_distances = [    0.6044
+    0.2950
+    2.7436
+    0.7774
+    0.2563
+    0.5092
+    0.2532
+    0.2525
+    0.2519
+    4.9001
+    1.0559
+    1.7384];
+base_point_index = 1;
+station_tolerance = 2;
+
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+
+assert(length(sequence_indicies) > 1);
+assert(length(sequence_indicies(1,:)) == 1);
+assert(isequal(sequence_indicies,[1 2]'))
 
 %% Fail cases follow
 if 1==0

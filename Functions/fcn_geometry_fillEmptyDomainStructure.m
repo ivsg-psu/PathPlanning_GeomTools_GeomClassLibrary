@@ -148,6 +148,79 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %               coeff_x^0, % constant term coeffiecient
 %              ]
 %
+%           
+%% FIXED on 2024_06_14
+%            These are the parameters of the fit. They are defined
+%            in each fit type in the following manner:
+%
+%            'empty' - no fit yet done, so [nan]
+%
+%            'unfitted' - points left over after a fit is done, so [nan]
+%            
+%            'point' -
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%             ]
+%
+%            'Hough line', 'Vector regression line fit' - 
+%
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+%            
+%            'Hough segment', 'Vector regression segment fit' - 
+%
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
+%
+%            'Hough circle', 'Regression circle' - 
+%               [circleCenter_x,
+%                circleCenter_y,
+%                radius]
+%            
+%            'Hough arc', 'Regression arc' - 
+%
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_arc_is_counterclockwise
+%                flag_this_is_a_circle
+%               ] 
+%
+%            
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
+%
+%            'Hough Cubic Polynomial', 'Polyfit cubic polynomial' - 
+% 
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+%
 %            
 %      emptyDomain.best_fit_domain_box = [];
 %

@@ -5,7 +5,8 @@
 % -- wrote the code
 % 2024_06_05 - Aneesh Batcu
 % -- Modified the assertions for better demonstration
-
+% 2024_06_14
+% -- Bug fixes and formatting modifications for new fcn (see fcn comments)
 close all
 
 %% Assertions
@@ -66,31 +67,38 @@ current_combo = [1, 2, 3, 4];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% Base point index
-% base_point_index = 1; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 0.1; 
+station_tolerance = 2;
 
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
-
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize', 20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
-
-assert(isequal(agreement_indices,[1; 2; 3; 4]));
-assert(isequal(size(agreement_indices),[4 1]));
+assert(length(agreement_indices(:,1))>1);
+assert(isequal(size(agreement_indices,2),1));
 assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
 assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
@@ -128,23 +136,35 @@ current_combo = [1, 11, 18, 29];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1;
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 1; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -197,26 +217,35 @@ points = corrupted_test_points;
 test_source_points = points(1:4,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1;
-
-% Base point index
-current_combo = []; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = []; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -255,26 +284,35 @@ current_combo = [1, 3, 5, 9];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1;
-
-% Base point index
-% base_point_index = 1; 
+transverse_tolerance = 0.1; 
 
 % Station tolerance
-station_tolerance = 1; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -313,26 +351,35 @@ current_combo = [3, 5, 9, 12];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.3;
-
-% Base point index
-% base_point_index = 1; 
+transverse_tolerance = 0.1; 
 
 % Station tolerance
-station_tolerance = 5; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -386,28 +433,37 @@ current_combo = [1, 2, 3, 4];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% current_combo
-current_combo = [];
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = []; 
+station_tolerance = [];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
-
-assert(length(agreement_indices(:,1))>1);
+assert(length(agreement_indices(:,1))>=1);
 assert(isequal(size(agreement_indices,2),1));
 assert(length(dist_btw_points_and_cubic_curve(:,1))>1);
 assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
@@ -444,26 +500,35 @@ current_combo = [1, 3, 7, 9];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.5;
-
-% Base point index
-% current_combo = []; 
+transverse_tolerance = 0.2; 
 
 % Station tolerance
-station_tolerance = []; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -502,23 +567,35 @@ current_combo = [9, 12, 13, 15];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1;
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 0.2; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -570,26 +647,35 @@ current_combo = [2, 5, 13, 18];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1;
-
-% Base point index
-current_combo = []; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = []; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -629,26 +715,35 @@ current_combo = [1, 3, 7, 9];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.2;
-
-% Base point index
-current_combo = []; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = []; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -687,23 +782,35 @@ current_combo = [5, 8, 11, 15];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 0.1; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -761,23 +868,35 @@ current_combo = [2, 8, 10, 43];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 0.1;
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -836,23 +955,35 @@ current_combo = [14, 17, 21, 26];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
-transverse_tolerance = 0.1; 
+transverse_tolerance = 0.5; 
 
 % Station tolerance
-station_tolerance = 0.1; 
+station_tolerance = 2;
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (current_combo), (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -861,12 +992,10 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 
 %% Working - shows agreement without transverse agreement check
-
-
-rng(123)
-
 fig_num = 22221;
 figure(fig_num); clf;
+
+rng(123)
 
 
 a = 0.01; % Coefficient for x^3
@@ -912,7 +1041,24 @@ current_combo = [1, 2, 4, 11];
 test_source_points = points(current_combo,:);
 
 % Find the fitted parameters using polyfit
-fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+cubic_fit = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+
+%%%%%%
+% FORMAT for cubic parameter set
+%             [ 
+%              base_point_x, 
+%              base_point_y, 
+%              flag_is_forward_x,
+%              x_Length,
+%              coeff_x^0, % cubic term coeffiecient
+%              coeff_x^1, % square term coeffiecient
+%              coeff_x^2, % linear term coeffiecient
+%              coeff_x^3, % constant term coeffiecient
+%             ]
+
+flag_is_forward_x = 1;
+x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubic_fit)];
 
 % Tranverse tolerance
 transverse_tolerance = 0.1; 
@@ -920,15 +1066,10 @@ transverse_tolerance = 0.1;
 % Station tolerance
 station_tolerance = [];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (station_tolerance), (fig_num));
+% Overall tolerance
+tolerance = [station_tolerance transverse_tolerance];
 
-% plot the source points of the cubic polynomial curve
-plot(test_source_points(:,1), test_source_points(:,2), 'b.', 'MarkerSize',20)
-
-% Plot the fitted polynomial
-x_fit = linspace(min(test_source_points(:,1)), max(test_source_points(:,1)), 100);
-y_fit = polyval(fittedParameters, x_fit);
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2);
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));

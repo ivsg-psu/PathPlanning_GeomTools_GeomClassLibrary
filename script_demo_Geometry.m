@@ -79,6 +79,8 @@
 % hough domain
 % 2024_05_17 - Sean Brennan
 % -- Fixed fcn_geometry_alignSegmentArc
+% 2024_06_14 - Sean Brennan
+% -- Fixed fcn_geometry_alignSegmentArc
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -93,7 +95,8 @@
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
-% 2025_05_15 - add spiral and polynomial types to the alignment options
+% 2025_05_15 - S. Brennan
+% -- add spiral and polynomial types to the alignment options
 
 
 %% Prep the workspace

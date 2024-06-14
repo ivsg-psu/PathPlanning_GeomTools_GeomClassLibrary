@@ -35,12 +35,12 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %
 %      threshold: the offset, in meters, between the arc and the line such
 %      that this offset is removed by shifting. If the offset is larger
-%      than this, then the outputs are set to empty.If this is
-%      entered as a 2x1 or 1x2, then this specifies the threshold first in
-%      the transverse direction, and then in the station direction. For
-%      example, an entry of [0.02 3] would have 0.02 meters threshold in
-%      the transverse direction, but 3 meters threshold in the station
-%      direction.
+%      than this, then the outputs are set to empty.If this is entered as a
+%      2x1 or 1x2, then this specifies the threshold in St coordinated,
+%      namely first in the station direction, and then in the transverse
+%      direction. For example, an entry of [3 0.02] would have 3 meters
+%      threshold in the station direction, but 0.02 meters threshold in the
+%      transverse direction.
 %
 %      continuity_level: the level of continuity desired in the alignment.
 %      Input values include 0 for C0 continuity, 1 for C1 continuity
@@ -855,6 +855,13 @@ end
 space_between_arc_and_segment = distance_from_arc_center_to_segment - arc_radius;
 
 
+% Check that the threshold is given in St format or not. If in St format,
+% just use the t portion.
+if length(threshold)>1
+    threshold = threshold(2);
+end
+
+
 % With the cleaned parameters, the line vector always
 % points in the direction of the join point.
 % to_joint_unit_tangent_vector = [1 0];
@@ -1383,6 +1390,12 @@ function [revised_arc_parameters_St,revised_segment_parameters_St, revised_inter
     desired_st_arc_parameters, desired_st_segment_parameters, ...
     desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, ...
     debug_fig_num)
+
+% Check that the threshold is given in St format or not. If in St format,
+% just use the t portion.
+if length(threshold)>1
+    threshold = threshold(2);
+end
 
 % Find out how much segment is shifting by looking at how much the base point of
 % segment is moving
