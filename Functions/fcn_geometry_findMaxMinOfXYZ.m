@@ -203,10 +203,11 @@ if flag_do_plots
         [~, idx_min_x] = min(N_points(:,1));
         [~, idx_max_x] = max(N_points(:,1));
         x = (N_points(:,1));
-        plot(x,'-o');
-        plot(x(idx_min_x),100,'r'); % Min x
-        plot(x(idx_max_x),100,'r'); % max x
-
+        hold on
+        plot(x,'o');
+        plot(idx_min_x,x(idx_min_x),'ro'); % Min x
+        plot(idx_max_x,x(idx_max_x),'ro'); % max x
+        hold off
     elseif 2 == length(N_points(1,:)) % N by 2
         [~, idx_min_x] = min(N_points(:,1));
         [~, idx_max_x] = max(N_points(:,1));
@@ -214,11 +215,13 @@ if flag_do_plots
         [~, idx_max_y] = max(N_points(:,2));
         x = (N_points(:,1));
         y = (N_points(:,2));
+        hold on
         scatter(x,y);
-        scatter(x(idx_min_x),y(idx_min_x), 'r'); % Min x
-        scatter(x(idx_max_x),y(idx_max_x), 'r'); % max x
-        scatter(x(idx_min_y),y(idx_min_y), 'g'); % min y
-        scatter(x(idx_max_y),y(idx_max_y), 'g'); % max y
+        scatter(x(idx_min_x),y(idx_min_x),100,'r'); % Min x
+        scatter(x(idx_max_x),y(idx_max_x),100,'r'); % max x
+        scatter(x(idx_min_y),y(idx_min_y),200,'g'); % min y
+        scatter(x(idx_max_y),y(idx_max_y),200,'g'); % max y
+        hold off
     elseif 3 == length(N_points(1,:))  % N by 3 
         [~, idx_min_x] = min(N_points(:,1));
         [~, idx_max_x] = max(N_points(:,1));
@@ -229,14 +232,16 @@ if flag_do_plots
         x = (N_points(:,1));
         y = (N_points(:,2));
         z = (N_points(:,3));
+        hold on 
         scatter3(x,y,z);
         scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
         scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
-        scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),100, 'g'); % min y
-        scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),100, 'g'); % max y
-        scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),100, 'b'); % min z
-        scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),100, 'g'); % max z
+        scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),200, 'g'); % min y
+        scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),200, 'g'); % max y
+        scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),300, 'y'); % min z
+        scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),300, 'y'); % max z
         view(3)
+        hold off
     end
     hold off
     % Make axis slightly larger?
