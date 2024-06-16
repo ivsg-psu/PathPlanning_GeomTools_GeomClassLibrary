@@ -104,11 +104,21 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % -- functionalized code to match arc to arc
 % -- changed code to force line to arc functionality only (per name of fcn)
 % -- renamed function to ArcLine because LineToArc was confusing as to
-% which was first
+%    which was first
 % 2024_05_28 - S. Brennan
 % -- fixed call to spiralFromCircleToCircle to use parameter vectors
 % -- fixed subplot axes to match each other
-
+% 2024_06_16 - Sean Brennan
+% -- changed parameter format to new style:
+%            'spiral' - 
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
 
 %% Debugging and Input checks
 
@@ -1018,8 +1028,8 @@ switch continuity_level
             end % Ends plotting
 
             % Find the angle and position that the spiral starts and ends at
-            % spiralLength = desired_intermediate_geometry_join_parameters(1,1);
-            h0           = desired_intermediate_geometry_join_parameters(1,2);
+            % spiralLength = desired_intermediate_geometry_join_parameters(1,4);
+            h0           = desired_intermediate_geometry_join_parameters(1,3);
             % K0           = desired_intermediate_geometry_join_parameters(1,5);
             % Kf           = desired_intermediate_geometry_join_parameters(1,6);
             % analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;

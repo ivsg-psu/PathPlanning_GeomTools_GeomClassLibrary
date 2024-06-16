@@ -272,6 +272,8 @@ fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_para
 % Check results
 assert(isequal(round(XY_parameters2{1},4),round(original_parameteters,4)));
 
+
+
 %% Basic test 2.1 - a line segment with other geometries
 fig_num = 21;
 figure(fig_num); clf;
@@ -372,7 +374,7 @@ secondary_parameters{5}              = [-1 5 2];
 %   Kf   % The final curvature
 % ]
 secondary_parameters_type_strings{6} = 'spiral';
-secondary_parameters{6}              = [4 -40*pi/180 5 5 -1 4];
+secondary_parameters{6}              = [5 5 -40*pi/180 4 -1 4];
 
 % Call the function to convert from XY to ST
 [~, st_secondary_parameters, St_transform_XYtoSt, ~, flag_primary_parameter_is_flipped] = ...

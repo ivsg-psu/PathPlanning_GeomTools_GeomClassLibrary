@@ -75,6 +75,18 @@ fcn_geometry_orientGeometrySt2XY(st_parameters_type_strings, st_parameters, St_t
 % -- fixed bug in segment calculation wherein unit vector gives NaN if
 % start and end points are same
 % -- fixed bug where NaN inputs cause it to crash
+% 2024_06_16 - Sean Brennan
+% -- changed parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
 
 %% Debugging and Input checks
 
@@ -383,18 +395,19 @@ for ith_parameter_set = 1:N_conversions
 
             case 'spiral'
                 % A test spiral
-                %  [spiralLength,  % the s-coordinate length allowed
-                %   h0,  % The initial heading
+                %  [
                 %   x0,  % The initial x value
                 %   y0,  % The initial y value
+                %   h0,  % The initial heading
+                %   spiralLength,  % the s-coordinate length allowed
                 %   K0,  % The initial curvature
                 %   Kf   % The final curvature
                 % ]
 
                 % Get the spiral details from parameters
-                spiral_length                = current_st_parameters(1,1);
-                spiral_heading               = current_st_parameters(1,2);
-                spiral_center_ST             = current_st_parameters(1,3:4);
+                spiral_center_ST             = current_st_parameters(1,1:2);
+                spiral_heading               = current_st_parameters(1,3);
+                spiral_length                = current_st_parameters(1,4);
                 spiral_K0                    = current_st_parameters(1,5);
                 spiral_Kf                    = current_st_parameters(1,6);
 
@@ -418,9 +431,9 @@ for ith_parameter_set = 1:N_conversions
                 end
 
 
-                spiral_parameters(1,1)        = spiral_length;
-                spiral_parameters(1,2)        = spiral_heading_XY;
-                spiral_parameters(1,3:4)      = spiral_center_XY;
+                spiral_parameters(1,1:2)      = spiral_center_XY;
+                spiral_parameters(1,3)        = spiral_heading_XY;
+                spiral_parameters(1,4)        = spiral_length;
                 spiral_parameters(1,5)        = spiral_K0_XY;
                 spiral_parameters(1,6)        = spiral_Kf_XY;
 

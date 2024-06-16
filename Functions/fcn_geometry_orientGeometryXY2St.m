@@ -88,8 +88,21 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 % -- wrote the code
 % 2024_05_09 - S. Brennan
 % -- fixed bug in segment calculation wherein unit vector gives NaN if
-% start and end points are same
+%    start and end points are same
 % -- fixed bug where NaN inputs cause it to crash
+% 2024_06_16 - Sean Brennan
+% -- changed parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
+
 
 %% Debugging and Input checks
 
@@ -406,18 +419,20 @@ for ith_parameter_set = 1:N_conversions
 
             case 'spiral'
                 % A test spiral
-                %  [spiralLength,  % the s-coordinate length allowed
-                %   h0,  % The initial heading
+                %  [
                 %   x0,  % The initial x value
                 %   y0,  % The initial y value
+                %   h0,  % The initial heading
+                %   spiralLength,  % the s-coordinate length allowed
                 %   K0,  % The initial curvature
                 %   Kf   % The final curvature
                 % ]
 
+
                 % Get the spiral details from parameters
-                spiral_length                = current_parameters(1,1);
-                spiral_heading               = current_parameters(1,2);
-                spiral_center_xy             = current_parameters(1,3:4);
+                spiral_center_xy             = current_parameters(1,1:2);
+                spiral_heading               = current_parameters(1,3);
+                spiral_length                = current_parameters(1,4);
                 spiral_K0                    = current_parameters(1,5);
                 spiral_Kf                    = current_parameters(1,6);
 
@@ -441,9 +456,9 @@ for ith_parameter_set = 1:N_conversions
                 end
 
 
-                spiral_parameters(1,1)        = spiral_length;
-                spiral_parameters(1,2)        = spiral_heading_St;
-                spiral_parameters(1,3:4)      = spiral_center_St;
+                spiral_parameters(1,1:2)      = spiral_center_St;
+                spiral_parameters(1,3)        = spiral_heading_St;
+                spiral_parameters(1,4)        = spiral_length;
                 spiral_parameters(1,5)        = spiral_K0_St;
                 spiral_parameters(1,6)        = spiral_Kf_St;
 

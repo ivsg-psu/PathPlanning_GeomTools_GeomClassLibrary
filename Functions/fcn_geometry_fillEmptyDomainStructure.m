@@ -196,7 +196,8 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                flag_this_is_a_circle
 %               ] 
 %
-%            
+% 
+% DONE
 %            'spiral' - 
 %
 %               [
@@ -208,6 +209,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                Kf   % The final curvature
 %              ] 
 %
+% DONE
 %            'Hough Cubic Polynomial', 'Polyfit cubic polynomial' - 
 % 
 %             [ 

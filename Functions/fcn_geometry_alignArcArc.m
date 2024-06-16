@@ -84,7 +84,18 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 % 2024_05_28 - S. Brennan
 % -- fixed call to spiralFromCircleToCircle to use parameter vectors
 % -- fixed bug related to angle checks in arcs when oriented opposite
-
+% 2024_06_16 - Sean Brennan
+% -- changed parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
 
 %% Debugging and Input checks
 
@@ -1253,8 +1264,19 @@ switch continuity_level
             [desired_intermediate_geometry_join_parameters, ~] = ...
                 fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, arc2_sign_counter_clockwise, -1);
 
-            spiralLength = desired_intermediate_geometry_join_parameters(1,1);
-            h0           = desired_intermediate_geometry_join_parameters(1,2);
+            % 'spiral' -
+            % 
+            % [
+            %     x0,  % The initial x value
+            %     y0,  % The initial y value
+            %     h0,  % The initial heading
+            %     s_Length,  % the s-coordinate length allowed
+            %     K0,  % The initial curvature
+            %     Kf   % The final curvature
+            %     ]
+
+            h0           = desired_intermediate_geometry_join_parameters(1,3);
+            spiralLength = desired_intermediate_geometry_join_parameters(1,4);
             % x0           = desired_spiral_join_parameters(1,3);
             % y0           = desired_spiral_join_parameters(1,4);
             K0           = desired_intermediate_geometry_join_parameters(1,5);
@@ -1273,7 +1295,7 @@ switch continuity_level
 
                 fcn_geometry_plotGeometry('arc',arc1_parameters);
                 fcn_geometry_plotGeometry('arc',arc2_parameters);
-                fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters);
+                fcn_geometry_plotGeometry('spiral',desired_intermediate_geometry_join_parameters);
             end % Ends plotting
 
             % Find the angle and position that the spiral ends at

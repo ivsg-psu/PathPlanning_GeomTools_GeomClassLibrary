@@ -1639,7 +1639,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc_parameters,4),[ 0    1.0000    1.0000   -2.9671   -2.6910         0    1.0000]));
 assert(isequal(round(revised_segment_parameters,4),[1.0000         0    1.0749   -0.2000         0    0.4251]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[2.2403   -1.1202   -0.9002    0.5645    1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.9002    0.5645   -1.1202    2.2403    1.0000         0]));
 
 %% Basic test 5.12 - checking the (-) cross product, NOT feasible, no intersection
 fig_num = 512;
@@ -1810,7 +1810,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.6483         0    1.0000]));
 assert(isequal(round(revised_segment_parameters,4),[1.0000         0    0.0775   -0.0010         0    0.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550   -0.0775   -0.0774    0.0030    1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774    0.0030   -0.0775    0.1550    1.0000         0]));
 
 %% Basic test 5.22 - checking the (-) cross product, feasible, intersection, not feasible
 fig_num = 522;
@@ -1922,7 +1922,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc_parameters,4),[ 0   -1.0000    1.0000    2.9671    1.6483         0         0]));
 assert(isequal(round(revised_segment_parameters,4),[ 1.0000         0    0.0775    0.0010         0    0.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1550    0.0775   -0.0774   -0.0030   -1.0000         0]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ -0.0774   -0.0030    0.0775    0.1550   -1.0000         0]));
 
 
 %% Basic test 5.32 - checking the (+) cross product, NOT feasible, no intersection

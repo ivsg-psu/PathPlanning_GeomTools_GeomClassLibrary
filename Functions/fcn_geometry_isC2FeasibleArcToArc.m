@@ -194,11 +194,11 @@ query_point = [r2 d12];
 % Method: 
 % An arc2 is C2 feasible connected to arc1 if it is one of 3 cases:
 % 1) both circles are oriented the same direction, and the circle of arc2
-% is completely encircled by the circle for arc1
+% is completely encircled by the circle for arc1 (r1>r2) 
 % 2) both circles are oriented the same direction, and the circle of arc2
-% completely encircles the circle for arc1
+% completely encircles the circle for arc1  (r1<r2) 
 % 3) both circles are oriented in opposite direction, and the circle of arc2
-% exists entirely outside the circle for arc1
+% exists entirely outside the circle for arc1 (opposite orientation) 
 %
 % Each of these cases produces an inequality requirement for the radius of
 % arc2 (r2) and the distance from the center of the circles for arc1
@@ -277,6 +277,144 @@ query_point = [r2 d12];
 % to the threshold to see if the projection would be allowed to determine
 % feasibility.
 
+
+
+% Method: 
+% An arc2 is C2 feasible connected to arc1 if it is one of 3 cases:
+% 1) both circles are oriented the same direction, and the circle of arc2
+% is completely encircled by the circle for arc1 (r1>r2) 
+% 2) both circles are oriented the same direction, and the circle of arc2
+% completely encircles the circle for arc1  (r1<r2) 
+% 3) both circles are oriented in opposite direction, and the circle of arc2
+% exists entirely outside the circle for arc1 (opposite orientation) 
+%
+% Each of these cases produces an inequality requirement for the radius of
+% arc2 (r2) and the distance from the center of the circles for arc1
+% and arc2 (d12), given a radius of arc1 (r1).
+%
+% Specifically:
+%
+%%%%%%
+% CASE 1: This only occurs if (r2 < r1), both CW or both CCW
+%
+% For case 1, when r2 is smaller than r1, the circle2 is inside circle1
+% only if:
+%  
+% r2 < (r1 - d12) 
+%
+% this can be rewritten with d12 as the dependent variable (y-axis):
+%
+%  d12 < r1 - r2
+%
+% and normalized as:
+%
+%  d12/r1 < 1 - r2/r1
+% 
+% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+% creates a line with slope of -1 and r1 as the y-intercept. The line
+% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
+% expected. 
+%
+% To determine the distance of a query point (r2,d12) to this line, a
+% vector can be created to the query point from either (0, r1) or (r1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [1 1] direction, is the distance to the boundary.
+%
+% If this is plotted with d12/r1 on the y-axis and r2/r1 on the x-axis,
+% then it creates a line with slope of -1 and 1 as the y-intercept. The
+% line intercepts the x-axis at the location where r2/r1 = 1 and d12/r1 is
+% zero, as expected.
+%
+% To determine the distance of a query point (r2/r1,d12/r1) to this line, a
+% vector can be created to the query point from either (0, 1) or (1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [1 1] direction, is the distance to the boundary.
+%
+%%%%%%%
+% CASE 2: This only occurs if (r2 > r1), both CW or both CCW
+%
+% For case 2, when r2 is larger than r1, the circle2 is encircling circle1
+% only if:
+%  
+% r2 > (r1 + d12) 
+%
+% this can be rewritten with d12 as the dependent variable (y-axis):
+%
+%  d12 < r2 - r1
+% 
+% and normalized as:
+%
+%  d12/r1 < r2/r1 - 1
+% 
+% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+% creates a line with slope of 1 and -r1 as the y-intercept. The line
+% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
+% expected. The feasible range exists only for d12 greater than zero, e.g.
+% within a right triangle whose corner starts at (r1, 0).
+%
+% To determine the distance of a query point (r2,d12) to this line, a
+% vector can be created to the query point from either (0, -r1) or (r1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [-1 1] direction, is the distance to the boundary.
+%
+% If this is plotted with d12/r1 on the y-axis and r2/r1 on the x-axis, then it
+% creates a line with slope of 1 and -1 as the y-intercept. The line
+% intercepts the x-axis at the location where r2/r1=1, and d12/r1=0. Thus
+% r2=r1 and d12 is zero, as expected. The feasible range exists only for
+% d12 greater than zero, e.g. within a right triangle whose corner starts
+% at (1, 0) in the plot.
+%
+% To determine the distance of a query point (r2/r1,d12/r1) to this line, a
+% vector can be created to the query point from either (0, -1) or (1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [-1 1] direction, is the distance to the boundary.
+%
+%%%%%%%%%
+% CASE 3: one arc is CW the other is CCW
+%
+% For case 3, the only feasible solution is when the circle for arc2 is
+% completely outside the cirlce for arc1. This occurs only if:
+%  
+% d12 > (r1 + r2) 
+%
+% and normalized as:
+%
+%  d12/r1 > r2/r1 + 1
+% 
+% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+% creates a line with slope of 1 and r1 as the intercept. The line 
+% intercepts the x-axis at the location where r2=-r1 and d12 is zero which
+% is not physically possible (negative radius). The feasible range exists
+% only for d12 greater than zero, e.g. within a right triangle whose corner
+% starts at (0, r1).
+%
+% To determine the distance of a query point (r2,d12) to this line, a
+% vector can be created to the query point from either (0, r1) or (-r1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [1 -1] direction, is the distance to the boundary.
+%
+% If this is plotted with d12/r1 on the y-axis and r2/r1 on the x-axis, then it
+% creates a line with slope of 1 and 1 as the intercept. The line 
+% intercepts the x-axis at the location where r2=-r1 and d12 is zero which
+% is not physically possible (negative radius). The feasible range exists
+% only for d12 greater than zero, e.g. within a right triangle whose corner
+% starts at (0, 1).
+%
+% To determine the distance of a query point (r2/r1,d12/r1) to this line, a
+% vector can be created to the query point from either (0, 1) or (-1,0).
+% The dot product of this vector with the projection normal from the
+% boundary, in the [1 -1] direction, is the distance to the boundary.
+%
+% These inequalities therefore give the method to find both feasibility and
+% the closest location: project the test point (r2, d12) into each of the 3
+% directions. Only 1 of them can be negative, and if this is the case, then
+% the C2 connectivity is feaible. If none are negative, then take the
+% minimum distance solution, project this distance into the feasible space
+% to find the feasible solution. As well, compare this projection distance
+% to the threshold to see if the projection would be allowed to determine
+% feasibility.
+
+
 cases_test_vectors = [...
     query_point - [r1, 0];
     query_point - [r1, 0];
@@ -284,9 +422,9 @@ cases_test_vectors = [...
     ];
 
 cases_projection_vectors = [...
-    1 1;
+     1 1;
     -1 1;
-    1 -1];
+     1 -1];
 
 cases_unit_projection_vectors = fcn_geometry_calcUnitVector(cases_projection_vectors);
 distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
@@ -381,15 +519,15 @@ if flag_do_plots
     hold on;
     grid on;
     axis equal;
-    xlabel('r2 [meters]');
-    ylabel('d12 [meters]');
+    xlabel('r2/r1 [meters]');
+    ylabel('d12/r1 [meters]');
     
     % Plot the cases
-    plot([0 r1],[r1 0],'b-','LineWidth',3);
-    plot([r1 2*r1],[0 r1],'m-','LineWidth',3);
-    plot([0 r1],[r1 2*r1],'c-','LineWidth',3);
-    plot(query_point(1,1),query_point(1,2),'r.','MarkerSize',30);
-    plot(corrected_parameters_r2_d12(1,1),corrected_parameters_r2_d12(1,2),'g.','MarkerSize',30);
+    plot([0 1],[1 0],'b-','LineWidth',3);
+    plot([1 2],[0 1],'m-','LineWidth',3);
+    plot([0 1],[1 2],'c-','LineWidth',3);
+    plot(query_point(1,1)/r1,query_point(1,2)/r1,'r.','MarkerSize',30);
+    plot(corrected_parameters_r2_d12(1,1)/r1,corrected_parameters_r2_d12(1,2)/r1,'g.','MarkerSize',30);
     
     legend('Case1','Case2','Case3','Query','Fixed')
 

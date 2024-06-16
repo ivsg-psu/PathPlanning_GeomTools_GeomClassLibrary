@@ -30,7 +30,7 @@ spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameter
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[ 1.8195   -0.1927   -0.5746    0.0555    0.3333    1.0000]));
+assert(isequal(round(spiral_join_parameters,4),[ -0.5746    0.0555   -0.1927    1.8195    0.3333    1.0000]));
 
 %% Basic test - circle 1 and circle 2 are large and small, counter-clockwise
 % show that if circle is outside, it will not join
@@ -78,7 +78,7 @@ spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameter
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[ 3.0183   -1.7856   -0.9770    1.2132    1.0000    0.5000]));
+assert(isequal(round(spiral_join_parameters,4),[-0.9770    1.2132   -1.7856    3.0183    1.0000    0.5000]));
 
 %% Basic test - circle 1 and circle 2 are small and large, counter-clockwise
 % Show that if circle is outside, it will not join
@@ -127,7 +127,7 @@ spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameter
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[1.3893   -0.1780   -0.5312    0.0474    0.3333   -1.0000]));
+assert(isequal(round(spiral_join_parameters,4),[-0.5312    0.0474   -0.1780    1.3893    0.3333   -1.0000]));
 
 %% Basic test - circle 1 and circle 2 are large and small, CLOCKWISE
 % show that if circle is outside, it will not join
@@ -176,7 +176,7 @@ spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameter
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[1.8584   -0.8484   -0.7503    0.3388    1.0000   -0.5000]));
+assert(isequal(round(spiral_join_parameters,4),[-0.7503    0.3388   -0.8484    1.8584    1.0000   -0.5000]));
 
 %% Basic test - circle 1 and circle 2 are small and large, CLOCKWISE
 % Show that if circle is outside, it will not join
@@ -226,7 +226,7 @@ circle2_parameters = [circle2_center_XY circle2_radius];
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[0.1897   -0.0949   -0.0947    0.0045    1.0000    0.3333]));
+assert(isequal(round(spiral_join_parameters,4),[-0.0947    0.0045   -0.0949    0.1897    1.0000    0.3333]));
 assert(space_between_circles>0);
 
 %% FAIL test - not sure why this is not working well?
@@ -251,7 +251,7 @@ circle2_parameters = [circle2_center_XY circle2_radius];
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[2.6105    0.1700   27.4677    2.3405    0.0062    0.0027]));
+assert(isequal(round(spiral_join_parameters,4),[ 27.4677    2.3405    0.1700    2.6105    0.0062    0.0027]));
 assert(space_between_circles>0);
 
 %% Circle to line tests
@@ -290,7 +290,7 @@ circle2_parameters = [circle2_center_XY circle2_radius];
 assert(isequal(size(spiral_join_parameters),[1 6]));
 
 % Check results
-assert(isequal(round(spiral_join_parameters,4),[2.2403   -1.1202   -0.9002    0.5645    1.0000         0]));
+assert(isequal(round(spiral_join_parameters,4),[-0.9002    0.5645   -1.1202    2.2403    1.0000         0]));
 assert(space_between_circles==0.2);
 
 

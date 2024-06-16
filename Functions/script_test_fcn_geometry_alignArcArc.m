@@ -2951,7 +2951,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.3281    2.8683    0.6000    0.7311    1.5708         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.3217    0.5397    0.5139    2.1421    1.0000    1.6667]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5139    2.1421    0.5397    1.3217    1.0000    1.6667]));
 
 %% Basic test 5.12 - checking the + to + cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -3097,7 +3097,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.3455    2.8005    0.6000   -0.3654    1.5708         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1898    0.9523    0.8148    2.4202    1.0000    1.6667]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.8148    2.4202    0.9523    0.1898    1.0000    1.6667]));
 
 
 
@@ -3172,7 +3172,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[-1.6204    1.5933    3.0000   -0.2366    1.5708         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.9199    0.0543    0.0542   -0.3985    1.0000    0.3333]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.0542   -0.3985    0.0543    1.9199    1.0000    0.3333]));
 
 %% Basic test 5.22 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 522;
@@ -3317,7 +3317,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[-1.7312    1.5995    3.0000   -0.4920    1.5708         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1897    0.9523    0.8148    0.0202    1.0000    0.3333]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8148    0.0202    0.9523    0.1897    1.0000    0.3333]));
 
 
 
@@ -3391,7 +3391,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[1.4539    2.2183    0.6000    2.0852   -1.5708         0         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6825    0.7419    0.6757    2.2628    1.0000   -1.6667]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6757    2.2628    0.7419    0.6825    1.0000   -1.6667]));
 
 %% Basic test 5.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
@@ -3537,7 +3537,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[1.3865    2.1995    0.6000    2.5389   -1.5708         0         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.0949    0.9998    0.8413    2.4595    1.0000   -1.6667]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8413    2.4595    0.9998    0.0949    1.0000   -1.6667]));
 
 
 
@@ -3612,7 +3612,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[3.5757   -1.4067    3.0000    2.4083   -1.5708         0         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.3580    0.3849    0.3754   -0.3269    1.0000   -0.3333]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3754   -0.3269    0.3849    1.3580    1.0000   -0.3333]));
 
 %% Basic test 5.42 - checking the + to + cross product combination, small to large, with shift blocked
 fig_num = 542;
@@ -3757,7 +3757,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[ 3.4650   -1.4005    3.0000    2.5956   -1.5708         0         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.1342    0.9801    0.8306    0.0431    1.0000   -0.3333]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8306    0.0431    0.9801    0.1342    1.0000   -0.3333]));
 
 
 

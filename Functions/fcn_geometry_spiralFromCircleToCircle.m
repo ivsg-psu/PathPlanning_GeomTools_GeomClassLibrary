@@ -67,12 +67,26 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % -- wrote the code
 % 2024_05_05 - S. Brennan
 % -- fixed bug where, with symmetric setup, will return negative value
-% incorrectly instead of positive value.
+%     incorrectly instead of positive value.
 % 2024_05_11 - Sean Brennan
 % -- Modified to allow line definitions, e.g. with Kf = 0 
 % 2024_05_28 - Sean Brennan
 % -- Modified to use circle or arc parameters, not raw entries of radius
 % and center
+% 2024_06_16 - Sean Brennan
+% -- fixed minor bug with flag_circle2_is_counterclockwise input, if user
+%    enters something other than 1 (like zero)
+% -- changed parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
 
 %% Debugging and Input checks
 
@@ -139,12 +153,16 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify best_fit_domain_box_projection_distance?
+% Does user want to specify flag_circle2_is_counterclockwise?
 flag_circle2_is_counterclockwise = 1; 
 if (3<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
         flag_circle2_is_counterclockwise = temp; 
+        % Make sure results are either 1 or -1
+        if flag_circle2_is_counterclockwise~=1
+            flag_circle2_is_counterclockwise = -1;
+        end
     end
 end
 
@@ -322,12 +340,29 @@ if space_between_circles>0
     circle1_start_xy = circle1_center_xy + circle1_radius*[cos(-90*pi/180 - rotation_angle) sin(-90*pi/180 - rotation_angle)];
 
     % Fill the spiral parameters with the results
-    spiral_join_parameters(1,1) = spiralLength;
-    spiral_join_parameters(1,2) = -rotation_angle;
-    spiral_join_parameters(1,3) = circle1_start_xy(1,1);
-    spiral_join_parameters(1,4) = circle1_start_xy(1,2);
+    %            'spiral' -
+    %
+    %               [
+    %                x0,  % The initial x value
+    %                y0,  % The initial y value
+    %                h0,  % The initial heading
+    %                s_Length,  % the s-coordinate length allowed
+    %                K0,  % The initial curvature
+    %                Kf   % The final curvature
+    %              ]
+    spiral_join_parameters(1,1) = circle1_start_xy(1,1);
+    spiral_join_parameters(1,2) = circle1_start_xy(1,2);
+    spiral_join_parameters(1,3) = -rotation_angle;
+    spiral_join_parameters(1,4) = spiralLength;
     spiral_join_parameters(1,5) = K0;
     spiral_join_parameters(1,6) = Kf;
+
+    % % spiral_join_parameters(1,1) = spiralLength;
+    % % spiral_join_parameters(1,2) = -rotation_angle;
+    % % spiral_join_parameters(1,3) = circle1_start_xy(1,1);
+    % % spiral_join_parameters(1,4) = circle1_start_xy(1,2);
+    % % spiral_join_parameters(1,5) = K0;
+    % % spiral_join_parameters(1,6) = Kf;
 
 else
     spiral_join_parameters = nan(1,6);

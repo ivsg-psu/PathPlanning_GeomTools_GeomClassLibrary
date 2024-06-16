@@ -310,7 +310,7 @@ secondary_parameters{5}              = [-1 5 2];
 %   Kf   % The final curvature
 % ]
 secondary_parameters_type_strings{6} = 'spiral';
-secondary_parameters{6}              = [4 -40*pi/180 5 5 -1 4];
+secondary_parameters{6}              = [5 5 -40*pi/180 4 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
@@ -331,7 +331,7 @@ assert(isequal(round(st_secondary_parameters{2},4), [-8.3660   -0.3660    2.0000
 assert(isequal(round(st_secondary_parameters{3},4), [-3.2679    2.4641    1.0000   -1.0472   -1.9199         0         0]));
 assert(isequal(round(st_secondary_parameters{4},4), [0.5000   -0.8660   -7.5000   -0.8660]));
 assert(isequal(round(st_secondary_parameters{5},4), [-8.5981    3.2321    2.0000]));
-assert(isequal(round(st_secondary_parameters{6},4), [4.0000   -1.2217   -3.4019    0.2321   -1.0000    4.0000]));
+assert(isequal(round(st_secondary_parameters{6},4), [-3.4019    0.2321   -1.2217    4.0000   -1.0000    4.0000]));
 
 assert(dist(St_transform,se2([0.8660    0.5000  -10.2321;    -0.5000    0.8660   -1.5981;   0         0    1.0000]))<0.001);
 assert(isequal(round(rotation_angle*180/pi,4),-30));
@@ -463,7 +463,7 @@ assert(isequal(round(st_secondary_parameters{2},4), [-1.0000    5.0000    2.0000
 assert(isequal(round(st_secondary_parameters{3},4), [4.0000    2.0000    1.0000   -2.0944   -2.9671         0         0]));
 assert(isequal(round(st_secondary_parameters{4},4), [-0.5000   -0.8660   -1.0000    4.0000]));
 assert(isequal(round(st_secondary_parameters{5},4), [2 7 2]));
-assert(isequal(round(st_secondary_parameters{6},4), [4.0000   -2.2689    2.0000    1.0000   -1.0000    4.0000]));
+assert(isequal(round(st_secondary_parameters{6},4), [-3.6981    2.0000   -2.8540    5.0000   -1.0000    4.0000]));
 
 assert(dist(St_transform,se2([0.0000    1.0000   -3.0000;    -1.0000    0.0000    6.0000;   0         0    1.0000]))<0.001);
 assert(isequal(round(rotation_angle*180/pi,4),-90));
@@ -594,7 +594,7 @@ assert(isequal(round(st_secondary_parameters{2},4), [1.0000    5.0000    2.0000 
 assert(isequal(round(st_secondary_parameters{3},4), [-4.0000    2.0000    1.0000   -1.0472   -0.1745         0    1.0000]));
 assert(isequal(round(st_secondary_parameters{4},4), [0.5000   -0.8660    1.0000    4.0000]));
 assert(isequal(round(st_secondary_parameters{5},4), [-2 7 2]));
-assert(isequal(round(st_secondary_parameters{6},4), [4.0000   -0.8727   -2.0000    1.0000    1.0000   -4.0000]));
+assert(isequal(round(st_secondary_parameters{6},4), [3.6981    2.0000   -0.2876    5.0000    1.0000   -4.0000]));
 
 assert(dist(St_transform,se2([0.0000    -1.0000   3.0000;    -1.0000    0.0000    6.0000;   0         0    1.0000]))<0.001);
 assert(isequal(round(rotation_angle*180/pi,4),90));
