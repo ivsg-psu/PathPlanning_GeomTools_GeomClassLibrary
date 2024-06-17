@@ -1,5 +1,5 @@
 function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
-%% fcn_geometry_findMaxMinOfXYZ
+%% fcn_geometry_findRepeatedNumber
 % Find the find the repeated numbers in an array and count the total.
 % 
 % FORMAT:
@@ -9,12 +9,11 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % INPUTS:     
 %       
 %      points: Number of points.
-%      
-%      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed.
+%      (OPTIONAL INPUTS)             
+%
+%      fig_num: There are no plots to show 
+%
 %
 % OUTPUTS:
 %
@@ -41,14 +40,15 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % Check if flag_max_speed set. This occurs if the fig_num variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
+
 flag_max_speed = 0;
 if (nargin==2 && isequal(varargin{end},-1))
-    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
-    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
@@ -63,12 +63,10 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 999978;
+    debug_fig_num = 34838;%#ok<NASGU>
 else
-    debug_fig_num = [];
+    debug_fig_num = [];%#ok<NASGU>
 end
-
-
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____                   _
@@ -101,36 +99,12 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify best_fit_domain_box_projection_distance?
-threshold = 0.1;
-flag_perform_shift_of_arc2 = 1;
-if (3<=nargin)
-    temp = varargin{1};
-    if ~isempty(temp)
-        threshold = temp;
-    else
-        flag_perform_shift_of_arc2 = 0;
-    end
-end
-
-% Does user want to specify continuity_level?
-continuity_level = 1;
-if (4<=nargin)
-    temp = varargin{2};
-    if ~isempty(temp)
-        continuity_level = temp;
-        if ~any(continuity_level == [0 1 2])
-            error('The continuity_level input must be 0, 1, or 2');
-        end
-    end
-end
-
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if 2<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        fig_num = temp;%#ok<NASGU>
         flag_do_plots = 1;
     end
 end
@@ -153,6 +127,7 @@ output = zeros(1, max(unique_elements)); % Initialize the output array with zero
 output(unique_elements) = counts; % Place the counts in the output array
 
 
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -165,7 +140,14 @@ output(unique_elements) = counts; % Place the counts in the output array
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+if flag_do_plots
+     % Ends check if plotting
+    disp('There are no plot to show');
+end 
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+end
+end
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   ______                _   _
