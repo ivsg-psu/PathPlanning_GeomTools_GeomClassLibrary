@@ -2,7 +2,7 @@
 % Exercises the function: fcn_geometry_findRepeatedNumber
 % Revision history:
 % 2024_6_17
-% -- wrote the code
+% Jiabao Zhao wrote the code
 
 %% Test 1
 fig_num = 1;

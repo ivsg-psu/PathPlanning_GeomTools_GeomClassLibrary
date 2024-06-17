@@ -2,7 +2,7 @@
 % Exercises the function: fcn_geometry_findMaxMinOfXYZ
 % Revision history:
 % 2024_6_14
-% -- wrote the code
+% Jiabao Zhao wrote the code
 
 close all;
 
