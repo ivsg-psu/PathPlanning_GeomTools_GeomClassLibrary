@@ -71,9 +71,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 999978;
+    debug_fig_num = 999978; %#ok<NASGU>
 else
-    debug_fig_num = [];
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 
@@ -109,30 +109,6 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify best_fit_domain_box_projection_distance?
-threshold = 0.1;
-flag_perform_shift_of_arc2 = 1;
-if (3<=nargin)
-    temp = varargin{1};
-    if ~isempty(temp)
-        threshold = temp;
-    else
-        flag_perform_shift_of_arc2 = 0;
-    end
-end
-
-% Does user want to specify continuity_level?
-continuity_level = 1;
-if (4<=nargin)
-    temp = varargin{2};
-    if ~isempty(temp)
-        continuity_level = temp;
-        if ~any(continuity_level == [0 1 2])
-            error('The continuity_level input must be 0, 1, or 2');
-        end
-    end
-end
-
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if 2<= nargin && 0==flag_max_speed
@@ -154,7 +130,7 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if 1 == length(N_points(1,:)) %% N by 1 
+if isscalar(N_points(1,:)) %% N by 1 
     Min_x = min(N_points(:,1));
     Max_x = max(N_points(:,1));
     Min_y = [];
@@ -176,6 +152,8 @@ elseif 3 == length(N_points(1,:)) % N by 3
     Min_z = min(N_points(:,3));
     Max_z = max(N_points(:,3));
 end 
+
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -199,7 +177,7 @@ if flag_do_plots
     axis equal
 
     %plot of points
-    if 1 == length(N_points(1,:))  % N by 1 
+    if isscalar(N_points(1,:))  % N by 1 
         [~, idx_min_x] = min(N_points(:,1));
         [~, idx_max_x] = max(N_points(:,1));
         x = (N_points(:,1));
