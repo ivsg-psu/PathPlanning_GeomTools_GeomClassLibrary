@@ -1,6 +1,6 @@
 %script_test_fcn_GeomTools_concentricSquaresPointDensity.m
 %This script is used to exercise the function:
-%fcn_GeomTools_concentricSquaresPointsDenisty
+%fcn_geometry_concentricSquaresPointsDenisty
 %This function was written on 2024_6_17 by A. Goncharov, opg5041@psu.edu
 %
 %% Basic Example
@@ -21,32 +21,62 @@
 
 N_points = 100;
 Ext_Square_Size=10;
+Int_Square_Size=3;
 fig_num = 1111;
 
-[X,Y,Z] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,[],[],fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],[],fig_num);
 
-assert(length(X)==100);
+assert(length(points)==N_points);
 
 
 %%  BASIC example 2 - Generate points inside two squares, noise added
 
-fcn_geometry_concentricSquaresPointDensity(100,10,0.5)
+N_points = 100;
+Ext_Square_Size=10;
+Int_Square_Size=3;
+fig_num = 2222;
+noise= 0.5;
+
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,[],fig_num);
+assert(length(points)==N_points);
 
 
 %% BASIC_example 3 - Create a diagonal line across, no noise
 
-fcn_geometry_concentricSquaresPointDensity(100,10,0,1)
+N_points = 100;
+Ext_Square_Size=10;
+Int_Square_Size=3;
+fig_num = 3333;
+diag_flag=1;
 
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],diag_flag,fig_num);
+assert(length(points)==N_points);
 
 %% BASIC_example 4 - Create a diagonal line across, noise added
 
-fcn_geometry_concentricSquaresPointDensity(100,10,0.5,1)
+N_points = 100;
+Ext_Square_Size=10;
+Int_Square_Size=3;
+fig_num = 4444;
+diag_flag=1;
+noise= 0.3;
+
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,fig_num);
+assert(length(points)==N_points);
 
 
 %% BASIC_example 5 - Create a diagonal line across, noise added, fig 31
 
 
-fcn_geometry_concentricSquaresPointDensity(100,10,[],[],31)
+N_points = 100;
+Ext_Square_Size=10;
+Int_Square_Size=3;
+fig_num = 31;
+diag_flag=1;
+noise= 0.3;
+
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,fig_num);
+assert(length(points)==N_points);
 
 
 %%
