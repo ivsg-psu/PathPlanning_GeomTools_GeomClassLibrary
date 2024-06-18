@@ -119,6 +119,8 @@ function [agreement_indices,orothogonal_dist_btw_test_points_and_cubic_curve] = 
 % -- changed tolerance style to be consistent with St coordinate definition
 % used in other functions
 % -- fixed bug in station calculations so that this works
+% 2024_06_18 - Aneesh Batchu
+% -- Deleted commented lines. Fixed some comments
 
 %% Debugging and Input checks
 
@@ -147,9 +149,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; 
+    debug_fig_num = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -174,26 +176,11 @@ if 0==flag_max_speed
         fcn_DebugTools_checkInputsToFunctions(...
             points, '2column_of_numbers',[2 3]);
 
-        % % Check the source points input to be length greater than or equal to 2
-        % fcn_DebugTools_checkInputsToFunctions(...
-        %     source_points, '2column_of_numbers',[2 3]);
-
         % Check the transverse_tolerance input is a positive single number
         fcn_DebugTools_checkInputsToFunctions(tolerance, 'positive_1or2column_of_numbers',1);
 
-        % % Check the transverse_tolerance input is a positive single number
-        % fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
     end
 end
-
-% % Does user want to specify base_point_index?
-% current_combo = [];
-% if 4<= nargin
-%     temp = varargin{1};
-%     if ~isempty(temp)
-%         current_combo = temp;
-%     end
-% end
 
 
 % Does user want to specify fig_num?
@@ -230,15 +217,6 @@ else
     transverse_tolerance = tolerance;
 end
 
-% % Remove the source points from the points
-% N_points = length(points(:,1)); 
-
-% Find the points excluding source points
-% points_excluding_source_points = setdiff(points, points(current_combo,:), 'rows');
-
-% Find the points in x - domain
-% points = find(points >= source_points(1,1) & points <= source_points(end,1));
-
 % Substitute the points to find y values using fitted parameters. The y
 % values of the points are different from y coordinates of original points
 [y_values_of_points_calculated, slopes_at_each_point] = fcn_INTERNAL_findSlopesAtEachPoint(points(:,1), cubic_fit);
@@ -252,24 +230,24 @@ points_calculated = [points(:,1), y_values_of_points_calculated];
 % slope of the cubic polynomial
 unit_orthogonal_vectors = fcn_INTERNAL_findUnitOrthogonalVectors(slopes_at_each_point);
 
-% Check results?
-if 1==flag_do_debug
-    figure(debug_fig_num)
-    clf;
-    hold on;
-    grid on;
-
-    % plot the input points
-    plot(points(:,1), points(:,2), 'k.', 'MarkerSize',30)
-
-
-    % plot the y_values_of_points_calculated
-    plot(points(:,1), y_values_of_points_calculated, 'r.', 'MarkerSize',15)
-
-    % Plot the unit vectors
-    quiver(points(:,1),points(:,2),unit_orthogonal_vectors(:,1),unit_orthogonal_vectors(:,2),0,'r','Linewidth',2);
-
-end
+% % Check results?
+% if 1==flag_do_debug
+%     figure(debug_fig_num)
+%     clf;
+%     hold on;
+%     grid on;
+% 
+%     % plot the input points
+%     plot(points(:,1), points(:,2), 'k.', 'MarkerSize',30)
+% 
+% 
+%     % plot the y_values_of_points_calculated
+%     plot(points(:,1), y_values_of_points_calculated, 'r.', 'MarkerSize',15)
+% 
+%     % Plot the unit vectors
+%     quiver(points(:,1),points(:,2),unit_orthogonal_vectors(:,1),unit_orthogonal_vectors(:,2),0,'r','Linewidth',2);
+% 
+% end
 
 % Find vectors from curve to the test points
 vectors_from_curve_to_test_points = points - points_calculated; 
@@ -283,14 +261,14 @@ orothogonal_dist_btw_test_points_and_cubic_curve = sum(vectors_from_curve_to_tes
 flags_in_transverse_agreement = abs(orothogonal_dist_btw_test_points_and_cubic_curve) <= transverse_tolerance;
 indices_in_transverse_agreement = find(flags_in_transverse_agreement==1); 
 
-% Check results?
-if 1==flag_do_debug
-    figure(debug_fig_num)
-
-    % plot the agreement points
-    plot(points(indices_in_transverse_agreement,1), points(indices_in_transverse_agreement,2), 'go', 'MarkerSize',15, 'LineWidth',3)
-
-end
+% % Check results?
+% if 1==flag_do_debug
+%     figure(debug_fig_num)
+% 
+%     % plot the agreement points
+%     plot(points(indices_in_transverse_agreement,1), points(indices_in_transverse_agreement,2), 'go', 'MarkerSize',15, 'LineWidth',3)
+% 
+% end
 
 % If the station distance is given
 if ~isempty(station_tolerance)
@@ -377,17 +355,17 @@ end
 
 
 %% fcn_INTERNAL_findSlopesAtEachPoint
-function [y_calculated_values, slopes_at_each_calculated_point] = fcn_INTERNAL_findSlopesAtEachPoint(x_coordinates, fittedParameters)
+function [y_calculated_values, slopes_at_each_calculated_point] = fcn_INTERNAL_findSlopesAtEachPoint(x_coordinates, cubicPoly_fittedParameters)
 % Find the y coordinates of interpolated source points by substituting x
 % coordinates of interpolated source points in cubic polynomial using
 % "polyval"
-y_calculated_values = polyval(fittedParameters, x_coordinates);
+y_calculated_values = polyval(cubicPoly_fittedParameters, x_coordinates);
 
 % Calculate squares and cubes of x_interpolated_source_points for speed
 % squares_x_interpolated_source_points = [x_interpolated_source_points, x_interpolated_source_points.^2];
 
 % % Find the slopes (first derivative) of cubic polynomial at each test source point
-slopes_at_each_calculated_point = 3*fittedParameters(1,1)*x_coordinates.^2 + 2*fittedParameters(1,2)*x_coordinates + fittedParameters(1,3);
+slopes_at_each_calculated_point = 3*cubicPoly_fittedParameters(1,1)*x_coordinates.^2 + 2*cubicPoly_fittedParameters(1,2)*x_coordinates + cubicPoly_fittedParameters(1,3);
 % Find the slopes (first derivative) of cubic polynomial at each test source point
 % slopes_at_each_interpolated_source_point = 3*fittedParameters(1,1)*squares_x_interpolated_source_points(:,2) + 2*fittedParameters(1,2)*squares_x_interpolated_source_points(:,1) + fittedParameters(1,3);
 
@@ -426,10 +404,5 @@ agreement_indices = ...
     station_distances_of_points_in_transverse_agreement, ...
     1, ...
     station_tolerance, -1);
-
-% % indices in both transverse and station agreement
-% indices_in_both_transverse_and_station_agreement = indices_in_transverse_agreement(indices_in_station_agreement);
-% 
-% agreement_indices = indices_in_both_transverse_and_station_agreement;
 
 end % Ends fcn_INTERNAL_findIndicesInStationAgreement
