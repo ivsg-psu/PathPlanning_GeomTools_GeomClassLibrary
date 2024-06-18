@@ -180,11 +180,13 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              s_Length,
 %             ]
 %
+% DONE
 %            'Hough circle', 'Regression circle' - 
 %               [circleCenter_x,
 %                circleCenter_y,
 %                radius]
-%            
+% 
+% DONE
 %            'Hough arc', 'Regression arc' - 
 %
 %               [circleCenter_x.

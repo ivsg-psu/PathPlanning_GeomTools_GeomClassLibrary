@@ -687,6 +687,40 @@ assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359  
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
+%%
+% URHERE
+
+%% Basic test 3.221 - RE-checking the (-) cross product, intersection, not feasible
+fig_num = 3221;
+figure(fig_num); clf;
+
+tolerance = 0.01; % meters
+
+arc_parameters = [0    0.9000    1.0000   -0.3491   -2.0944         0         0];
+segment_parameters = [-1.0000         0   -2.0000    0.1000   -3.0000         0];
+tolerance = 0.01;
+continuity_level = 0;
+
+% Call function
+[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcSegment(...
+    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+
+sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
+
+
+% Check sizes
+assert(isequal(size(revised_arc_parameters),[1 7]));
+assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(ischar(revised_intermediate_geometry_join_type));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+
+% Check values
+assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(strcmp(revised_intermediate_geometry_join_type,''));
+assert(all(isnan(revised_intermediate_geometry_join_parameters)));
+
+
 %% Basic test 3.31 - checking the (+) cross product, feasible, no intersection
 fig_num = 331;
 figure(fig_num); clf;
