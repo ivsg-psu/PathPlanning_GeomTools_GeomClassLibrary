@@ -266,15 +266,15 @@ if flag_do_plots
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
                 case {'Hough cubic polynomial','Cubic polynomial poly fit'}
                     % plot the best-fit cubic polynomial
-                    x3_coeff = domain_to_plot.best_fit_parameters(1,1);
-                    x2_coeff = domain_to_plot.best_fit_parameters(1,2);
-                    x1_coeff = domain_to_plot.best_fit_parameters(1,3);
-                    x0_coeff = domain_to_plot.best_fit_parameters(1,4);
+                    x3_coeff = domain_to_plot.best_fit_parameters(1,8);
+                    x2_coeff = domain_to_plot.best_fit_parameters(1,7);
+                    x1_coeff = domain_to_plot.best_fit_parameters(1,6);
+                    x0_coeff = domain_to_plot.best_fit_parameters(1,5);
                     min_xcoordinate = min(domain_to_plot.points_in_domain(:,1));
                     max_xcoordinate = max(domain_to_plot.points_in_domain(:,1));
-                    x_range_to_plot = linspace(min_xcoordinate, max_xcoordinate, length(domain_to_plot.points_in_domain(:,1)))';
-                    y_range = x3_coeff*(x_range_to_plot.^3) + x2_coeff*(x_range_to_plot.^2) + x1_coeff*(x_range_to_plot) + x0_coeff;
-                    cubic_poly = [x_range_to_plot, y_range];
+                    x_domain_to_plot = linspace(min_xcoordinate, max_xcoordinate, length(domain_to_plot.points_in_domain(:,1)))';
+                    y_range = x3_coeff*(x_domain_to_plot.^3) + x2_coeff*(x_domain_to_plot.^2) + x1_coeff*(x_domain_to_plot) + x0_coeff;
+                    cubic_poly = [x_domain_to_plot, y_range];
                     plot(cubic_poly(:,1),cubic_poly(:,2),'-','Linewidth',1,'MarkerSize',15,'Color',current_color);
 
                 otherwise
