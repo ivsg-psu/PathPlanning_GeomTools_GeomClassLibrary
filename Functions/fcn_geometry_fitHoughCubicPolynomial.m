@@ -1,9 +1,12 @@
-function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_tolerance, varargin)
+function domains = fcn_geometry_fitHoughCubicPolynomial(points, tolerance, varargin)
 %% fcn_geometry_fitHoughCubicPolynomial
 %
-% This function takes the input points and tolerance as the input and
-% outputs the fitted parameters, agreement indices, and best fit type in a
-% cell array.
+% Checks all permutations between points to fit a cubic polynomial (N
+% choose 4), then calculates the cubic polynomial Hough fit and determines
+% which of the points are within a tolerance distance of that cubic
+% polynomial Hough fit. This is calculated for all possible 4-point
+% permutations, ordered in N-choose-4 format. The best-fit parameters are
+% returned
 %
 % FORMAT: 
 %
@@ -12,10 +15,18 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
 %
+%      tolerance: a 1x2 vector: [station_tolerance, transverse_tolerance]
 %      transverse_tolerance: the orthogonal distance between the points and
 %      the linear curve fit that indicate whether a point "belongs" to the
 %      fit (if distance is less than or equal to the tolerance), or is
 %      "outside" the fit (if distance is greater than the tolerance).
+%      station_tolerance: the projection distance between the points in a
+%      curve fit, along the direction of the curve, that indicate whether a
+%      point "belongs" to the cubic poly Hough fit of a cubic polynomial or
+%      not. A cubic poly segment is considered continous if station
+%      interval distance is less than or equal to the station_tolerance.
+%      Set station_tolerance to an empty value, [], to avoid cubic poly
+%      segment fitting and instead find pure cubic poly fits.
 %
 %      (OPTIONAL INPUTS)
 %
@@ -31,6 +42,10 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 %      agreement. Otherwise, searches will be continued until none are left
 %      that have more than points_required_for_agreement. Default is 0, to
 %      find all agreements
+%
+%      total_points_including_source_points: After filling the domains, the
+%      source points are interpolated to generate a good (visually
+%      appealing) domain shape. 
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -78,6 +93,8 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_toler
 % -- Modified the function "fcn_geometry_findAgreementsOfPointsToCubicPoly"
 % to find the agreement indices faster. More details of the function are
 % mentioned in the instructions of that function. 
+% 2024_06_18 - Aneesh Batchu
+% -- Changed the inputs of "fcn_geometry_findAgreementsOfPointsToCubicPoly"
 
 %% Debugging and Input checks
 
@@ -125,31 +142,21 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,7);
+        narginchk(2,6);
 
         % Check the points input to be length greater than or equal to 2
         fcn_DebugTools_checkInputsToFunctions(...
             points, '2column_of_numbers',[2 3]);
 
         % Check the transverse_tolerance input is a positive single number
-        fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
-
-    end
-end
-
-% Does user want to specify station_tolerance?
-station_tolerance = [];
-if (3<=nargin)
-    temp = varargin{1};
-    if ~isempty(temp)
-        station_tolerance = temp;
+        fcn_DebugTools_checkInputsToFunctions(tolerance, 'positive_1or2column_of_numbers',1);
     end
 end
 
 % Does user specify points_required_for_agreement?
 points_required_for_agreement = 10;
-if (4<= nargin)
-    temp = varargin{2};
+if (3<= nargin)
+    temp = varargin{1};
     if ~isempty(temp)
         points_required_for_agreement = temp;
         if points_required_for_agreement<4
@@ -160,17 +167,17 @@ end
 
 % Does user want to specify flag_find_only_best_agreement?
 flag_find_only_best_agreement = 0;
-if (5<=nargin)
-    temp = varargin{3};
+if (4<=nargin)
+    temp = varargin{2};
     if ~isempty(temp)
         flag_find_only_best_agreement = temp;
     end
 end
 
-% Does user specify total_points_including_source_points?
+% Does user specify total_points_including_source_points? For Domain Box
 total_points_after_interpolating_points_in_domain = 20;
-if (6<= nargin)
-    temp = varargin{4};
+if (5<= nargin)
+    temp = varargin{3};
     if ~isempty(temp)
         total_points_after_interpolating_points_in_domain = temp;
         if total_points_after_interpolating_points_in_domain<4
@@ -182,7 +189,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (7<=nargin)
+if (0==flag_max_speed) && (6<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -201,7 +208,14 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-slow_method = 0; 
+% Extract the tolerances
+if length(tolerance)>1
+    % station_tolerance = tolerance(1);
+    transverse_tolerance = tolerance(2);
+else
+    % station_tolerance = [];
+    transverse_tolerance = tolerance;
+end
 
 % Total number of points
 N_points = size(points,1);
@@ -214,7 +228,7 @@ N_permutations = size(combos_paired,1);
 
 % Pre-allocation of fittedParameters and agreementIndices for saving
 % computation time
-fitted_parameters = zeros(N_permutations,4);
+fitted_parameters = zeros(N_permutations,8);
 
 %% Step 1: find all the agreement counts, save in array "agreements"
 
@@ -238,16 +252,24 @@ for ith_combo = 1:N_permutations
     test_source_points = points(combos_paired(ith_combo,:),:);
 
     % Find fitted curve - use the function "polyfit"
-    fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+    cubicPoly_fittedParameters = polyfit(test_source_points(:,1), test_source_points(:,2), 3);
+    
+    % This is set as 1 always. The fit is always started from the 1st
+    % source point (base point). 
+    flag_is_forward_x = 1;
+
+    % This is the maximum x_length of the fit
+    x_Length = max(test_source_points(:,1)) - min(test_source_points(:,1));
+
+    % All fittedParameters including the base point, fit direction,
+    % x_length, polynomial coefficients. 
+    fittedParameters = [test_source_points(1,:) flag_is_forward_x x_Length fliplr(cubicPoly_fittedParameters)];
 
     % Store resulting fitted parameters in "fitted_parameters" matrix
     fitted_parameters(ith_combo,:) = fittedParameters;
     
     % Find agreement indices
-    [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, transverse_tolerance, (ith_combo), (station_tolerance),(-1));
-    if 1 == slow_method
-        [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly_slow_method(points, test_source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_after_interpolating_points_in_domain), (-1));
-    end
+    [agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (-1));
     % Save the count of points in agreement
     agreement_count = length(agreement_indices);
     agreements(ith_combo) = agreement_count;
@@ -269,9 +291,6 @@ end
 best_fit_cubic_poly_coefficients   = {};
 best_fit_agreement_indicies      = {};
 best_fit_source_indicies         = {};
-if 1 == slow_method
-    best_fit_polygon_vertices        = {};  % comment this
-end
 
 % Find best agreements
 if 1 == flag_find_only_best_agreement
@@ -279,27 +298,18 @@ if 1 == flag_find_only_best_agreement
     remaining_agreements = agreements;
 
     [~, best_agreement_index] = max(remaining_agreements);
-    if 1 == slow_method
-        % Best fit source points
-        only_best_fit_source_points = points(combos_paired(best_agreement_index,:),:);
-    end
     % Find the best fit parameters
     only_best_fit_fittedCoefficients  = fitted_parameters(best_agreement_index,:);
     
     % Find the indicies in transverse agreement with this best fit
-    if 1 == slow_method
-        [only_best_agreement_indices,polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly_slow_method(points, only_best_fit_source_points, only_best_fit_fittedCoefficients, transverse_tolerance, (station_tolerance), (total_points_after_interpolating_points_in_domain), (-1));
-    end
-    [only_best_agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_fittedCoefficients, transverse_tolerance, (combos_paired(best_agreement_index,:)), (station_tolerance), (-1));
+    [only_best_agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_fittedCoefficients, tolerance, (-1));
 
     % Accumulate results from best fits to prep for domain formation
     N_fits = N_fits+1;
     best_fit_cubic_poly_coefficients{N_fits}  = only_best_fit_fittedCoefficients;
     best_fit_agreement_indicies{N_fits}     = only_best_agreement_indices;
     best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:);
-    if 1 == slow_method
-        best_fit_polygon_vertices{N_fits}        = polygon_vertices;  % comment this
-    end
+
 else
     N_fits = 0;
     remaining_agreements = agreements;
@@ -307,25 +317,18 @@ else
     [best_agreement_count, best_agreement_index] = max(remaining_agreements);
 
     while best_agreement_count >= points_required_for_agreement
-        if 1 == slow_method
-            % test source points
-            fit_source_points = points(combos_paired(best_agreement_index,:),:);
-        end
         % Find the best fit parameters
         fittedCoefficients  = fitted_parameters(best_agreement_index,:);
 
         % Find the indicies in transverse agreement with this best fit
-        % [current_agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPointsToCubicPoly_slow_method(points, fit_source_points, fittedCoefficients, transverse_tolerance, station_tolerance, (total_points_after_interpolating_points_in_domain), (-1));
-        [current_agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedCoefficients, transverse_tolerance, (combos_paired(best_agreement_index,:)), (station_tolerance), (-1));
+        [current_agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedCoefficients, tolerance, (-1));
 
         % Accumulate results from best fits to prep for domain formation
         N_fits = N_fits+1;
         best_fit_cubic_poly_coefficients{N_fits} = fittedCoefficients;  %#ok<AGROW>
         best_fit_agreement_indicies{N_fits}      = current_agreement_indices;  %#ok<AGROW>
         best_fit_source_indicies{N_fits}         = combos_paired(best_agreement_index,:);  %#ok<AGROW>
-        if 1 == slow_method
-            best_fit_polygon_vertices{N_fits}        = polygon_vertices; %#ok<AGROW>   % comment this
-        end
+
         % Remove all combos_paired sums that include this agreement
         for ith_agreement = 1:length(current_agreement_indices)
             % Grab current agreement
@@ -347,9 +350,7 @@ end
 %% Step 3: form the domains
 
 domains = fcn_INTERNAL_filldomains(points, best_fit_cubic_poly_coefficients, best_fit_agreement_indicies, best_fit_source_indicies, total_points_after_interpolating_points_in_domain, transverse_tolerance);
-if 1 == slow_method
-    domains = fcn_INTERNAL_filldomains(points, best_fit_cubic_poly_coefficients, best_fit_agreement_indicies, best_fit_source_indicies, best_fit_polygon_vertices);
-end
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
@@ -371,10 +372,6 @@ if flag_do_plots
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end        
-
-
-    % Produce the sorted list, to create the Hough plot
-    % [~,sorted_indicies] = sort(agreements,'ascend');
 
     %% Plot the results in point space
 
@@ -426,7 +423,6 @@ end
 % function domains = fcn_INTERNAL_filldomains(points, best_fit_cubic_poly_coefficients, best_fit_agreement_indicies, fit_source_indicies, best_fit_polygon_vertices)
 function domains = fcn_INTERNAL_filldomains(points, best_fit_cubic_poly_coefficients, best_fit_agreement_indicies, fit_source_indicies, total_points_after_interpolating_points_in_domain, transverse_tolerance)
 
-slow_method = 0; 
 % How many domains are there?
 N_domains = length(best_fit_agreement_indicies);
 
@@ -473,15 +469,6 @@ for ith_domain = 1:N_domains
     domain_box = polygon_vertices; 
     domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 
-    % % % % Plot the input points
-    % % % plot(points(:,1),points(:,2),'k.','MarkerSize',20);
-    % % % 
-    % % % % drawpolygon function is used to set the domain
-    % % % drawpolygon(gca,"Position",polygon_vertices);
-    
-    if 1 == slow_method
-        domainShape = fcn_geometry_domainBoxByType('cubic polynomial', best_fit_polygon_vertices{ith_domain},-1);   % comment this
-    end
     %% Save results into the domain structure
     domains{ith_domain} = fcn_geometry_fillEmptyDomainStructure;
 
@@ -506,13 +493,14 @@ end % Ends fcn_INTERNAL_filldomains
 
 function polygon_vertices = fcn_INTERNAL_findPolygonVerticesForDomainBox(points_in_domain, total_points_after_interpolating_points_in_domain, best_fit_parameters, transverse_tolerance)
 
-% points_in_domain = points_in_domain(best_fit_source_indicies,:); 
+% Extract the cubic fit parameters
+cubic_fit = fliplr(best_fit_parameters(1,5:8)); 
 
 % Interpolate x-coordinates of points within the station tolerance limit
 x_interpolated_points_in_domain = fcn_INTERNAL_interpolateSourcePoints(points_in_domain, total_points_after_interpolating_points_in_domain);
 
 % Find the y coordinates and slopes at each interpolated agreement point
-[y_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(x_interpolated_points_in_domain, best_fit_parameters);
+[y_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(x_interpolated_points_in_domain, cubic_fit);
 
 % Find the unit orthogonal vectors at each interpolated agreement
 % points based on the slope of the cubic polynomial
@@ -553,16 +541,16 @@ interpolated_points_in_domain = interpolated_points_in_domain';
 
 end
 
-function [y_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(x_interpolated_points_in_domain, best_fit_parameters)
+function [y_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(x_interpolated_points_in_domain, cubic_poly_best_fit_parameters)
 
 % Find the y coordinates of interpolated points in domain by substituting x
 % coordinates of interpolated points in domain in cubic polynomial using
 % "polyval"
-y_interpolated_points_in_domain = polyval(best_fit_parameters, x_interpolated_points_in_domain);
+y_interpolated_points_in_domain = polyval(cubic_poly_best_fit_parameters, x_interpolated_points_in_domain);
 
 %  Find the slopes (first derivative) of cubic polynomial at each
 %  interpolated points in domain
-slopes_at_each_interpolated_points_in_domain = 3*best_fit_parameters(1,1)*x_interpolated_points_in_domain.^2 + 2*best_fit_parameters(1,2)*x_interpolated_points_in_domain + best_fit_parameters(1,3);
+slopes_at_each_interpolated_points_in_domain = 3*cubic_poly_best_fit_parameters(1,1)*x_interpolated_points_in_domain.^2 + 2*cubic_poly_best_fit_parameters(1,2)*x_interpolated_points_in_domain + cubic_poly_best_fit_parameters(1,3);
 
 % round off the slopes to a 4th decimal
 slopes_at_each_interpolated_points_in_domain = round(slopes_at_each_interpolated_points_in_domain,4);
@@ -576,33 +564,18 @@ theta = atan(slopes_at_each_interpolated_points_in_domain);
 % theta = atan2(slopes_at_each_test_source_point, interpolated_source_points(:,1)); 
 
 % Unit tangent vectors of all test source points
-unit_tangent_vectors = [sin(theta), cos(theta)]; 
+unit_tangent_vectors = [cos(theta), sin(theta)]; 
 
-% Pre-allocate unit_orthogonal_vectors with zeros
-unit_orthogonal_vectors = zeros(size(unit_tangent_vectors));
-
-% If the slopes are negative, rotate the unit tangent vector in clockwise
-% direction.
-indices_slope_is_negative = slopes_at_each_interpolated_points_in_domain < 0;
-unit_orthogonal_vectors(indices_slope_is_negative,:) = unit_tangent_vectors(indices_slope_is_negative,:)*[0 -1; 1 0];
-
-% If the slopes are positive, rotate the unit tangent vector in anti
-% clockwise direction
-indices_slope_is_positive = slopes_at_each_interpolated_points_in_domain > 0;
-unit_orthogonal_vectors(indices_slope_is_positive,:) = unit_tangent_vectors(indices_slope_is_positive,:)*[0 1; -1 0];
-
-% If the slopes are zero, use tangent vectors to give transverse tolerance
-% to generate the domain box
-indices_slope_is_zero = slopes_at_each_interpolated_points_in_domain == 0;
-unit_orthogonal_vectors(indices_slope_is_zero,:) = unit_tangent_vectors(indices_slope_is_zero,:);
+% Find the orthogonal vectors
+unit_orthogonal_vectors = unit_tangent_vectors*[0 1; -1 0];
 
 end
 
 function [polygon_vertices,upper_boundary_points,lower_boundary_points, y_values_upperboundary, y_values_lowerboundary]  = fcn_INTERNAL_findDomainVertices(interpolated_points_in_domain, unit_orthogonal_vectors, transverse_tolerance)
 
 % Find the points on upper and lower boundaries
-upper_boundary_points = interpolated_points_in_domain + unit_orthogonal_vectors*(2*transverse_tolerance);
-lower_boundary_points = interpolated_points_in_domain - unit_orthogonal_vectors*(2*transverse_tolerance);
+upper_boundary_points = interpolated_points_in_domain + unit_orthogonal_vectors*(transverse_tolerance);
+lower_boundary_points = interpolated_points_in_domain - unit_orthogonal_vectors*(transverse_tolerance);
 
 % Fit the upper and lower boundary points using polyfit
 fit_upper_boundary_parameters = polyfit(upper_boundary_points(:,1), upper_boundary_points(:,2), 3);
