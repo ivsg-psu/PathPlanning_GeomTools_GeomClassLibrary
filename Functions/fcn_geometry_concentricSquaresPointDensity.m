@@ -1,4 +1,4 @@
-function [X,Y,Z] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_length,varargin)
+function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_length,int_length,varargin)
 
 % Given the number of points and the range of the points, generates two
 % concentric squares with the external having a length of (ext_length) and
@@ -15,7 +15,7 @@ function [X,Y,Z] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_lengt
 %   
 %       N_Points: Number of points to plot
 %       ext_length: Length of external side of the square
-%       
+%       inr_length: Length of internal side of the square
 %       (OPTIONAL INPUTS)
 %
 %       noise_lvl: Noise to give the figure
@@ -45,7 +45,7 @@ function [X,Y,Z] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_lengt
 % number.
 
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -89,19 +89,20 @@ end
 
 if flag_max_speed == 0
     % Are there the right number of inputs?
-    narginchk(2,5);
+    narginchk(3,6);
 end
 
 
-if nargin==2
+if nargin==3
     noise=0;
    
 end
 
 %Did the user want noise?
 flag_create_noise = 0;
-if 3 <= nargin
+if 4 <= nargin
     temp = varargin{1};
+    noise=0;
     if ~isempty(temp)
         flag_create_noise = 1;
         noise=temp;
@@ -110,7 +111,7 @@ end
 
 %Did the user want a diagonal?
 flag_create_diagonal=0;
-if 4 <= nargin
+if 5 <= nargin
     temp = varargin{2};
     if temp == 1
         flag_create_diagonal = 1;
@@ -128,7 +129,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (5<= nargin)
+if (0==flag_max_speed) && (6<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -153,8 +154,6 @@ Z=0;
 
 %Create The Squares
 
-int_length=ext_length/2;
-
 A=ext_length/2;  %Exterior Length from center
 B=int_length/2;   %Interior Square from Center (Half of exterior square)
 
@@ -170,16 +169,23 @@ Y_out = (rand(pointsOuter, 1) - 0.5) * ext_length;
 X_in = (rand(pointsInner, 1) - 0.5) * int_length;
 Y_in = (rand(pointsInner, 1) - 0.5) * int_length;
 
+X=[X_out;X_in];
+Y=[Y_out;Y_in];
+
 %Creates points without a diagonal 
 if flag_create_diagonal == 0
 
-    Z_in=0;
-    Z_out=0;
+    Z_in=zeros(pointsInner,1);
+    Z_out=zeros(pointsOuter,1);
 
     if noise~=0
         Z_in = Z + noise * randn(pointsInner, 1);
         Z_out = Z + noise * randn(pointsOuter, 1);
+        
     end
+    
+    Z=[Z_out;Z_in];
+
 end
 
 %If Diagonal Flag is checked 
@@ -219,10 +225,13 @@ if flag_create_diagonal == 1
     Z_out(noisy_area_out) = noisy_Z_out;
     Z_in(noisy_area_in) = noisy_Z_in;
     
+    
+   
     end
-end
 
-
+    Z=[Z_out;Z_in];
+end 
+ points=[X Y Z];
 %% Any debugging?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _
