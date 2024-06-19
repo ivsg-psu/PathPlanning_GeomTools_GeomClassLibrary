@@ -212,7 +212,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              ] 
 %
 % DONE
-%            'Hough Cubic Polynomial', 'Polyfit cubic polynomial' - 
+%            'Hough cubic polynomial', 'Polyfit cubic polynomial' - 
 % 
 %             [ 
 %              base_point_x, 
