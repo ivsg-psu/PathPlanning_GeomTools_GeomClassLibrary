@@ -3,21 +3,35 @@
 % Revision history:
 % 2024_6_17
 % Jiabao Zhao wrote the code
+% 2024_06_19 - Aneesh Batchu
+% -- Added a case when "length_indices_array" is more than max(indices) of
+% array
 
 %% Test 1
 fig_num = 1;
-points = [1, 1, 1, 2, 4, 4];
-output = fcn_geometry_findRepeatedNumber(points,fig_num);
+indices = [1, 1, 1, 2, 4, 4]';
 
-assert(isequal(output, [3 1 0 2]'))
-assert(isequal(length(output),4))
+length_indices_array = 4; 
+repeated_indices = fcn_geometry_findRepeatedIndices(indices,length_indices_array,fig_num);
 
+assert(isequal(repeated_indices, [3 1 0 2]'))
+assert(isequal(length(repeated_indices),4))
 
-%%  Test 2 
+%% Test 2
+fig_num = 1;
+indices = [1, 1, 1, 2, 4, 4]';
+
+length_indices_array = 5; 
+repeated_indices = fcn_geometry_findRepeatedIndices(indices,length_indices_array,fig_num);
+
+assert(isequal(repeated_indices, [3 1 0 2 0]'))
+assert(isequal(length(repeated_indices),5))
+
+%%  Test 3 
 fig_num = [];
 num_points = 50;
 range = [1,10];
-points = randi(range,num_points,1);
-output = fcn_geometry_findRepeatedNumber(points,fig_num);
-assert(isequal(length(output),10));
+indices = randi(range,num_points,1);
+repeated_indices = fcn_geometry_findRepeatedIndices(indices,length_indices_array,fig_num);
+assert(isequal(length(repeated_indices),10));
 

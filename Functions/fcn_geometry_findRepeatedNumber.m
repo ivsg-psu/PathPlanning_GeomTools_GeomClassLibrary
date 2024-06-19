@@ -1,10 +1,10 @@
-function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
+function [output] = fcn_geometry_findRepeatedIndices(indices,length_indices_array, varargin)
 %% fcn_geometry_findRepeatedNumber
-% Find the find the repeated numbers in an array and count the total.
+% Finds the repeated numbers in an array and count the total.
 % 
 % FORMAT:
 %
-%      [output] = fcn_geometry_findRepeatedNumber(points,varargin)
+%      [output] = fcn_geometry_findRepeatedIndices(points,length_indices_array, varargin)
 %
 % INPUTS:     
 %       
@@ -12,7 +12,9 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 %
 %      (OPTIONAL INPUTS)             
 %
-%      fig_num: There are no plots to show 
+%      fig_num: There are no plots to show. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 %
 % OUTPUTS:
@@ -28,7 +30,7 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_Geometry_findRepeatedNumber.m for a full
+%       script_test_fcn_geometry_findRepeatedNumber.m for a full
 %       test suite.
 %
 % This function was written on 2024_06_17 by Jiabao Zhao
@@ -38,7 +40,10 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % 2024_06_17 - Jiabao Zhao
 % -- wrote the code originally
 % 2024_06_19 - Aneesh Batchu
-% -- replaced histc with histcounts to make the code more compact. 
+% -- Added length of the indices array as one of the inputs
+% -- Fixed some comments
+% -- Renamed fcn_geometry_findRepeatedNumber to
+% "fcn_geometry_findRepeatedIndices"
 
 
 %% Debugging and Input checks
@@ -48,7 +53,7 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % number.
 
 flag_max_speed = 0;
-if (nargin==2 && isequal(varargin{end},-1))
+if (nargin==3 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -89,7 +94,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,2);
+        narginchk(2,3);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -107,7 +112,7 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
-if 2<= nargin && 0==flag_max_speed
+if 3<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;%#ok<NASGU>
@@ -126,16 +131,14 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-sorted_points = sort(points);
-counts = histcounts(sorted_points); 
-output = counts'; 
-% unique_elements = unique(sorted_points); % Find the unique elements in A
-% counts = histc(sorted_points, unique_elements); % Count the occurrences of each unique element
-% output = zeros(1, max(unique_elements)); % Initialize the output array with zeros
-% output(unique_elements) = counts; % Place the counts in the output array
+sorted_points = sort(indices);
+% counts = histcounts(sorted_points); 
+% output = counts'; 
+unique_elements = unique(sorted_points); % Find the unique elements in A
+counts = histc(sorted_points, unique_elements); % Count the occurrences of each unique element
+output = zeros(length_indices_array,1); % Initialize the output array with zeros
+output(unique_elements) = counts'; % Place the counts in the output array
 % output = output';
-
-
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
