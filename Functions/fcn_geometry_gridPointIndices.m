@@ -122,16 +122,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 max_val = max(gridIndices); % Find the maximum value in the input array
-unique_values = 1:max_val; % Generate from 1 to the maximum value
-cell_array = cell(1, max_val); % cell array with empty cells
-for i = 1:length(unique_values)
-    indices = find(gridIndices == unique_values(i)); % Find indices of the current unique value
-    if isempty(indices)
-        cell_array{i} = 0; % If no indices found, put 0
-    else
-        cell_array{i} = indices; % Store indices
-    end
-end
+unique_values = 1:max_val; % Generate a sequence from 1 to the maximum value
+cell_array = arrayfun(@(x) find(gridIndices == x), unique_values, 'UniformOutput', false); % Create a cell array where each cell contains the indices
+cell_array(cellfun(@isempty, cell_array)) = {0}; % Replace empty cells with 0
+cell_array = cell_array'; %turn into row matrix 
 
 
 %% Plot the results (for debugging)?

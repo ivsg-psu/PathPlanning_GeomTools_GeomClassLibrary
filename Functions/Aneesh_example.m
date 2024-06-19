@@ -9,12 +9,10 @@ y_range = linspace(-2,5,15);
 
 % Create Z data that is same size
 Z = zeros(size(X));
-
 % Make all Z data which has XY data above line y = x + 2 equal to 1
 Y_line = X + 2;
 flag_larger_than = Y>Y_line;
 Z(flag_larger_than) = 1;
-
 if 1==0
     % Plot the data in 3D
     figure(1234);
