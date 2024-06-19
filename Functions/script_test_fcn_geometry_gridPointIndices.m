@@ -109,8 +109,9 @@ figure(fig_num); clf;
 inputPoints = [points1; points2; points3]; 
 gridSize = 1;
 gridBoundaries = [1 4 1 2 2.5 5.5]; 
-
 [gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
 output = fcn_geometry_findRepeatedNumber(gridIndices);
 cell_array = fcn_geometry_gridPointIndices(gridIndices,fig_num);
 % assert((length(cell_array{1}))==21);
+
+

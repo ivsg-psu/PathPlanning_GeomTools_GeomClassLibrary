@@ -121,9 +121,17 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-unique_values = unique(gridIndices); % Find the unique values in the array
-cell_array = arrayfun(@(x) find(gridIndices == x), unique_values, ...
-    'UniformOutput', false); % Create array for each unique value and store the indices
+max_val = max(gridIndices); % Find the maximum value in the input array
+unique_values = 1:max_val; % Generate from 1 to the maximum value
+cell_array = cell(1, max_val); % cell array with empty cells
+for i = 1:length(unique_values)
+    indices = find(gridIndices == unique_values(i)); % Find indices of the current unique value
+    if isempty(indices)
+        cell_array{i} = 0; % If no indices found, put 0
+    else
+        cell_array{i} = indices; % Store indices
+    end
+end
 
 
 %% Plot the results (for debugging)?
