@@ -125,6 +125,7 @@ unique_elements = unique(sorted_points); % Find the unique elements in A
 counts = histc(sorted_points, unique_elements); % Count the occurrences of each unique element
 output = zeros(1, max(unique_elements)); % Initialize the output array with zeros
 output(unique_elements) = counts; % Place the counts in the output array
+output = output';
 
 
 
