@@ -8,6 +8,8 @@
 fig_num = 1;
 points = [1, 1, 1, 2, 4, 4];
 output = fcn_geometry_findRepeatedNumber(points,fig_num);
+
+assert(isequal(output, [3 1 0 2]'))
 assert(isequal(length(output),4))
 
 

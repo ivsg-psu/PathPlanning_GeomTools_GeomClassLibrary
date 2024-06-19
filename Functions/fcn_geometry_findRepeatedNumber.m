@@ -34,6 +34,12 @@ function [output] = fcn_geometry_findRepeatedNumber(points,varargin)
 % This function was written on 2024_06_17 by Jiabao Zhao
 % Questions or comments? jpz5469@psu.edu
 
+% Revision History
+% 2024_06_17 - Jiabao Zhao
+% -- wrote the code originally
+% 2024_06_19 - Aneesh Batchu
+% -- replaced histc with histcounts to make the code more compact. 
+
 
 %% Debugging and Input checks
 
@@ -121,11 +127,13 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 sorted_points = sort(points);
-unique_elements = unique(sorted_points); % Find the unique elements in A
-counts = histc(sorted_points, unique_elements); % Count the occurrences of each unique element
-output = zeros(1, max(unique_elements)); % Initialize the output array with zeros
-output(unique_elements) = counts; % Place the counts in the output array
-output = output';
+counts = histcounts(sorted_points); 
+output = counts'; 
+% unique_elements = unique(sorted_points); % Find the unique elements in A
+% counts = histc(sorted_points, unique_elements); % Count the occurrences of each unique element
+% output = zeros(1, max(unique_elements)); % Initialize the output array with zeros
+% output(unique_elements) = counts; % Place the counts in the output array
+% output = output';
 
 
 
@@ -143,7 +151,7 @@ output = output';
 
 if flag_do_plots
      % Ends check if plotting
-    disp('There are no plot to show');
+    disp('There are no plots to show');
 end 
 if flag_do_debug
     fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
