@@ -70,7 +70,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % 2024_05_16
 % -- Fixed bug that happens when XY data is empty
 % 2024_06_16 - Sean Brennan
-% -- changed parameter format to new style:
+% -- changed spiral parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -81,6 +81,22 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
+% 2024_06_19 - Sean Brennan
+% -- changed line parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
+
 %% Debugging and Input checks
 
 % Check if flag_max_speed set. This occurs if the fig_num variable input
@@ -205,8 +221,9 @@ else
             XY_data = [nan nan; nan nan];
         case {'line'}
             if ~isempty(parameters) && ~any(isnan(parameters))
-                line_vector          = parameters(1,1:2);
-                base_point_xy        = parameters(1,3:4);
+
+                base_point_xy        = parameters(1,1:2);
+                line_vector          = [cos(parameters(1,3))   sin(parameters(1,3))  ];
 
                 station_distance_min = -10;
                 station_distance_max = 10;
@@ -224,18 +241,19 @@ else
 
         case {'segment','vector regression segment fit', 'line segment'}
             if ~isempty(parameters) && ~any(isnan(parameters))
-                line_vector          = parameters(1,1:2);
-                base_point_xy        = parameters(1,3:4);
-                station_distance_min = parameters(1,5);
-                station_distance_max = parameters(1,6);
+                base_point_xy        = parameters(1,1:2);
+                line_vector          = [cos(parameters(1,3))   sin(parameters(1,3))  ];
+                station_length       = parameters(1,4);
 
-                if station_distance_max>station_distance_min
-                    stations = (station_distance_min:segment_length:station_distance_max)';
+                if station_length>=0
+                    stations = (0:segment_length:station_length)';
+                    station_end = station_length;
                 else
-                    stations = (station_distance_min:(-1*segment_length):station_distance_max)';
+                    stations = (station_length:segment_length:0)';
+                    station_end = 0;
                 end
-                if stations(end)~=station_distance_max
-                    stations = [stations; station_distance_max];
+                if stations(end)~=station_end
+                    stations = [stations; station_end];
                 end
 
                 XY_data = stations*line_vector + ones(length(stations),1)* base_point_xy;

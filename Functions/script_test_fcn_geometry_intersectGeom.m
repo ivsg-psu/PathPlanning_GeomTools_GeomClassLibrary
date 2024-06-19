@@ -10,6 +10,21 @@
 % -- modified/created figure numbers based on the format specified below.
 % -- added test cases for circle to line, circle to segment, segment to
 % line and line to segment. 
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 % TO-DO
 % -- Add "captions" to each section similar to Arc to Arc so we can find
@@ -93,6 +108,7 @@ circle1_center_xy            = [-3 3];
 circle1_radius               = 2;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle1_parameters
 circle1_parameters(1,1:2) = circle1_center_xy;
 circle1_parameters(1,3)   = circle1_radius;
 
@@ -101,6 +117,7 @@ circle2_center_xy            = [3 3];
 circle2_radius               = 2;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle2_parameters
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
@@ -123,6 +140,7 @@ circle1_center_xy            = [-3 0];
 circle1_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle1_parameters
 circle1_parameters(1,1:2) = circle1_center_xy;
 circle1_parameters(1,3)   = circle1_radius;
 
@@ -131,6 +149,7 @@ circle2_center_xy            = [3 0];
 circle2_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle2_parameters
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
@@ -154,6 +173,7 @@ circle1_center_xy            = [-3 0];
 circle1_radius               = 6;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle1_parameters
 circle1_parameters(1,1:2) = circle1_center_xy;
 circle1_parameters(1,3)   = circle1_radius;
 
@@ -162,6 +182,7 @@ circle2_center_xy            = [3 0];
 circle2_radius               = 6;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle2_parameters
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
@@ -184,6 +205,7 @@ circle1_center_xy            = [0 0];
 circle1_radius               = 6;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle1_parameters
 circle1_parameters(1,1:2) = circle1_center_xy;
 circle1_parameters(1,3)   = circle1_radius;
 
@@ -192,6 +214,7 @@ circle2_center_xy            = [0 0];
 circle2_radius               = 6;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle2_parameters
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
@@ -226,6 +249,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 2;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -241,6 +265,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -266,6 +291,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -281,6 +307,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -313,6 +340,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 % arc1_parameters(1,4:5) = arc1_angles;
@@ -330,6 +358,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -355,6 +384,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -370,6 +400,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -395,6 +426,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -410,6 +442,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -435,6 +468,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -450,6 +484,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -487,15 +522,12 @@ true_start_point_xy = [-4 3];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -503,6 +535,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -513,6 +546,7 @@ secondFitType_parameters = line_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
+URHERE
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
@@ -525,15 +559,13 @@ true_start_point_xy = [0 6];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -541,6 +573,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -563,15 +596,12 @@ true_start_point_xy = [-4 3];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -579,6 +609,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -614,17 +645,16 @@ figure(fig_num); clf;
 true_line_unit_tangent_vector = [0 5];
 true_start_point_xy = [-4 3];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
+segment_unit_tangent_vector = true_line_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -632,13 +662,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -649,20 +680,20 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 14002;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([3 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear segment_parameters
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -670,13 +701,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
@@ -689,20 +721,22 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 14003;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 0];
-true_start_point_xy = [0 3];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
+true_segment_unit_tangent_vector = [1 0];
+true_start_point_xy = [0 3];
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -710,13 +744,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
     
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -728,20 +763,20 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 14101;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 6];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -749,13 +784,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -767,20 +803,20 @@ assert(isequal(intersection_points,[0 6]));
 fig_num = 14102;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 0];
-true_start_point_xy = [0 6];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = -5;
-line_s_end               = 5;
+true_segment_unit_tangent_vector = [1 0];
+true_start_point_xy = [0 1];
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 10;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -788,13 +824,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -805,20 +842,20 @@ assert(isequal(intersection_points,[0 6]));
 fig_num = 14103;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 3];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 8;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 8;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -826,13 +863,14 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'circle';
 firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -876,6 +914,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 2;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -891,6 +930,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -916,6 +956,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -931,6 +972,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -963,6 +1005,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 % arc1_parameters(1,4:5) = arc1_angles;
@@ -980,6 +1023,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1005,6 +1049,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -1020,6 +1065,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1045,6 +1091,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -1060,6 +1107,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1085,6 +1133,7 @@ circle_center_xy            = [-3 0];
 circle_radius               = 3;
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -1100,6 +1149,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1162,6 +1212,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1210,6 +1261,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1258,6 +1310,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1306,6 +1359,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1354,6 +1408,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1404,6 +1459,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1452,6 +1508,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1500,6 +1557,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1548,6 +1606,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1682,6 +1741,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1730,6 +1790,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1778,6 +1839,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -1836,15 +1898,11 @@ true_start_point_xy = [1 8];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 
 firstFitType = 'arc';
@@ -1884,15 +1942,11 @@ true_start_point_xy = [2 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 
 firstFitType = 'arc';
@@ -1932,15 +1986,11 @@ true_start_point_xy = [1 1];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 
 firstFitType = 'arc';
@@ -1979,16 +2029,11 @@ true_start_point_xy = [1 1];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
-
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
@@ -2027,15 +2072,11 @@ true_start_point_xy = [0 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 
 firstFitType = 'arc';
@@ -2075,16 +2116,11 @@ true_start_point_xy = [-0.5 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
-
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
@@ -2133,26 +2169,26 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [4 0];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 4;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2181,26 +2217,27 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 1]);
-true_start_point_xy = [2 0];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
+true_segment_unit_tangent_vector = [0 1];
+true_start_point_xy = [2 0];
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2228,27 +2265,25 @@ arc1_parameters(1,4:5) = arc1_angles;
 arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
-
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-1 1]);
+true_segment_unit_tangent_vector = [-1 1];
 true_start_point_xy = [0.1 0.1];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
 
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2277,26 +2312,28 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 0];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 4;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2324,26 +2361,26 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([4 2]);
+true_segment_unit_tangent_vector = [4 2];
 true_start_point_xy = [1 1];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 5;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 5;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2372,27 +2409,28 @@ arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 % arc1_parameters = [0, -1, 1, 2.9671, 1.5708, 0, 0]; 
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-0.5 -0.1];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 % line_parameters = [1, 0, -0.5, -0.1, 0, 2];
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2421,26 +2459,26 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-1 1]);
+true_segment_unit_tangent_vector = [-1 1];
 true_start_point_xy = [-0.5 0];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 5;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 5;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2469,26 +2507,26 @@ arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 3];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 4;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2516,27 +2554,27 @@ arc1_parameters(1,4:5) = arc1_angles;
 arc1_parameters(1,6)   = arc1_is_circle;
 arc1_parameters(1,7)   = arc1_is_counter_clockwise;
 
-
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 0];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 4;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 4;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 
 firstFitType = 'arc';
 firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = line_parameters;
+secondFitType_parameters = segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -2576,15 +2614,11 @@ true_start_point_xy = [-4 3];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -2592,6 +2626,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -2614,15 +2649,11 @@ true_start_point_xy = [-4 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -2630,6 +2661,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -2652,15 +2684,11 @@ true_start_point_xy = [-4 3];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -2668,6 +2696,7 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
@@ -2703,15 +2732,11 @@ true_start_point_xy = [1 8];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 1
 arc2_center_xy            = [0 3];
@@ -2724,6 +2749,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -2749,15 +2775,11 @@ true_start_point_xy = [2 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -2770,6 +2792,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -2797,15 +2820,11 @@ true_start_point_xy = [-4 0.5];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -2818,6 +2837,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -2842,18 +2862,17 @@ figure(fig_num); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([6 2]);
 true_start_point_xy = [-2 1];
-line_s_start             = 0;
-line_s_end               = 1;
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -2866,6 +2885,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -2893,15 +2913,12 @@ true_start_point_xy = [-4 0.5];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -2914,6 +2931,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -2941,15 +2959,12 @@ true_start_point_xy = [-0.5 0];
 
 line_unit_tangent_vector = true_line_unit_tangent_vector;
 line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -3003,30 +3018,24 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 second_true_start_point_xy = [0 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3038,6 +3047,11 @@ intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_par
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear line_parameters
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3  ) = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 %% Basic Test: line to line Intersection - No intersection (BUG??) 
 
 fig_num = 33002;
@@ -3048,30 +3062,25 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 -7]);
 second_true_start_point_xy = [0 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3093,30 +3102,25 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 -7]);
 second_true_start_point_xy = [1 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3137,30 +3141,25 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-7 0]);
 second_true_start_point_xy = [9 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3183,30 +3182,25 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [9 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3223,38 +3217,34 @@ assert(isequal(round(intersection_points,4), [9 0]));
 fig_num = 33102;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 4;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [4 -5];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 2;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
 
-firstFitType = 'line';
-firstFitType_parameters = first_line_parameters;
+
+firstFitType = 'segment';
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -3272,30 +3262,25 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 9;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-2 2]);
 second_true_start_point_xy = [9 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3316,30 +3301,25 @@ first_true_start_point_xy = [5 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 3;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([5 0]);
 second_true_start_point_xy = [0 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 9;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
@@ -3376,35 +3356,31 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [9 -4];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 2;
-
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 2;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -3420,35 +3396,32 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-7 0]);
 second_true_start_point_xy = [9 0];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 1;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 1;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -3465,35 +3438,32 @@ first_true_start_point_xy = [0 0];
 
 first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
 first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_line_parameters
+first_line_parameters(1,1:2) = first_line_base_point_xy;
+first_line_parameters(1,3  ) = atan2(first_line_unit_tangent_vector(2),first_line_unit_tangent_vector(1));
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [9 -2];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 4;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -3515,6 +3485,7 @@ first_line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear first_line_parameters
 first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
 first_line_parameters(1,3:4) = first_line_base_point_xy;
 first_line_parameters(1,5)   = first_line_s_start;
@@ -3523,22 +3494,21 @@ first_line_parameters(1,6)   = first_line_s_end;
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-2 2]);
 second_true_start_point_xy = [9 -2];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 10;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 10;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'line';
 firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -3549,38 +3519,34 @@ assert(isequal(round(intersection_points,4), [3.5, 3.5]));
 fig_num = 34103;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 3;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 3;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([5 0]);
 second_true_start_point_xy = [0 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 9;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -3622,20 +3588,23 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 fig_num = 41001;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([3 0]);
-true_start_point_xy = [-4 0.5];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
+true_segment_unit_tangent_vector = [1 0];
+true_start_point_xy = [-4 0.5];
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -3643,11 +3612,12 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
@@ -3661,20 +3631,23 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 41002;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 1];
-true_start_point_xy = [-4 0.5];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
+true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([1 1]);
+true_start_point_xy = [-4 0.5];
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -3682,11 +3655,12 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
     
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
@@ -3701,20 +3675,22 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 41003;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = [1 0];
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 3];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -3722,11 +3698,12 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
     
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
@@ -3738,20 +3715,22 @@ assert(isequal(isnan(intersection_points),[1 1]));
 %% Basic Test: Line segment to circle Intersection - one intersection point
 fig_num = 41101;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 3;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 3;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -3759,11 +3738,12 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
@@ -3777,20 +3757,22 @@ assert(isequal(round(intersection_points(1,:),4), [-1.6583, 0.5000]));
 fig_num = 41102;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 7;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 7;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 circle_center_xy            = [0 3];
@@ -3798,11 +3780,12 @@ circle_radius               = 3;
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear circle_parameters
 circle_parameters(1,1:2) = circle_center_xy;
 circle_parameters(1,3)   = circle_radius;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
@@ -3832,20 +3815,21 @@ fig_num = 42001;
 figure(fig_num); clf;
 
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([3 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 1;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 1;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -3858,6 +3842,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -3865,7 +3850,7 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
@@ -3879,20 +3864,22 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 42101;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([3 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 3;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 3;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -3905,6 +3892,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -3912,7 +3900,7 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
@@ -3926,21 +3914,22 @@ assert(isequal(round(intersection_points,4), [-1.6583, 0.5000]));
 fig_num = 42102;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
 
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 7;
-% segment_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-% segment_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 7;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -3953,6 +3942,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -3960,7 +3950,7 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
@@ -3974,20 +3964,22 @@ assert(isequal(round(intersection_points,4), [1.6583, 0.5000]));
 fig_num = 42103;
 figure(fig_num); clf;
 
-true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
-
-line_unit_tangent_vector = true_line_unit_tangent_vector;
-line_base_point_xy       = true_start_point_xy;
-line_s_start             = 0;
-line_s_end               = 7;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+segment_unit_tangent_vector = true_segment_unit_tangent_vector;
+segment_base_point_xy       = true_start_point_xy;
+segment_length              = 7;
+
+% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
+
 
 % Fill in arc 2
 arc2_center_xy            = [0 3];
@@ -4000,6 +3992,7 @@ arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vect
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = circle_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -4007,7 +4000,7 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 firstFitType = 'segment';
-firstFitType_parameters = line_parameters;
+firstFitType_parameters = segment_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
@@ -4036,38 +4029,34 @@ assert(isequal(round(intersection_points,4), [-1.6583    0.5000]));
 fig_num = 43001;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 7;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [9 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -4080,38 +4069,34 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 43002;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 7;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-7 0]);
 second_true_start_point_xy = [9 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 1;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -4126,38 +4111,35 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 43101;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 7;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [4 -5];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 2;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -4170,38 +4152,35 @@ assert(isequal(round(intersection_points,4), [4 0]));
 fig_num = 43102;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 9;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 9;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-2 2]);
 second_true_start_point_xy = [9 -2];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -4214,38 +4193,35 @@ assert(isequal(round(intersection_points,4), [3.5, 3.5]));
 fig_num = 43103;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 3;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 3;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([5 0]);
 second_true_start_point_xy = [0 0];
 
 second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
 second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 9;
-
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_line_parameters
+second_line_parameters(1,1:2) = second_line_base_point_xy;
+second_line_parameters(1,3  ) = atan2(second_line_unit_tangent_vector(2),second_line_unit_tangent_vector(1));
+
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
@@ -4272,40 +4248,39 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 fig_num = 44001;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 7;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 7]);
 second_true_start_point_xy = [9 -2];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 4;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -4316,40 +4291,39 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 44002;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 7;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 7;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-7 0]);
 second_true_start_point_xy = [9 0];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 1;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 1;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -4360,40 +4334,38 @@ assert(isequal(isnan(intersection_points),[1 1]));
 fig_num = 44101;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 9;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 9;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 2]);
 second_true_start_point_xy = [9 -2];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 4;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 4;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -4404,40 +4376,39 @@ assert(isequal(round(intersection_points,4), [9 0]))
 fig_num = 44102;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 9;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 9;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-2 2]);
 second_true_start_point_xy = [9 -2];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 10;
 
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 10;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 
@@ -4448,40 +4419,38 @@ assert(isequal(round(intersection_points,4), [3.5, 3.5]))
 fig_num = 44103;
 figure(fig_num); clf;
 
-first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
+first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
 
-first_line_unit_tangent_vector = first_true_line_unit_tangent_vector;
-first_line_base_point_xy       = first_true_start_point_xy;
-first_line_s_start             = 0;
-first_line_s_end               = 3;
-
+first_segment_base_point_xy       = first_true_start_point_xy;
+first_segment_unit_tangent_vector = first_true_segment_unit_tangent_vector;
+first_segment_length              = 3;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-first_line_parameters(1,1:2) = first_line_unit_tangent_vector;
-first_line_parameters(1,3:4) = first_line_base_point_xy;
-first_line_parameters(1,5)   = first_line_s_start;
-first_line_parameters(1,6)   = first_line_s_end;
+clear first_segment_parameters
+first_segment_parameters(1,1:2) = first_segment_base_point_xy;
+first_segment_parameters(1,3)   = atan2(first_segment_unit_tangent_vector(2),first_segment_unit_tangent_vector(1));
+first_segment_parameters(1,4)   = first_segment_length;
+
+
 
 second_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([5 0]);
 second_true_start_point_xy = [0 0];
 
-second_line_unit_tangent_vector = second_true_line_unit_tangent_vector;
-second_line_base_point_xy       = second_true_start_point_xy;
-second_line_s_start             = 0;
-second_line_s_end               = 9;
-
+second_segment_base_point_xy       = second_true_start_point_xy;
+second_segment_unit_tangent_vector = second_true_line_unit_tangent_vector;
+second_segment_length              = 9;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-second_line_parameters(1,1:2) = second_line_unit_tangent_vector;
-second_line_parameters(1,3:4) = second_line_base_point_xy;
-second_line_parameters(1,5)   = second_line_s_start;
-second_line_parameters(1,6)   = second_line_s_end;
+clear second_segment_parameters
+second_segment_parameters(1,1:2) = second_segment_base_point_xy;
+second_segment_parameters(1,3)   = atan2(second_segment_unit_tangent_vector(2),second_segment_unit_tangent_vector(1));
+second_segment_parameters(1,4)   = second_segment_length;
 
 firstFitType = 'segment';
-firstFitType_parameters = first_line_parameters;
+firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
-secondFitType_parameters = second_line_parameters;
+secondFitType_parameters = second_segment_parameters;
 
 intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
 

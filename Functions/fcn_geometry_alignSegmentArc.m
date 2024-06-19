@@ -244,7 +244,7 @@ end
 
 [revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcSegment(...
-    arc_parameters_flipped, segment_parameters_flipped, (threshold), (continuity_level), (2345));
+    arc_parameters_flipped, segment_parameters_flipped, (threshold), (continuity_level), (-1));
 
 if ~isempty(debug_fig_num)
     % Plot the results

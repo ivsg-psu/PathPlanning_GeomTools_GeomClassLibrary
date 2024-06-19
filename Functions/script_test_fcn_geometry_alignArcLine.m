@@ -10,6 +10,15 @@
 % -- added test sections
 % 2024_05_28 - Sean Brennan
 % -- fixed many broken test cases
+% 2024_06_19 - Sean Brennan
+% -- changed segment references to lines (did not fix param structure yet)
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+
 
 close all;
 
@@ -26,24 +35,19 @@ close all;
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 1
-%% Basic test 1.11 - an arc nearby the line segment joined with C1 continuity, arc forwards, line is forwards
+%% Basic test 1.11 - an arc nearby the line joined with C1 continuity, arc forwards, line is forwards
 fig_num = 11;
 figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
-
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 0.2];
 
 
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_radius               = 1;
@@ -64,40 +68,38 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 1.12 - an arc nearby the line segment joined with C1 continuity, arc backwards, line is forwards
+%% Basic test 1.12 - an arc nearby the line joined with C1 continuity, arc backwards, line is forwards
 fig_num = 12;
 figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -120,40 +122,40 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 1.13 - an arc nearby the line segment joined with C1 continuity, arc forwards, line is backwards
+%% Basic test 1.13 - an arc nearby the line joined with C1 continuity, arc forwards, line is backwards
 fig_num = 13;
 figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [-1 0];
-segment_base_point_xy       = [1.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [-1 0];
+line_base_point_xy       = [1.1 0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -176,42 +178,42 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 
-%% Basic test 1.14 - an arc nearby the line segment joined with C1 continuity, arc backward, line is backward
+%% Basic test 1.14 - an arc nearby the line joined with C1 continuity, arc backward, line is backward
 fig_num = 14;
 figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [-1 0];
-segment_base_point_xy       = [1.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [-1 0];
+line_base_point_xy       = [1.1 0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -234,22 +236,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
@@ -277,16 +279,16 @@ figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -309,22 +311,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 2.2 - Checking St corrections, arc clockwise
@@ -333,16 +335,16 @@ figure(fig_num); clf;
 
 tolerance = 0.5; % meters
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -365,22 +367,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0d continuous',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.5708         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
@@ -413,16 +415,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -445,21 +447,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -470,16 +472,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -502,21 +504,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -527,16 +529,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -559,21 +561,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -584,16 +586,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -616,21 +618,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_line_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -641,14 +643,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -671,21 +673,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -696,16 +698,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -728,21 +730,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -753,16 +755,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -785,21 +787,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -810,16 +812,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -842,21 +844,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -867,16 +869,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
-segment_s_start             = 0;
-segment_s_end               = 2;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 -0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+line_s_end               = 2;
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -899,21 +901,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 0;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000   2.9671    2.0218          0    0.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000   -0.0000   -0.4359    -0.1000         0    2.0000]));
+assert(isequal(round(revised_line_parameters,4),[1.0000   -0.0000   -0.4359    -0.1000         0    2.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -925,14 +927,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -956,21 +958,21 @@ continuity_level = 0;
 
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1006,16 +1008,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1038,22 +1040,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.12 - checking the (-) cross product, NOT feasible, no intersection
@@ -1063,16 +1065,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1095,22 +1097,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.13 - checking the (-) cross product, forced NOT feasible, no intersection
@@ -1120,16 +1122,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1152,22 +1154,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.21 - checking the (-) cross product, feasible, intersection, feasible
@@ -1177,16 +1179,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1209,22 +1211,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.22 - checking the (-) cross product, feasible, intersection, not feasible
@@ -1234,14 +1236,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1264,22 +1266,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.31 - checking the (+) cross product, feasible, no intersection
@@ -1289,16 +1291,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1321,22 +1323,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     1]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.32 - checking the (+) cross product, NOT feasible, no intersection
@@ -1346,16 +1348,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1378,22 +1380,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.33 - checking the (+) cross product, forced NOT feasible, no intersection
@@ -1403,16 +1405,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1435,22 +1437,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.41 - checking the (+) cross product, feasible, intersection, feasible
@@ -1460,16 +1462,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
-segment_s_start             = 0;
-segment_s_end               = 2;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 -0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+line_s_end               = 2;
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1492,22 +1494,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.5708         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[1     0     0     0     0     2]));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     2]));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
@@ -1518,14 +1520,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1548,22 +1550,22 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 1;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
-assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+assert(all(isnan(revised_line_parameters)));
+assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% check C2 intersections
@@ -1594,16 +1596,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1.5;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+line_s_end               = 1.5;
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1626,21 +1628,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[ 0    1.0000    1.0000   -2.9671   -2.6910         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000         0    1.0749   -0.2000         0    0.4251]));
+assert(isequal(round(revised_line_parameters,4),[1.0000         0    1.0749   -0.2000         0    0.4251]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.9002    0.5645   -1.1202    2.2403    1.0000         0]));
 
@@ -1651,16 +1653,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1683,21 +1685,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1708,16 +1710,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1740,21 +1742,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1765,16 +1767,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1797,21 +1799,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.6483         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000         0    0.0775   -0.0010         0    0.9225]));
+assert(isequal(round(revised_line_parameters,4),[1.0000         0    0.0775   -0.0010         0    0.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774    0.0030   -0.0775    0.1550    1.0000         0]));
 
@@ -1822,14 +1824,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1852,21 +1854,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1877,16 +1879,16 @@ figure(fig_num); clf;
 tolerance = 0.4; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1909,21 +1911,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[ 0   -1.0000    1.0000    2.9671    1.6483         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[ 1.0000         0    0.0775    0.0010         0    0.9225]));
+assert(isequal(round(revised_line_parameters,4),[ 1.0000         0    0.0775    0.0010         0    0.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774   -0.0030    0.0775    0.1550   -1.0000         0]));
 
@@ -1935,16 +1937,16 @@ figure(fig_num); clf;
 tolerance = 0.1; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -1967,21 +1969,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1992,16 +1994,16 @@ figure(fig_num); clf;
 tolerance = []; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [0.1 -0.2];
-segment_s_start             = 0;
-segment_s_end               = 1;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [0.1 -0.2];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -2024,21 +2026,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -2049,16 +2051,16 @@ figure(fig_num); clf;
 tolerance = 0.7; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 -0.1];
-segment_s_start             = 0;
-segment_s_end               = 2;
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 -0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+line_s_end               = 2;
+
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -2081,21 +2083,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.6483         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[1.0000         0    0.0775    0.0010         0    1.9225]));
+assert(isequal(round(revised_line_parameters,4),[1.0000         0    0.0775    0.0010         0    1.9225]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774   -0.0030    0.0775    0.1550   -1.0000         0]));
 
@@ -2107,14 +2109,14 @@ figure(fig_num); clf;
 tolerance = 0.01; % meters
 
 
-% Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = [1 0];
-segment_base_point_xy       = [-0.5 0.1];
+% Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+line_unit_tangent_vector = [1 0];
+line_base_point_xy       = [-0.5 0.1];
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+
 
 
 
@@ -2137,21 +2139,21 @@ arc_parameters(1,7)   = arc_is_counter_clockwise;
 continuity_level = 2;
 
 % Call function
-[revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
-    arc_parameters, segment_parameters, (tolerance), (continuity_level), (fig_num));
+[revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
+    arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
 sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_segment_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 6]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_segment_parameters)));
+assert(all(isnan(revised_line_parameters)));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 

@@ -122,7 +122,7 @@ geomParameters = spiral_parameters;
 geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
-assert(isequal(round(geomParameters_flipped,4), round([2.2403    3.1415    1.0748   -0.2000         0   -1.0000],4)));
+assert(isequal(round(geomParameters_flipped,4), round([2.6662   -1.4877    2.5236    0.5645         0   -1.0000],4)));
 
 %% Basic Test: 'none' - does nothing
 fig_num = 6;
