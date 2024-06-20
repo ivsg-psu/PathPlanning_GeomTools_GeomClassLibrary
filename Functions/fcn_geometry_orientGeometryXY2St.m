@@ -102,7 +102,21 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
-
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -213,12 +227,10 @@ end
 flag_primary_parameter_is_flipped = 0;
 switch primary_parameters_type_string
     case 'segment'
-        line_unit_tangent_vector   = primary_parameters(1,1:2);
-        line_base_point_xy         = primary_parameters(1,3:4);
-        % line_s_start               = primary_parameters(1,5);
-        line_s_end                 = primary_parameters(1,6);
-        % line_start_xy              = line_base_point_xy + line_unit_tangent_vector*line_s_start;
-        line_end_xy                = line_base_point_xy + line_unit_tangent_vector*line_s_end;
+        line_base_point_xy         = primary_parameters(1,1:2);
+        line_unit_tangent_vector   = [cos(primary_parameters(1,3)) sin(primary_parameters(1,3))];
+        s_length                   = primary_parameters(1,4);
+        line_end_xy                = line_base_point_xy + line_unit_tangent_vector*s_length;
 
         % Use the SE2 toolbox to transform 
         % Start with translation of the line's center to the origin 
@@ -321,41 +333,43 @@ for ith_parameter_set = 1:N_conversions
                 %     ]
 
                 % Get the line details from parameters
-                line_unit_tangent_vector   = current_parameters(1,1:2);
-                line_base_point_xy         = current_parameters(1,3:4);
+                line_base_point_xy         = current_parameters(1,1:2);
+                line_unit_tangent_vector   = [cos(current_parameters(1,3)) sin(current_parameters(1,3))];
 
                 %%%%%
                 % Fix line
                 line_unit_tangent_vector_end    = line_base_point_xy+line_unit_tangent_vector;
                 line_unit_tangent_vector_end_St = transform(St_transform,line_unit_tangent_vector_end);
                 line_base_point_St              = transform(St_transform,line_base_point_xy);
+                
+                % Calculate new unit tangent vector
+                st_line_unit_tangent_vector     = line_unit_tangent_vector_end_St - line_base_point_St;
+                st_line_parameters(1,1:2)       = line_base_point_St;
 
-                st_line_parameters(1,1:2)       = line_unit_tangent_vector_end_St - line_base_point_St;
-                st_line_parameters(1,3:4)       = line_base_point_St;
+                % Calculate new heading
+                st_line_parameters(1,3)         = atan2(st_line_unit_tangent_vector(2),st_line_unit_tangent_vector(1));
 
                 St_current_parameters = st_line_parameters;
 
             case 'segment'
                 % Get the segment details from parameters
-                segment_unit_tangent_vector   = current_parameters(1,1:2);
-                segment_base_point_xy         = current_parameters(1,3:4);
-                segment_s_start               = current_parameters(1,5);
-                segment_s_end                 = current_parameters(1,6);
-                segment_length                = segment_s_end - segment_s_start;
+                segment_base_point_xy         = current_parameters(1,1:2);
+                segment_unit_tangent_vector   = [cos(current_parameters(1,3)) sin(current_parameters(1,3))];
+                segment_length                = current_parameters(1,4);
 
                 %%%%%
                 % Fix segment
-                segment_start_point_xy        = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
+                segment_start_point_xy        = segment_base_point_xy;
                 segment_start_point_St        = transform(St_transform,segment_start_point_xy);
                 segment_unit_vector_start_point_xy        = [0 0];
                 segment_unit_vector_start_point_St        = transform(St_transform,segment_unit_vector_start_point_xy);
                 segment_unit_vector_end_point_xy          = segment_unit_tangent_vector;
                 segment_unit_vector_end_point_St          = transform(St_transform,segment_unit_vector_end_point_xy);
 
-                st_segment_parameters(1,1:2)  = fcn_geometry_calcUnitVector(segment_unit_vector_end_point_St - segment_unit_vector_start_point_St);
-                st_segment_parameters(1,3:4)  = segment_start_point_St;
-                st_segment_parameters(1,5)    = 0;
-                st_segment_parameters(1,6)    = segment_length;
+                st_segment_direction_vector   = fcn_geometry_calcUnitVector(segment_unit_vector_end_point_St - segment_unit_vector_start_point_St);
+                st_segment_parameters(1,1:2)  = segment_start_point_St;
+                st_segment_parameters(1,3)    = atan2(st_segment_direction_vector(2),st_segment_direction_vector(1));
+                st_segment_parameters(1,4)    = segment_length;
 
                 St_current_parameters = st_segment_parameters;
 

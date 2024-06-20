@@ -572,7 +572,7 @@ line_unit_tangent_vector = [cos(line_parameters(1,3)) sin(line_parameters(1,3))]
 circle_center_xy                = circle_parameters(1,1:2);
 circle_radius                   = circle_parameters(1,3);
 
-if line_unit_tangent_vector(1)==0
+if abs(line_unit_tangent_vector(1))<1000*eps
     slope = inf;
     intercept = line_base_point_xy(1);
 else

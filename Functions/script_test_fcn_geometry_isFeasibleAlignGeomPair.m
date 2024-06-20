@@ -68,6 +68,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -88,6 +89,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -132,6 +134,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -152,6 +155,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -196,6 +200,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -216,6 +221,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -260,6 +266,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -280,6 +287,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -325,6 +333,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -345,6 +354,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -369,7 +379,7 @@ assert(isequal(size(feasibility_distance),[1 1]));
 
 % Check values
 assert(isequal(round(flag_is_feasible,4),0));
-assert(isequal(round(feasibility_distance,4),0.1));
+assert(isequal(round(feasibility_distance,4),0.0707));
 
 
 %% C2 Arc to Arc Continuity test - FEASIBLE
@@ -390,6 +400,7 @@ arc1_is_circle            = 0;
 arc1_is_counter_clockwise = 1;
 arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
 
+clear arc1_parameters
 arc1_parameters(1,1:2) = arc1_center_xy;
 arc1_parameters(1,3)   = arc1_radius;
 arc1_parameters(1,4:5) = arc1_angles;
@@ -410,6 +421,7 @@ arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
 arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
 
+clear arc2_parameters
 arc2_parameters(1,1:2) = arc2_center_xy;
 arc2_parameters(1,3)   = arc2_radius;
 arc2_parameters(1,4:5) = arc2_angles;
@@ -434,7 +446,7 @@ assert(isequal(size(feasibility_distance),[1 1]));
 
 % Check values
 assert(isequal(round(flag_is_feasible,4),1));
-assert(isequal(round(feasibility_distance,4),-0.1));
+assert(isequal(round(feasibility_distance,4),-0.0707));
 
 %% 2.4 Arc is the first geometry, Segment is the second geometry
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -455,18 +467,15 @@ fig_num = 420001;
 figure(fig_num);
 clf;
 
-
-
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -517,13 +526,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -572,17 +581,16 @@ figure(fig_num);
 clf;
 
 
-
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -629,17 +637,16 @@ fig_num = 421101;
 figure(fig_num);
 clf;
 
-
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -692,13 +699,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -749,13 +756,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -838,13 +845,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -895,13 +902,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -954,13 +961,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -1011,13 +1018,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -1070,13 +1077,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;
@@ -1127,13 +1134,13 @@ clf;
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_s_start             = 0;
-segment_s_end               = 2;
+segment_length              = 2;
 
-segment_parameters(1,1:2) = segment_unit_tangent_vector;
-segment_parameters(1,3:4) = segment_base_point_xy;
-segment_parameters(1,5)   = segment_s_start;
-segment_parameters(1,6)   = segment_s_end;
+clear segment_parameters
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3  ) = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
+
 
 input1_type = 'segment';
 input1_parameters = segment_parameters;

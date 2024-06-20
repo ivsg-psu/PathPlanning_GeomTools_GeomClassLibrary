@@ -425,8 +425,8 @@ arc_radius                   = arc_parameters(1,3);
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector     = fcn_geometry_calcUnitVector(segment_parameters(1,1:2));
-segment_base_point_xy           = segment_parameters(1,3:4);
+segment_base_point_xy           = segment_parameters(1,1:2);
+segment_unit_tangent_vector     = [cos(segment_parameters(1,3)) sin(segment_parameters(1,3))];
 % segment_s_start                 = segment_parameters(1,5);
 % segment_s_end                   = segment_parameters(1,6);
 % segment_angle = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
@@ -502,6 +502,11 @@ end % Ends fcn_INTERNAL_confirmSegmentToArc
 
 %% fcn_INTERNAL_confirmArcToArc
 function  [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_INTERNAL_confirmArcToArc(arc1_parameters, arc2_parameters, continuity_level, threshold)
+
+% Fill defaults
+flag_is_feasible = 0;
+feasibility_distance = [];
+closest_feasible_arc2_parameters = [];
 
 
 % Calculate needed values from parameter sets
@@ -639,6 +644,9 @@ switch continuity_level
             error('Unknown error encountered - it should not be possible to enter this case!');            
         end
 
+        % This part is not yet done
+        closest_feasible_arc2_parameters = nan;
+        warning('This section is not completely finished.');
     case 2
         % For C2 continuity of an arc to an arc, the spiral must change
         % curvature. Calculation of the spiral is difficult and requires
@@ -651,26 +659,8 @@ switch continuity_level
         % spiral is possible between the circles containing the arcs, and if
         % not, how much space is needed to allow the spiral.
 
-        
-        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_INTERNAL_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, continuity_level, threshold);
-
-        if space_between_circles>0
-            flag_is_feasible = 1;
-            feasibility_distance = -space_between_circles;
-        else
-            % Not enough space between circles for a spiral, not without
-            % modifying it
-
-            if abs(space_between_circles)<transverse_threshold
-                % Is possible to move
-                flag_is_feasible = 1;
-            else
-                % Not possible to move
-                flag_is_feasible = 0;
-            end
-            feasibility_distance = transverse_threshold-space_between_circles;
-
-        end % Ends if statement to check if spiral is possible
+        in_boundary_margin = [];
+        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters,(threshold), (in_boundary_margin), (-1));
 
     otherwise
         warning('on','backtrace');
@@ -679,137 +669,3 @@ switch continuity_level
 end
 end % Ends fcn_INTERNAL_confirmArcToArc
 
-%% fcn_INTERNAL_isC2FeasibleArcToArc
-function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_INTERNAL_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, continuity_level, threshold)
-% Finds the closest C2 feasible arc2 given arc1.
-
-% Method: 
-% An arc2 is C2 feasible connected to arc1 if it is one of 3 cases:
-% 1) both circles are oriented the same direction, and the circle of arc2
-% is completely encircled by the circle for arc1
-% 2) both circles are oriented the same direction, and the circle of arc2
-% completely encircles the circle for arc1
-% 3) both circles are oriented in opposite direction, and the circle of arc2
-% exists entirely outside the circle for arc1
-%
-% Each of these cases produces an inequality requirement for the radius of
-% arc2 (r2) and the distance from the center of the circles for arc1
-% and arc2 (d12), given a radius of arc1 (r1).
-%
-% Specifically:
-%
-% CASE 1: This only occurs if (r2 < r1), both CW or both CCW
-%
-% For case 1, when r2 is smaller than r1, the circle2 is inside circle1
-% only if:
-%  
-% r2 < (r1 - d12) 
-%
-% this can be rewritten with d12 as the dependent variable (y-axis):
-%
-%  d12 < r1 - r2
-% 
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of -1 and r1 as the intercept. The line
-% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
-% expected. 
-%
-% For points that are outside the feasible region, the closest feasible r2
-% and d12 combination will occur by projecting from the infeasible (r2,d12)
-% point exactly in the [-1 -1] direction until it meets or crosses the line
-% from (0, r1) to (r1,0).
-%
-% CASE 2: This only occurs if (r2 > r1), both CW or both CCW
-%
-% For case 2, when r2 is larger than r1, the circle2 is encircling circle1
-% only if:
-%  
-% r2 > (r1 + d12) 
-%
-% this can be rewritten with d12 as the dependent variable (y-axis):
-%
-%  d12 < r2 - r1
-% 
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of 1 and -r1 as the intercept. The line
-% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
-% expected. The feasible range exists only for d12 greater than zero, e.g.
-% within a right triangle whose corner starts at (r1, 0).
-%
-% For points that are outside this feasible region, the closest feasible r2
-% and d12 combination will occur by projecting from the infeasible (r2,d12)
-% point exactly in the [1 -1] direction until it meets or crosses the line
-% from (0, -r1) to (r1,0).
-%
-% CASE 3: one arc is CW the other is CCW
-%
-% For case 3, the only feasible solution is when the circle for arc2 is
-% completely outside the cirlce for arc1. This occurs only if:
-%  
-% d12 > (r1 + r2) 
-%
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of 1 and r1 as the intercept. The line 
-% intercepts the x-axis at the location where r2=-r1 and d12 is zero which
-% is not physically possible (negative radius). The feasible range exists
-% only for d12 greater than zero, e.g. within a right triangle whose corner
-% starts at (0, r1).
-%
-% For points that are outside this feasible region, the closest feasible r2
-% and d12 combination will occur by projecting from the infeasible (r2,d12)
-% point exactly in the [-1 1] direction until it meets or crosses the line
-% from (-r1, 0) to (r1,0).
-%
-% These inequalities therefore give the method to find both feasibility and
-% the closest location: project the test point (r2, d12) into each of the 3
-% directions. Only 1 of them can be negative, and if this is the case, then
-% the C2 connectivity is feaible. If none are negative, then take the
-% minimum distance solution, project this distance into the feasible space
-% to find the feasible solution. As well, compare this projection distance
-% to the threshold to see if the projection would be allowed to determine
-% feasibility.
-
-% Calculate needed values from parameter sets
-% Calculate needed values from parameter sets
-% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc1_center_xy                = arc1_parameters(1,1:2);
-arc1_radius                   = arc1_parameters(1,3);
-% arc1_start_angle_in_radians   = arc1_parameters(1,4);
-% arc1_end_angle_in_radians     = arc1_parameters(1,5);
-% arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-% arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
-% arc1_is_counter_clockwise     = arc1_parameters(1,7);
-
-% Find the change in angle of the arc
-% arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-% arc1_end_unit_vector          = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)  ];
-% if 1==arc1_is_counter_clockwise
-%     arc1_is_counter_clockwise = 1;
-% else
-%     arc1_is_counter_clockwise = -1;
-% end
-% % arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, arc1_is_counter_clockwise);
-
-
-% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc2_center_xy                = arc2_parameters(1,1:2);
-arc2_radius                   = arc2_parameters(1,3);
-% arc2_start_angle_in_radians   = arc2_parameters(1,4);
-% arc2_end_angle_in_radians     = arc2_parameters(1,5);
-% arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-% arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-arc2_is_counter_clockwise     = arc2_parameters(1,7);
-
-% Find the change in angle of the arc
-% arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-% arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
-if 1==arc2_is_counter_clockwise
-    arc2_is_counter_clockwise = 1;
-else
-    arc2_is_counter_clockwise = -1;
-end
-% arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, arc2_is_counter_clockwise);
-
-
-
-end % Ends fcn_INTERNAL_isC2FeasibleArcToArc

@@ -99,7 +99,21 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
-
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -794,27 +808,16 @@ end % Ends fcn_INTERNAL_convertParametersOutOfStOrientation
 
 %% fcn_INTERNAL_renormalizeSegment
 function new_segment_parameters = fcn_INTERNAL_renormalizeSegment(old_segment_parameters)
-segment_unit_tangent_vector = old_segment_parameters(1,1:2);
-segment_base_point_xy       = old_segment_parameters(1,3:4);
-segment_s_start             = old_segment_parameters(1,5);
-segment_s_end               = old_segment_parameters(1,6);
-% Make sure the line segment is well-formed, e.g. the station at the end is
-% larger than the station at the start. If not, need to correct
-if segment_s_end<segment_s_start
-    % Flip the order
-    segment_s_start         = segment_parameters(1,6);
-    segment_s_end           = segment_parameters(1,5);
+segment_base_point_xy       = old_segment_parameters(1,1:2);
+segment_unit_tangent_vector = [cos(old_segment_parameters(1,3)) sin(old_segment_parameters(1,3))];
+segment_s_length            = old_segment_parameters(1,4);
 
-    % Flip the vector
-    segment_unit_tangent_vector = -segment_unit_tangent_vector;
+segment_start_xy            = segment_base_point_xy;
+segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_s_length;
 
-end
-segment_start_xy            = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
-segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
 segment_length = sum((segment_end_xy - segment_start_xy).^2,2).^0.5;
 
-new_segment_parameters(1,1:2) = segment_unit_tangent_vector;
-new_segment_parameters(1,3:4) = segment_start_xy;
-new_segment_parameters(1,5)   = 0;
-new_segment_parameters(1,6)   = segment_length;
+new_segment_parameters(1,1:2) = segment_start_xy;
+new_segment_parameters(1,3)   = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+new_segment_parameters(1,4)   = segment_length;
 end % Ends fcn_INTERNAL_renormalizeSegment

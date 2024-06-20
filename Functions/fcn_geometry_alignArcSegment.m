@@ -120,6 +120,14 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -463,25 +471,12 @@ arc_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc_st
 
 
 
-% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector = segment_parameters(1,1:2);
-segment_base_point_xy       = segment_parameters(1,3:4);
-segment_s_start             = segment_parameters(1,5);
-segment_s_end               = segment_parameters(1,6);
-
-% Make sure the line segment is well-formed, e.g. the station at the end is
-% larger than the station at the start. If not, need to correct
-if segment_s_end<segment_s_start
-    % Flip the order
-    segment_s_start         = segment_parameters(1,6);
-    segment_s_end           = segment_parameters(1,5);
-
-    % Flip the vector
-    segment_unit_tangent_vector = -segment_unit_tangent_vector;
-
-end
-segment_start_xy            = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
-segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
+% Get the segment details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_base_point_xy       = segment_parameters(1,1:2);
+segment_unit_tangent_vector = [cos(segment_parameters(1,3)) sin(segment_parameters(1,3))];
+segment_length              = segment_parameters(1,4);
+segment_start_xy            = segment_base_point_xy;
+segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_length;
 
 
 % Find arc and segment join points, e.g. where they meet. This can
@@ -564,14 +559,12 @@ clean_arc_parameters(1,4:5)   = [corrected_arc_start_angle_in_radians corrected_
 clean_arc_parameters(1,6)     = arc_parameters(1,6);   % flag is circle
 clean_arc_parameters(1,7)     = corrected_arc_is_counter_clockwise;
 
-% Set the segment start and end by distances only, starting at 0 and ending at
-% total distance
-corrected_segment_s_start             = 0;
-corrected_segment_s_end               = sum((segment_end_xy - segment_start_xy).^2,2).^0.5;
+% Set the segment length
+corrected_segment_length               = sum((segment_end_xy - segment_start_xy).^2,2).^0.5;
 
-clean_segment_parameters(1,1:2)  = corrected_segment_unit_tangent_vector;
-clean_segment_parameters(1,3:4)  = corrected_segment_base_point_xy;
-clean_segment_parameters(1,5:6)  = [corrected_segment_s_start corrected_segment_s_end];
+clean_segment_parameters(1,1:2)  = corrected_segment_base_point_xy;
+clean_segment_parameters(1,3)    = atan2( corrected_segment_unit_tangent_vector(2), corrected_segment_unit_tangent_vector(1));
+clean_segment_parameters(1,4)    = corrected_segment_length;
 
 if ~isempty(debug_fig_num)
     figure(debug_fig_num);
@@ -626,11 +619,12 @@ arc_is_counter_clockwise     = arc_parameters(1,7);
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector     = fcn_geometry_calcUnitVector(segment_parameters(1,1:2));
-% segment_base_point_xy           = segment_parameters(1,3:4);
-% segment_s_start                 = segment_parameters(1,5);
-% segment_s_end                   = segment_parameters(1,6);
-% segment_angle = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+% segment_base_point_xy       = segment_parameters(1,1:2);
+segment_unit_tangent_vector = [cos(segment_parameters(1,3)) sin(segment_parameters(1,3))];
+% segment_length              = segment_parameters(1,4);
+% segment_start_xy            = segment_base_point_xy;
+% segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_length;
+
 segment_unit_ortho_vector = segment_unit_tangent_vector*[0 1; -1 0];
 %
 % % Calculate the distance from the arc to the segment
@@ -799,14 +793,14 @@ end
 
 
 
-% Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector     = fcn_geometry_calcUnitVector(segment_parameters(1,1:2));
-segment_base_point_xy           = segment_parameters(1,3:4);
-segment_s_start                 = segment_parameters(1,5);
-segment_s_end                   = segment_parameters(1,6);
-% segment_angle = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+% Get the segment details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+segment_base_point_xy       = segment_parameters(1,1:2);
+segment_unit_tangent_vector = [cos(segment_parameters(1,3)) sin(segment_parameters(1,3))];
+segment_length              = segment_parameters(1,4);
+% segment_start_xy            = segment_base_point_xy;
+% segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_length;
+
 segment_unit_ortho_vector = segment_unit_tangent_vector*[0 1; -1 0];
-segment_length                  = segment_s_end - segment_s_start;
 
 % Calculate the distance from the arc to the segment
 vector_from_arc_center_to_segment_joint = segment_base_point_xy - arc_center_xy;
@@ -843,7 +837,7 @@ switch continuity_level
             desired_arc_parameters(1,5)   = angle_of_intersection; % Update where the spiral ends
 
             desired_segment_parameters        = segment_parameters;
-            desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+            desired_segment_parameters(1,1:2) = [0 0]; % Move segment_base_point_xy
 
         else
             % A shift is required
@@ -855,17 +849,17 @@ switch continuity_level
                     desired_arc_parameters        = arc_parameters;
 
                     desired_segment_parameters        = segment_parameters;
-                    desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+                    desired_segment_parameters(1,1:2) = [0 0]; % Move segment_base_point_xy
 
                 else
                     % Not possible to shift enough to allow connection
                     desired_arc_parameters        = nan(size(arc_parameters));
-                    desired_segment_parameters    = nan(1,6);
+                    desired_segment_parameters    = nan(1,4);
                 end
             else
                 % No shift allowed by user entry, so not possible
                 desired_arc_parameters            = nan(size(arc_parameters));
-                desired_segment_parameters        = nan(1,6);
+                desired_segment_parameters        = nan(1,4);
             end
         end
 
@@ -889,17 +883,17 @@ switch continuity_level
                 desired_arc_parameters(1,5)   = -pi/2;
 
                 desired_segment_parameters        = segment_parameters;
-                desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+                desired_segment_parameters(1,1:2) = [0 0]; % Move segment_base_point_xy
 
             else
                 % Not possible to shift enough to allow connection
                 desired_arc_parameters        = nan(size(arc_parameters));
-                desired_segment_parameters    = nan(1,6);
+                desired_segment_parameters    = nan(1,4);
             end
         else
             % No shift allowed by user entry, so not possible
             desired_arc_parameters            = nan(size(arc_parameters));
-            desired_segment_parameters        = nan(1,6);
+            desired_segment_parameters        = nan(1,4);
         end
 
 
@@ -944,12 +938,12 @@ switch continuity_level
                 else
                     % Not possible
                     desired_arc_parameters = nan(size(arc_parameters));
-                    desired_segment_parameters = nan(1,6);
+                    desired_segment_parameters = nan(1,4);
                 end
             else
                 % Not allowed by user entry
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_segment_parameters = nan(1,4);
             end
         end % Ends if statement to check if spiral is possible
 
@@ -992,7 +986,7 @@ switch continuity_level
             if arc_is_counter_clockwise ~= intersection_is_counterClockwise
                 % Spiral does not connect with the arc
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_segment_parameters = nan(1,4);
                 flag_spiral_is_bad = 1;
             end
 
@@ -1003,7 +997,7 @@ switch continuity_level
             if spiral_end_XY(1,1)<0 || spiral_end_XY(1,1)>segment_length
                 % Spiral does not connect with the segment.
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_segment_parameters = nan(1,4);
                 flag_spiral_is_bad = 1;
             end
 
@@ -1014,9 +1008,8 @@ switch continuity_level
                 desired_arc_parameters(1,5)   = arc_angle_where_spiral_starts; % Update where the spiral ends
 
                 desired_segment_parameters        = segment_parameters;
-                desired_segment_parameters(1,3:4) = spiral_end_XY; % segment_base_point_xy
-                desired_segment_parameters(1,5)   = 0; % segment_s_start
-                desired_segment_parameters(1,6)   = segment_length - spiral_end_XY(1,1); % segment_s_end
+                desired_segment_parameters(1,1:2) = spiral_end_XY; % segment_base_point_xy
+                desired_segment_parameters(1,4)   = segment_length - spiral_end_XY(1,1); % segment_s_end
             else
                 % Bad spiral - set all to nan
                 desired_intermediate_geometry_join_parameters = nan(size(desired_intermediate_geometry_join_parameters));
@@ -1066,17 +1059,21 @@ function [revised_arc_parameters_St,revised_segment_parameters_St, revised_inter
     desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, ...
     debug_fig_num)
 
+% Get the segment details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+st_segment_base_point_xy       = st_segment_parameters(1,1:2);
+st_segment_unit_tangent_vector = [cos(st_segment_parameters(1,3)) sin(st_segment_parameters(1,3))];
+st_segment_s_length            = st_segment_parameters(1,4);
+% st_segment_start_xy            = st_segment_base_point_xy;
+st_segment_end_xy              = st_segment_base_point_xy + st_segment_unit_tangent_vector*st_segment_s_length;
+
+
 % Find out how much segment is shifting by looking at how much the end point of
 % segment is moving
-segment_unit_tangent_vector = st_segment_parameters(1,1:2);
-segment_base_point_xy       = st_segment_parameters(1,3:4);
-segment_s_end               = st_segment_parameters(1,6);
-st_segment_end_xy           = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
-
-desired_segment_unit_tangent_vector = st_segment_parameters(1,1:2);
-desired_segment_base_point_xy       = st_segment_parameters(1,3:4);
-desired_segment_s_end               = st_segment_parameters(1,6);
-desired_st_segment_end_xy           = desired_segment_base_point_xy + desired_segment_unit_tangent_vector*desired_segment_s_end;
+desired_segment_base_point_xy       = desired_st_segment_parameters(1,1:2);
+desired_segment_unit_tangent_vector = [cos(desired_st_segment_parameters(1,3)) sin(desired_st_segment_parameters(1,3))];
+desired_segment_s_length            = desired_st_segment_parameters(1,4);
+% st_segment_start_xy                 = st_segment_base_point_xy;
+desired_st_segment_end_xy           = desired_segment_base_point_xy + desired_segment_unit_tangent_vector*desired_segment_s_length;
 
 % St_shift = st_segment_parameters(1,3:4)-desired_st_segment_parameters(1,3:4);
 St_shift = st_segment_end_xy - desired_st_segment_end_xy;

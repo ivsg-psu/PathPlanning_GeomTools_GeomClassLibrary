@@ -58,6 +58,21 @@ function geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameter
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -148,16 +163,21 @@ switch lower(geomType)
 
     case 'line'
         line_parameters_flipped         = geomParameters;
-        line_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
+        line_parameters_flipped(1,3)    = geomParameters(1,3)+pi;
 
         geomParameters_flipped = line_parameters_flipped;
+
     case {'segment', 'line segment'}
-        segment_parameters_flipped         = geomParameters;
-        segment_parameters_flipped(1,1:2)  = -geomParameters(1,1:2);
-        segment_parameters_flipped(1,5)    = -geomParameters(1,6);
-        segment_parameters_flipped(1,6)    = -geomParameters(1,5);
+        segment_base_point_xy              = geomParameters(1,1:2);
+        segment_unit_tangent_vector        = [cos(geomParameters(1,3)) sin(geomParameters(1,3))];
+        segment_length                     = geomParameters(1,4);
+        
+        segment_parameters_flipped(1,1:2)  = segment_base_point_xy +segment_unit_tangent_vector*segment_length;
+        segment_parameters_flipped(1,3)    = geomParameters(1,3)+pi;
+        segment_parameters_flipped(1,4)    = segment_length;
 
         geomParameters_flipped = segment_parameters_flipped;
+    
     case 'spiral'
         %            'spiral' -
         %               [

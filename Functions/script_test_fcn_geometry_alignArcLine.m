@@ -45,7 +45,7 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 0.2];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -58,6 +58,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -76,13 +77,13 @@ sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0d co
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -96,11 +97,11 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 0.2];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
-
+URHERE
 
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -112,6 +113,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -130,13 +132,13 @@ sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d c
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -150,9 +152,7 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [-1 0];
 line_base_point_xy       = [1.1 0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -168,6 +168,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -186,13 +187,13 @@ sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0d c
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -208,9 +209,7 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [-1 0];
 line_base_point_xy       = [1.1 0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -226,6 +225,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -244,13 +244,13 @@ sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d c
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -283,9 +283,7 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -301,6 +299,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -319,13 +318,13 @@ sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0d continuou
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -339,9 +338,7 @@ tolerance = 0.5; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -357,6 +354,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -375,13 +373,13 @@ sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0d continuous',conti
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.5708         0         0]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -419,9 +417,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -437,6 +433,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -455,13 +452,13 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -476,9 +473,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -494,6 +489,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -512,7 +508,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -533,9 +529,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -551,6 +545,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -569,7 +564,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT fe
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -590,9 +585,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -608,6 +601,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -626,7 +620,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, int
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -647,7 +641,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -663,6 +657,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -681,7 +676,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -702,9 +697,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -720,6 +713,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -738,13 +732,13 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersec
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -759,9 +753,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -777,6 +769,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -795,7 +788,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no inte
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -816,9 +809,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -834,6 +825,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -852,7 +844,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -873,9 +865,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 -0.1];
 
-line_s_end               = 2;
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -891,6 +881,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -909,7 +900,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersectio
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -931,7 +922,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -947,6 +938,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -966,7 +958,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, interse
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1012,9 +1004,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1030,6 +1020,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1048,13 +1039,13 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1069,9 +1060,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1087,6 +1076,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1105,7 +1095,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1126,9 +1116,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1144,6 +1132,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1162,7 +1151,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT fe
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1183,9 +1172,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1201,6 +1188,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1219,13 +1207,13 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, int
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1240,7 +1228,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1256,6 +1244,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1274,7 +1263,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1295,9 +1284,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1313,6 +1300,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1331,13 +1319,13 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersec
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     1]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1352,9 +1340,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1370,6 +1356,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1388,7 +1375,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no inte
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1409,9 +1396,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1427,6 +1412,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1445,7 +1431,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1466,9 +1452,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 -0.1];
 
-line_s_end               = 2;
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1484,6 +1468,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1502,7 +1487,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersectio
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1524,7 +1509,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1540,6 +1525,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1558,7 +1544,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, interse
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1600,9 +1586,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-line_s_end               = 1.5;
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1618,6 +1602,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters; 
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1636,7 +1621,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1657,9 +1642,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1675,7 +1658,8 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
-arc_parameters(1,1:2) = arc_center_xy;
+clear arc_parameters; 
+ arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
 arc_parameters(1,6)   = arc_is_circle;
@@ -1693,7 +1677,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1714,9 +1698,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1732,6 +1714,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1750,7 +1733,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT fe
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1771,9 +1754,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1789,6 +1770,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1807,7 +1789,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, int
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1828,7 +1810,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1844,6 +1826,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 1;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1862,7 +1845,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible,
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1883,9 +1866,7 @@ tolerance = 0.4; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1901,6 +1882,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1919,7 +1901,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersec
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1941,9 +1923,7 @@ tolerance = 0.1; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -1959,6 +1939,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -1977,7 +1958,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no inte
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -1998,9 +1979,7 @@ tolerance = []; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0.1 -0.2];
 
-
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -2016,6 +1995,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -2034,7 +2014,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, 
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -2055,9 +2035,7 @@ tolerance = 0.7; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 -0.1];
 
-line_s_end               = 2;
-
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -2073,6 +2051,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -2091,7 +2070,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersectio
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
@@ -2113,7 +2092,7 @@ tolerance = 0.01; % meters
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-0.5 0.1];
 
-
+clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
@@ -2129,6 +2108,7 @@ arc_is_circle            = 0;
 arc_is_counter_clockwise = 0;
 arc_angles = [atan2(arc_vector_start(2),arc_vector_start(1)); atan2(arc_vector_end(2),arc_vector_end(1));];
 
+clear arc_parameters
 arc_parameters(1,1:2) = arc_center_xy;
 arc_parameters(1,3)   = arc_radius;
 arc_parameters(1,4:5) = arc_angles;
@@ -2147,7 +2127,7 @@ sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, interse
 
 % Check sizes
 assert(isequal(size(revised_arc_parameters),[1 7]));
-assert(isequal(size(revised_line_parameters),[1 6]));
+assert(isequal(size(revised_line_parameters),[1 3]));
 assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 

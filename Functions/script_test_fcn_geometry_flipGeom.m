@@ -1,8 +1,35 @@
 %% script_test_fcn_geometry_flipGeom
 % Exercises the function: fcn_geometry_flipGeom
+
 % Revision history:
 % 2024_05_15 - Sean Brennan
 % -- wrote the code
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format to new style:
+%            'spiral' - 
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
+% 2024_06_19 - Sean Brennan
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% 2024_06_19 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 % TO-DO
 % (none)
@@ -65,15 +92,13 @@ fig_num = 3;
 figure(fig_num); clf;
 
 % Fill in line
-line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 5]);
+line_unit_tangent_vector = [0 1];
 line_base_point_xy       = [-4 3];
-line_s_start             = 0;
-line_s_end               = 1;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear line_parameters
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
 geomType = 'line';
 geomParameters = line_parameters;
@@ -81,24 +106,22 @@ geomParameters = line_parameters;
 geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
-assert(isequal(round(geomParameters_flipped,4), round([-line_unit_tangent_vector line_base_point_xy],4)));
+assert(isequal(round(geomParameters_flipped,4), round([line_base_point_xy line_parameters(1,3)+pi],4)));
 
 %% Basic Test: segment - flips start and end stations, flips direction, but otherwise the same
 fig_num = 4;
 figure(fig_num); clf;
 
 % Fill in line
-line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 5]);
-line_base_point_xy       = [-4 3];
-line_s_start             = 0;
-line_s_end               = 1;
+segment_unit_tangent_vector = [0 1];
+segment_base_point_xy       = [-4 3];
+segment_length              = 1;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear segment_parameters
-segment_parameters(1,1:2) = line_unit_tangent_vector;
-segment_parameters(1,3:4) = line_base_point_xy;
-segment_parameters(1,5)   = line_s_start;
-segment_parameters(1,6)   = line_s_end;
+segment_parameters(1,1:2) = segment_base_point_xy;
+segment_parameters(1,3)   = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,4)   = segment_length;
 
 geomType = 'segment';
 geomParameters = segment_parameters;
@@ -106,7 +129,7 @@ geomParameters = segment_parameters;
 geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
-assert(isequal(round(geomParameters_flipped,4), round([-line_unit_tangent_vector line_base_point_xy -line_s_end -line_s_start],4)));
+assert(isequal(round(geomParameters_flipped,4), round([segment_base_point_xy+segment_unit_tangent_vector*segment_length segment_parameters(1,3)+pi segment_parameters(1,4)],4)));
 
 %% Basic Test: spiral - flips start and end stations, flips direction, but otherwise the same
 fig_num = 5;
