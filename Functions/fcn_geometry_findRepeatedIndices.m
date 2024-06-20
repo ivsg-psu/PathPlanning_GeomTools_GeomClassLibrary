@@ -4,7 +4,7 @@ function [output] = fcn_geometry_findRepeatedIndices(indices,length_indices_arra
 % 
 % FORMAT:
 %
-%      [output] = fcn_geometry_findRepeatedIndices(points,length_indices_array, varargin)
+%      [output] = fcn_geometry_findRepeatedIndices(points,length_indices_array, (fig_num))
 %
 % INPUTS:     
 %       
@@ -30,7 +30,7 @@ function [output] = fcn_geometry_findRepeatedIndices(indices,length_indices_arra
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_geometry_findRepeatedNumber.m for a full
+%       script_test_fcn_geometry_findRepeatedIndices.m for a full
 %       test suite.
 %
 % This function was written on 2024_06_17 by Jiabao Zhao

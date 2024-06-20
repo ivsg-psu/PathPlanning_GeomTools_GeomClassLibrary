@@ -3,6 +3,16 @@
 % Revision history:
 % 2024_6_17
 % Jiabao Zhao wrote the code
+% 2024_06_19 - Aneesh Batchu
+% -- Added a case when "length_indices_array" is more than max(indices) of
+% array
+% -- Changed the name of the script
+
+
+% To-do
+% 2024_06_20 - Aneesh Batchu
+% -- write assertions
+% -- write simple examples. 
 
 close all
 
@@ -32,8 +42,8 @@ inputPoints = points1;
 gridSize = 1;
 gridBoundaries = [1 10 1 10 2.5 3.5]; 
 [gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
-output = fcn_geometry_findRepeatedNumber(gridIndices);
-cell_array = fcn_geometry_gridPointIndices(gridIndices,fig_num);
+output = fcn_geometry_findRepeatedIndices(gridIndices, length(grid_AABBs));
+cell_array = fcn_geometry_createGridPointIndicesCellArray(gridIndices,length(grid_AABBs), fig_num);
 assert((length(cell_array{1}))==21);
 
 %% test 2
@@ -110,8 +120,8 @@ inputPoints = [points1; points2; points3];
 gridSize = 1;
 gridBoundaries = [1 4 1 2 2.5 5.5]; 
 [gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
-output = fcn_geometry_findRepeatedNumber(gridIndices);
-cell_array = fcn_geometry_gridPointIndices(gridIndices,fig_num);
+output = fcn_geometry_findRepeatedIndices(gridIndices, length(grid_AABBs));
+cell_array = fcn_geometry_createGridPointIndicesCellArray(gridIndices,length(grid_AABBs), fig_num);
 % assert((length(cell_array{1}))==21);
 
 
