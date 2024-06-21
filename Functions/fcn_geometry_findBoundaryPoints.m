@@ -1,0 +1,280 @@
+function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, varargin)
+%% fcn_geometry_findMaxMinOfXYZ
+% Find the the boundary points between the data set
+%
+% FORMAT:
+%
+% function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, varargin)
+%
+% INPUTS:
+%
+% X: Points in X-coordinate
+%
+% Y: Points in y-coordinate
+%
+% Z: Points in Z-coordinate
+%
+% x_range: the distance between two points in X-coordinate
+%
+% y_range: the distance between two points in y-coordinate
+%
+%
+% (OPTIONAL INPUTS)
+% fig_num: a figure number to plot results. If set to -1, skips any
+% input checking or debugging, no figures will be generated, and sets
+% up code to maximize speed.
+%
+%
+% OUTPUTS:
+%
+% boundary_points: the boundary points
+%
+%
+% DEPENDENCIES:
+%
+% (none)
+%
+% EXAMPLES:
+%
+% See the script:
+% script_test_fcn_geometry_findBoundaryPoints.m for a full
+% test suite.
+%
+% This function was written on 2024_06_21 by Jiabao Zhao
+% Questions or comments? jpz5469@psu.edu
+
+
+%% Debugging and Input checks
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==5 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % % % % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); 
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
+
+% flag_do_debug = 1;
+
+if flag_do_debug
+    st = dbstack; %#ok<*UNRCH>
+    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
+    debug_fig_num = 999978; %#ok<NASGU>
+else
+    debug_fig_num = []; %#ok<NASGU>
+end
+
+
+%% check input arguments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____                   _
+%  |_   _|                 | |
+%    | |  _ __  _ __  _   _| |_ ___
+%    | | | '_ \| '_ \| | | | __/ __|
+%   _| |_| | | | |_) | |_| | |_\__ \
+%  |_____|_| |_| .__/ \__,_|\__|___/
+%              | |
+%              |_|
+% See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(5,6);
+
+        % % Check the points input to be length greater than or equal to 2
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     points, '2column_of_numbers',[2 3]);
+        %
+        % % Check the transverse_tolerance input is a positive single number
+        % fcn_DebugTools_checkInputsToFunctions(transverse_tolerance, 'positive_1column_of_numbers',1);
+        %
+        % % Check the station_tolerance input is a positive single number
+        % if ~isempty(station_tolerance)
+        %     fcn_DebugTools_checkInputsToFunctions(station_tolerance, 'positive_1column_of_numbers',1);
+        % end
+    end
+end
+
+% Does user want to specify fig_num?
+flag_do_plots = 0;
+if 2<= nargin && 0==flag_max_speed
+    temp = varargin{end};
+    if ~isempty(temp)
+        fig_num = temp;
+        flag_do_plots = 1;
+    end
+end
+
+
+%% Solve for the Maxs and Mins
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   __  __       _       
+%  |  \/  |     (_)      
+%  | \  / | __ _ _ _ __  
+%  | |\/| |/ _` | | '_ \ 
+%  | |  | | (_| | | | | |
+%  |_|  |_|\__,_|_|_| |_|
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Find the X_interval
+x_interval = x_range(2)-x_range(1);
+y_interval = y_range(2)-y_range(1);
+
+[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z,  y_interval);
+[boundary_points_falling_x_transpose, boundary_points_rising_x_transpose] = fcn_INTERNAL_findBoundaryPointsX(Y', X', Z', x_interval);
+boundary_points_falling_x = fliplr(boundary_points_falling_x_transpose);
+boundary_points_rising_x = fliplr(boundary_points_rising_x_transpose);
+
+boundary_points = [boundary_points_falling_y; boundary_points_rising_y; boundary_points_falling_x; boundary_points_rising_x];
+
+
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if flag_do_plots
+if 1 == 1
+    % Plot the data in 2D
+    figure(fig_num);
+    clf;
+    hold on;
+    axis equal;
+
+    % Plot the results
+    flag_larger_than = Z>0.5;
+    plot(X(flag_larger_than),Y(flag_larger_than),'k.','Markersize',50);
+
+    xlabel('X [m]');
+    ylabel('Y [m]');
+
+    xlim([min(x_range) max(x_range)]);
+    ylim([min(y_range) max(y_range)]);
+
+    % Make axis slightly bigger than range
+    temp = axis;
+    axis_range_x = temp(2)-temp(1);
+    axis_range_y = temp(4)-temp(3);
+    percent_larger = 0.3;
+    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
+
+    % Plot the results
+    plot(boundary_points_falling_y(:,1),boundary_points_falling_y(:,2),'r.','Markersize',40);
+    plot(boundary_points_rising_y(:,1),boundary_points_rising_y(:,2),'g.','Markersize',40);
+    plot(boundary_points_falling_x(:,1),boundary_points_falling_x(:,2),'c.','Markersize',40);
+    plot(boundary_points_rising_x(:,1),boundary_points_rising_x(:,2),'m.','Markersize',40);
+end
+end 
+if flag_do_debug
+    fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
+end
+end
+
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% fcn_INTERNAL_findBoundaryPointsX
+function [boundary_points_falling, boundary_points_rising] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z, y_interval)
+
+flag_do_debug = 0;
+
+Z_greater_than = find(Z>0.5);
+
+% Pad the first and last points
+N_points = numel(X); % Total number of elements
+Z_greater_than_padded = [0; Z_greater_than; N_points+1];
+
+%% FInd changes
+changes_in_sequence = diff(Z_greater_than_padded);
+indicies_falling_edge = find(changes_in_sequence>1.5); %  Anything greater than 1 is a change. Have to add 1 because we padded indicies above
+indicies_rising_edge = find(changes_in_sequence>1.5)+1; % Anything greater than 1 is a change. Have to add 1 because we padded indicies above
+
+indicies_with_rising_x_edge  = Z_greater_than_padded(indicies_rising_edge);
+indicies_with_falling_x_edge = Z_greater_than_padded(indicies_falling_edge);
+
+% Clean up any indicies outside of range
+indicies_with_rising_x_edge(indicies_with_rising_x_edge<1) = [];
+indicies_with_rising_x_edge(indicies_with_rising_x_edge>N_points) = [];
+indicies_with_falling_x_edge(indicies_with_falling_x_edge<1) = [];
+indicies_with_falling_x_edge(indicies_with_falling_x_edge>N_points) = [];
+
+% Clean up any indicies on borders
+border_dimension = length(X(:,1));
+border_indices_rising = find(mod(indicies_with_rising_x_edge,border_dimension)==1);
+indicies_with_rising_x_edge(border_indices_rising) = [];
+border_indices_falling = find(mod(indicies_with_falling_x_edge,border_dimension)==0);
+indicies_with_falling_x_edge(border_indices_falling) = [];
+
+
+
+
+boundary_points_rising  = [X(indicies_with_rising_x_edge),Y(indicies_with_rising_x_edge)-y_interval/2];
+boundary_points_falling = [X(indicies_with_falling_x_edge),Y(indicies_with_falling_x_edge)+y_interval/2];
+
+% Plot the data in 2D?
+if 1==flag_do_debug
+    figure(1111);
+    clf;
+    hold on;
+
+    % Plot the inputs
+    plot(X(1:N_points),Y(1:N_points),'.','Color',[0.5 0.5 0.5],'Markersize',20);
+    plot(X(Z_greater_than),Y(Z_greater_than),'k.','Markersize',50);
+
+    % Number the results (for clarity)
+    for ith_label = 1:length(Z_greater_than)
+        label_number = Z_greater_than(ith_label);
+        current_text = sprintf('%.0d',label_number);
+        text(X(label_number),Y(label_number),current_text,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
+    end
+    xlabel('X [m]');
+    ylabel('Y [m]');
+
+    % Start by forcing tight axes
+    xlim([min(X,[],'all') max(X,[],'all')]);
+    ylim([min(Y,[],'all') max(Y,[],'all')]);
+
+    % Make axis slightly bigger than range
+    temp = axis;
+    axis_range_x = temp(2)-temp(1);
+    axis_range_y = temp(4)-temp(3);
+    percent_larger = 0.3;
+    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
+    plot(boundary_points_falling(:,1),boundary_points_falling(:,2),'r.','Markersize',30);
+    plot(boundary_points_rising(:,1),boundary_points_rising(:,2),'g.','Markersize',30);
+end
+end
