@@ -72,7 +72,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -87,7 +87,7 @@ assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 1.12 - an arc nearby the line joined with C1 continuity, arc backwards, line is forwards
+%% Basic test 1.12 - an arc nearby the line joined with C1 continuity, arc CCW, line is forwards
 fig_num = 12;
 figure(fig_num); clf;
 
@@ -101,7 +101,6 @@ clear line_parameters;
 line_parameters(1,1:2) = line_base_point_xy;
 line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
 
-URHERE
 
 
 % Fill in arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -127,7 +126,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -182,7 +181,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -193,7 +192,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
+assert(isequal(round(revised_line_parameters,4),[ 0     0     3.1416]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -239,7 +238,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -250,7 +249,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.5708         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
+assert(isequal(round(revised_line_parameters,4),[0     0     3.1416]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -313,7 +312,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -368,7 +367,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0d continuous',continuity_level));
+sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0f continuous',continuity_level));
 
 
 % Check sizes
@@ -447,7 +446,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -503,7 +502,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -559,7 +558,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -615,7 +614,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -626,11 +625,11 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1.0000   -0.0000   -0.4359    0.1000         0    1.0000]));
+assert(isequal(round(revised_line_parameters,4),[-0.4359    0.1000    0.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
-%% Basic test 3.22 - checking the (-) cross product, feasible, intersection, not feasible
+%% Basic test 3.22 - checking the (-) cross product, feasible, intersection, feasible
 fig_num = 322;
 figure(fig_num); clf;
 
@@ -671,7 +670,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -681,8 +680,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_line_parameters)));
+assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -2.0218         0    1.0000]));
+assert(isequal(round(revised_line_parameters,4),[-0.4359    0.1000    0.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -727,7 +726,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -737,8 +736,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0    -1.0000    1.0000    2.9671    1.5708         0    0.0000]));
-assert(isequal(round(revised_line_parameters,4),[ 0     0     0]));
+assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    2.2143         0         0]));
+assert(isequal(round(revised_line_parameters,4),[ -0.6     -0.2     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -783,7 +782,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -793,8 +792,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_line_parameters)));
+assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    2.2143         0         0]));
+assert(isequal(round(revised_line_parameters,4),[ -0.6     -0.2     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -839,7 +838,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -849,8 +848,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(all(isnan(revised_arc_parameters)));
-assert(all(isnan(revised_line_parameters)));
+assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    2.2143         0         0]));
+assert(isequal(round(revised_line_parameters,4),[ -0.6     -0.2     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -895,7 +894,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -906,7 +905,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000   2.9671    2.0218          0    0.0000]));
-assert(isequal(round(revised_line_parameters,4),[1.0000   -0.0000   -0.4359    -0.1000         0    2.0000]));
+assert(isequal(round(revised_line_parameters,4),[-0.4359   -0.1000   -0.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -953,7 +952,7 @@ continuity_level = 0;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1034,7 +1033,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1090,7 +1089,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1146,7 +1145,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1202,7 +1201,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1258,7 +1257,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1314,7 +1313,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1370,7 +1369,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1426,7 +1425,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1482,7 +1481,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1493,7 +1492,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.5708         0         0]));
-assert(isequal(round(revised_line_parameters,4),[1     0     0     0     0     2]));
+assert(isequal(round(revised_line_parameters,4),[0     0     0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'line'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1539,7 +1538,7 @@ continuity_level = 1;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1616,7 +1615,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1627,7 +1626,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[ 0    1.0000    1.0000   -2.9671   -2.6910         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1.0000         0    1.0749   -0.2000         0    0.4251]));
+assert(isequal(round(revised_line_parameters,4),[1.0749   -0.2000         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.9002    0.5645   -1.1202    2.2403    1.0000         0]));
 
@@ -1672,7 +1671,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1696,7 +1695,7 @@ tolerance = []; % meters
 
 % Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 line_unit_tangent_vector = [1 0];
-line_base_point_xy       = [0.1 -0.2];
+line_base_point_xy       = [0.1 0.2];
 
 clear line_parameters; 
 line_parameters(1,1:2) = line_base_point_xy;
@@ -1728,7 +1727,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1784,7 +1783,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1795,7 +1794,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0    1.0000    1.0000   -2.9671   -1.6483         0    1.0000]));
-assert(isequal(round(revised_line_parameters,4),[1.0000         0    0.0775   -0.0010         0    0.9225]));
+assert(isequal(round(revised_line_parameters,4),[0.0775   -0.0010         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774    0.0030   -0.0775    0.1550    1.0000         0]));
 
@@ -1840,7 +1839,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -1896,7 +1895,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -1907,7 +1906,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[ 0   -1.0000    1.0000    2.9671    1.6483         0         0]));
-assert(isequal(round(revised_line_parameters,4),[ 1.0000         0    0.0775    0.0010         0    0.9225]));
+assert(isequal(round(revised_line_parameters,4),[ 0.0775    0.0010         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774   -0.0030    0.0775    0.1550   -1.0000         0]));
 
@@ -1953,7 +1952,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -2009,7 +2008,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
 
 % Check sizes
@@ -2065,7 +2064,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
 
 % Check sizes
@@ -2076,7 +2075,7 @@ assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
 assert(isequal(round(revised_arc_parameters,4),[0   -1.0000    1.0000    2.9671    1.6483         0         0]));
-assert(isequal(round(revised_line_parameters,4),[1.0000         0    0.0775    0.0010         0    1.9225]));
+assert(isequal(round(revised_line_parameters,4),[0.0775    0.0010         0]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.0774   -0.0030    0.0775    0.1550   -1.0000         0]));
 
@@ -2122,7 +2121,7 @@ continuity_level = 2;
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcLine(...
     arc_parameters, line_parameters, (tolerance), (continuity_level), (fig_num));
 
-sgtitle(sprintf('Checking C%.0d continuous, arc clockwise, NOT feasible, intersection',continuity_level));
+sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
 
 % Check sizes

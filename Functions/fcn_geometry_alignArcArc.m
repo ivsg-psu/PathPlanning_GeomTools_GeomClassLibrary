@@ -1139,10 +1139,9 @@ switch continuity_level
                     desired_arc2_parameters(1,1:2) = [0 arc2_radius]; % Move arc2's center to align correctly
                     desired_arc2_parameters(1,4)   = -pi/2;
 
-                    segment_parameters(1,1:2) = [1 0]; % line_unit_tangent_vector
-                    segment_parameters(1,3:4) = [0 0]; % line_base_point_xy
-                    segment_parameters(1,5)   = 0;     % line_s_start
-                    segment_parameters(1,6)   = abs(arc2_center_xy(1)); % line_s_end
+                    segment_parameters(1,1:2) = [0 0]; % segment_base_point_xy
+                    segment_parameters(1,3)   = 0;   % heading
+                    segment_parameters(1,4)   = abs(arc2_center_xy(1)); % line_s_end
                     desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
                     desired_intermediate_geometry_join_parameters = segment_parameters; 
                    
@@ -1171,10 +1170,9 @@ switch continuity_level
             desired_arc2_parameters        = arc2_parameters;
             desired_arc2_parameters(1,4)   = -pi/2; % Start of arc 2 should be at -90 degrees
 
-            segment_parameters(1,1:2) = [1 0]; % line_unit_tangent_vector
-            segment_parameters(1,3:4) = [0 0]; % line_base_point_xy
-            segment_parameters(1,5)   = 0;     % line_s_start
-            segment_parameters(1,6)   = abs(arc2_center_xy(1)); % line_s_end
+            segment_parameters(1,1:2) = [0 0]; % segment_base_point_xy
+            segment_parameters(1,3)   = 0;   % heading
+            segment_parameters(1,4)   = abs(arc2_center_xy(1)); % line_s_end
             desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
             desired_intermediate_geometry_join_parameters = segment_parameters;
 
@@ -1190,10 +1188,9 @@ switch continuity_level
             desired_arc2_parameters        = arc2_parameters;
             desired_arc2_parameters(1,4)   = pi/2; % Start of arc 2 should be at 90 degrees
 
-            segment_parameters(1,1:2) = [1 0]; % line_unit_tangent_vector
-            segment_parameters(1,3:4) = [0 0]; % line_base_point_xy
-            segment_parameters(1,5)   = 0;     % line_s_start
-            segment_parameters(1,6)   = abs(arc2_center_xy(1)); % line_s_end
+            segment_parameters(1,1:2) = [0 0]; % segment_base_point_xy
+            segment_parameters(1,3)   = 0;   % heading
+            segment_parameters(1,4)   = abs(arc2_center_xy(1)); % line_s_end
             desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
             desired_intermediate_geometry_join_parameters = segment_parameters;
             
@@ -1211,11 +1208,10 @@ switch continuity_level
                     desired_arc2_parameters        = arc2_parameters;
                     desired_arc2_parameters(1,1:2) = [0 -arc2_radius]; % Move arc2's center to align correctly
                     desired_arc2_parameters(1,4)   = pi/2; % Start of arc 2 should be at 90 degrees
-            
-                    segment_parameters(1,1:2) = [1 0]; % line_unit_tangent_vector
-                    segment_parameters(1,3:4) = [0 0]; % line_base_point_xy
-                    segment_parameters(1,5)   = 0;     % line_s_start
-                    segment_parameters(1,6)   = 0; % line_s_end
+
+                    segment_parameters(1,1:2) = [0 0]; % segment_base_point_xy
+                    segment_parameters(1,3)   = 0;   % heading
+                    segment_parameters(1,4)   = 0; % line_s_end
                     desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
                     desired_intermediate_geometry_join_parameters = segment_parameters;
 

@@ -8,7 +8,7 @@ function [revised_line_parameters, revised_arc_parameters, revised_intermediate_
 % If the alignment is not feasible but the offset is less than a threshold
 % (default is 0.1 meter), the arc's geometric position is shifted to force
 % alignment with the line. In other words, the line is kept stationary and
-% the arc is aligned to the line segment.
+% the arc is aligned to the line.
 %
 % Alignment types are allowed of different types of continuity, including:
 %
@@ -20,13 +20,13 @@ function [revised_line_parameters, revised_arc_parameters, revised_intermediate_
 %
 % Format:
 % [revised_line_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-% fcn_geometry_alignLineArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
+% fcn_geometry_alignLineArc(line_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
 %
 % INPUTS:
 %
-%      segment_parameters: the parameter set describing the line segment
+%      line_parameters: the parameter set describing the line
 %      geometry. See fcn_geometry_fillEmptyDomainStructure for details,
-%      specifically the structure for 'Vector regression segment fit'.
+%      specifically the structure for 'Vector regression line fit'.
 %
 %      arc_parameters: the parameter set describing the arc geometry. See
 %      fcn_geometry_fillEmptyDomainStructure for details, specifically the
@@ -57,10 +57,10 @@ function [revised_line_parameters, revised_arc_parameters, revised_intermediate_
 %      revised_line_parameters: the parameter set describing the line
 %      that joins the geometries. See
 %      fcn_geometry_fillEmptyDomainStructure for details, specifically the
-%      structure for 'Vector regression segment fit'.
+%      structure for 'Vector regression line fit'.
 %
 %      revised_arc_parameters: the parameter set describing the arc
-%      segment geometry that joins the geometries. See
+%      geometry that joins the geometries. See
 %      fcn_geometry_fillEmptyDomainStructure for details, specifically the
 %      structure for 'Regression arc'.
 %
@@ -69,7 +69,7 @@ function [revised_line_parameters, revised_arc_parameters, revised_intermediate_
 %      This output saves the geometry type as a string type.
 %
 %      revised_intermediate_geometry_join_parameters: the parameter set describing the
-%      spiral segment geometry that joins the line and arc geometries if C2
+%      spiral geometry that joins the line and arc geometries if C2
 %      continuity is specified. See fcn_geometry_fillEmptyDomainStructure
 %      for details, specifically the structure for 'spiral'.
 %
@@ -100,7 +100,14 @@ function [revised_line_parameters, revised_arc_parameters, revised_intermediate_
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
-
+% 2024_06_21 - Sean Brennan
+% -- changed segment references to lines 
+% -- changed parameter format for line to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
 
 %% Debugging and Input checks
 
@@ -215,8 +222,8 @@ end
 %% Plot inputs?
 fcn_INTERNAL_prepDebugFigure(arc_parameters, line_parameters, debug_fig_num);
 
-%% Check to see if arc and segment intersect
-intersection_point1 = fcn_INTERNAL_LineSegmentIntersection(arc_parameters, line_parameters, 1, debug_fig_num);
+%% Check to see if arc and line intersect
+intersection_point1 = fcn_INTERNAL_ArcLineIntersection(arc_parameters, line_parameters, 1, debug_fig_num);
 if (length(intersection_point1(:,1))>1)&&(0==continuity_level)
     warning('Multiple intersection points found between a line and arc geometry with a requested connection type of C0 continuity. Unable to resolve which intersection to use.');
 end
@@ -241,9 +248,9 @@ if ~isempty(debug_fig_num)
     axis(debug_axis);
 end
 
-%% Call alignArcSegment to get inverse solution
+%% Call alignArcLine to get inverse solution
 
-[revised_inverse_arc_parameters, revised_inverse_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = ...
+[revised_inverse_arc_parameters, revised_inverse_line_parameters, revised_inverse_intermediate_geometry_join_type, revised_inverse_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcLine(...
     arc_parameters_flipped, line_parameters_flipped, (threshold), (continuity_level), (-1));
 
@@ -256,10 +263,10 @@ if ~isempty(debug_fig_num)
     subplot(3,2,3);
 
     fcn_geometry_plotGeometry('arc',revised_inverse_arc_parameters);
-    fcn_geometry_plotGeometry('segment',revised_inverse_segment_parameters);
+    fcn_geometry_plotGeometry('line',revised_inverse_line_parameters);
     fcn_geometry_plotGeometry(revised_inverse_intermediate_geometry_join_type,revised_inverse_intermediate_geometry_join_parameters);
     
-    title('Inverse ArcSegment solution');
+    title('Inverse ArcLine solution');
     axis(debug_axis);
 end
 
@@ -268,8 +275,8 @@ end
 % Flip the arc ordering
 revised_offset_arc_parameters = fcn_geometry_flipGeom('arc',  revised_inverse_arc_parameters, -1);
 
-% Flip the segment ordering
-revised_offset_segment_parameters = fcn_geometry_flipGeom('segment',  revised_inverse_segment_parameters, -1);
+% Flip the line ordering
+revised_offset_line_parameters = fcn_geometry_flipGeom('line',  revised_inverse_line_parameters, -1);
 
 % Flip the intermediate geometry
 revised_offset_intermediate_geometry_join_parameters = fcn_geometry_flipGeom(revised_inverse_intermediate_geometry_join_type,  revised_inverse_intermediate_geometry_join_parameters, -1);
@@ -283,7 +290,7 @@ if ~isempty(debug_fig_num)
     subplot(3,2,4);
 
     fcn_geometry_plotGeometry('arc',revised_offset_arc_parameters);
-    fcn_geometry_plotGeometry('segment',revised_offset_segment_parameters);
+    fcn_geometry_plotGeometry('line',revised_offset_line_parameters);
     fcn_geometry_plotGeometry(revised_inverse_intermediate_geometry_join_type,revised_offset_intermediate_geometry_join_parameters);
     
     title('Solution offset but flipped');
@@ -291,14 +298,30 @@ if ~isempty(debug_fig_num)
 end
 
 
-%% Find transform that moves the line segment from old position to solution 
-% Renormalize the segment result
-revised_offset_segment_parameters = fcn_INTERNAL_renormalizeSegment(revised_offset_segment_parameters);
+%% Find transform that moves the arc's solution so that end matches old position
+% This only is required if there's an intersection, and C0 test
 
-% Find how much the arc moved
-segment_old_base_point = line_parameters(1,3:4);
-segment_new_base_point = revised_offset_segment_parameters(1,3:4);
-translation_vector = segment_new_base_point - segment_old_base_point;
+if (0==continuity_level) && (~any(isnan(intersection_point1)))
+    % Find how much the arc moved
+    arc_old_center_xy            = arc_parameters(1,1:2);
+    arc_old_radius               = arc_parameters(1,3);
+    arc_old_end_angle_in_radians = arc_parameters(1,5);
+    arc_old_end_xy               = arc_old_center_xy + arc_old_radius*[cos(arc_old_end_angle_in_radians) sin(arc_old_end_angle_in_radians)];
+
+
+    arc_new_center_xy            = arc_parameters(1,1:2);
+    arc_new_radius               = arc_parameters(1,3);
+    arc_new_end_angle_in_radians = arc_parameters(1,5);
+    arc_new_end_xy               = arc_new_center_xy + arc_new_radius*[cos(arc_new_end_angle_in_radians) sin(arc_new_end_angle_in_radians)];
+
+
+    translation_vector = arc_new_end_xy - arc_old_end_xy;
+else
+    % Find out how much the line moved
+    line_old_base_point = line_parameters(1,1:2);
+    line_new_base_point = revised_offset_line_parameters(1,1:2);
+    translation_vector = line_new_base_point - line_old_base_point;
+end
 
 % create a transformation that moves one to the other
 transformMatrix_translation_into_origin = se2(0,'theta',translation_vector);
@@ -308,7 +331,7 @@ St_transform_XYtoSt = transformMatrix_translation_into_origin;
 
 [revised_arc_parameters, revised_line_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_offset_arc_parameters, revised_offset_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_offset_intermediate_geometry_join_parameters, St_transform_XYtoSt, 0, debug_fig_num);
+    revised_offset_arc_parameters, revised_offset_line_parameters, revised_inverse_intermediate_geometry_join_type, revised_offset_intermediate_geometry_join_parameters, St_transform_XYtoSt, 0, debug_fig_num);
 
 
 %% Plot the results (for debugging)?
@@ -334,13 +357,12 @@ if flag_do_plots
     hold on;
     grid on;
     axis equal;
-    sgtitle('Arc joining with line segment');
+    sgtitle('Arc joining with line');
     title('Original');
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
     % Plot the inputs
-    fcn_geometry_plotGeometry('segment',line_parameters);
     fcn_geometry_plotGeometry('arc',arc_parameters);
 
     % Make axis slightly larger?
@@ -353,6 +375,8 @@ if flag_do_plots
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
+    fcn_geometry_plotGeometry('line',line_parameters);
+
     temp_axis = axis;
 
     subplot(1,2,2);
@@ -364,7 +388,6 @@ if flag_do_plots
     ylabel('Y [meters]')
 
     % Plot the outputs
-    fcn_geometry_plotGeometry('segment',revised_line_parameters);
     fcn_geometry_plotGeometry('arc',revised_arc_parameters);
     fcn_geometry_plotGeometry('spiral',revised_intermediate_geometry_join_parameters);
 
@@ -380,6 +403,8 @@ if flag_do_plots
         good_axis = [min([temp_axis(1) temp_axis2(1)])  max([temp_axis(2) temp_axis2(2)])  min([temp_axis(3) temp_axis2(3)])  max([temp_axis(4) temp_axis2(4)]) ];
         axis(good_axis);
     end
+
+    fcn_geometry_plotGeometry('line',revised_line_parameters);
 
     % Force the subplots to have matching axes
     subplot(1,2,2);
@@ -422,7 +447,6 @@ if ~isempty(debug_fig_num)
         sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
 
     fcn_geometry_plotGeometry('arc',arc_parameters);
-    fcn_geometry_plotGeometry('line',line_parameters);
 
     temp = axis;
     %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
@@ -431,6 +455,8 @@ if ~isempty(debug_fig_num)
     percent_larger = 0.3;
     new_axis = [temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y];
     axis([min(new_axis) max(new_axis) min(new_axis) max(new_axis)]);
+
+    fcn_geometry_plotGeometry('line',line_parameters);
 
     hold on;
     grid on;
@@ -443,8 +469,8 @@ if ~isempty(debug_fig_num)
 end
 end % Ends fcn_INTERNAL_prepDebugFigure
 
-%% fcn_INTERNAL_LineSegmentIntersection
-function  intersection_point_arc_to_line = fcn_INTERNAL_LineSegmentIntersection(arc_parameters,line_parameters, subplot_number, debug_fig_num)
+%% fcn_INTERNAL_ArcLineIntersection
+function  intersection_point_arc_to_line = fcn_INTERNAL_ArcLineIntersection(arc_parameters,line_parameters, subplot_number, debug_fig_num)
 firstFitType = 'arc';
 firstFitType_parameters = arc_parameters;
 secondFitType = 'line';
@@ -465,13 +491,13 @@ if ~isempty(debug_fig_num)
     axis(debug_axis);
 end
 
-end % Ends fcn_INTERNAL_LineSegmentIntersection
+end % Ends fcn_INTERNAL_ArcLineIntersection
 
 
-%% fcn_INTERNAL_findShiftToMatchSegmentToArc
-function [desired_arc_parameters, desired_segment_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
-    fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, segment_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_segment, debug_fig_num)
-% Calculates the delta amount to match the segment to the arc. The delta
+%% fcn_INTERNAL_findShiftToMatchLineToArc
+function [desired_arc_parameters, desired_line_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
+    fcn_INTERNAL_findShiftToMatchLineToArc(arc_parameters, line_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_line, debug_fig_num)
+% Calculates the delta amount to match the line to the arc. The delta
 % values are measured FROM desired point TO actual point
 
 if length(threshold)==1
@@ -502,27 +528,30 @@ end
 % arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, arc1_is_counter_clockwise);
 
 
-
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-segment_unit_tangent_vector     = fcn_geometry_calcUnitVector(segment_parameters(1,1:2));
-segment_base_point_xy           = segment_parameters(1,3:4);
-segment_s_start                 = segment_parameters(1,5);
-segment_s_end                   = segment_parameters(1,6);
-% segment_angle = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
-segment_unit_ortho_vector = segment_unit_tangent_vector*[0 1; -1 0];
-segment_length                  = segment_s_end - segment_s_start;
+line_base_point_xy           = line_parameters(1,1:2);
+line_unit_tangent_vector     = [cos(line_parameters(1,3)) sin(line_parameters(1,3))];
 
-% Calculate the distance from the arc to the segment
-vector_from_arc_center_to_segment_joint = segment_base_point_xy - arc_center_xy;
-if arc_is_counter_clockwise
-    distance_from_arc_center_to_segment = -sum(segment_unit_ortho_vector.*vector_from_arc_center_to_segment_joint,2);
-else
-    distance_from_arc_center_to_segment = sum(segment_unit_ortho_vector.*vector_from_arc_center_to_segment_joint,2);
-end
+% line_angle = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+% line_unit_ortho_vector = line_unit_tangent_vector*[0 1; -1 0];
+
+% Find the closest point of the arc to the line
+vector_from_line_base_to_arc_center = arc_center_xy - line_base_point_xy;
+distance_along_line_to_circle_closest_point = sum(line_unit_tangent_vector.*vector_from_line_base_to_arc_center,2);
+closest_point_on_line_to_circle_center = line_base_point_xy + distance_along_line_to_circle_closest_point*line_unit_tangent_vector;
+
+distance_from_arc_center_to_line = sum((closest_point_on_line_to_circle_center -arc_center_xy).^2,2).^0.5; 
+% % Calculate the distance from the arc to the line
+% vector_from_arc_center_to_line_joint = line_base_point_xy - arc_center_xy;
+% if arc_is_counter_clockwise
+%     distance_from_arc_center_to_line = -sum(line_unit_ortho_vector.*vector_from_arc_center_to_line_joint,2);
+% else
+%     distance_from_arc_center_to_line = sum(line_unit_ortho_vector.*vector_from_arc_center_to_line_joint,2);
+% end
 
 
 % Calculate the distance between the circles and the join point
-space_between_arc_and_segment = distance_from_arc_center_to_segment - arc_radius;
+space_from_arc_to_line = distance_from_arc_center_to_line - arc_radius;
 
 
 % With the cleaned parameters, the line vector always
@@ -532,7 +561,7 @@ space_between_arc_and_segment = distance_from_arc_center_to_segment - arc_radius
 
 switch continuity_level
     case 0
-        % For C0 continuity of arc to segment, the closest point of the
+        % For C0 continuity of arc to line, the closest point of the
         % desired joint to the arc is simply the end of arc
 
         desired_intermediate_geometry_join_type       = ''; % Intermediate geometry will be a line segement
@@ -540,69 +569,69 @@ switch continuity_level
 
         if ~any(isnan(intersection_point))
             % Arc will end at the intersection, which is at the origin
-            vector_from_arc_center_to_segment_joint = [0 0] - arc_center_xy;
-            angle_of_intersection = atan2(vector_from_arc_center_to_segment_joint(2),vector_from_arc_center_to_segment_joint(1));
+            vector_from_arc_center_to_line_joint = [0 0] - arc_center_xy;
+            angle_of_intersection = atan2(vector_from_arc_center_to_line_joint(2),vector_from_arc_center_to_line_joint(1));
 
             desired_arc_parameters        = arc_parameters;
             desired_arc_parameters(1,5)   = angle_of_intersection; % Update where the spiral ends
 
-            desired_segment_parameters        = segment_parameters;
-            desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+            desired_line_parameters        = line_parameters;
+            desired_line_parameters(1,1:2) = [0 0]; % Move line_base_point_xy
 
         else
-            if flag_perform_shift_of_segment==1
-                if abs(space_between_arc_and_segment)<=transverse_threshold
-                    % Yes, segment can be moved enough to be tangent. So put
-                    % segment's start at the end of the arc. Do not change the
+            if flag_perform_shift_of_line==1
+                if abs(space_from_arc_to_line)<=transverse_threshold
+                    % Yes, line can be moved enough to be tangent. So put
+                    % line's start at the end of the arc. Do not change the
                     % arc.
                     desired_arc_parameters        = arc_parameters;
 
-                    desired_segment_parameters        = segment_parameters;
-                    desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+                    desired_line_parameters        = line_parameters;
+                    desired_line_parameters(1,1:2) = [0 0]; % Move line_base_point_xy
 
                 else
                     % Not possible to shift enough to allow connection
                     desired_arc_parameters        = nan(size(arc_parameters));
-                    desired_segment_parameters    = nan(1,6);
+                    desired_line_parameters    = nan(1,3);
                 end
             else
                 % No shift allowed by user entry, so not possible
                 desired_arc_parameters            = nan(size(arc_parameters));
-                desired_segment_parameters        = nan(1,6);
+                desired_line_parameters        = nan(1,3);
             end
         end
 
     case 1
-        % For C1 continuity of arc to segment, the closest point of the
+        % For C1 continuity of arc to line, the closest point of the
         % desired joint to the arc is always going to be the point where
-        % the arc touches the tangent line of the segment. Since the
-        % segment is the only one that can be moved, the connecting point
+        % the arc touches the tangent line of the line. Since the
+        % line is the only one that can be moved, the connecting point
         % for the arc is simply the location where the arc is tangent, which by
-        % construction is [0 0]. The connection point for the segment is at
+        % construction is [0 0]. The connection point for the line is at
         % this same point
 
-        desired_intermediate_geometry_join_type       = 'segment'; % Intermediate geometry will be a line segement
+        desired_intermediate_geometry_join_type       = 'line'; % Intermediate geometry will be a line segement
         desired_intermediate_geometry_join_parameters = nan(1,6);
 
-        if flag_perform_shift_of_segment==1
-            if abs(space_between_arc_and_segment)<=transverse_threshold
+        if flag_perform_shift_of_line==1
+            if abs(space_from_arc_to_line)<=transverse_threshold
                 % Yes, arc2 can be moved enough to be tangent. So put
                 % arc2's center in correct place
                 desired_arc_parameters        = arc_parameters;
                 desired_arc_parameters(1,5)   = -pi/2;
 
-                desired_segment_parameters        = segment_parameters;
-                desired_segment_parameters(1,3:4) = [0 0]; % Move segment_base_point_xy
+                desired_line_parameters        = line_parameters;
+                desired_line_parameters(1,1:2) = [0 0]; % Move line_base_point_xy
 
             else
                 % Not possible to shift enough to allow connection
                 desired_arc_parameters        = nan(size(arc_parameters));
-                desired_segment_parameters    = nan(1,6);
+                desired_line_parameters    = nan(1,3);
             end
         else
             % No shift allowed by user entry, so not possible
             desired_arc_parameters            = nan(size(arc_parameters));
-            desired_segment_parameters        = nan(1,6);
+            desired_line_parameters        = nan(1,3);
         end
 
 
@@ -619,36 +648,36 @@ switch continuity_level
         desired_intermediate_geometry_join_parameters = nan(1,6);
 
         flag_spiral_was_calculated = 0;
-        if space_between_arc_and_segment>0
+        if space_from_arc_to_line>0
             % spiral_join_parameters = [spiralLength,h0,x0,y0,K0,Kf];
 
             [desired_intermediate_geometry_join_parameters, ~] = ...
-                fcn_geometry_spiralFromCircleToCircle(arc_radius, inf, [0 -space_between_arc_and_segment], [], -1);
+                fcn_geometry_spiralFromCircleToCircle(arc_radius, inf, [0 -space_from_arc_to_line], [], -1);
             flag_spiral_was_calculated = 1;
         else
-            % Not enough space between arc and segment for a spiral, not
+            % Not enough space between arc and line for a spiral, not
             % without modifying it
-            if flag_perform_shift_of_segment==1
-                if abs(space_between_arc_and_segment)<=transverse_threshold
-                    unit_direction_vector_to_shift_segment = [0 -1];
+            if flag_perform_shift_of_line==1
+                if abs(space_from_arc_to_line)<=transverse_threshold
+                    unit_direction_vector_to_shift_line = [0 -1];
 
-                    revised_line_parameters = segment_parameters;
-                    revised_line_parameters(1,3:4) = segment_parameters(1,3:4) + unit_direction_vector_to_shift_segment*(abs(space_between_arc_and_segment)+0.001);
+                    revised_line_parameters = line_parameters;
+                    revised_line_parameters(1,3:4) = line_parameters(1,3:4) + unit_direction_vector_to_shift_line*(abs(space_from_arc_to_line)+0.001);
 
                     % Call function again with revised parameters that
                     % should work
-                    [desired_arc_parameters, desired_segment_parameters, desired_intermediate_geometry_join_parameters] = ...
-                        fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, revised_line_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
+                    [desired_arc_parameters, desired_line_parameters, desired_intermediate_geometry_join_parameters] = ...
+                        fcn_INTERNAL_findShiftToMatchLineToArc(arc_parameters, revised_line_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
                     flag_spiral_was_calculated = 1;
                 else
                     % Not possible
                     desired_arc_parameters = nan(size(arc_parameters));
-                    desired_segment_parameters = nan(1,6);
+                    desired_line_parameters = nan(1,3);
                 end
             else
                 % Not allowed by user entry
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_line_parameters = nan(1,3);
             end
         end % Ends if statement to check if spiral is possible
 
@@ -669,7 +698,7 @@ switch continuity_level
                 axis equal;
 
                 fcn_geometry_plotGeometry('arc',arc_parameters);
-                fcn_geometry_plotGeometry('segment',segment_parameters);
+                fcn_geometry_plotGeometry('line',line_parameters);
                 fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters);
 
             end % Ends plotting
@@ -691,7 +720,7 @@ switch continuity_level
             if arc_is_counter_clockwise ~= intersection_is_counterClockwise
                 % Spiral does not connect with the arc
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_line_parameters = nan(1,3);
                 flag_spiral_is_bad = 1;
             end
 
@@ -699,10 +728,10 @@ switch continuity_level
             % Find the x-value of the spiral result
             XY_spiral = fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters,[],[],-1);
             spiral_end_XY = XY_spiral(end,:);
-            if spiral_end_XY(1,1)<0 || spiral_end_XY(1,1)>segment_length
-                % Spiral does not connect with the segment.
+            if spiral_end_XY(1,1)<0 
+                % Spiral does not connect with the line.
                 desired_arc_parameters = nan(size(arc_parameters));
-                desired_segment_parameters = nan(1,6);
+                desired_line_parameters = nan(1,3);
                 flag_spiral_is_bad = 1;
             end
 
@@ -712,10 +741,9 @@ switch continuity_level
                 desired_arc_parameters = arc_parameters;
                 desired_arc_parameters(1,5)   = arc_angle_where_spiral_starts; % Update where the spiral ends
 
-                desired_segment_parameters        = segment_parameters;
-                desired_segment_parameters(1,3:4) = spiral_end_XY; % segment_base_point_xy
-                desired_segment_parameters(1,5)   = 0; % segment_s_start
-                desired_segment_parameters(1,6)   = segment_length - spiral_end_XY(1,1); % segment_s_end
+                desired_line_parameters        = line_parameters;
+                desired_line_parameters(1,1:2) = spiral_end_XY; % line_base_point_xy
+
             else
                 % Bad spiral - set all to nan
                 desired_intermediate_geometry_join_parameters = nan(size(desired_intermediate_geometry_join_parameters));
@@ -739,7 +767,7 @@ if ~isempty(debug_fig_num)
         sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
 
     fcn_geometry_plotGeometry('arc',desired_arc_parameters);
-    fcn_geometry_plotGeometry('segment',desired_segment_parameters);
+    fcn_geometry_plotGeometry('line',desired_line_parameters);
     fcn_geometry_plotGeometry(desired_intermediate_geometry_join_type,desired_intermediate_geometry_join_parameters);
 
     axis(debug_axis);
@@ -752,7 +780,7 @@ if ~isempty(debug_fig_num)
 
     title('Desired St geometries');
 end
-end % Ends fcn_INTERNAL_findShiftToMatchSegmentToArc
+end % Ends fcn_INTERNAL_findShiftToMatchLineToArc
 
 
 
@@ -762,7 +790,7 @@ function [revised_arc_parameters, revised_line_parameters, revised_intermediate_
     revised_arc_parameters_St, revised_line_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc_is_flipped, debug_fig_num)
 
 % Call the function to convert from ST back to XY
-st_parameters_type_strings{1} = 'segment';
+st_parameters_type_strings{1} = 'line';
 st_parameters_type_strings{2} = 'arc';
 st_parameters_type_strings{3} = revised_intermediate_geometry_join_type;
 st_parameters{1} = revised_line_parameters_St;
@@ -785,7 +813,7 @@ if ~isempty(debug_fig_num)
     subplot(3,2,6);
 
     fcn_geometry_plotGeometry('arc',revised_arc_parameters);
-    fcn_geometry_plotGeometry('segment',revised_line_parameters);
+    fcn_geometry_plotGeometry('line',revised_line_parameters);
     fcn_geometry_plotGeometry(revised_intermediate_geometry_join_type,revised_intermediate_geometry_join_parameters);
     
     title('Final outputs');
@@ -793,29 +821,3 @@ if ~isempty(debug_fig_num)
 end
 end % Ends fcn_INTERNAL_convertParametersOutOfStOrientation
 
-%% fcn_INTERNAL_renormalizeSegment
-function new_segment_parameters = fcn_INTERNAL_renormalizeSegment(old_segment_parameters)
-segment_unit_tangent_vector = old_segment_parameters(1,1:2);
-segment_base_point_xy       = old_segment_parameters(1,3:4);
-segment_s_start             = old_segment_parameters(1,5);
-segment_s_end               = old_segment_parameters(1,6);
-% Make sure the line segment is well-formed, e.g. the station at the end is
-% larger than the station at the start. If not, need to correct
-if segment_s_end<segment_s_start
-    % Flip the order
-    segment_s_start         = segment_parameters(1,6);
-    segment_s_end           = segment_parameters(1,5);
-
-    % Flip the vector
-    segment_unit_tangent_vector = -segment_unit_tangent_vector;
-
-end
-segment_start_xy            = segment_base_point_xy + segment_unit_tangent_vector*segment_s_start;
-segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_s_end;
-segment_length = sum((segment_end_xy - segment_start_xy).^2,2).^0.5;
-
-new_segment_parameters(1,1:2) = segment_unit_tangent_vector;
-new_segment_parameters(1,3:4) = segment_start_xy;
-new_segment_parameters(1,5)   = 0;
-new_segment_parameters(1,6)   = segment_length;
-end % Ends fcn_INTERNAL_renormalizeSegment
