@@ -4,8 +4,11 @@
 %
 
 % Revision history:
-% 2024_06_21 - jpz5469@psu.edu
-% -- original write of the code
+% 2024_06_18 - S. Brennan
+% -- wrote these examples for demonstration
+% 2024_06_21 - Jiabao Zhao
+% -- organized the script
+
 close all;
 
 %% Example for Aneesh
@@ -14,6 +17,7 @@ close all;
 N_points = 10;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,15);
+grid_size = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -30,9 +34,11 @@ if 1==0
     surf(X,Y,Z)
 end
 
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
 % Calculate boundary points
-fig_num = 1;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num);
+fig_num = 123;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary line
@@ -62,9 +68,11 @@ if 1==0
     surf(X,Y,Z)
 end
 
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
 % Calculate boundary points
-fig_num = 2;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num);
+fig_num = 124;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary line
@@ -97,10 +105,11 @@ if 1==0
     surf(X,Y,Z)
 end
 
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
 % Calculate boundary points
-fig_num = 3;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num);
-plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+fig_num = 125;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary circle
 angles = linspace(0,360,100)'*pi/180;
@@ -132,9 +141,11 @@ if 1==0
     surf(X,Y,Z)
 end
 
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
 % Calculate boundary points
-fig_num = 4;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num);
+fig_num = 126;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary circle

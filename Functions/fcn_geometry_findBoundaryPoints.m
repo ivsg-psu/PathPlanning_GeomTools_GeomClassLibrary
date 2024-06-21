@@ -1,33 +1,36 @@
-function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, varargin)
+function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,varargin)
 %% fcn_geometry_findMaxMinOfXYZ
-% Find the the boundary points between the data set
+%
+% Finds the boundary points of drivable and non-drivable grids in 2D by
+% taking grid centers(X,Y), Z (1 - drivable, 0 - non-drivable), grid_size
+% as the inputs.
 %
 % FORMAT:
 %
-% function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range, varargin)
+% boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,(x_limits),(y_limits),(fig_num))
 %
 % INPUTS:
 %
-% X: Points in X-coordinate
+% X: X-coordinates of mapped grid centers
 %
-% Y: Points in y-coordinate
+% Y: Y-coordinates of mapped grid centers
 %
-% Z: Points in Z-coordinate
-%
-% x_range: the distance between two points in X-coordinate
-%
-% y_range: the distance between two points in y-coordinate
-%
+% Z: 1 or 0 (drivable and non-drivable grids) 
 %
 % (OPTIONAL INPUTS)
+%
+% x_limits: x_limits of the plot
+%
+% y_limits: y_limits of the plot
+%
 % fig_num: a figure number to plot results. If set to -1, skips any
 % input checking or debugging, no figures will be generated, and sets
 % up code to maximize speed.
 %
-%
 % OUTPUTS:
 %
-% boundary_points: the boundary points
+% boundary_points: the boundary points of the drivable and non-drivable
+% grids in 2D
 %
 %
 % DEPENDENCIES:
@@ -41,8 +44,18 @@ function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range
 % test suite.
 %
 % This function was written on 2024_06_21 by Jiabao Zhao
-% Questions or comments? jpz5469@psu.edu
+% Questions or comments? jpz5469@psu.edu or sbrennan@psu.edu
 
+% Revision History
+% 2024_06_18 - S. Brennan
+% -- wrote the code originally
+% 2024_06_21 - Jiabao Zhao
+% -- Functionalized the code
+% 2024_06_21 - Aneesh Batchu
+% -- changed plotting options
+% -- added grid size as one of the inputs
+% -- made x_range and y_range to x_limits and y_limits
+% -- fixed some comments
 
 %% Debugging and Input checks
 
@@ -50,7 +63,7 @@ function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,x_range,y_range
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -93,7 +106,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(5,6);
+        narginchk(4,7);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -109,9 +122,26 @@ if 0==flag_max_speed
     end
 end
 
+x_limits = [];
+if (5<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        x_limits = temp;
+    end
+end
+
+y_limits = [];
+if (6<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        y_limits = temp;
+    end
+end
+
 % Does user want to specify fig_num?
+fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if 2<= nargin && 0==flag_max_speed
+if 7<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -132,10 +162,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Find the X_interval
-x_interval = x_range(2)-x_range(1);
-y_interval = y_range(2)-y_range(1);
+% x_interval = x_range(2)-x_range(1);
+% y_interval = y_range(2)-y_range(1);
+x_interval = grid_size;
+y_interval = grid_size; 
 
-[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z,  y_interval);
+[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z, y_interval);
 [boundary_points_falling_x_transpose, boundary_points_rising_x_transpose] = fcn_INTERNAL_findBoundaryPointsX(Y', X', Z', x_interval);
 boundary_points_falling_x = fliplr(boundary_points_falling_x_transpose);
 boundary_points_rising_x = fliplr(boundary_points_rising_x_transpose);
@@ -155,22 +187,27 @@ boundary_points = [boundary_points_falling_y; boundary_points_rising_y; boundary
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-if 1 == 1
+
     % Plot the data in 2D
-    figure(fig_num);
-    clf;
+    temp_h = figure(fig_num);
+    flag_rescale_axis = 0;
+    if isempty(get(temp_h,'Children'))
+        flag_rescale_axis = 1;
+    end
+
     hold on;
-    axis equal;
+    grid on;
+    axis equal
+    xlabel('X [m]')
+    ylabel('Y [m]')
 
     % Plot the results
     flag_larger_than = Z>0.5;
     plot(X(flag_larger_than),Y(flag_larger_than),'k.','Markersize',50);
 
-    xlabel('X [m]');
-    ylabel('Y [m]');
 
-    xlim([min(x_range) max(x_range)]);
-    ylim([min(y_range) max(y_range)]);
+    xlim([min(x_limits) max(x_limits)]);
+    ylim([min(y_limits) max(y_limits)]);
 
     % Make axis slightly bigger than range
     temp = axis;
@@ -178,6 +215,19 @@ if 1 == 1
     axis_range_y = temp(4)-temp(3);
     percent_larger = 0.3;
     axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    
+    if isempty(boundary_points_falling_y)
+        boundary_points_falling_y = zeros(0,2);
+    end
+    if isempty(boundary_points_rising_y)
+        boundary_points_rising_y = zeros(0,2);
+    end
+    if isempty(boundary_points_falling_x)
+        boundary_points_falling_x = zeros(0,2);
+    end
+    if isempty(boundary_points_rising_x)
+        boundary_points_rising_x = zeros(0,2);
+    end
 
 
     % Plot the results
@@ -185,7 +235,18 @@ if 1 == 1
     plot(boundary_points_rising_y(:,1),boundary_points_rising_y(:,2),'g.','Markersize',40);
     plot(boundary_points_falling_x(:,1),boundary_points_falling_x(:,2),'c.','Markersize',40);
     plot(boundary_points_rising_x(:,1),boundary_points_rising_x(:,2),'m.','Markersize',40);
-end
+
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
 end 
 if flag_do_debug
     fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
