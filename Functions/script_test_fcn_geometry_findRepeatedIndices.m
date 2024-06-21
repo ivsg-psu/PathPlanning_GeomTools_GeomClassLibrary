@@ -1,11 +1,12 @@
-% script_test_fcn_geometry_findRepeatedNumber
-% Exercises the function: fcn_geometry_findRepeatedNumber
+% script_test_fcn_geometry_findRepeatedIndices
+% Exercises the function: fcn_geometry_findRepeatedIndices
 % Revision history:
 % 2024_6_17
 % Jiabao Zhao wrote the code
 % 2024_06_19 - Aneesh Batchu
 % -- Added a case when "length_indices_array" is more than max(indices) of
 % array
+% -- Changed the name of the script
 
 %% Test 1
 fig_num = 1;

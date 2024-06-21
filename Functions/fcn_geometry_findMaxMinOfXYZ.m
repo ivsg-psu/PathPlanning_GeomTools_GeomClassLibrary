@@ -37,7 +37,7 @@ function [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(N_
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_Geometry_findMaxMinOfXYZ.m for a full
+%       script_test_fcn_geometry_findMaxMinOfXYZ.m for a full
 %       test suite.
 %
 % This function was written on 2024_06_14 by Jiabao Zhao
