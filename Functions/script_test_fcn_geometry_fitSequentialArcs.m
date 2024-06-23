@@ -177,7 +177,10 @@ for ith_plot = 1:NfitsInSequence
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
 
-%% Connect the fits so that the lines perfectly align with the arcs
+%% EVERYTHING AFTER THIS POINT IS OPTIONAL
+URHERE
+
+%% Connect the fits so that the lines perfectly align with the arcs?
 %
 % Check Line 189: The backward parameter inputs are not actually backward
 % paramters. Check the inputs. 
@@ -185,9 +188,10 @@ end
 fig_num = 23456;
 figure(fig_num);clf;
 
-fitting_tolerance = 2;
-revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward,  fitting_tolerance, fig_num);
-revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance, fig_num);
+fitting_tolerance = 5;
+continuity_level = 2;
+revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward,  fitting_tolerance, continuity_level, fig_num);
+revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance, continuity_level, fig_num);
 
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(fig_num));
@@ -195,7 +199,7 @@ fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSeque
 subplot(1,2,1);
 good_axis_limits = axis;
 
-%% Print the results
+%%% Print the results
 
 
 NleadCharacters = 20;
@@ -239,7 +243,7 @@ fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
 fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
 
 
-%% Plot the results
+%%% Plot the results
 comparison_fig_num = 2828;
 figure(comparison_fig_num); clf;
 hold on;
@@ -284,6 +288,16 @@ for ith_fit = 1:NfitsInSequence
 end
 
 %% Test track data
+% Initialize the subplots
+fig_num = 9999;
+
+fig_num_array(1) = fig_num;
+fig_num_array(2) = 0;
+fig_num_array(3) = 0;
+fig_num_array(4) = 0;
+figure(fig_num); clf;
+
+
 % Check to see if XY data for the centerline of the original track lane was loaded earlier
 mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
 if exist(mat_filename,'file')

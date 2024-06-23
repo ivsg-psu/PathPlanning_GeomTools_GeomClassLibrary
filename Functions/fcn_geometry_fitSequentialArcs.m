@@ -130,6 +130,8 @@ else
     end
 end
 
+flag_do_debug = 1;
+
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
