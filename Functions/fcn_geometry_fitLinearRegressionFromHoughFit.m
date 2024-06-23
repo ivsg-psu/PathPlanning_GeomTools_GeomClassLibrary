@@ -78,6 +78,14 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 % -- fixed bounding box bug when standard deviations are very close to 0
 % 2024_04_14 - S. Brennan
 % -- added fcn_geometry_fillColorFromNumberOrName for plotting
+% 2024_06_21 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 
 
@@ -197,8 +205,8 @@ associated_points_in_domain = points_in_domain;
 
 %% First, sort all the points in the original direction
 % Find the unit vector (in fast mode) connecting base to end point.
-unit_tangent_vector_of_domain = best_fit_parameters(1,1:2);
-base_point_of_domain          = best_fit_parameters(1,3:4);
+base_point_of_domain          = best_fit_parameters(1,1:2);
+unit_tangent_vector_of_domain = [cos(best_fit_parameters(1,3)) sin(best_fit_parameters(1,3))];
 
 % Find domain ranges related to point-to-point fit
 projection_vectors_from_base = associated_points_in_domain - base_point_of_domain;
@@ -270,12 +278,11 @@ unit_converted_projection_vector = [cos(regression_vector_angle) sin(regression_
 unit_converted_orthogonal_vector = unit_converted_projection_vector*[0 1; -1 0];
 
 
-
-
 % Project the base point onto the line segment using the dot
 % product to create a new base point
 projection_to_lowest_point = sorted_points_in_domain(1,:) - base_point_on_line;
 transverse_distance_to_lowest_point = sum(projection_to_lowest_point.*unit_converted_projection_vector,2);
+updated_base_point_on_line  = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_projection_vector;
 % min_regression_point = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_projection_vector;
 
 projection_to_highest_point = sorted_points_in_domain(end,:) - base_point_on_line;
@@ -291,7 +298,14 @@ orthogonal_distances = sum(projections.*unit_converted_orthogonal_vector,2);
 % regression_fit_line_segment = [min_regression_point; max_regression_point];
 % [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) current_station_distances];
 % regression_domain.best_fit_parameters = [min_regression_point max_regression_point];
-regression_domain.best_fit_parameters = [unit_converted_projection_vector base_point_on_line transverse_distance_to_lowest_point transverse_distance_to_highest_point];
+
+% OLD: commented out on 2024_06_22
+% regression_domain.best_fit_parameters = [unit_converted_projection_vector base_point_on_line transverse_distance_to_lowest_point transverse_distance_to_highest_point];
+% NEW: added on 2024_06_22
+updated_segment_angle = atan2(unit_converted_projection_vector(2),unit_converted_projection_vector(1));
+updated_segment_length = abs(transverse_distance_to_lowest_point) + abs(transverse_distance_to_highest_point);
+regression_domain.best_fit_parameters = [updated_base_point_on_line updated_segment_angle updated_segment_length];
+
 
 %% Calculate the domain boxes
 std_dev_orthogonal_distance = std(orthogonal_distances);

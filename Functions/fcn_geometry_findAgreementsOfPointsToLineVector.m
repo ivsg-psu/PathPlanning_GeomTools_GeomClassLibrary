@@ -45,8 +45,8 @@ function [agreement_indicies, station_distances] = fcn_geometry_findAgreementsOf
 %      station tolerance settings. If a station_tolerance is specified, the
 %      indicies are sorted in station-increasing order.
 % 
-%      station_distances: the station distances, relative to the base
-%      point, that are in agreement
+%      station_distances: a [1 x 2] vector of the minimum and maximum
+%      station distances, relative to the base point, that are in agreement
 %
 % DEPENDENCIES:
 %      fcn_DebugTools_checkInputsToFunctions
@@ -228,16 +228,20 @@ if ~isempty(station_tolerance)
     end
 
     indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement(indicies_in_station_agreement);
-
-    station_distances_of_points_in_lateral_and_station_agreement = ...
-        sum(base_projection_vectors(indicies_in_both_lateral_and_station_agreement,:).* unit_projection_vector,2);
-
-    station_distances = [min(station_distances_of_points_in_lateral_and_station_agreement) max(station_distances_of_points_in_lateral_and_station_agreement)];
+ 
+    % station_distances_of_points_in_lateral_and_station_agreement = ...
+    %     sum(base_projection_vectors(indicies_in_both_lateral_and_station_agreement,:).* unit_projection_vector,2);
+    % 
+    % station_distances = [min(station_distances_of_points_in_lateral_and_station_agreement) max(station_distances_of_points_in_lateral_and_station_agreement)];
 else
     indicies_in_both_lateral_and_station_agreement = indicies_in_lateral_agreement;
-    station_distances = [-inf inf];
+    % station_distances = [-inf inf];
 end
 
+station_distances_of_points_in_lateral_and_station_agreement = ...
+    sum(base_projection_vectors(indicies_in_both_lateral_and_station_agreement,:).* unit_projection_vector,2);
+
+station_distances = [min(station_distances_of_points_in_lateral_and_station_agreement) max(station_distances_of_points_in_lateral_and_station_agreement)];
 agreement_indicies = indicies_in_both_lateral_and_station_agreement;
 
 

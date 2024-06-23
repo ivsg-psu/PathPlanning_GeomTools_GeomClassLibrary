@@ -78,6 +78,20 @@ function domains = fcn_geometry_fitHoughLine(points, transverse_tolerance, stati
 % -- functionalized fcn_INTERNAL_findPhisRhos
 % -- changed outputs to domain types
 % -- added fcn_geometry_plotFitDomains for plotting
+% 2024_06_22 - Sean Brennan
+% -- changed line parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -223,8 +237,16 @@ if flag_find_only_best_agreement ==1
     % Save results to outputs
     % best_fit_parameters_phi_rho_form{1} = fitted_parameters(best_agreement_index,:);
     % best_fit_source_indicies{1} = combos_paired(max_agreement_index,:);   
-    best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) station_distances];
 
+    % Format revised on 2024_06_22 for new line style:
+    % OLD:
+    %     best_fit_parameters_unitvector_basepoint_distance_form{1} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) station_distances];
+    % NEW:
+    segment_base_point = points(base_point_index,:) + unit_projection_vectors(max_agreement_index,:)*station_distances(1);
+    segment_angle = atan2(unit_projection_vectors(max_agreement_index,2), unit_projection_vectors(max_agreement_index,1));
+    segment_length = station_distances(2) - station_distances(1);
+    best_fit_parameters_unitvector_basepoint_distance_form{1} = [segment_base_point segment_angle segment_length];
+    
     max_agreement_indicies{1} = max_agreement_index;
 else % Find many agreements, up to the number of specified votes
     N_fits = 0;
@@ -248,7 +270,15 @@ else % Find many agreements, up to the number of specified votes
         best_fit_agreement_indicies{N_fits} = current_agreement_indicies; %#ok<AGROW>
         % best_fit_source_indicies{N_fits} = combos_paired(max_agreement_index,:); %#ok<AGROW>
         % best_fit_parameters_phi_rho_form{N_fits} = fitted_parameters(best_agreement_index,:); %#ok<AGROW>
-        best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) current_station_distances]; %#ok<AGROW>
+
+        % Format revised on 2024_06_22 for new line style:
+        % OLD: 
+        % best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [unit_projection_vectors(max_agreement_index,:) points(base_point_index,:) current_station_distances]; %#ok<AGROW>
+        % NEW:
+        segment_base_point = points(base_point_index,:) + unit_projection_vectors(max_agreement_index,:)*current_station_distances(1);
+        segment_angle = atan2(unit_projection_vectors(max_agreement_index,2),unit_projection_vectors(max_agreement_index,1));
+        segment_length = current_station_distances(2) - current_station_distances(1);
+        best_fit_parameters_unitvector_basepoint_distance_form{N_fits} = [segment_base_point segment_angle segment_length]; %#ok<AGROW>
         % best_fit_source_indicies{N_fits} = combos_paired(best_agreement_index,:); %#ok<AGROW>
 
         % Remove all combos_paired sums that include this agreement
@@ -475,8 +505,8 @@ for ith_domain = 1:N_domains
 
     % Find the points that start and end the domain Hough fit
     fit_parameters              = best_fit_parameters_unitvector_basepoint_distance_form{ith_domain};
-    unit_projection_vector      = fit_parameters(1,1:2);
-    domain_specific_start_point = fit_parameters(1,3:4);
+    domain_specific_start_point = fit_parameters(1,1:2);
+    unit_projection_vector      = [cos(fit_parameters(1,3)) sin(fit_parameters(1,3))];
 
     % Calculate a box that goes all around the points in the domain
     base_projection_vectors = points_in_domain - domain_specific_start_point;
@@ -499,9 +529,9 @@ for ith_domain = 1:N_domains
 
     % Determine the best_fit_parameters
     if flag_this_is_a_line
-        best_fit_parameters = fit_parameters(1,1:4);
+        best_fit_parameters = fit_parameters(1,1:3);
     else
-        best_fit_parameters = fit_parameters(1,1:6);
+        best_fit_parameters = fit_parameters(1,1:4);
     end
 
 

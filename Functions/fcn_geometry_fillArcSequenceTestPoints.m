@@ -36,7 +36,7 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 %      namedCurveTypes: a cell array of names indicating the type of curve
 %      for each test point sequence. Names include:
 %
-%           'line': for line segments
+%           'segment': for line segments
 %
 %           'arc': for arc segments
 %
@@ -64,7 +64,15 @@ function [test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, n
 % 2024_04_14 - S Brennan
 % -- fixed output angles to be between 0 and 2*pi
 % -- added fcn_geometry_fillColorFromNumberOrName in plotting
-
+% 2024_06_21 - Sean Brennan
+% -- updated circle plotting to match circle center + to color
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 
 %% Debugging and Input checks
@@ -220,7 +228,7 @@ for ith_segment = 1:N_segments
 
         trueParameters{ith_segment}   = true_arc_parameters; %#ok<AGROW>
     else
-        namedCurveTypes{ith_segment} = 'line'; %#ok<AGROW>
+        namedCurveTypes{ith_segment} = 'segment'; %#ok<AGROW>
         circleCenters(ith_segment,:) = [nan nan];
         projection_distances = (0:(1/M):total_arc_length)';
         N_points = length(projection_distances);
@@ -230,12 +238,11 @@ for ith_segment = 1:N_segments
         perturbed_points = current_position + projection_distances*unit_tangential_vector + orthogonal_distances.*unit_radial_vector;
         final_point = current_position + total_arc_length.*unit_tangential_vector;
 
-        true_line_parameters(1,1:2) = unit_tangential_vector;
-        true_line_parameters(1,3:4) = current_position;
-        true_line_parameters(1,5)   = 0;
-        true_line_parameters(1,6)   = sum((final_point - current_position).^2,2).^0.5;
+        true_segment_parameters(1,1:2) = current_position;
+        true_segment_parameters(1,3)   = atan2(unit_tangential_vector(2),unit_tangential_vector(1));
+        true_segment_parameters(1,4)   = sum((final_point - current_position).^2,2).^0.5;
 
-         trueParameters{ith_segment}   = true_line_parameters; %#ok<AGROW>
+         trueParameters{ith_segment}   = true_segment_parameters; %#ok<AGROW>
     end
 
     % Convert to test points
@@ -281,16 +288,22 @@ if flag_do_plots
     hold on;
     grid on;
 
-    % Plot the circle centers
-    plot(circleCenters(:,1), circleCenters(:,2), 'r+','MarkerSize',30);
 
     % Plot the results
     plot(test_points(:,1),test_points(:,2),'b.','MarkerSize',10);
 
     % Plot the segments in different colors
     for ith_row = 1:length(arc_pattern(:,1))
+        
         current_color = fcn_geometry_fillColorFromNumberOrName(ith_row);
+
+        % Plot the arc's circle centers
+        plot(circleCenters(ith_row,1), circleCenters(ith_row,2), 'r+','MarkerSize',30, 'Color',current_color);
+
+        % Plot the start as a large circle
         plot(trueStartPointsOfArcs(ith_row,1),trueStartPointsOfArcs(ith_row,2),'.','MarkerSize',50,'Color',current_color);
+
+        % Plot the points
         if ith_row < length(arc_pattern(:,1))
             range = (arcStartIndicies(ith_row):arcStartIndicies(ith_row+1));
         else

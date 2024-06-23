@@ -81,6 +81,9 @@
 % -- Fixed fcn_geometry_alignSegmentArc
 % 2024_06_14 - Sean Brennan
 % -- Fixed fcn_geometry_alignSegmentArc
+% 2024_06_19 - 2024_06_21 - Sean Brennan
+% -- Reparameterized spiral, line, and segment definitions to be consistent with
+% each other and with the other parameter sets
 
 %% To-do items
 % 2024_04_15 - S. Brennan

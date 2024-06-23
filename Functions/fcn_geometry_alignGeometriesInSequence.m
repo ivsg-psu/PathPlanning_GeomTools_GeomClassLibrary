@@ -6,32 +6,6 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 % then second to third, etc. and matches the fits together to achieve
 % levels of continuity between fits.
 %
-% The levels of alignment include:
-%
-%  C0 continuous: the ith+1 segment is forced to intersect the ith segment
-%
-%  C1 continous: the ith+1 segment is C0 continous with the ith segment,
-%  and the tangent vector of the ith+1 segment is forced to match the
-%  tangent vector of the ith segment at the intersection point. In other
-%  words, the derivative dt/ds in St-coordinates are matched. Or, in XY
-%  coordinates, the radius of ith fit at point of contact is matched to the
-%  radius of the ith+1 fit at the same contact point. NOTE: a function can
-%  be C1 continuous in St coordinates but NOT C1 continuous in XY
-%  coordinates. For example, an arc joining a vertical line has an
-%  undefined slope at the vertical line, but still be tangent to the
-%  circle.
-%
-%  C2 continous: the ith+1 segment is C0 and C1 continous with the ith
-%  segment, and the curvature (1/R) of the ith+1 segment is forced to match
-%  the curvature of the ith segment at the intersection point. In other
-%  words, the 2nd derivative dt/ds in St-coordinates are matched such that
-%  there are no discontinuities in the curvature. For vehicles, steering
-%  angle is kinematically (but not dynamically) associated with the
-%  radius of the local path. Enforcing C2 curvature thus forces the curve
-%  fit to produce a path such that the steering angle of a vehicle would
-%  not have to instantaneously change from one setting to another in order
-%  for a vehicle to remain on a path.
-%
 % The following matches are supported with either C0, C1, and C2
 % continuity, and user-defined tolerances:
 %
@@ -46,7 +20,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 %
 % Format:
 % revised_fitSequence_parameters = ...
-% fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (fig_num))
+% fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (fig_num))
 %
 % INPUTS:
 %      fitSequence_bestFitType: a cell array of length N that contains
@@ -63,6 +37,41 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 %      process is stopped.
 %
 %      (OPTIONAL INPUTS)
+%
+%      continuity_level: the level of continuity requested between the
+%      geometries, either 0, 1, or 2. The default is 2. 
+% 
+%           The levels of alignment continuity, from 0 to 2, mean the
+%           following:
+% 
+%           C0 continuous: the ith+1 segment is forced to intersect the ith
+%           segment
+% 
+%           C1 continous: the ith+1 segment is C0 continous with the ith
+%           segment, and the tangent vector of the ith+1 segment is forced
+%           to match the tangent vector of the ith segment at the
+%           intersection point. In other words, the derivative dt/ds in
+%           St-coordinates are matched. Or, in XY coordinates, the radius
+%           of ith fit at point of contact is matched to the radius of the
+%           ith+1 fit at the same contact point. NOTE: a function can be C1
+%           continuous in St coordinates but NOT C1 continuous in XY
+%           coordinates. For example, an arc joining a vertical line has an
+%           undefined slope at the vertical line, but still be tangent to
+%           the circle.
+% 
+%           C2 continous: the ith+1 segment is C0 and C1 continous with the
+%           ith segment, and the curvature (1/R) of the ith+1 segment is
+%           forced to match the curvature of the ith segment at the
+%           intersection point. In other words, the 2nd derivative dt/ds in
+%           St-coordinates are matched such that there are no
+%           discontinuities in the curvature. For vehicles, C2 continuity
+%           is usually required for high-speed roads because the steering
+%           angle is kinematically (but not dynamically) associated with
+%           the radius of the local path. Enforcing C2 curvature thus
+%           forces the curve fit to produce a path such that the steering
+%           angle of a vehicle does not have to instantaneously change
+%           from one position to another in order for a vehicle to remain
+%           centered on a path.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -88,6 +97,33 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 % Revision history:
 % 2024_04_19 - S Brennan
 % -- wrote the code
+% 2024_06_21 - Sean Brennan
+% -- changed spiral parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
+% -- changed line parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
+% 2024_06_21 - Sean Brennan
+% -- added continuity_level as an input option
 
 %% Debugging and Input checks
 
@@ -95,7 +131,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==4 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -138,15 +174,25 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,4);
+        narginchk(3,5);
 
     end
 end
 
+% Does user want to specify continuity_level?
+continuity_level = 2;
+if (4<=nargin)
+    temp = varargin{1};
+    if ~isempty(temp)
+        continuity_level = temp;
+    end
+end
+
+
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if  (0==flag_max_speed) && (4<= nargin)
+if  (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -188,8 +234,6 @@ NfitsInSequence = length(fitSequence_bestFitType);
 N_revisedFits                     = 0;
 revised_fitSequence_types{1}      = '';
 revised_fitSequence_parameters{1} = [];
-
-continuity_level = 2;
 
 
 % Loop through fits, connecting them together
@@ -401,12 +445,15 @@ switch X_fitType
 
     case 'arc'
         % Arc to Arc
-        % Call function
-        % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-        % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
-        
-        [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
-            arc_parameters, X_parameters, (threshold), (continuity_level), (77777));
+        % Call function to see if the connection is feasible
+        in_boundary_margin = [];
+        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc_parameters, X_parameters, continuity_level, (threshold), (in_boundary_margin), (-1));
+
+        if flag_is_feasible
+            [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
+                arc_parameters, X_parameters, (threshold), (continuity_level), (77777));
+        end
+
     otherwise
         warning('on','backtrace');
         warning('An error will be thrown at this point due to missing code.');
@@ -437,6 +484,11 @@ else
         revised_sequence_parameters{2} = revised_X_parameters;
 
     end
+end
+
+if 1==flag_fit_failed
+    revised_sequence_types{1} = '';
+    revised_sequence_parameters{1} = nan;
 end
 end % Ends fcn_INTERNAL_alignArcToX
 

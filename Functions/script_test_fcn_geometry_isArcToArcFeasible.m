@@ -1,5 +1,5 @@
-%% script_test_fcn_geometry_isC2FeasibleArcToArc
-% Tests the function fcn_geometry_isC2FeasibleArcToArc
+%% script_test_fcn_geometry_isArcToArcFeasible
+% Tests the function fcn_geometry_isArcToArcFeasible
 
 % Revision history:
 % 2024_05_26 - S Brennan
@@ -26,7 +26,7 @@
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Illustrative%20Test%20Cases
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% 1.1 Basic test - circle2 in circle1
+%% 1.2.1 Basic test - circle2 in circle1
 
 fig_num = 1101;
 figure(fig_num);
@@ -50,12 +50,13 @@ circle2_center_xy            = [x_offset circle2_radius+y_offset];
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -87,10 +88,11 @@ assert(all(isnan(spiral_join_parameters)));
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));
@@ -108,7 +110,7 @@ assert(~all(isnan(spiral_join_parameters)));
 
 
 
-%% 1.2 Basic test - circle1 in circle2
+%% 1.2.2 Basic test - circle1 in circle2
 
 fig_num = 1201;
 figure(fig_num);
@@ -132,12 +134,13 @@ circle2_center_xy            = [x_offset circle2_radius+y_offset];
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -170,10 +173,11 @@ assert(all(isnan(spiral_join_parameters)) || isequal(round(spiral_join_parameter
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));
@@ -191,7 +195,7 @@ assert(~all(isnan(spiral_join_parameters)));
 
 
 
-%% 1.3 Basic test - circle1 outside of circle2
+%% 1.2.3 Basic test - circle1 outside of circle2
 
 fig_num = 1301;
 figure(fig_num);
@@ -215,12 +219,13 @@ circle2_center_xy            = [x_offset -1*(circle2_radius+y_offset)];
 circle2_parameters(1,1:2) = circle2_center_xy;
 circle2_parameters(1,3)   = circle2_radius;
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -253,10 +258,11 @@ assert(all(isnan(spiral_join_parameters)) || isequal(round(spiral_join_parameter
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(circle1_parameters, circle2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));
@@ -331,12 +337,13 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -368,10 +375,11 @@ assert(all(isnan(spiral_join_parameters)));
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));
@@ -446,12 +454,13 @@ arc2_parameters(1,4:5) = arc2_angles;
 arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -484,10 +493,11 @@ assert(all(isnan(spiral_join_parameters)) || isequal(round(spiral_join_parameter
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));
@@ -563,12 +573,13 @@ arc2_parameters(1,6)   = arc2_is_circle;
 arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -601,10 +612,11 @@ assert(all(isnan(spiral_join_parameters)) || isequal(round(spiral_join_parameter
 %%%
 % Call function with a user-defined margin that is small
 
-% Set threshold and margin
+% Set continuity_level, threshold and in_boundary_margin
+continuity_level = 2;
 threshold = 0;
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isArcToArcFeasible(arc1_parameters, arc2_parameters, continuity_level, (threshold), (in_boundary_margin), (fig_num));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.0707));

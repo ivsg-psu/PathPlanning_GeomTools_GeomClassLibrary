@@ -41,7 +41,31 @@ function fcn_geometry_plotFitDomains(domains, varargin)
 % 2024_04_15 - Aneesh Batchu
 % -- added a case for "Hough cubic polynomial" and "Cubic polynomial poly
 % fit"
-
+% 2024_06_22 - Sean Brennan
+% -- changed spiral parameter format to new style:
+%            'spiral' - 
+%
+%               [
+%                x0,  % The initial x value
+%                y0,  % The initial y value
+%                h0,  % The initial heading
+%                s_Length,  % the s-coordinate length allowed
+%                K0,  % The initial curvature
+%                Kf   % The final curvature
+%              ] 
+% -- changed line parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%             ]
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -216,32 +240,31 @@ if flag_do_plots
             switch domain_to_plot.best_fit_type
 
                 case {'Hough line','Vector regression line fit'}
-                    % Plot the best-fit line 
-                    %             [unit_projection_vector_x,
-                    %              unit_projection_vector_y,
+                    % Plot the best-fit line
+                    %             [
                     %              base_point_x,
                     %              base_point_y,
+                    %              heading,
                     %             ]
-                    unit_projection_vector = model_fit(1,1:2);
-                    base_point = model_fit(1,3:4);
-                    low_station  = -max_distance;
-                    high_station = max_distance;
+                    base_point = model_fit(1,1:2);
+                    unit_projection_vector = [cos(model_fit(1,3)) sin(model_fit(1,3))];
+                    low_station  = -10;
+                    high_station = 10;
                     line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
                 case {'Hough segment','Vector regression segment fit'}
-                    % Plot the best-fit segment                    
-                    %             [unit_projection_vector_x,
-                    %              unit_projection_vector_y,
+                    % Plot the best-fit segment
+                    %             [
                     %              base_point_x,
                     %              base_point_y,
-                    %              station_distance_min,
-                    %              station_distance_max,
+                    %              heading,
+                    %              s_Length,
                     %             ]
-                    unit_projection_vector = model_fit(1,1:2);
-                    base_point = model_fit(1,3:4);
-                    low_station  = model_fit(1,5);
-                    high_station = model_fit(1,6);
+                    base_point = model_fit(1,1:2);
+                    unit_projection_vector = [cos(model_fit(1,3)) sin(model_fit(1,3))];
+                    low_station  = 0;
+                    high_station = model_fit(1,4);
                     line_segment = [base_point + unit_projection_vector*low_station; base_point + unit_projection_vector*high_station];
                     plot(line_segment(:,1),line_segment(:,2),'.-','Linewidth',3,'MarkerSize',15,'Color',current_color);
 
@@ -264,6 +287,7 @@ if flag_do_plots
                     fcn_geometry_plotArc(circleCenter, circleRadius, start_angle_in_radians, end_angle_in_radians, flag_arc_is_counterclockwise, degree_step, current_color, fig_num);
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
+                
                 case {'Hough cubic polynomial','Cubic polynomial poly fit'}
                     % plot the best-fit cubic polynomial
                     x3_coeff = domain_to_plot.best_fit_parameters(1,8);

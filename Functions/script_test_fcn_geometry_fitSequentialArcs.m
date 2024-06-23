@@ -185,8 +185,9 @@ end
 fig_num = 23456;
 figure(fig_num);clf;
 
-revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward, 0.5, fig_num);
-revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance*2, fig_num);
+fitting_tolerance = 2;
+revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward,  fitting_tolerance, fig_num);
+revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance, fig_num);
 
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
 fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(fig_num));
@@ -281,6 +282,25 @@ for ith_fit = 1:NfitsInSequence
 
 
 end
+
+%% Test track data
+% Check to see if XY data for the centerline of the original track lane was loaded earlier
+mat_filename = fullfile(cd,'Data','Centerline_OriginalTrackLane_InnerMarkerClusterCenterOfDoubleYellow.mat');
+if exist(mat_filename,'file')
+    load(mat_filename,'XY_data');
+end
+
+% Since the XY data is very dense, keep only 1 of every "keep_every" points
+keep_every = 20;
+indicies = (1:length(XY_data(:,1)))';
+small_XY_data_indicies = find(0==mod(indicies,keep_every));
+small_XY_data = XY_data(small_XY_data_indicies,:);
+
+% Perform the fit forwards
+fitting_tolerance = [1 10]; % Units are meters
+flag_fit_backwards = 0;
+[fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
+    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, 1);
 
 
 %% Functions follow

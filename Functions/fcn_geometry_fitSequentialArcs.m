@@ -99,6 +99,14 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % 2024_04_19 - S. Brennan
 % -- added ability to provide tolerances in station and transverse
 % directions separately
+% 2024_06_21 - Sean Brennan
+% -- changed segment parameter format to new standard:
+%             [
+%              base_point_x, 
+%              base_point_y, 
+%              heading,
+%              s_Length,
+%             ]
 
 %% Debugging and Input checks
 
@@ -153,7 +161,7 @@ if 0==flag_max_speed
 end
 
 
-% Does user want to specify flag_fit_backwards?
+% Does user want to specify fitting_tolerance?
 fitting_tolerance = 0.1;
 if (2<=nargin)
     temp = varargin{1};

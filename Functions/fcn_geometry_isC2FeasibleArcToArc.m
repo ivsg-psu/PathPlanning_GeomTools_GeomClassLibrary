@@ -69,6 +69,9 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % -- wrote the code
 % 2024_06_08 - S Brennan
 % -- added in_boundary_margin input option
+% 2024_06_22 - S Brennan
+% -- added in check for arcs along with circles, including directionality
+% test
 
 %% Debugging and Input checks
 
@@ -178,7 +181,31 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Extract needed values from parameter sets
+%% Determine if the inputs are arcs or circles
+if length(arc1_parameters(1,:))==7
+    flag_arc1_is_arc = 1;
+else
+    flag_arc1_is_arc = 0;
+end
+
+if length(arc2_parameters(1,:))==7
+    flag_arc2_is_arc = 1;
+else
+    flag_arc2_is_arc = 0;
+end
+
+if 1==flag_arc1_is_arc && 1==flag_arc2_is_arc
+    flag_check_arcs = 1;
+    if arc1_parameters(1,7) == arc2_parameters(1,7)
+        flag_oriented_same_direction = 1;
+    else
+        flag_oriented_same_direction = 0;
+    end
+else
+    flag_check_arcs = 0;
+end
+
+%% Extract needed values from parameter sets
 % Get the details from arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc1_center_xy                = arc1_parameters(1,1:2);
 r1                            = arc1_parameters(1,3);
@@ -414,19 +441,31 @@ query_point = [r2 d12];
 % to the threshold to see if the projection would be allowed to determine
 % feasibility.
 
-
 cases_test_vectors = [...
     query_point - [r1, 0];
     query_point - [r1, 0];
     query_point - [0, r1];
     ];
 
-cases_projection_vectors = [...
-     1 1;
-    -1 1;
-     1 -1];
+if flag_check_arcs
+    if flag_oriented_same_direction
+        cases_unit_projection_vectors = [...
+            1 1;
+            -1 1;
+            nan nan]/(2^0.5);
+    else
+        cases_unit_projection_vectors = [...
+            nan nan;
+            nan nan;
+            1 -1]/(2^0.5);
+    end
+else
+    cases_unit_projection_vectors = [...
+        1 1;
+        -1 1;
+        1 -1]/(2^0.5);
+end
 
-cases_unit_projection_vectors = fcn_geometry_calcUnitVector(cases_projection_vectors);
 distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
 [closest_distance,case_number] = min(distances_by_case);
 
@@ -490,18 +529,31 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
+    % Plot the inputs
     segment_length = [];
-    format_string = sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',7 ');
-    fcn_geometry_plotGeometry('circle', arc1_parameters,segment_length, format_string, (fig_num));
-    format_string = sprintf(' ''-'',''Color'',[1 0 0],''LineWidth'',4 ');
-    fcn_geometry_plotGeometry('circle', arc2_parameters,segment_length, format_string, (fig_num));
-
-    if 0==flag_is_feasible
-        title(sprintf('NOT C2 feasible, dist: %.2f',feasibility_distance));
-        format_string = sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',4 ');
-        fcn_geometry_plotGeometry('circle', closest_feasible_arc2_parameters,segment_length, format_string, (fig_num));
+    format1_string = sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',7 ');
+    
+    if 1==flag_arc1_is_arc
+        fcn_geometry_plotGeometry('arc', arc1_parameters,segment_length, format1_string, (fig_num));
     else
-        title(sprintf('C2 feasible, dist: %.2f',feasibility_distance));
+        fcn_geometry_plotGeometry('circle', arc1_parameters,segment_length, format1_string, (fig_num));
+    end
+
+    format2_string = sprintf(' ''-'',''Color'',[1 0 0],''LineWidth'',4 ');
+    if 1==flag_arc2_is_arc
+        fcn_geometry_plotGeometry('arc', arc2_parameters,segment_length, format2_string, (fig_num));
+    else
+        fcn_geometry_plotGeometry('circle', arc2_parameters,segment_length, format2_string, (fig_num));
+    end
+
+    % Plot the corrected solution?
+    if 0==flag_is_feasible
+        format_string = sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',4 ');
+        if flag_check_arcs
+            fcn_geometry_plotGeometry('arc', closest_feasible_arc2_parameters,segment_length, format_string, (fig_num));
+        else
+            fcn_geometry_plotGeometry('circle', closest_feasible_arc2_parameters,segment_length, format_string, (fig_num));
+        end
     end
 
     % Make axis slightly larger?
@@ -540,6 +592,14 @@ if flag_do_plots
         percent_larger = 0.3;
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
+
+    % Add a title
+    if 0==flag_is_feasible
+        sgtitle(sprintf('NOT C2 feasible, dist: %.2f',feasibility_distance));
+    else
+        sgtitle(sprintf('C2 feasible, dist: %.2f',feasibility_distance));
+    end
+
 end % Ends check if plotting
 
 if flag_do_debug

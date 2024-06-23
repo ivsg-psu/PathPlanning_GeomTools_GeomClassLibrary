@@ -6,8 +6,11 @@
 
 close all;
 
-%% Test 1: a basic test of line segment fitting
+%% Test 1: a basic test of line segment fitting with 2 points
 fig_num = 1;
+figure(fig_num);
+clf;
+
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 points_required_for_agreement = [];
@@ -29,7 +32,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough segment',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
@@ -92,7 +95,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough segment',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
@@ -157,7 +160,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough line',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 4]));
+    assert(isequal(size(domain.best_fit_parameters),[1 3]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
@@ -222,7 +225,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough segment',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
@@ -263,6 +266,8 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
 fig_num = 5;
+figure(fig_num);
+clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
@@ -287,7 +292,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough segment',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
@@ -353,7 +358,7 @@ for ith_domain = 1:length(domains)-1
     assert(strcmp('Hough segment',domain.best_fit_type));
     assert(length(domain.points_in_domain(:,1))>1);
     assert(length(domain.points_in_domain(1,:))==2);
-    assert(isequal(size(domain.best_fit_parameters),[1 6]));
+    assert(isequal(size(domain.best_fit_parameters),[1 4]));
     assert(issimplified(domain.best_fit_domain_box));
 end
 
