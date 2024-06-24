@@ -288,7 +288,7 @@ if flag_do_plots
 
                     plot(circleCenter(1,1),circleCenter(1,2),'+','MarkerSize',30,'Color',current_color);
                 
-                case {'Hough cubic polynomial','Cubic polynomial poly fit'}
+                case {'Hough cubic polynomial','Polyfit cubic polynomial'}
                     % plot the best-fit cubic polynomial
                     x3_coeff = domain_to_plot.best_fit_parameters(1,8);
                     x2_coeff = domain_to_plot.best_fit_parameters(1,7);
