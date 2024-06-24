@@ -473,7 +473,13 @@ for ith_domain = 1:length(fitSequence_parameters)
             % This is a line - redo the fit with a line
             Hough_domain.points_in_domain = fitSequence_points{ith_domain};
             Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
-            Hough_domain.best_fit_type = 'Hough segment';
+            Hough_domain.best_fit_type = 'Hough segment';   
+            first_point = fitSequence_points{ith_domain}(1,:);
+            last_point = fitSequence_points{ith_domain}(end,:);
+            vector_from_first_to_last = last_point - first_point;
+            angle_of_segment = atan2(vector_from_first_to_last(2),vector_from_first_to_last(1));
+            length_of_domain = sum(vector_from_first_to_last.^2,2).^0.5;
+            Hough_domain.best_fit_parameters = [first_point angle_of_segment length_of_domain];
             regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance(1), -1);
             
             % Update the data with the regression fit
