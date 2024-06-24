@@ -419,30 +419,33 @@ if flag_plot_subfigs
     plot([absolute_start_index absolute_start_index],[-0.1 1.1],'-','Color',current_color);
 end
 
-% Rearrange outputs if fitting in backwards order so that the outputs
-% correspond to the first points in the first indicies and last points in
-% the last indicies.
-if flag_fit_backwards
-    % The indicies have Ndomains+1 in length
-    temp_fitSequence_endIndicies = fitSequence_endIndicies;
-    Nindicies = Ndomains+1;
-    for ith_index = 1:Nindicies
-        fitSequence_endIndicies{ith_index} = temp_fitSequence_endIndicies{Nindicies+1-ith_index};
-    end
-
-    % These inputs all have Ndomains in length
-    temp_fitSequence_points      = fitSequence_points;
-    temp_fitSequence_shapes      = fitSequence_shapes;
-    temp_fitSequence_parameters  = fitSequence_parameters;
-    temp_fitSequence_bestFitType = fitSequence_bestFitType;
-    for ith_domain = 1:Ndomains
-        fitSequence_points{ith_domain}      = temp_fitSequence_points{Ndomains+1-ith_domain};
-        fitSequence_shapes{ith_domain}      = temp_fitSequence_shapes{Ndomains+1-ith_domain};
-        fitSequence_parameters{ith_domain}  = temp_fitSequence_parameters{Ndomains+1-ith_domain};
-        fitSequence_bestFitType{ith_domain} = temp_fitSequence_bestFitType{Ndomains+1-ith_domain};
-    end
-
-end
+% % Rearrange outputs if fitting in backwards order so that the outputs
+% % correspond to the first points in the first indicies and last points in
+% % the last indicies. As well, flip the ordering of the parameters
+% % front/back.
+% if flag_fit_backwards
+%     % The indicies have Ndomains+1 in length
+%     temp_fitSequence_endIndicies = fitSequence_endIndicies;
+%     Nindicies = Ndomains+1;
+%     for ith_index = 1:Nindicies
+%         fitSequence_endIndicies{ith_index} = temp_fitSequence_endIndicies{Nindicies+1-ith_index};
+%     end
+% 
+% 
+%     % These inputs all have Ndomains in length
+%     temp_fitSequence_points      = fitSequence_points;
+%     temp_fitSequence_shapes      = fitSequence_shapes;
+%     temp_fitSequence_parameters  = fitSequence_parameters;
+%     temp_fitSequence_bestFitType = fitSequence_bestFitType;
+%     for ith_domain = 1:Ndomains
+%         fitSequence_points{ith_domain}      = temp_fitSequence_points{Ndomains+1-ith_domain};
+%         fitSequence_shapes{ith_domain}      = temp_fitSequence_shapes{Ndomains+1-ith_domain};
+%         flipped_order_parameters = fcn_geometry_flipGeom('arc',  temp_fitSequence_parameters{Ndomains+1-ith_domain});
+%         fitSequence_parameters{ith_domain}  = flipped_order_parameters;
+%         fitSequence_bestFitType{ith_domain} = temp_fitSequence_bestFitType{Ndomains+1-ith_domain};
+%     end
+% 
+% end
 
 %% Check for arcs that are really lines
 %            'Regression arc' - 
@@ -490,6 +493,39 @@ for ith_domain = 1:length(fitSequence_parameters)
         end
         
     end
+end
+
+%% 
+% Rearrange outputs if fitting in backwards order so that the outputs
+% correspond to the first points in the first indicies and last points in
+% the last indicies. As well, flip the ordering of the parameters
+% front/back.
+if flag_fit_backwards
+    % The indicies have Ndomains+1 in length
+    temp_fitSequence_endIndicies = fitSequence_endIndicies;
+    Nindicies = Ndomains+1;
+    for ith_index = 1:Nindicies
+        fitSequence_endIndicies{ith_index} = temp_fitSequence_endIndicies{Nindicies+1-ith_index};
+    end
+
+
+    % These inputs all have Ndomains in length
+    temp_fitSequence_points      = fitSequence_points;
+    temp_fitSequence_shapes      = fitSequence_shapes;
+    temp_fitSequence_parameters  = fitSequence_parameters;
+    temp_fitSequence_bestFitType = fitSequence_bestFitType;
+    for ith_domain = 1:Ndomains
+        fitSequence_points{ith_domain}      = temp_fitSequence_points{Ndomains+1-ith_domain};
+        fitSequence_shapes{ith_domain}      = temp_fitSequence_shapes{Ndomains+1-ith_domain};
+        if contains(temp_fitSequence_bestFitType{Ndomains+1-ith_domain},'arc')
+            flipped_order_parameters = fcn_geometry_flipGeom('arc',  temp_fitSequence_parameters{Ndomains+1-ith_domain});
+        else
+            flipped_order_parameters = fcn_geometry_flipGeom('segment',  temp_fitSequence_parameters{Ndomains+1-ith_domain});
+        end
+        fitSequence_parameters{ith_domain}  = flipped_order_parameters;
+        fitSequence_bestFitType{ith_domain} = temp_fitSequence_bestFitType{Ndomains+1-ith_domain};
+    end
+
 end
 
 %% Plot the results (for debugging)?
