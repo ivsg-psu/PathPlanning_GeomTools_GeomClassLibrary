@@ -134,15 +134,21 @@ regression_domain = fcn_geometry_fillEmptyDomainStructure;
 % Pull out key variables
 best_fit_type            = Hough_domain.best_fit_type;
 points_in_domain         = Hough_domain.points_in_domain;
+best_fit_parameters      = Hough_domain.best_fit_parameters;
 % best_fit_domain_box      = Hough_domain.best_fit_domain_box;
 
 if isequal(best_fit_type, 'Hough cubic polynomial')
-    regression_domain.best_fit_type = 'Cubic polynomial poly fit';
+    regression_domain.best_fit_type = 'Polyfit cubic polynomial';
 end
 
-regression_domain.points_in_domain = Hough_domain.points_in_domain;
+% Set the regression domain's points_in_domain
+regression_domain.points_in_domain = points_in_domain;
+
 % Find fitted curve - use the function "polyfit"
-fittedParameters = polyfit(points_in_domain(:,1), points_in_domain(:,2), 3);
+cubicPoly_fittedParameters = polyfit(points_in_domain(:,1), points_in_domain(:,2), 3);
+
+% Regression domain fitted parameters
+fittedParameters = [best_fit_parameters(1,1:4) fliplr(cubicPoly_fittedParameters)];  
 
 regression_domain.best_fit_parameters = fittedParameters;
 
@@ -158,7 +164,7 @@ xcoor_interpolated_points_in_domain = fcn_INTERNAL_interpolatePointsInDomain(poi
 % Find the y coordinates of interpolated points in domain by substituting x
 % coordinates of interpolated points in domain in cubic polynomial using
 % "polyval"
-[ycoor_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(xcoor_interpolated_points_in_domain, fittedParameters);
+[ycoor_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(xcoor_interpolated_points_in_domain, cubicPoly_fittedParameters);
 
 % Find the unit orthogonal vectors at each interpolated points in domain
 % based on the slope of the cubic polynomial
@@ -270,6 +276,31 @@ xcoor_interpolated_points_in_domain = xcoor_interpolated_points_in_domain';
 
 end
 
+% function xcoor_interpolated_points_in_domain = fcn_INTERNAL_interpolateSourcePoints(points_in_domain, n_points)
+% 
+% % Sort the x_coordinates of points in domain
+% x_coordinates_points_in_domain = sort(points_in_domain(:,1),1);
+% 
+% % Generate the positions for the x_coordinates of points in domain 
+% indices = round(linspace(1, n_points, length(x_coordinates_points_in_domain)));
+% 
+% % Initialize the result vector with NaNs (or any placeholder)
+% xcoor_interpolated_points_in_domain = NaN(1, n_points);
+% 
+% % Place the given numbers at the calculated indices
+% xcoor_interpolated_points_in_domain(indices) = x_coordinates_points_in_domain;
+% 
+% % Find the indices of the NaNs (to interpolate)
+% nan_indices = find(isnan(xcoor_interpolated_points_in_domain));
+% 
+% % Interpolate the NaNs
+% xcoor_interpolated_points_in_domain(nan_indices) = interp1(indices, x_coordinates_points_in_domain, nan_indices, 'makima'); 
+% 
+% % The interpolated points are transposed
+% xcoor_interpolated_points_in_domain = xcoor_interpolated_points_in_domain';
+% 
+% end
+
 function [ycoor_interpolated_points_in_domain, slopes_at_each_interpolated_points_in_domain] = fcn_INTERNAL_findSlopesAtEachPoint(x_interpolated_points_in_domain, fitted_parameters)
 % Find the y coordinates of interpolated source points by substituting x
 % coordinates of interpolated source points in cubic polynomial using
@@ -296,26 +327,10 @@ theta = atan(slopes_at_each_interpolated_points_in_domain);
 % theta = atan2(slopes_at_each_test_source_point, interpolated_source_points(:,1)); 
 
 % Unit tangent vectors of all test source points
-unit_tangent_vectors = [sin(theta), cos(theta)]; 
+unit_tangent_vectors = [cos(theta), sin(theta)]; 
 
-% Pre-allocate unit_orthogonal_vectors with zeros
-unit_orthogonal_vectors = zeros(size(unit_tangent_vectors));
-
-% If the slopes are negative, rotate the unit tangent vector in clockwise
-% direction.
-indices_slope_is_negative = slopes_at_each_interpolated_points_in_domain < 0;
-unit_orthogonal_vectors(indices_slope_is_negative,:) = unit_tangent_vectors(indices_slope_is_negative,:)*[0 -1; 1 0];
-
-% If the slopes are positive, rotate the unit tangent vector in anti
-% clockwise direction
-indices_slope_is_positive = slopes_at_each_interpolated_points_in_domain > 0;
-unit_orthogonal_vectors(indices_slope_is_positive,:) = unit_tangent_vectors(indices_slope_is_positive,:)*[0 1; -1 0];
-
-% If the slopes are zero, use tangent vectors to give transverse tolerance
-% to generate the domain box
-indices_slope_is_zero = slopes_at_each_interpolated_points_in_domain == 0;
-unit_orthogonal_vectors(indices_slope_is_zero,:) = unit_tangent_vectors(indices_slope_is_zero,:);
-
+% Find the orthogonal vectors
+unit_orthogonal_vectors = unit_tangent_vectors*[0 1; -1 0];
 
 end
 
