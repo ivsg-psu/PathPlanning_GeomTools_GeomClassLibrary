@@ -84,6 +84,9 @@
 % 2024_06_19 - 2024_06_21 - Sean Brennan
 % -- Reparameterized spiral, line, and segment definitions to be consistent with
 % each other and with the other parameter sets
+% 2024_06_24 - Aneesh Batchu
+% -- created "fcn_geometry_surfaceAnalysis" to classify mapped surfaces
+% into drivable and non-drivable surfaces. 
 
 %% To-do items
 % 2024_04_15 - S. Brennan

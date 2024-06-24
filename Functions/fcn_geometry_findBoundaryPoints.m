@@ -205,9 +205,10 @@ if flag_do_plots
     flag_larger_than = Z>0.5;
     plot(X(flag_larger_than),Y(flag_larger_than),'k.','Markersize',50);
 
-
-    xlim([min(x_limits) max(x_limits)]);
-    ylim([min(y_limits) max(y_limits)]);
+    if ~isempty(x_limits) &&  ~isempty(y_limits)
+        xlim([min(x_limits) max(x_limits)]);
+        ylim([min(y_limits) max(y_limits)]);
+    end
 
     % Make axis slightly bigger than range
     temp = axis;
