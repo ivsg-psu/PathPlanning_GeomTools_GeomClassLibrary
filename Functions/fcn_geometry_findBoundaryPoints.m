@@ -56,6 +56,9 @@ function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,varar
 % -- added grid size as one of the inputs
 % -- made x_range and y_range to x_limits and y_limits
 % -- fixed some comments
+% 2024_06_25 - Aneesh Batchu
+% -- wrote a conditional statement to keep "Z_greater_than" array to be a
+% column matrix.
 
 %% Debugging and Input checks
 
@@ -275,6 +278,9 @@ flag_do_debug = 0;
 
 Z_greater_than = find(Z>0.5);
 
+if size(Z_greater_than,2) ~= 1
+    Z_greater_than = Z_greater_than'; 
+end
 % Pad the first and last points
 N_points = numel(X); % Total number of elements
 Z_greater_than_padded = [0; Z_greater_than; N_points+1];

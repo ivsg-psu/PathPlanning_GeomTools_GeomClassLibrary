@@ -10,8 +10,11 @@ function [drivable_grids, non_drivable_grids, unmapped_grids, gridCenters_mapped
 % Questions or comments? abb6486@psu.edu or sbrennan@psu.edu 
 
 % Revision history:
-% 2024_01_15 - Aneesh Batchu
+% 2024_06_15 - Aneesh Batchu
 % -- wrote the code
+% 2024_06_25 - Aneesh Batchu
+% -- NaNs from gridIndices are removed before they are used in the surface
+% analysis
 
 %% Debugging and Input checks
 
@@ -121,10 +124,11 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-flag_do_debug = 0; 
-
 % Divides the data into grids
 [gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(input_points, grid_size, grid_boundaries, (-1));
+
+% Remove NaNs from gridIndices if there any
+gridIndices = gridIndices(~isnan(gridIndices));
 
 % Calculate the number of points in each grid
 total_N_points_in_each_grid = fcn_geometry_findRepeatedIndices(gridIndices,length(grid_AABBs(:,1)), -1);
