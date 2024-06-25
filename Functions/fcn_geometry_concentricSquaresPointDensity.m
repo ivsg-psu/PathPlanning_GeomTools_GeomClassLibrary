@@ -1,4 +1,4 @@
-function [points] = fcn_geometry_concentricSquaresPointDensity(ext_length,int_length,ext_point_concentration,int_point_concentration,varargin)
+function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_length,int_length,varargin)
 
 % Given the number of points and the range of the points, generates two
 % concentric squares with the external having a length of (ext_length) and
@@ -13,19 +13,18 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(ext_length,int_le
 %
 % INPUTS:
 %   
+%       N_Points: Number of points to plot
 %       ext_length: Length of external side of the square
-%       int_length: Length of internal side of the square
-%       ext_point_concentration: Concentration of external points per unit^2
-%       int_point_concentration: Concentration of internal points per unit^2
+%       inr_length: Length of internal side of the square
 %       (OPTIONAL INPUTS)
 %
-%       noise: Noise to give the figure
+%       noise_lvl: Noise to give the figure
 %       diagonal_flag: 1 or 0 input to have a diagonal half have noise
 %       fig_num: Assigns a custom number to the figure
 %
 % OUTPUTS:
 %       
-%       Points: Values of the X,Y,and Z positions of each point
+%       X,Y,Z: Values of the X,Y,and Z positions of each point
 %
 % DEPENDENCIES:
 %
@@ -39,9 +38,6 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(ext_length,int_le
 %
 % This function was written on 2024_6_15 by Aleksandr Goncharov
 % Questions or comments? opg5041@psu.edu or 267-304-8354
-%
-%Revision History:
-% 2024_6_24 - A. Goncharov - Revised to have point concentration input instead of N_points
 
 %% Debug and Max speed
 % Check if flag_max_speed set. This occurs if the fig_num variable input
@@ -49,7 +45,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(ext_length,int_le
 % number.
 
 flag_max_speed = 0;
-if (nargin==7 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -57,8 +53,8 @@ else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
-    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
-    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
+    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
         flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
         flag_check_inputs  = str2double(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS);
@@ -93,27 +89,29 @@ end
 
 if flag_max_speed == 0
     % Are there the right number of inputs?
-    narginchk(4,7);
+    narginchk(3,6);
 end
 
 
-if nargin==4
+if nargin==3
     noise=0;
    
 end
 
 %Did the user want noise?
-if 5 <= nargin
+flag_create_noise = 0;
+if 4 <= nargin
     temp = varargin{1};
     noise=0;
     if ~isempty(temp)
+        flag_create_noise = 1;
         noise=temp;
     end
 end
 
 %Did the user want a diagonal?
 flag_create_diagonal=0;
-if 6 <= nargin
+if 5 <= nargin
     temp = varargin{2};
     if temp == 1
         flag_create_diagonal = 1;
@@ -131,7 +129,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (7<= nargin)
+if (0==flag_max_speed) && (6<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -151,86 +149,89 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Calculate number of points needed independently
-ext_points= round(ext_point_concentration*ext_length^2);
-int_points= round(int_point_concentration*int_length^2);
+%Height without noise
+Z=0;
 
-n_ext = round(sqrt(ext_points));
-n_int = round(sqrt(int_points));
+%Create The Squares
 
-spacing_ext=ext_length/n_ext;
-spacing_int=int_length/n_int;
+A=ext_length/2;  %Exterior Length from center
+B=int_length/2;   %Interior Square from Center (Half of exterior square)
 
-ext_side=ext_length/2;
-int_side=int_length/2;
+%Generate Points Inside density ~~3 times higher
+pointsInner=round(N_points*3/4);
+pointsOuter=N_points-pointsInner;
 
-%grid generation outputs X-Y coordinates of every point
-[x_e,y_e]=meshgrid(linspace(-ext_side,ext_side,n_ext),linspace(-ext_side,ext_side,n_ext));
-x_ext=x_e(:);
-y_ext=y_e(:);
+%Points outside the interior square
+X_out = (rand(pointsOuter, 1) - 0.5) * ext_length;
+Y_out = (rand(pointsOuter, 1) - 0.5) * ext_length;
 
-[x_i,y_i]=meshgrid(linspace(-int_side,int_side,n_int),linspace(-int_side,int_side,n_int));
-x_int=x_i(:);
-y_int=y_i(:);
+%Points inside the interior square
+X_in = (rand(pointsInner, 1) - 0.5) * int_length;
+Y_in = (rand(pointsInner, 1) - 0.5) * int_length;
 
+X=[X_out;X_in];
+Y=[Y_out;Y_in];
 
-%point remover, only keeps points outside the masked area
-interior_mask= abs(x_ext) <= int_side & abs(y_ext) <= int_side;
+%Creates points without a diagonal 
+if flag_create_diagonal == 0
 
-x_ext=x_ext(~interior_mask);
-y_ext=y_ext(~interior_mask);
-z_ext=zeros(length(x_ext),1);
-z_int=zeros(length(x_int),1);
+    Z_in=zeros(pointsInner,1);
+    Z_out=zeros(pointsOuter,1);
 
-if noise~=0
-
-    x_ext_disp = (-spacing_ext + (spacing_ext*2)*rand(size(x_ext,1),1)) * noise;
-    y_ext_disp = (-spacing_ext + (spacing_ext*2)*rand(size(y_ext,1),1)) * noise;
-    z_ext_disp = (-spacing_ext + (spacing_ext*2)*rand(size(z_ext,1),1)) * noise;
-
-    x_int_disp = (-spacing_int + (spacing_int*2)*rand(size(x_int,1),1)) * noise;
-    y_int_disp = (-spacing_int + (spacing_int*2)*rand(size(y_int,1),1)) * noise;
-    z_int_disp = (-spacing_int + (spacing_int*2)*rand(size(z_int,1),1)) * noise;
-
-    x_ext=x_ext+x_ext_disp;
-    y_ext=y_ext+y_ext_disp;
-    z_ext=z_ext+z_ext_disp;
-
-    x_int=x_int+x_int_disp;
-    y_int=y_int+y_int_disp;
-    z_int=z_int+z_int_disp;
-
-end
-
-%Diagonal Check
-if flag_create_diagonal==1
-    %Create diag line points
-    diag_x=[-ext_side,ext_side];
-    diag_y=[-ext_side,ext_side];
-
-    %Create diagonal mask
-    diag_area_ext= y_ext<=x_ext;
-    diag_area_int= y_int<=x_int;
-
-    if noise ~=0
-    %Revert a diagonal area to an undisturbed area
-    x_ext(diag_area_ext)=x_ext(diag_area_ext)-x_ext_disp(diag_area_ext);
-    y_ext(diag_area_ext)=y_ext(diag_area_ext)-y_ext_disp(diag_area_ext);
-    z_ext(diag_area_ext)=z_ext(diag_area_ext)-z_ext_disp(diag_area_ext);
-
-    x_int(diag_area_int)=x_int(diag_area_int)-x_int_disp(diag_area_int);
-    y_int(diag_area_int)=y_int(diag_area_int)-y_int_disp(diag_area_int);
-    z_int(diag_area_int)=z_int(diag_area_int)-z_int_disp(diag_area_int);
-
+    if noise~=0
+        Z_in = Z + noise * randn(pointsInner, 1);
+        Z_out = Z + noise * randn(pointsOuter, 1);
+        
     end
+    
+    Z=[Z_out;Z_in];
+
 end
 
-X=[x_ext;x_int];
-Y=[y_ext;y_int];
-Z=[z_ext;z_int];
+%If Diagonal Flag is checked 
+if flag_create_diagonal == 1
 
-points=[X Y Z];
+    %Points to create a diagonal line across
+    diag_x = [-A, A];
+    diag_y = [-A, A];
+        
+    Z_in=zeros(pointsInner,1);
+    Z_out=zeros(pointsOuter,1);
+    
+    if noise ~=0
+    %Filter to determine which points are in a diagonal sector
+    noisy_area_out = Y_out <= X_out;
+    noisy_area_in  = Y_in  <= X_in;
+    %Differentiating noisy and non noisy points
+    %Noisy
+    noisy_points_X_out=X_out(noisy_area_out);
+    noisy_points_Y_out=Y_out(noisy_area_out);
+    noisy_points_X_in=X_in(noisy_area_in);
+    noisy_points_Y_in=Y_in(noisy_area_in);
+    %Non-noisy
+    undisturbed_X_out = X_out(~noisy_area_out);
+    undisturbed_Y_out = Y_out(~noisy_area_out);
+    undisturbed_X_in = X_in(~noisy_area_in);
+    undisturbed_Y_in = Y_in(~noisy_area_in);
+    %number of points inside and outside that are noisy/undisturbed
+    num_Z_noisy_out=zeros(size(noisy_points_X_out));
+    num_Z_noisy_in=zeros(size(noisy_points_X_in));
+    num_Z_undisturbed_out=zeros(size(undisturbed_X_out));
+    num_Z_undisturbed_in=zeros(size(undisturbed_X_in));
+    %apply noise
+    noisy_Z_out=num_Z_noisy_out + noise * randn(sum(noisy_area_out),1);
+    noisy_Z_in=num_Z_noisy_in + noise * randn(sum(noisy_area_in),1);
+    % Combine noisy and non-noisy points
+    Z_out(noisy_area_out) = noisy_Z_out;
+    Z_in(noisy_area_in) = noisy_Z_in;
+    
+    
+   
+    end
 
+    Z=[Z_out;Z_in];
+end 
+ points=[X Y Z];
 %% Any debugging?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _
@@ -248,22 +249,37 @@ points=[X Y Z];
 
 if flag_do_plots
 
-    
     figure(fig_num);
+    %plot3(X,Y,Z)
+
+
+    P=fill3([-A -A A A -A],[-A A A -A -A],[0 0 0 0 0],'r',[-B -B B B -B],[-B B B -B -B],[0 0 0 0 0],'b');
+    P(1).FaceAlpha=0.05;
+    P(2).FaceAlpha=0.05;
     hold on
-  
 
     if flag_create_diagonal == 1
+
         %plots the diagonal
         plot(diag_x, diag_y,'black' ,'LineWidth', 2);
+
+        if noise ~= 0
+
+            scatter3(X_in, Y_in, Z_in, 'filled', 'red');
+            scatter3(X_out, Y_out, Z_out, 'filled', 'blue');
+        end
 
     end
 
 
-    scatter3(x_ext, y_ext, z_ext, 'filled','c');
-    scatter3(x_int, y_int, z_int, 'filled','r');
+    if flag_create_diagonal == 0 | noise==0
+        scatter3(X_in,Y_in,Z_in,'filled','red')
+        scatter3(X_out,Y_out,Z_out,'filled','blue')
+        hold off
+    end
+
+
     view(3)
-    hold off
 
 end
 
