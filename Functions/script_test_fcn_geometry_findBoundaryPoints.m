@@ -76,6 +76,50 @@ plot(x,y_line,'b-','LineWidth',3);
 assert(isequal(boundary_points(1,2),2.5));
 assert(isequal(boundary_points(2,2),2.5));
 assert(isequal(boundary_points(3,2),2.5));
+
+%% Simple example 3
+
+x = [1,2,3,4,5];
+y = [1,2,3,4,5];
+grid_size = x(2) - x(1); 
+[X,Y] = meshgrid(x,y);
+
+% draw a boundary lines of a rectangle shape with length of 3
+
+Z = [0 0 0 0 0;0 1 1 1 0;0 1 1 1 0;0 1 1 1 0; 0 0 0 0 0];
+
+if 1==0
+    % Plot the data in 3D
+    figure(1234);
+    clf;
+    surf(X,Y,Z)
+end
+
+x_limits = [min(x) max(x)];  
+y_limits = [min(y) max(y)]; 
+
+% Calculate boundary points
+fig_num = 123;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+
+% Plot the boundary line
+y_line = [4.5,4.5,4.5,4.5,4.5];
+y_line1 = [1.5,1.5,1.5,1.5,1.5];
+plot(x,y_line,x,y_line1,y_line,y,y_line1,y,'b-','LineWidth',3);
+
+assert(isequal(boundary_points(1,2),4.5));
+assert(isequal(boundary_points(2,2),4.5));
+assert(isequal(boundary_points(3,2),4.5));
+assert(isequal(boundary_points(4,2),1.5));
+assert(isequal(boundary_points(5,2),1.5));
+assert(isequal(boundary_points(6,2),1.5));
+assert(isequal(boundary_points(7,1),4.5));
+assert(isequal(boundary_points(8,1),4.5));
+assert(isequal(boundary_points(9,1),4.5));
+assert(isequal(boundary_points(10,1),1.5));
+assert(isequal(boundary_points(11,1),1.5));
+assert(isequal(boundary_points(12,1),1.5));
 %% Example for Aneesh
 
 % Create some data
