@@ -68,7 +68,7 @@ arc2_vector_start         = [cos(-135*pi/180) sin(-135*pi/180)];
 arc2_vector_end           = [cos(-90*pi/180) sin(-90*pi/180)];
 arc2_is_circle            = 0;
 arc2_is_counter_clockwise = 1;
-arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+arc2_angles = mod([atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));],2*pi);
 
 
 % Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -98,7 +98,7 @@ line_base_point_xy       = [-4 3];
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear line_parameters
 line_parameters(1,1:2) = line_base_point_xy;
-line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+line_parameters(1,3)   = mod(atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1)),2*pi);
 
 geomType = 'line';
 geomParameters = line_parameters;
@@ -120,7 +120,7 @@ segment_length              = 1;
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear segment_parameters
 segment_parameters(1,1:2) = segment_base_point_xy;
-segment_parameters(1,3)   = atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1));
+segment_parameters(1,3)   = mod(atan2(segment_unit_tangent_vector(2),segment_unit_tangent_vector(1)),2*pi);
 segment_parameters(1,4)   = segment_length;
 
 geomType = 'segment';
@@ -137,7 +137,7 @@ figure(fig_num); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear spiral_parameters
-spiral_parameters = [2.2403   -1.1202   -0.9002    0.5645    1.0000         0];
+spiral_parameters = [2.2403   -1.1202  mod(-0.9002,2*pi)    0.5645    1.0000         0];
 
 geomType = 'spiral';
 geomParameters = spiral_parameters;

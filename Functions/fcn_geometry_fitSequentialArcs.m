@@ -495,7 +495,7 @@ for ith_domain = 1:length(fitSequence_parameters)
     end
 end
 
-%% 
+%% Fix ordering
 % Rearrange outputs if fitting in backwards order so that the outputs
 % correspond to the first points in the first indicies and last points in
 % the last indicies. As well, flip the ordering of the parameters
@@ -526,6 +526,13 @@ if flag_fit_backwards
         fitSequence_bestFitType{ith_domain} = temp_fitSequence_bestFitType{Ndomains+1-ith_domain};
     end
 
+end
+
+%% Clean the parameters
+% Make sure the parameters are good
+
+for ith_domain = 1:length(fitSequence_parameters)
+    fitSequence_parameters{ith_domain} = fcn_geometry_cleanGeom(fitSequence_bestFitType{ith_domain},  fitSequence_parameters{ith_domain}, -1); 
 end
 
 %% Plot the results (for debugging)?
