@@ -1,27 +1,20 @@
-function [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameters] = ...
-    fcn_geometry_isC2FeasibleLineToArc(segment_parameters, arc_parameters, varargin)
-%% fcn_geometry_isC2FeasibleLineToArc
-% Given a fixed line geometry and variable arc geometry, including a
-% possible threshold to move the arc geometry, checks if the line and arc
+function [flag_is_feasible, feasibility_distance, closest_feasible_line_parameters] = ...
+    fcn_geometry_isC2FeasibleArcToLine(arc_parameters, segment_parameters, varargin)
+%% fcn_geometry_isC2FeasibleArcToLine
+% Given a fixed arc geometry and variable line geometry, including a
+% possible threshold to move the line geometry, checks if the arc and line
 % can be joined with C2 continuity. The method is to calculate the closest
-% C2 feasible arc parameter set given the line, then use this to calculate
+% C2 feasible line parameter set given the arc, then use this to calculate
 % the distance in parameter space to this closest parameter set, and then -
 % if this distance is less than either zero (default) or a positive
 % tolerance, calculates flag_is_feasible.
 %
 % Format:
-%  [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameters] = fcn_geometry_isC2FeasibleArcToArc(...
-%    segment_parameters, arc_parameters, ...
+%  [flag_is_feasible, feasibility_distance, closest_feasible_line_parameters] = fcn_geometry_isC2FeasibleArcToArc(...
+%    arc_parameters, segment_parameters, ...
 %    (threshold), (in_boundary_margin), (fig_num))
 %
 % INPUTS:
-%
-%      segment_parameters: a vector of segment parameters consistent with
-%            line or segment geometries, e.g.
-%  
-%            [base_point_x base_point_y angle_of_vector]. 
-% 
-%            See fcn_geometry_fillEmptyDomainStructure for details
 %
 %      arc_parameters: a vector of arc parameters consistent with arc or
 %            circle geometries, e.g. 
@@ -30,11 +23,18 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameter
 % 
 %            See fcn_geometry_fillEmptyDomainStructure for details
 %
+%      segment_parameters: a vector of segment parameters consistent with
+%            line or segment geometries, e.g.
+%  
+%            [base_point_x base_point_y angle_of_vector]. 
+% 
+%            See fcn_geometry_fillEmptyDomainStructure for details
+%
 %      (OPTIONAL INPUTS)
 %
-%      threshold: the offset, in meters, that either the radius or circle
-%      center can be moved to create C2 feasibility. If the
-%      needed feasible offset is larger than this value, then the
+%      threshold: the offset, in meters, that either the line base point
+%      can be moved in transverse direction to create C2 feasibility. If
+%      the needed feasible offset is larger than this value, then the
 %      flag_is_feasible is set to 0. If threshold is entered as a 2x1 or
 %      1x2, then this specifies the threshold in St coordinates, e.g. first
 %      in the station direction, and then in the transverse direction. For
@@ -61,8 +61,8 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameter
 %      feasibility_distance: the distance between arc1 and arc2 that gives
 %      feasibile C2 continuity.
 %
-%      closest_feasible_arc_parameters: the closest parameters that give
-%      feasible continuity between the line and arc.
+%      closest_feasible_line_parameters: the closest parameters that give
+%      feasible continuity between the arc and line.
 %
 % DEPENDENCIES:
 %
@@ -70,15 +70,15 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameter
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_geometry_isC2FeasibleLineToArc
+% See the script: script_test_fcn_geometry_isC2FeasibleArcToLine
 % for a full test suite.
 %
 % This function was written on 2024_06_24 by S. Brennan
 % Questions or comments? sbrennan@psu.edu
 
 % Revision history:
-% 2024_06_24 - S Brennan
-% -- wrote the code
+% 2024_06_25 - S Brennan
+% -- wrote the code, starting with fcn_geometry_isC2FeasibleLineToArc
 
 %% Debugging and Input checks
 
@@ -225,13 +225,17 @@ segment_angle                  = segment_parameters(1,3);
 arc_center_xy                = arc_parameters(1,1:2);
 r2                            = arc_parameters(1,3);
 
-% Find distance, d12 from segment to the circle by using dot product of
-% orthogonal projection
+% Find distance, d12 from segment to the circle by finding the closest
+% point, then finding distance.
 segment_unit_tangent_vector = [cos(segment_angle) sin(segment_angle)];
-segment_unit_orthogo_vector = segment_unit_tangent_vector*[0 1; -1 0];
-vector_from_segment_base_to_circle_center = arc_center_xy - segment_base_xy;
 
-d12 = real(sum(vector_from_segment_base_to_circle_center.*segment_unit_orthogo_vector,2));
+% Find closest point
+vector_from_segment_base_to_circle_center = arc_center_xy - segment_base_xy;
+segment_length_to_closest_point_to_circle_center = sum(segment_unit_tangent_vector.*vector_from_segment_base_to_circle_center,2);
+closest_point_on_segment_to_circle_center = segment_base_xy + segment_length_to_closest_point_to_circle_center*segment_unit_tangent_vector;
+vector_from_closest_point_on_segment_to_circle_center = arc_center_xy - closest_point_on_segment_to_circle_center;
+
+d12 = real(sum(vector_from_closest_point_on_segment_to_circle_center.^2,2).^0.5);
 
 query_point = [r2 d12];
 
@@ -246,51 +250,34 @@ query_point = [r2 d12];
 % Specifically:
 % We require (r2 < d12). 
 %
-% If this relationship is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a 45-degree line with slope of 1 and the origin as the
-% y-intercept. The area above the line is feasible, and the area below is
-% not.
-%
-% To determine the distance of a query point (r2,d12) to this line, a
-% vector can be created to the query point from the origin.
-% The dot product of this vector with the projection normal from the
-% boundary, in the [1 -1] direction, is the distance from the boundary to
-% the query point. Negative distances are feasible, positive ones are not.
-% If the positive distance is larger than the threshold, then it is not
-% possible to move the arc to achieve feasibility.
+% Note that, unlike arc adjustment in isFeasibleLineToArc, the line can
+% only be adjusted by changing d12. Thus, the distance in feasibility is
+% simply r2 - d12. 
 
-cases_test_vectors = ...
-    query_point - [0, 0];
-
-cases_unit_projection_vectors = [...
-            1 -1]/(2^0.5);
-            
-
-distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
-[closest_distance,case_number] = min(distances_by_case);
-
+closest_distance = r2 - d12;
 if closest_distance<=0
     % In this case, the join is fully feasible without correction
     flag_is_feasible = 1;
     feasibility_distance = closest_distance;
-    closest_feasible_arc_parameters = arc_parameters;
+    closest_feasible_line_parameters = segment_parameters;
     corrected_parameters_r2_d12 = [r2 d12];
 else
     % Some correction is necessary for the join to be feasible
 
     % Find closest parameters
-    corrected_parameters_r2_d12 = query_point - cases_unit_projection_vectors(case_number,:)*(closest_distance + in_boundary_margin);
-    closest_feasible_arc_parameters = arc_parameters;
-
-    % The radius is the first value
-    closest_feasible_arc_parameters(1,3) = corrected_parameters_r2_d12(1,1);
-
+    % new_ = query_point - cases_unit_projection_vectors(case_number,:)*(closest_distance + in_boundary_margin);
+    % closest_feasible_line_parameters = arc_parameters;
+    % 
+    % % The radius is the first value
+    % closest_feasible_line_parameters(1,3) = corrected_parameters_r2_d12(1,1);
+    
     % The new center can be calculated by the center-to-center vector
-    updated_d12 = corrected_parameters_r2_d12(1,2);
-    vector_center1_to_center2 = arc_center_xy - segment_base_xy;
-    unit_vector_center1_to_center2 = fcn_geometry_calcUnitVector(vector_center1_to_center2);
-    updated_arc2_center_xy = segment_base_xy + unit_vector_center1_to_center2*updated_d12;
-    closest_feasible_arc_parameters(1,1:2) = updated_arc2_center_xy;
+    updated_d12 = r2+in_boundary_margin;
+    unit_vector_from_closest_point_on_segment_to_circle_center = fcn_geometry_calcUnitVector(vector_from_closest_point_on_segment_to_circle_center);
+    updated_line_base_xy = arc_center_xy - unit_vector_from_closest_point_on_segment_to_circle_center*updated_d12;
+    closest_feasible_line_parameters(1,1:2) = updated_line_base_xy;
+    closest_feasible_line_parameters(1,3) = segment_angle;
+
     feasibility_distance = closest_distance;
 
     if closest_distance <= threshold
@@ -298,6 +285,8 @@ else
     else
         flag_is_feasible = 0;
     end
+
+    corrected_parameters_r2_d12 = [r2 updated_d12];
 end
 
 %% Plot the results (for debugging)?
@@ -350,9 +339,9 @@ if flag_do_plots
     if 0==flag_is_feasible
         format_string = sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',4 ');
         if flag_arc_is_arc
-            fcn_geometry_plotGeometry('arc', closest_feasible_arc_parameters,segment_length, format_string, (fig_num));
+            fcn_geometry_plotGeometry('arc', closest_feasible_line_parameters,segment_length, format_string, (fig_num));
         else
-            fcn_geometry_plotGeometry('circle', closest_feasible_arc_parameters,segment_length, format_string, (fig_num));
+            fcn_geometry_plotGeometry('circle', closest_feasible_line_parameters,segment_length, format_string, (fig_num));
         end
     end
 

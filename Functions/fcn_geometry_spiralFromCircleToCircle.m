@@ -87,6 +87,9 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
+% 2024_06_26 - S. Brennan
+% -- minor bug fix due to changing line definition, but not changing
+% plotting command.
 
 %% Debugging and Input checks
 
@@ -399,7 +402,7 @@ if flag_do_plots
     % Plot the inputs (circles or lines)
     if 1==flag_circle2_is_a_line
         fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
-        fcn_geometry_plotGeometry('line',[1 0 0 circle2_center_xy(1,2)], [], sprintf(' ''LineWidth'',2'));
+        fcn_geometry_plotGeometry('line',[circle2_center_xy(1,1:2) 0], [], sprintf(' ''LineWidth'',2'));
     else
         fcn_geometry_plotGeometry('circle',[circle1_center_xy, circle1_radius], [], sprintf(' ''LineWidth'',4'));
         fcn_geometry_plotGeometry('circle',[circle2_center_xy, circle2_radius], [], sprintf(' ''LineWidth'',2'));
