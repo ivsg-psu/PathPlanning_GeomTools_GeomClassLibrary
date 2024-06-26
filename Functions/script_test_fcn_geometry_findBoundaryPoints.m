@@ -11,6 +11,71 @@
 
 close all;
 
+%% Simple example 1
+
+x = [1,2];
+y = [1,2];
+grid_size = x(2) - x(1); 
+[X,Y] = meshgrid(x,y);
+
+% draw a boundary line between first row and second row
+Z = [1 1; 0 0];
+
+if 1==0
+    % Plot the data in 3D
+    figure(1234);
+    clf;
+    surf(X,Y,Z)
+end
+
+x_limits = [min(x) max(x)];  
+y_limits = [min(y) max(y)]; 
+
+% Calculate boundary points
+fig_num = 123;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+
+% Plot the boundary line
+y_line = [1.5,1.5];
+plot(x,y_line,'b-','LineWidth',3);
+
+assert(isequal(boundary_points(1,2),1.5));
+assert(isequal(boundary_points(2,2),1.5));
+
+%% Simple example 2
+
+x = [1,2,3];
+y = [1,2,3];
+grid_size = x(2) - x(1); 
+[X,Y] = meshgrid(x,y);
+
+% draw a boundary line between third row and second row
+
+Z = [1 1 1; 1 1 1;0 0 0];
+
+if 1==0
+    % Plot the data in 3D
+    figure(1234);
+    clf;
+    surf(X,Y,Z)
+end
+
+x_limits = [min(x) max(x)];  
+y_limits = [min(y) max(y)]; 
+
+% Calculate boundary points
+fig_num = 123;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+
+% Plot the boundary line
+y_line = [2.5,2.5,2.5];
+plot(x,y_line,'b-','LineWidth',3);
+
+assert(isequal(boundary_points(1,2),2.5));
+assert(isequal(boundary_points(2,2),2.5));
+assert(isequal(boundary_points(3,2),2.5));
 %% Example for Aneesh
 
 % Create some data
@@ -45,11 +110,14 @@ plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 y_line = x_range+2;
 plot(x_range,y_line,'b-','LineWidth',3);
 
+% Assert check the length of column of the output  
+assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 %% EXAMPLE 2
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,N_points);
+grid_size = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -58,7 +126,7 @@ Z = zeros(size(X));
 
 % Make all Z data which has XY data below line y = x + 2 equal to 1
 Y_line = X + 2;
-flag_larger_than = find(Y<Y_line);
+flag_larger_than = Y<Y_line;
 Z(flag_larger_than) = 1;
 
 if 1==0
@@ -79,11 +147,14 @@ plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 y_line = x_range+2;
 plot(x_range,y_line,'b-','LineWidth',3);
 
+% Assert check the length of column of the output  
+assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 %% EXAMPLE 3
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,N_points);
+grid_size = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -95,7 +166,7 @@ distance_squared = X.^2 + Y.^2;
 radius = 2;
 radius_squared = radius.^2;
 
-flag_larger_than = find(distance_squared<radius_squared);
+flag_larger_than = distance_squared<radius_squared;
 Z(flag_larger_than) = 1;
 
 if 1==0
@@ -115,11 +186,14 @@ boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 angles = linspace(0,360,100)'*pi/180;
 plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
 
+% Assert check the length of column of the output 
+assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 %% EXAMPLE 4
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,2,N_points);
+grid_size = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -151,3 +225,5 @@ plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 % Plot the boundary circle
 angles = linspace(0,360,100)'*pi/180;
 plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+% Assert check the length of column of the output 
+assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));

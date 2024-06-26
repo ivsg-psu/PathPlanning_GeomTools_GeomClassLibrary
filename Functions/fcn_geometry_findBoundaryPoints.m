@@ -287,7 +287,7 @@ Z_greater_than_padded = [0; Z_greater_than; N_points+1];
 
 %% FInd changes
 changes_in_sequence = diff(Z_greater_than_padded);
-indicies_falling_edge = find(changes_in_sequence>1.5); %  Anything greater than 1 is a change. Have to add 1 because we padded indicies above
+indicies_falling_edge = changes_in_sequence>1.5; %  Anything greater than 1 is a change. Have to add 1 because we padded indicies above
 indicies_rising_edge = find(changes_in_sequence>1.5)+1; % Anything greater than 1 is a change. Have to add 1 because we padded indicies above
 
 indicies_with_rising_x_edge  = Z_greater_than_padded(indicies_rising_edge);
@@ -301,9 +301,9 @@ indicies_with_falling_x_edge(indicies_with_falling_x_edge>N_points) = [];
 
 % Clean up any indicies on borders
 border_dimension = length(X(:,1));
-border_indices_rising = find(mod(indicies_with_rising_x_edge,border_dimension)==1);
+border_indices_rising = mod(indicies_with_rising_x_edge,border_dimension)==1;
 indicies_with_rising_x_edge(border_indices_rising) = [];
-border_indices_falling = find(mod(indicies_with_falling_x_edge,border_dimension)==0);
+border_indices_falling = mod(indicies_with_falling_x_edge,border_dimension)==0;
 indicies_with_falling_x_edge(border_indices_falling) = [];
 
 
