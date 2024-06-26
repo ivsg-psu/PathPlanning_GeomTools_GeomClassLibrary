@@ -128,6 +128,10 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 %              heading,
 %              s_Length,
 %             ]
+% 2024_06_26 - Sean Brennan
+% -- fixed bug in segment distance calculation in spiral calculation when
+% doing C2 calculations
+
 
 %% Debugging and Input checks
 
@@ -474,7 +478,11 @@ arc_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc_st
 % Get the segment details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_base_point_xy       = segment_parameters(1,1:2);
 segment_unit_tangent_vector = [cos(segment_parameters(1,3)) sin(segment_parameters(1,3))];
-segment_length              = segment_parameters(1,4);
+try
+    segment_length              = segment_parameters(1,4);
+catch
+    disp('debug here');
+end
 segment_start_xy            = segment_base_point_xy;
 segment_end_xy              = segment_base_point_xy + segment_unit_tangent_vector*segment_length;
 
@@ -1007,9 +1015,13 @@ switch continuity_level
                 desired_arc_parameters = arc_parameters;
                 desired_arc_parameters(1,5)   = arc_angle_where_spiral_starts; % Update where the spiral ends
 
+                old_segment_start_point = segment_parameters(1,1);
+                new_segment_start_point = spiral_end_XY(1,1);
+                distance_lost = sum((old_segment_start_point - new_segment_start_point).^2,2).^0.5;
+
                 desired_segment_parameters        = segment_parameters;
-                desired_segment_parameters(1,1:2) = spiral_end_XY; % segment_base_point_xy
-                desired_segment_parameters(1,4)   = segment_length - spiral_end_XY(1,1); % segment_s_end
+                desired_segment_parameters(1,1)   = new_segment_start_point(1,1); % segment_base_point_xy - x-value only
+                desired_segment_parameters(1,4)   = segment_length - distance_lost; % segment_s_end
             else
                 % Bad spiral - set all to nan
                 desired_intermediate_geometry_join_parameters = nan(size(desired_intermediate_geometry_join_parameters));

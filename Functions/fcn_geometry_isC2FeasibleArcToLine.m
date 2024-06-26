@@ -289,6 +289,10 @@ else
     corrected_parameters_r2_d12 = [r2 updated_d12];
 end
 
+if 1 == flag_segmentInput_is_segment
+    % Pass through the segment length
+    closest_feasible_line_parameters(1,4) = segment_parameters(1,4);
+end
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _

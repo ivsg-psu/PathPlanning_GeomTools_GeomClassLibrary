@@ -344,8 +344,15 @@ while 1==flag_keep_going
     % Perform the regression fit of the arc
     Hough_domain.points_in_domain = current_points_in_domain;
     Hough_domain.best_fit_source_indicies = [1 2 length(current_points_in_domain(:,1))];
-    regression_domain  =  ...
-        fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, fitting_tolerance, -1);
+
+    % Do regression
+    if 1==Ndomains
+        regression_domain  =  ...
+            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, fitting_tolerance, -1);
+    else
+        regression_domain  =  ...
+            fcn_geometry_fitArcRegressionFromHoughFitC2(Hough_domain, previous_parameters, fitting_tolerance, -1);
+    end
 
     % Use isinterior to check which points belong to the fit
     buffered_box = regression_domain.best_fit_domain_box; % polybuffer(regression_domain.best_fit_domain_box,fitting_tolerance);
@@ -375,6 +382,7 @@ while 1==flag_keep_going
         fitSequence_shapes{Ndomains} = regression_domain.best_fit_domain_box; %#ok<AGROW>
         fitSequence_parameters{Ndomains} = regression_domain.best_fit_parameters; %#ok<AGROW>
         fitSequence_bestFitType{Ndomains} = regression_domain.best_fit_type; %#ok<AGROW>
+        previous_parameters = regression_domain.best_fit_parameters;
 
         % Set up for next loop
         Ndomains = Ndomains + 1;        

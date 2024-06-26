@@ -114,6 +114,9 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %              heading,
 %              s_Length,
 %             ]
+% 2024_06_26 - S. Brennan
+% -- fixed bug due to line definition change not being updated in final
+% translation offset correction
 
 %% Debugging and Input checks
 
@@ -308,9 +311,10 @@ end
 % Renormalize the segment result
 revised_offset_segment_parameters = fcn_INTERNAL_renormalizeSegment(revised_offset_segment_parameters);
 
-% Find how much the arc moved
-segment_old_base_point = segment_parameters(1,3:4);
-segment_new_base_point = revised_offset_segment_parameters(1,3:4);
+% Find how much the segment moved, then find the transform that moves it
+% back where it started
+segment_old_base_point = segment_parameters(1,1:2);
+segment_new_base_point = revised_offset_segment_parameters(1,1:2);
 translation_vector = segment_new_base_point - segment_old_base_point;
 
 % create a transformation that moves one to the other

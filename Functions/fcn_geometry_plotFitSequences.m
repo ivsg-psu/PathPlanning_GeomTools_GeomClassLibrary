@@ -3,7 +3,7 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-% fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (fig_num))
+% fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (segment_length), (format), (fig_num))
 %
 % INPUTS:
 %
@@ -17,6 +17,18 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 %
 %      (OPTIONAL INPUTS)
 %
+%      segment_length: the smallest step to use for plotting, representing
+%      the length (approximately) between points. Default is 0.1 meters.
+%      This is a pass through parameter to fcn_geometry_plotGeometry - see
+%      that function for examples.
+%
+%      format: A format string, e.g. 'b-', that dictates the plot style or
+%      a color vector, e.g. [1 0 0.23], that dictates the line color. The
+%      format string can also be a complex string - see the test script for
+%      examples.
+%      This is a pass through parameter to fcn_geometry_plotGeometry - see
+%      that function for examples.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
@@ -28,7 +40,7 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 %
 % DEPENDENCIES:
 %      
-%      (none)
+%      fcn_geometry_plotGeometry
 %
 % EXAMPLES:
 %
@@ -41,6 +53,8 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 % Revision history:
 % 2024_04_14 - S. Brennan
 % -- wrote the code
+% 2024_06_26 - S. Brennan
+% -- added segment_length and format input options 
 
 %% Debugging and Input checks
 
@@ -91,7 +105,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(2,3);
+        narginchk(2,5);
 
         % % Check the points input to be length greater than or equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -107,11 +121,32 @@ if 0==flag_max_speed
     end
 end
 
+% Does user want to specify the segment_length?
+segment_length = [];
+if 3 <= nargin
+    temp = varargin{1};
+    if ~isempty(temp)
+        segment_length = temp;
+    end
+end
+
+% Does user want to change the plot style?
+% Set plotting defaults
+plot_str = '';
+
+% Check to see if user passed in a string or color style?
+if 4 <= nargin
+    input = varargin{2};
+    if ~isempty(input)
+        plot_str = input;
+    end
+end
+
 % Does user want to specify fig_num?
 flag_do_plots = 0;
 if 0==flag_max_speed
     flag_do_plots = 1;
-    if 3<= nargin
+    if 5<= nargin
         temp = varargin{end};
         if ~isempty(temp)
             fig_num = temp;
@@ -164,7 +199,7 @@ if flag_do_plots
     for ith_domain = 1:length(fitSequence_bestFitType)
         plot_type_string = fitSequence_bestFitType{ith_domain};
         parameters       = fitSequence_parameters{ith_domain};
-        fcn_geometry_plotGeometry(plot_type_string, parameters, [], [], fig_num);
+        fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, fig_num);
     end
 
     axis equal;

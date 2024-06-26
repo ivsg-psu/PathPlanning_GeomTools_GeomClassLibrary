@@ -11,8 +11,7 @@
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
 fig_num = 1;
-figure(fig_num);
-clf;
+
 
 % Check to see if the fits were calculated earlier
 if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parameters_forward','var')
@@ -32,8 +31,10 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
     % Perform the fit forwards
     fitting_tolerance = [1 10]; % Units are meters
     flag_fit_backwards = 0;
+    figure(fig_num);
+    clf;
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, 1);
+        fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
 end
 
@@ -41,17 +42,23 @@ end
 %% Connect the fits so that the lines perfectly align with the arcs
 fig_num = 2;
 figure(fig_num);clf;
-fitting_tolerance = [10 2];
+fitting_tolerance = [100 100];
+continuity_level = 2;
 
 clear fits_to_check_types fits_to_check_parameters
-for ith_fit = 1:6
-    fits_to_check_types{ith_fit}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
-    fits_to_check_parameters{ith_fit} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
+% N_fits = 0;
+% for ith_fit = [1 2 3 4 5 6]
+%     N_fits = N_fits+1;
+%     fits_to_check_types{N_fits}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
+%     fits_to_check_parameters{N_fits} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
+% end
+fits_to_check_types = fitSequence_bestFitType_forward;
+fits_to_check_parameters = fitSequence_parameters_forward;
+
+[revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
+
+for ith_fit = [1 2 3 5 6]
+    points_to_plot = fitSequence_points_forward{ith_fit};
+    plot(points_to_plot(:,1),points_to_plot(:,2),'k.','MarkerSize',5);
 end
-
-fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(fig_num));
-
-revised_fitSequence_parameters_forward  = ...
-    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, fig_num);
-
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));

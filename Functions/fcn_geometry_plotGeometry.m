@@ -3,7 +3,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-%      XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, (segment_length), (fig_num))
+%      XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, (segment_length), (format), (fig_num))
 %
 % INPUTS:
 %

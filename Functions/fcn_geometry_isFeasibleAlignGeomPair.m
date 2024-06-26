@@ -340,14 +340,15 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
-
 %% fcn_INTERNAL_covertComplexShapeNamesToSimpleNames
 function simple_name_string = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(complex_name_string)
 
 switch lower(complex_name_string)
-    case {'regression arc','arc'}
+    case {'arc','line','segment','spiral','','none','circle'}
+        simple_name_string = complex_name_string;
+    case {'regression arc'}
         simple_name_string = 'arc';
-    case {'vector regression segment fit','segment'}
+    case {'vector regression segment fit'}
         simple_name_string = 'segment';
     otherwise
         warning('on','backtrace');
@@ -356,6 +357,7 @@ switch lower(complex_name_string)
 end
 
 end % Ends fcn_INTERNAL_covertComplexShapeNamesToSimpleNames
+
 
 %% fcn_INTERNAL_confirmArcToX
 function [flag_is_feasible, feasibility_distance, closest_feasible_input2_parameters] = fcn_INTERNAL_confirmArcToX(arc_parameters, X_fitType, X_parameters, continuity_level, threshold)
