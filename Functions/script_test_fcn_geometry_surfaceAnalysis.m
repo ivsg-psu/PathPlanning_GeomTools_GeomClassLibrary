@@ -105,7 +105,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -188,7 +188,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -265,7 +265,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -307,7 +307,7 @@ Ext_Square_Size=4;
 Int_Square_Size=1;
 % ext_point_concentration = 3;
 % int_point_concentration = 120; 
-fig_num = 32;
+fig_num = 42;
 diag_flag=1;
 noise= 0.2;
 
@@ -349,7 +349,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -431,7 +431,7 @@ z = true_z;
 
 points3 = [x, y, z]; 
 
-fig_num = 1; clf;
+fig_num = 52; clf;
 % Plot the points
 figure(fig_num)
 plot3(points1(:,1),points1(:,2),points1(:,3),'.','MarkerSize',20,'Color',[0 0 0]);
@@ -477,7 +477,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -510,7 +510,7 @@ assert(length(drivable_grid_numbers_in_mapped_grids)>=1)
 assert(length(non_drivable_grid_numbers_in_mapped_grids)>=1)
 assert(length(boundary_points)>=1)
 
-%% Different data - drivable and non_drivable case
+%% Test 6:
 
 % Create data
 
@@ -562,7 +562,7 @@ points2 = [x, y, z];
 % 
 % points3 = [x, y, z]; 
 
-fig_num = 3; clf;
+fig_num = 62; clf;
 % Plot the points
 figure(fig_num)
 plot3(points1(:,1),points1(:,2),points1(:,3),'.','MarkerSize',20,'Color',[1 0 0]);
@@ -606,7 +606,7 @@ y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:
 [X, Y] = meshgrid(x_range, y_range);
 
 % Initialize Z matrix
-Z = zeros(size(X));
+Z = NaN(size(X));
 
 % Combine X and Y from meshgrid into pairs
 XY_pairs = [X(:) Y(:)];
@@ -629,6 +629,87 @@ x_limits = [];
 y_limits = []; 
 % Calculate boundary points
 fig_num = 6002;
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+
+assert(length(drivable_grids)>=1)
+assert(length(non_drivable_grids)>=1)
+assert(isempty(unmapped_grids))
+assert(length(gridCenters_mapped_grids(:,1))>=1)
+assert(length(drivable_grid_numbers_in_mapped_grids)>=1)
+assert(length(non_drivable_grid_numbers_in_mapped_grids)>=1)
+assert(length(boundary_points)>=1)
+
+%% 
+
+fig_num = 789; 
+figure(fig_num);clf;
+
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(Velodyne_Lidar_Scan_ENU, fig_num); 
+
+Max_x = ceil(Max_x); Max_y = ceil(Max_y); Max_z = ceil(Max_z);
+Min_x = floor(Min_x); Min_y = floor(Min_y); Min_z = floor(Min_z);
+
+% std(Velodyne_Lidar_Scan_ENU(:,3))
+
+fig_num = 7002; 
+figure(fig_num); clf;
+input_points = Velodyne_Lidar_Scan_ENU; 
+grid_size = 1;
+grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
+point_density = 10;
+theta_threshold = pi/9; 
+std_threshold = 0.02; 
+flag_plot_in_3D = 0; 
+
+[drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
+    non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, (flag_plot_in_3D), (fig_num));
+
+%%
+
+XYZ_matrix = [gridCenters_mapped_grids(:,1:2) gridCenters_mapped_grids(:,4)]; 
+
+XYZ_matrix = unique(XYZ_matrix,'rows'); 
+
+[~,XYZ_matrix_indices] = unique(XYZ_matrix(:,1:2),'rows'); 
+
+XYZ_matrix = XYZ_matrix(XYZ_matrix_indices,:);  
+
+XYZ_matrix = round(XYZ_matrix,4); 
+% Given x_range and y_range
+% x_range = min(XYZ_matrix(:,1)):grid_size:max(XYZ_matrix(:,1)); % min_x:gridSize:max_x 
+% y_range = min(XYZ_matrix(:,2)):grid_size:max(XYZ_matrix(:,2)); % min_y:gridSize:max_y 
+
+x_range = unique(XYZ_matrix(:,1))'; 
+y_range = unique(XYZ_matrix(:,2))';
+% Generate X and Y using meshgrid
+[X, Y] = meshgrid(x_range, y_range);
+
+% Initialize Z matrix
+Z = NaN(size(X));
+
+% Combine X and Y from meshgrid into pairs
+XY_pairs = [X(:) Y(:)];
+
+XY_pairs = round(XY_pairs,4); 
+
+% Find the indices of XY pairs in the original XYZ matrix
+[~, idx] = ismember(XY_pairs, XYZ_matrix(:, 1:2), 'rows');
+
+% C = setdiff(XY_pairs, XY_pairs(idx==0,:), 'rows');
+
+% Fill Z matrix with corresponding Z values
+Z(idx~=0) = XYZ_matrix(idx(idx~=0), 3);
+
+% Reshape Z to match the dimensions of X and Y
+Z = reshape(Z, size(X));
+
+% x_limits = [min(x_range) max(x_range)];  
+% y_limits = [min(y_range) max(y_range)]; 
+
+x_limits = [];  
+y_limits = []; 
+% Calculate boundary points
+fig_num = 7002;
 boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 
 assert(length(drivable_grids)>=1)
