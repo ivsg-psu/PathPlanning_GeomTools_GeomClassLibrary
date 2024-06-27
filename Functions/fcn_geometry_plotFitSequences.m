@@ -1,9 +1,9 @@
-function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, varargin)
+function XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, varargin)
 %% fcn_geometry_plotFitSequences
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-% fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (segment_length), (format), (fig_num))
+% XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (segment_length), (format), (fig_num))
 %
 % INPUTS:
 %
@@ -36,7 +36,8 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 %
 % OUTPUTS:
 %
-%      (none)
+%      XY_data: the data produced during plotting calculations. Note: this
+%      data is returned even if fig_num is empty or set to -1.
 %
 % DEPENDENCIES:
 %      
@@ -55,6 +56,8 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 % -- wrote the code
 % 2024_06_26 - S. Brennan
 % -- added segment_length and format input options 
+% 2024_06_26 - S. Brennan
+% -- added XY_data output
 
 %% Debugging and Input checks
 
@@ -62,7 +65,7 @@ function fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_para
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==5 && isequal(varargin{end},-1))
     flag_do_debug = 0; % % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -167,7 +170,14 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Nothing in main, all is in plotting
+XY_data = [];
+% Fill in XY data from the domain fits
+for ith_domain = 1:length(fitSequence_bestFitType)
+    plot_type_string = fitSequence_bestFitType{ith_domain};
+    parameters       = fitSequence_parameters{ith_domain};
+    XY_domain = fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, -1);
+    XY_data   = [XY_data; XY_domain]; %#ok<AGROW>
+end
 
 
 %% Plot the results (for debugging)?

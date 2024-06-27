@@ -22,11 +22,15 @@ function [flag_is_similar, minimum_distance_to_each_point, mean_error, max_error
 % INPUTS:
 %
 %      reference_curve_type_string: a string indicating the geometry type
-%      to use as a reference, such as 'line' or 'arc'.
+%      to use as a reference, such as 'line' or 'arc'. Or, this can be a
+%      cell array of strings geometries consistent with
+%      fcn_geometry_plotFitSequences 
 %
 %      reference_curve_parameters: the parameter set describing the
 %      geometry. See fcn_geometry_fillEmptyDomainStructure for details, as
-%      the parameter set is different for each geometry type.
+%      the parameter set is different for each geometry type. Or, can be a
+%      cell array of parameters for geometries consistent with
+%      fcn_geometry_plotFitSequences 
 %
 %      test_points_XY: an [Mx2] set of points to compare to the reference.
 %
@@ -74,7 +78,8 @@ function [flag_is_similar, minimum_distance_to_each_point, mean_error, max_error
 %
 % DEPENDENCIES:
 %      
-%      (none)
+%      fcn_geometry_plotGeometry
+%      fcn_geometry_plotFitSequences
 %
 % EXAMPLES:
 %
@@ -194,7 +199,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get the reference points from the curve plotting function
-reference_points_XY = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+
+if iscell(reference_curve_type_string)
+    reference_points_XY = fcn_geometry_plotFitSequences(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+else
+    reference_points_XY = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+end
 
 % Now check similarity
 flag_is_similar = true;
@@ -251,15 +261,36 @@ if flag_do_plots
     error_colormap = turbo;
     Ncolors = length(error_colormap(:,1));
 
-    % Plot the inputs
-    fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [], (fig_num));
+    % Plot the input curves
+    if iscell(reference_curve_type_string)
+        format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',5 ');
+        fcn_geometry_plotFitSequences(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, format_string, (fig_num));
 
-    color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(reference_curve_type_string));
+        % Plot the input reference points
+        color_vector = 'k';
+        plot(reference_points_XY(:,1),reference_points_XY(:,2),'.','Color',color_vector,'MarkerSize',1);
 
-    plot(reference_points_XY(:,1),reference_points_XY(:,2),'.','Color',color_vector,'MarkerSize',20);
-    plot(test_points_XY(:,1),test_points_XY(:,2),'.','Color',[1 0 1 ],'MarkerSize',20);
+        % Plot the input test points
+        plot(test_points_XY(:,1),test_points_XY(:,2),'.','Color',[1 0 1 ],'MarkerSize',1);
 
-    % Sort the points by distance
+        lineWidth_value = 3;
+
+    else
+        fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [], (fig_num));
+        
+        % Plot the input reference points
+        color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(reference_curve_type_string));
+        plot(reference_points_XY(:,1),reference_points_XY(:,2),'.','Color',color_vector,'MarkerSize',20);
+
+        % Plot the input test points
+        plot(test_points_XY(:,1),test_points_XY(:,2),'.','Color',[1 0 1 ],'MarkerSize',20);
+
+        lineWidth_value = 3;
+    end
+
+
+
+    % Sort the test point results by distance
     [sorted_distances,sorted_indicies] = sort(minimum_distance_to_each_point);
 
     % Figure out which max error to use
@@ -269,6 +300,7 @@ if flag_do_plots
         max_allowable_error = threshold;
     end
 
+    % Plot the results, changing color based on distance
     for ith_test_point = 1:NtestPoints
         current_index = sorted_indicies(ith_test_point);
         current_distance = minimum_distance_to_each_point(current_index);
@@ -281,7 +313,7 @@ if flag_do_plots
         current_color_index = round(error_ratio*(Ncolors-1))+1;
         current_color = error_colormap(current_color_index,:);
 
-        plot(line_points(:,1),line_points(:,2),'-','LineWidth',3,'Color',current_color);
+        plot(line_points(:,1),line_points(:,2),'-','LineWidth',lineWidth_value,'Color',current_color);
     end
 
     % Make axis slightly larger?

@@ -6,7 +6,8 @@
 % -- wrote the code
 % 2024_05_02 - S Brennan / A. Batchu
 % -- add more test cases
-
+% 2024_06_26 - S Brennan 
+% -- working with test track data
 
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
@@ -58,7 +59,24 @@ fits_to_check_parameters = fitSequence_parameters_forward;
 [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
     fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
 
-for ith_fit = [1 2 3 5 6]
+test_points_XY = [];
+for ith_fit = 1:length(fitSequence_points_forward)
     points_to_plot = fitSequence_points_forward{ith_fit};
     plot(points_to_plot(:,1),points_to_plot(:,2),'k.','MarkerSize',5);
+    test_points_XY = [test_points_XY; points_to_plot]; %#ok<AGROW>
 end
+
+%% Check the fits
+fig_num = 3;
+figure(fig_num);
+clf;
+
+threshold           = max_feasibility_distance;
+curve_test_segment_length = 0.5; % Check every 0.5 meters;
+
+[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+    fcn_geometry_comparePointsToCurve(...
+    revised_fitSequence_types, revised_fitSequence_parameters, test_points_XY, ...
+    (threshold), (curve_test_segment_length), (fig_num));
+
+
