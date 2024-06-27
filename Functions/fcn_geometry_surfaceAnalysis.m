@@ -368,11 +368,12 @@ if flag_do_plots
         plot3(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),points_in_original_mapped_grids(:,3),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
     else
         % Plot the unmapped points red
-        plot(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
+        p2 = plot(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
         % Plot the mapped points green
-        plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
+        p1 = plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
     end
 
+    legend([p1,p2],{'Mapped','Unmapped'})
 
     % Make axis slightly larger?
     if flag_rescale_axis
@@ -400,7 +401,6 @@ if flag_do_plots
     ylabel('Y [m]')
     zlabel('Z [m]')
     title('Drivable and Non-drivable regions')
-    % legend('Drivable','Non-drivable')
 
     if flag_plot_in_3D
 
@@ -574,12 +574,12 @@ if flag_do_plots
                 ];
 
             % Plot the result
-            plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+            p3 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
 
             % Plot the grid centers
             % plot(gridCenters(drivable_grids(ith_domain),1), gridCenters(drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
 
-            plot(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), '.','MarkerSize',40,'Color',[0 0 0]);
+            plot(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
 
             % Get all points in this domain and plot them
             rows_in_domain = gridIndices==drivable_grids(ith_domain);
@@ -616,18 +616,21 @@ if flag_do_plots
                 ];
 
             % Plot the result
-            plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+            p4 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
 
             % Plot the grid centers
             % plot(gridCenters(non_drivable_grids(ith_domain),1), gridCenters(non_drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
 
-            plot(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), '.','MarkerSize',40,'Color',[0 0 0]);
+            plot(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
 
             % Get all points in this domain and plot them
             rows_in_domain = gridIndices==non_drivable_grids(ith_domain);
             points_in_domain = input_points(rows_in_domain,:);
             plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
         end
+
+        legend([p3,p4],{'Drivable','Non-drivable'})
     end
     % Make axis slightly larger?
     if flag_rescale_axis
