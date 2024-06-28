@@ -211,7 +211,7 @@ if flag_do_plots
         y = (N_points(:,2));
         z = (N_points(:,3));
         hold on 
-        colors = sqrt(z);
+        colors = z;
         scatter3(x,y,z,20,colors);
         scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
         scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
