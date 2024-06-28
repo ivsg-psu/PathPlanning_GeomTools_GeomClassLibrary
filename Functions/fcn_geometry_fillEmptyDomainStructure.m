@@ -62,101 +62,6 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %
 %            'unfitted' - points left over after a fit is done, so [nan]
 %            
-%            'Hough line' - 
-%
-%             [unit_projection_vector_x,
-%              unit_projection_vector_y,
-%              base_point_x, 
-%              base_point_y, 
-%             ]
-%            
-%            'Hough segment' - 
-%
-%             [unit_projection_vector_x,
-%              unit_projection_vector_y,
-%              base_point_x, 
-%              base_point_y, 
-%              station_distance_min,
-%              station_distance_max,
-%             ]
-%
-%            'Hough circle' - 
-%               [circleCenter_x.
-%                circleCenter_y,
-%                radius]
-%            
-%            'Hough arc' - 
-%
-%               [circleCenter_x.
-%                circleCenter_y,
-%                radius,
-%                start_angle_in_radians, 
-%                end_angle_in_radians,
-%                flag_this_is_a_circle
-%                flag_arc_is_counterclockwise
-%               ] 
-%
-%            'Vector regression line fit' - 
-%
-%             [unit_projection_vector_x,
-%              unit_projection_vector_y,
-%              base_point_x, 
-%              base_point_y, 
-%             ]
-%
-%            'Vector regression segment fit' -
-
-%             [unit_projection_vector_x,
-%              unit_projection_vector_y,
-%              base_point_x, 
-%              base_point_y, 
-%              station_distance_min,
-%              station_distance_max,
-%             ]
-%
-%            'Regression circle' - 
-%               [circleCenter_x.
-%                circleCenter_y,
-%                radius]
-%            
-%            'Regression arc' - 
-%
-%               [circleCenter_x.
-%                circleCenter_y,
-%                radius,
-%                start_angle_in_radians, 
-%                end_angle_in_radians,
-%                flag_this_is_a_circle
-%                flag_arc_is_counterclockwise
-%               ] 
-%            
-%            'spiral' - 
-%
-%               [spiralLength,  % the s-coordinate length allowed
-%                h0,  % The initial heading
-%                x0,  % The initial x value
-%                y0,  % The initial y value
-%                K0,  % The initial curvature
-%                Kf   % The final curvature
-%              ] 
-%
-%            'Hough Cubic Polynomial' - 
-% 
-%             [ coeff_x^3, % cubic term coeffiecient
-%               coeff_x^2, % square term coeffiecient
-%               coeff_x^1, % linear term coeffiecient
-%               coeff_x^0, % constant term coeffiecient
-%              ]
-%
-%           
-%% FIXED on 2024_06_14
-%            These are the parameters of the fit. They are defined
-%            in each fit type in the following manner:
-%
-%            'empty' - no fit yet done, so [nan]
-%
-%            'unfitted' - points left over after a fit is done, so [nan]
-%            
 %            'point' -
 %             [
 %              base_point_x, 
@@ -180,13 +85,11 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              s_Length,
 %             ]
 %
-% DONE
 %            'Hough circle', 'Regression circle' - 
 %               [circleCenter_x,
 %                circleCenter_y,
 %                radius]
 % 
-% DONE
 %            'Hough arc', 'Regression arc' - 
 %
 %               [circleCenter_x.
@@ -198,8 +101,6 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                flag_this_is_a_circle
 %               ] 
 %
-% 
-% DONE
 %            'spiral' - 
 %
 %               [
@@ -211,7 +112,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                Kf   % The final curvature
 %              ] 
 %
-% DONE
+%
 %            'Hough cubic polynomial', 'Polyfit cubic polynomial' - 
 % 
 %             [ 

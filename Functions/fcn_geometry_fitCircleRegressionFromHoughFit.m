@@ -80,7 +80,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_fig_num = 34838; %#ok<NASGU>
 else
     debug_fig_num = []; %#ok<NASGU>
 end
@@ -240,7 +240,7 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% 
-function [circleCenter, circleRadius] = fcn_INTERNAL_calc_Circle(associated_points_in_domain)
+function [circleCenter, circleRadius] = fcn_INTERNAL_calc_Circle(associated_points_in_domain) %#ok<DEFNU>
 % Below uses method from:
 % https://dtcenter.org/sites/default/files/community-code/met/docs/write-ups/circle_fit.pdf
 
