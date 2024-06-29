@@ -177,7 +177,7 @@ if flag_do_plots
     axis equal
 
     %plot of points
-    if isscalar(N_points(1,:))  % N by 1 
+    if isscalar(N_points(1,:))  % N by 1
         [~, idx_min_x] = min(N_points(:,1));
         [~, idx_max_x] = max(N_points(:,1));
         x = (N_points(:,1));
@@ -211,13 +211,16 @@ if flag_do_plots
         y = (N_points(:,2));
         z = (N_points(:,3));
         hold on 
-        scatter3(x,y,z);
+        colors = z;
+        scatter3(x,y,z,20,colors);
         scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
         scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
         scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),200, 'g'); % min y
         scatter3(x(idx_max_y),y(idx_max_y),z(idx_max_y),200, 'g'); % max y
         scatter3(x(idx_min_z),y(idx_min_z),z(idx_min_z),300, 'y'); % min z
         scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),300, 'y'); % max z
+        colormap('jet'); % You can use 'viridis' if you have it, or other colormaps
+        colorbar; % Add a color bar to show the color mapping
         view(3)
         hold off
     end
