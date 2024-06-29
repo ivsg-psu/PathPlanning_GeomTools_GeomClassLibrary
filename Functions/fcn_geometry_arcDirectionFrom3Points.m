@@ -145,7 +145,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % The code below is set up to be vectorized. The method is to create a
-% vector from points1 to points2 and to points3. If the 
+% vector from points1 to points2 and to points3. If the cross product is
+% positive, then the arc is CCW.
+
 projection_points1_to_points2 = points2 - points1;
 projection_points1_to_points3 = points3 - points1;
 

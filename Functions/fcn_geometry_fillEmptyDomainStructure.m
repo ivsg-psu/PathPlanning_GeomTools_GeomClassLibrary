@@ -97,8 +97,8 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                radius,
 %                start_angle_in_radians, 
 %                end_angle_in_radians,
-%                flag_arc_is_counterclockwise
 %                flag_this_is_a_circle
+%                flag_arc_is_counterclockwise
 %               ] 
 %
 %            'spiral' - 

@@ -25,6 +25,9 @@ if 1==1
         load(mat_filename,'XY_data');
     end
 
+    % Pre-append and post-append data, to allow wrap-around?
+    % ADD THIS?
+
     % Since the XY data is very dense, keep only 1 of every "keep_every" points
     keep_every = 100; % 20 works OK
     indicies = (1:length(XY_data(:,1)))';
@@ -86,7 +89,149 @@ point_curvature_minimums(curvatures<0.001) = 1;
 
 curvature_SNR = curvatures./point_curvature_minimums;
 
-[~,best_SNR_index] = max(curvature_SNR);
+%% Pull out the fits by ranking them via SNRs
+N_fits = 0;
+best_fit_arcs = [];
+best_fit_SNRs = [];
+best_fit_ranges = [];
+remaining_curvature_SNR = curvature_SNR;
+
+flag_do_debug = 1;
+debug_fig_num = 38383;
+figure(debug_fig_num);clf;
+
+flag_first_time = 1;
+
+while ~all(isnan(remaining_curvature_SNR))
+
+    % Find the best remaining
+    [~,best_SNR_index] = max(remaining_curvature_SNR);
+    
+    % Plot results?
+    if flag_do_debug
+        %%%%%%%%%%%%%%%%%%%%%%
+        figure(debug_fig_num)
+        subplot(1,3,1);
+        % cla;
+
+        hold on;
+        grid on;
+        axis equal
+        xlabel('X [m]');
+        ylabel('Y [m]');
+
+        % Make axis slightly larger?
+        if 1==flag_first_time
+
+            % Plot the input points
+            plot(points_to_fit(:,1),points_to_fit(:,2),'b.','MarkerSize',20);
+
+
+            temp = axis;
+            axis_range_x = temp(2)-temp(1);
+            axis_range_y = temp(4)-temp(3);
+            percent_larger = 0.3;
+            axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+            temp_axis = axis;
+            flag_first_time = 0;
+        else
+            axis(temp_axis);
+        end
+
+        % Plot the circle fit at the point
+        fcn_geometry_plotCircle(arc_centers(best_SNR_index,:), 1/curvatures(best_SNR_index),'r-',debug_fig_num);
+
+
+        % Plot the index range
+        min_index = best_SNR_index-index_ranges(best_SNR_index);
+        max_index = best_SNR_index+index_ranges(best_SNR_index);
+        plot(points_to_fit(min_index:max_index,1),points_to_fit(min_index:max_index,2),'m.','MarkerSize',10)
+
+        % Plot the max SNR point
+        plot(points_to_fit(best_SNR_index,1),points_to_fit(best_SNR_index,2),'g.','MarkerSize',30)
+
+        axis(temp_axis);
+
+        title('Input points');
+
+        %%%%%%%%%%%%%%%%%%%%%%
+        subplot(1,3,2);
+        % cla;
+
+        semilogy(index_curvatures,curvatures,'k-');
+        hold on;
+        semilogy(index_curvatures,point_curvature_minimums,'-','Color',[0.6 0.6 0.6]);
+
+        plot(best_SNR_index,point_curvature_minimums(best_SNR_index),'g.','Markersize',20);
+
+        grid on;
+        xlabel('index [count]');
+        ylabel('curvature [1/m]');
+        title('Curvatures')
+
+        %%%%%%%%%%%%%%%%%%%%%%
+        subplot(1,3,3);
+        % cla;
+        grid on;
+        hold on;
+
+        plot(index_curvatures, remaining_curvature_SNR,'k-');
+        plot(index_curvatures(best_SNR_index), remaining_curvature_SNR(best_SNR_index),'g.','Markersize',30);
+
+        xlabel('index [count]');
+        ylabel('SNR [unitless]');
+        title('Curvature SNR')
+    end
+    
+    % Save results
+    best_fit_SNRs    = [best_fit_SNRs; remaining_curvature_SNR(best_SNR_index)]; %#ok<AGROW>
+    best_fit_ranges = [best_fit_ranges; index_ranges(best_SNR_index)]; %#ok<AGROW>
+    
+
+    % Block out the indicies of this fit
+    min_index = best_SNR_index-index_ranges(best_SNR_index);
+    max_index = best_SNR_index+index_ranges(best_SNR_index);
+    remaining_curvature_SNR(min_index:max_index) = nan;
+
+    % Save fit parameters
+    %               [circleCenter_x.
+    %                circleCenter_y,
+    %                radius,
+    %                start_angle_in_radians,
+    %                end_angle_in_radians,
+    %                flag_this_is_a_circle
+    %                flag_arc_is_counterclockwise
+    %               ]
+    best_arc_center                    = arc_centers(best_SNR_index,:);
+    best_arc_radius                    = 1/curvatures(best_SNR_index);
+    vector_from_circle_center_to_start = points_to_fit(min_index,:)-best_arc_center;
+    vector_from_circle_center_to_end   = points_to_fit(max_index,:)-best_arc_center;
+    best_arc_start_angle_in_radians    = mod(atan2(vector_from_circle_center_to_start(2),vector_from_circle_center_to_start(1)),2*pi);
+    best_arc_end_angle_in_radians      = mod(atan2(vector_from_circle_center_to_end(2),vector_from_circle_center_to_end(1)),2*pi);
+    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points_to_fit(min_index,:), points_to_fit(best_SNR_index,:), points_to_fit(max_index,:),-1);
+    best_arc_flag_is_counterclockwise  = (1==is_counterClockwise);
+    best_arc_flag_this_is_a_circle     = 0;
+    best_fit_arc = [...
+        best_arc_center,...
+        best_arc_radius,...
+        best_arc_start_angle_in_radians,...
+        best_arc_end_angle_in_radians,...
+        best_arc_flag_this_is_a_circle,...
+        best_arc_flag_is_counterclockwise,...
+        ];
+
+    % Plot the arcs?
+    if flag_do_debug
+        figure(debug_fig_num)
+        subplot(1,3,1);
+        fcn_geometry_plotGeometry('arc',best_fit_arc);
+    end
+
+    % Save results
+    best_fit_arcs = [best_fit_arcs; best_fit_arc]; %#ok<AGROW>
+
+end
+
 
 %% Plot results
 % URHERE

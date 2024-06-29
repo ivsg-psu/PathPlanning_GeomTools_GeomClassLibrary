@@ -1,8 +1,13 @@
 function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, varargin)
 %% fcn_geometry_fitRadiusToPoints
 % Given a set of XY data, fits a circle to the data and finds the
-% uncertainty in the fit, as a bounding box relative to 2 standard
-% deviations.
+% uncertainty in the radius fit using a bounding box relative to 2 standard
+% deviations. The uncertainty in the fit is quantified as a signal - the
+% radius - versus noise, the standard deviation. The standard deviation is
+% used (+/- 2 sigma) to create a bounding box with the same length as the
+% arc being fit. The bounding box then puts a upper constraint on the
+% maximum radius that can be fit that would be statistically
+% indistinguishable from a line fit. This maximum radius is returned.
 % 
 % Format: 
 % [arcRadius, radius_maximum] = fcn_geometry_fitRadiusToPoints(points_to_fit, (fig_num))
