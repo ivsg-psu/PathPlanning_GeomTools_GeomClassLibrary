@@ -250,7 +250,7 @@ end
 
 %% Shift the solution via C2 continuity check
 % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, varargin)
-[~, ~, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (best_fit_domain_box_projection_distance/2), (0.01), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (best_fit_domain_box_projection_distance/2), (0.0001), (fig_num));
 
 regression_domain.best_fit_parameters = possible_best_fit_parameters;
 regression_domain.best_fit_parameters(1,1:3) = closest_feasible_arc2_parameters(1,1:3);

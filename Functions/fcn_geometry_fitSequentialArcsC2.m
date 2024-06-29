@@ -85,7 +85,7 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fitSequentialArcs
+% See the script: script_test_fcn_geometry_fitSequentialArcsC2
 % for a full test suite.
 %
 % This function was written on 2024_04_03 by S. Brennan
@@ -467,41 +467,44 @@ end
 %                flag_this_is_a_circle
 %               ] 
 
-for ith_domain = 1:length(fitSequence_parameters)
-    if strcmp(fitSequence_bestFitType{ith_domain},'Regression arc')
-        % Find the arc's height. See diagram here, for example:
-        % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
-        angle_sweep_radians = diff(fitSequence_parameters{ith_domain}(4:5));
-        half_angle = abs(angle_sweep_radians)/2;
-        fit_radius = fitSequence_parameters{ith_domain}(3);
-        arc_height = fit_radius*(1-cos(half_angle));
+if 1==0
+    for ith_domain = 1:length(fitSequence_parameters)
+        if strcmp(fitSequence_bestFitType{ith_domain},'Regression arc')
+            % Find the arc's height. See diagram here, for example:
+            % https://mathcentral.uregina.ca/QQ/database/QQ.09.07/s/bruce1.html
+            angle_sweep_radians = diff(fitSequence_parameters{ith_domain}(4:5));
+            half_angle = abs(angle_sweep_radians)/2;
+            fit_radius = fitSequence_parameters{ith_domain}(3);
+            arc_height = fit_radius*(1-cos(half_angle));
 
-        % It's probably a line if the arc almost fits within the box
-        % created by the fitting tolerance. The height of that box is
-        % 2*tolerance. However, the first and last points may be very
-        % slightly outside this, and so we make the height 3 times the
-        % tolerance.
-        if arc_height < 3*fitting_tolerance(1)
-            % This is a line - redo the fit with a line
-            Hough_domain.points_in_domain = fitSequence_points{ith_domain};
-            Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
-            Hough_domain.best_fit_type = 'Hough segment';   
-            first_point = fitSequence_points{ith_domain}(1,:);
-            last_point = fitSequence_points{ith_domain}(end,:);
-            vector_from_first_to_last = last_point - first_point;
-            angle_of_segment = atan2(vector_from_first_to_last(2),vector_from_first_to_last(1));
-            length_of_domain = sum(vector_from_first_to_last.^2,2).^0.5;
-            Hough_domain.best_fit_parameters = [first_point angle_of_segment length_of_domain];
-            regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance(1), -1);
-            
-            % Update the data with the regression fit
-            fitSequence_shapes{ith_domain} = regression_domain.best_fit_domain_box; 
-            fitSequence_parameters{ith_domain} = regression_domain.best_fit_parameters; 
-            fitSequence_bestFitType{ith_domain} = regression_domain.best_fit_type; 
+            % It's probably a line if the arc almost fits within the box
+            % created by the fitting tolerance. The height of that box is
+            % 2*tolerance. However, the first and last points may be very
+            % slightly outside this, and so we make the height 3 times the
+            % tolerance.
+            if arc_height < 3*fitting_tolerance(1)
+                % This is a line - redo the fit with a line
+                Hough_domain.points_in_domain = fitSequence_points{ith_domain};
+                Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
+                Hough_domain.best_fit_type = 'Hough segment';
+                first_point = fitSequence_points{ith_domain}(1,:);
+                last_point = fitSequence_points{ith_domain}(end,:);
+                vector_from_first_to_last = last_point - first_point;
+                angle_of_segment = atan2(vector_from_first_to_last(2),vector_from_first_to_last(1));
+                length_of_domain = sum(vector_from_first_to_last.^2,2).^0.5;
+                Hough_domain.best_fit_parameters = [first_point angle_of_segment length_of_domain];
+                regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance(1), -1);
+
+                % Update the data with the regression fit
+                fitSequence_shapes{ith_domain} = regression_domain.best_fit_domain_box;
+                fitSequence_parameters{ith_domain} = regression_domain.best_fit_parameters;
+                fitSequence_bestFitType{ith_domain} = regression_domain.best_fit_type;
+
+            end
 
         end
-        
     end
+
 end
 
 %% Fix ordering

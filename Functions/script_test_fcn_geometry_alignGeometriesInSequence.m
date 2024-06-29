@@ -30,12 +30,16 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
     small_XY_data = XY_data(small_XY_data_indicies,:);
 
     % Perform the fit forwards
-    fitting_tolerance = [1 10]; % Units are meters
+    fitting_tolerance = [0.1 10]; % Units are meters
     flag_fit_backwards = 0;
     figure(fig_num);
     clf;
+
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-        fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+
+    % [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
+    %    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
 end
 
@@ -43,7 +47,7 @@ end
 %% Connect the fits so that the lines perfectly align with the arcs
 fig_num = 2;
 figure(fig_num);clf;
-fitting_tolerance = [100 100];
+fitting_tolerance = [10 0.2];
 continuity_level = 2;
 
 clear fits_to_check_types fits_to_check_parameters

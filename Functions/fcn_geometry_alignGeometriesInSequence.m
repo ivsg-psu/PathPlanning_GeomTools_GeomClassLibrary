@@ -285,6 +285,12 @@ in_boundary_margin = 0.01;
 % Loop through fits, connecting them together
 for ith_fit = 1:NfitsInSequence-1
 
+    if ith_fit==5
+        disp('Stop here');
+    end
+
+    fprintf(1,'Performing fit %.0d of %.0d\n',ith_fit,NfitsInSequence-1);
+
     current_fit_type = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(lastFit_type);
     next_fit_type    = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(fitSequence_bestFitType{ith_fit+1});
 
@@ -488,12 +494,20 @@ switch X_fitType
             % [flag_is_feasible, feasibility_distance, closest_feasible_line_parameters] = ...
             % fcn_geometry_isC2FeasibleArcToLine( circle_parameters, line_parameters, (threshold), (in_boundary_margin), (fig_num));
 
+            % Is a C2 solution feasible?
             [flag_is_feasible, feasibility_distance, closest_feasible_segment_parameters] = ...
                 fcn_geometry_isC2FeasibleArcToLine( arc_parameters, segment_parameters, (transverse_threshold), (in_boundary_margin), (-1));
 
-            % Is a solution feasible?
+            % If not C2, then is a C1 solution feasible?
             if 0==flag_is_feasible
-                revised_arc_parameters = nan*arc_parameters;
+                [flag_is_feasible, feasibility_distance, closest_feasible_segment_parameters] = ...
+                    fcn_geometry_isC2FeasibleArcToLine( arc_parameters, segment_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+                if 0==flag_is_feasible
+                    error('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
+                    revised_arc_parameters = nan*arc_parameters;
+                end
+                continuity_level = 1;
+
             end
         else
             closest_feasible_segment_parameters = segment_parameters;
@@ -512,7 +526,7 @@ switch X_fitType
         % Arc to Arc2
 
         arc2_parameters = X_parameters;
-
+        
         if 2==continuity_level
             %%%%
             % Check feasibility
@@ -520,13 +534,21 @@ switch X_fitType
             % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
             % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
 
+            % Is a C2 solution feasible?
             [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
             fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
 
-            % Is a solution feasible?
+            % If not C2, then is a C1 solution feasible?
             if 0==flag_is_feasible
-                revised_arc_parameters = nan*arc_parameters;
+                [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
+                    fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+                if 0==flag_is_feasible
+                    error('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
+                    revised_arc_parameters = nan*arc_parameters;
+                end
+                continuity_level = 1;
             end
+            
         else
             closest_feasible_arc2_parameters = arc2_parameters;
             flag_is_feasible = 1;
@@ -537,7 +559,7 @@ switch X_fitType
             %%%%
             % Calculate parameters
             [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
-                arc_parameters, closest_feasible_arc2_parameters, (threshold), (continuity_level), (-1));
+                arc_parameters, closest_feasible_arc2_parameters, (threshold), (continuity_level), (2689));
         end
 
     otherwise
