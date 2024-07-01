@@ -11,7 +11,7 @@
 
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
-fig_num = 1;
+
 
 
 % Check to see if the data was loaded earlier
@@ -27,26 +27,53 @@ end
 % Check to see if the fits were calculated earlier
 if ~exist('fitSequence_points_forward','var') || ~exist('fitSequence_points_backward','var')
 
+    fitting_tolerance = [30 2]; % Units are meters, in St form
+
     % Since the XY data is very dense, keep only 1 of every "keep_every" points
-    keep_every = 20;
+    keep_every = 100;
     indicies = (1:length(XY_data(:,1)))';
     small_XY_data_indicies = find(0==mod(indicies,keep_every));
     small_XY_data = XY_data(small_XY_data_indicies,:);
 
-    % Perform the fit forwards
-    fitting_tolerance = [2 10]; % Units are meters
-    flag_fit_backwards = 0;
+    points = small_XY_data;
+    transverse_tolerance = fitting_tolerance(1,2);
+    station_tolerance    = fitting_tolerance(1,1);
+    points_required_for_agreement = 4;
+    flag_force_circle_fit = 0;
+    expected_radii_range = [];
+    flag_find_only_best_agreement = 0;
+    flag_use_permutations = [];
+
+    fig_num = 11;
     figure(fig_num);
     clf;
+
+    domains  = ...
+    fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
+            (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
 
     % [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
     %     fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
+    % Perform the fit forwards and backwards
+
+    flag_fit_backwards = 0;
+
+    fig_num = 12;
+    figure(fig_num);
+    clf;
+
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
        fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
+    fig_num = 13;
+    figure(fig_num);
+    clf;
+
+    flag_fit_backwards = 0;
     [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
         fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, 1, fig_num);
+
 
 end
 

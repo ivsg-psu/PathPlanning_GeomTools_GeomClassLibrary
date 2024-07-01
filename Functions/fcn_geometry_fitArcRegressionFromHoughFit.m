@@ -18,8 +18,8 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 %      best_fit_domain_box. If left empty, defaults to 2 standard
 %      deviations to thus give a box that is +/- 2 sigma. If this is
 %      entered as a 2x1 or 1x2, then this specifies the distance first in
-%      the transverse direction, and then in the station direction. For
-%      example, an entry of [0.02 3] would have 0.02 meters tolerance in
+%      the station direction, and then in the transverse direction. For
+%      example, an entry of [3 0.02] would have 0.02 meters tolerance in
 %      the transverse direction, but 3 meters tolerance in the station
 %      direction.
 %
@@ -65,6 +65,9 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % used in the track data
 % -- added option to best_fit_domain_box_projection_distance to allow both
 % transverse AND station tolerances
+% 2024_07_01 - Sean Brennan
+% -- changed fitting_tolerance to St form, with station first then
+% transverse (it was the reverse, previously - confusing)
 
 %% Debugging and Input checks
 
@@ -198,13 +201,15 @@ regression_domain.points_in_domain = points_in_domain;
 circleCenter = regression_fit_circle_center_and_radius(1,1:2);
 circleRadius = regression_fit_circle_center_and_radius(1,3);
 
-% Find the station tolerance to use
+% Find the station and transverse tolerance to use
 
 if ~isempty(best_fit_domain_box_projection_distance)
     if length(best_fit_domain_box_projection_distance)==1
-        station_tolerance = 10*best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+        station_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+        transverse_toleraance = best_fit_domain_box_projection_distance;
     else
-        station_tolerance = best_fit_domain_box_projection_distance(2);
+        station_tolerance = best_fit_domain_box_projection_distance(1,1);
+        transverse_toleraance = best_fit_domain_box_projection_distance(1,2); 
     end
 
 else
@@ -276,7 +281,7 @@ else
         direction_of_angles = -1;
     end
     angles_padded = [start_angle_in_radians - direction_of_angles*additional_arc_radians; angles; end_angle_in_radians + direction_of_angles*additional_arc_radians];
-    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance(1),-1);
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  transverse_toleraance,-1);
 end
 
 
