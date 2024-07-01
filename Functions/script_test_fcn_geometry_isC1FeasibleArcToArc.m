@@ -412,4 +412,242 @@ assert(isequal(round(flag_is_feasible,4),1));
 
 
 
+%% 3.1 Basic test - feasible arc1 outside of arc2 (arc1 BEFORE arc2)
 
+fig_num = 3101;
+figure(fig_num);
+clf;
+
+% Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc1_radius               = 4;
+arc1_x_offset             = 0; 
+arc1_y_offset             = 0; 
+arc1_start_angle_degrees  = -180;
+arc1_end_angle_degrees    = -90;
+arc1_is_counter_clockwise = 1;
+
+arc1_center_xy            = [arc1_x_offset arc1_radius+arc1_y_offset];
+arc1_vector_start         = [cos(arc1_start_angle_degrees*pi/180) sin(arc1_start_angle_degrees*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle_degrees  *pi/180) sin(arc1_end_angle_degrees  *pi/180)];
+arc1_is_circle            = 0;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc1_parameters
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+
+% Fill in arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc2_radius               = 4;
+arc2_x_offset             = 3; 
+arc2_y_offset             = 0; 
+arc2_start_angle_degrees  = -110;
+arc2_end_angle_degrees    = 10;
+arc2_is_counter_clockwise = 1;
+
+arc2_center_xy            = [arc2_x_offset (arc2_radius+arc2_y_offset)];
+arc2_vector_start         = [cos(arc2_start_angle_degrees*pi/180) sin(arc2_start_angle_degrees*pi/180)];
+arc2_vector_end           = [cos(arc2_end_angle_degrees  *pi/180) sin(arc2_end_angle_degrees  *pi/180)];
+arc2_is_circle            = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = [];
+
+% Call function
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+% Check sizes
+assert(isequal(size(flag_is_feasible),[1 1]));
+assert(isequal(size(feasibility_distance),[1 1]));
+assert(isequal(size(closest_feasible_arc2_parameters),[1 7]));
+
+% Check values
+assert(isequal(round(flag_is_feasible,4),1));
+assert(isequal(round(feasibility_distance,4),-2.1213));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[3.0000    4.0000    4.0000   -1.9199    0.1745         0    1.0000]));
+
+
+%% 3.2 Basic test - infeasible arc1 outside of arc2 (arc1 AFTER arc2), locked together
+
+fig_num = 3201;
+figure(fig_num);
+clf;
+
+% Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc1_radius               = 4;
+arc1_x_offset             = 3; 
+arc1_y_offset             = 0; 
+arc1_start_angle_degrees  = -180;
+arc1_end_angle_degrees    = -90;
+arc1_is_counter_clockwise = 1;
+
+arc1_center_xy            = [arc1_x_offset arc1_radius+arc1_y_offset];
+arc1_vector_start         = [cos(arc1_start_angle_degrees*pi/180) sin(arc1_start_angle_degrees*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle_degrees  *pi/180) sin(arc1_end_angle_degrees  *pi/180)];
+arc1_is_circle            = 0;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc1_parameters
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+
+% Fill in arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc2_radius               = 4;
+arc2_x_offset             = 0; 
+arc2_y_offset             = 0; 
+arc2_start_angle_degrees  = -110;
+arc2_end_angle_degrees    = 10;
+arc2_is_counter_clockwise = 1;
+
+arc2_center_xy            = [arc2_x_offset (arc2_radius+arc2_y_offset)];
+arc2_vector_start         = [cos(arc2_start_angle_degrees*pi/180) sin(arc2_start_angle_degrees*pi/180)];
+arc2_vector_end           = [cos(arc2_end_angle_degrees  *pi/180) sin(arc2_end_angle_degrees  *pi/180)];
+arc2_is_circle            = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = [];
+
+% Call function
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+% Check sizes
+assert(isequal(size(flag_is_feasible),[1 1]));
+assert(isequal(size(feasibility_distance),[1 1]));
+assert(isequal(size(closest_feasible_arc2_parameters),[1 7]));
+
+% Check values
+assert(isequal(round(flag_is_feasible,4),0));
+assert(isequal(round(feasibility_distance,4),3));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[3.0000    4.0000    4.0000   -1.9199    0.1745         0    1.0000]));
+
+
+% Show new parameters are feasible, if nudged in boundary by VERY small
+% amount
+in_boundary_margin = 0.00001;
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+assert(isequal(round(flag_is_feasible,4),1));
+
+%% 3.3 Basic test - infeasible arc1 outside of arc2 (arc1 AFTER arc2), r2 less than r1
+
+fig_num = 3301;
+figure(fig_num);
+clf;
+
+% Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc1_radius               = 4;
+arc1_x_offset             = 0.0001; 
+arc1_y_offset             = 0; 
+arc1_start_angle_degrees  = -180;
+arc1_end_angle_degrees    = -90;
+arc1_is_counter_clockwise = 1;
+
+arc1_center_xy            = [arc1_x_offset arc1_radius+arc1_y_offset];
+arc1_vector_start         = [cos(arc1_start_angle_degrees*pi/180) sin(arc1_start_angle_degrees*pi/180)];
+arc1_vector_end           = [cos(arc1_end_angle_degrees  *pi/180) sin(arc1_end_angle_degrees  *pi/180)];
+arc1_is_circle            = 0;
+arc1_angles = [atan2(arc1_vector_start(2),arc1_vector_start(1)); atan2(arc1_vector_end(2),arc1_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc1_parameters
+arc1_parameters(1,1:2) = arc1_center_xy;
+arc1_parameters(1,3)   = arc1_radius;
+arc1_parameters(1,4:5) = arc1_angles;
+arc1_parameters(1,6)   = arc1_is_circle;
+arc1_parameters(1,7)   = arc1_is_counter_clockwise;
+
+
+% Fill in arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+
+% Fill in arc 2
+arc2_radius               = 2;
+arc2_x_offset             = 0; 
+arc2_y_offset             = 0; 
+arc2_start_angle_degrees  = -110;
+arc2_end_angle_degrees    = 10;
+arc2_is_counter_clockwise = 1;
+
+arc2_center_xy            = [arc2_x_offset (arc1_radius+arc2_y_offset)];
+arc2_vector_start         = [cos(arc2_start_angle_degrees*pi/180) sin(arc2_start_angle_degrees*pi/180)];
+arc2_vector_end           = [cos(arc2_end_angle_degrees  *pi/180) sin(arc2_end_angle_degrees  *pi/180)];
+arc2_is_circle            = 0;
+arc2_angles = [atan2(arc2_vector_start(2),arc2_vector_start(1)); atan2(arc2_vector_end(2),arc2_vector_end(1));];
+
+
+% Get the arc fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+clear arc2_parameters
+arc2_parameters(1,1:2) = arc2_center_xy;
+arc2_parameters(1,3)   = arc2_radius;
+arc2_parameters(1,4:5) = arc2_angles;
+arc2_parameters(1,6)   = arc2_is_circle;
+arc2_parameters(1,7)   = arc2_is_counter_clockwise;
+
+
+% Set threshold and margin
+threshold = 0;
+in_boundary_margin = [];
+
+% Call function
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+
+% Check sizes
+assert(isequal(size(flag_is_feasible),[1 1]));
+assert(isequal(size(feasibility_distance),[1 1]));
+assert(isequal(size(closest_feasible_arc2_parameters),[1 7]));
+
+% Check values
+assert(isequal(round(flag_is_feasible,4),0));
+assert(isequal(round(feasibility_distance,4),2.0001));
+assert(isequal(round(closest_feasible_arc2_parameters,4),[0.0001    4.0000    4.0000   -1.9199    0.1745         0    1.0000]));
+
+
+% Show new parameters are feasible, if nudged in boundary by VERY small
+% amount
+in_boundary_margin = 0.00001;
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+assert(isequal(round(flag_is_feasible,4),1));

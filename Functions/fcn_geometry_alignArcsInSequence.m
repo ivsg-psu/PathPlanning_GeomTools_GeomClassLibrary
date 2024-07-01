@@ -1,13 +1,12 @@
 function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] = ...
-    fcn_geometry_alignGeometriesInSequence(input_types, input_parameters, threshold, varargin)
-%% fcn_geometry_alignGeometriesInSequence
-% Given the results of regression fits that are used to fit a set of data
+    fcn_geometry_alignArcsInSequence(input_types, input_parameters, threshold, varargin)
+%% fcn_geometry_alignArcsInSequence
+% Given the results of arc regression fits that are used to fit a set of data
 % in sequence, this function proceeds from the first fit to the second,
 % then second to third, etc. and matches the fits together to achieve
 % levels of continuity between fits.
 %
-% The following matches are supported with either C0, C1, and C2
-% continuity, and user-defined tolerances:
+% The matching seeks C2 continuity, and user-defined tolerances:
 %
 % * connections from line segments to arcs using
 %   fcn_geometry_alignSegmentArc 
@@ -20,7 +19,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %
 % Format:
 % revised_fitSequence_parameters = ...
-% fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (fig_num))
+% fcn_geometry_alignArcsInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (fig_num))
 %
 % INPUTS:
 %      fitSequence_bestFitType: a cell array of length N that contains
@@ -95,7 +94,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %
 % EXAMPLES:
 %
-% See the script: script_test_fcn_geometry_alignGeometriesInSequence
+% See the script: script_test_fcn_geometry_alignArcsInSequence
 % for a full test suite.
 %
 % This function was written on 2024_04_19 by S. Brennan
@@ -231,6 +230,7 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Prep the plots
 if flag_do_plots
         % Plot the results in the given figure number
         temp_h = figure(fig_num);
@@ -265,19 +265,94 @@ if flag_do_plots
 
 end
 
+%% Set up variables
 fitSequence_bestFitType = input_types;
 fitSequence_parameters = input_parameters;
+fitSequence_revised_parameters_C1 = input_parameters;
+fitSequence_revised_parameters_C2 = input_parameters;
 
 % How many fits are we aligning?
 NfitsInSequence = length(fitSequence_bestFitType);
 
+in_boundary_margin = 0.001;
+
+if length(threshold(1,:))>1
+    transverse_threshold = threshold(1,2);
+else
+    transverse_threshold = threshold(1,1);
+end
+
+
+%% Check the feasibility
+
+
+
+% Loop through fits, connecting them together
+for ith_fit = 1:NfitsInSequence-1
+
+    fprintf(1,'\n\nChecking alignment of: %.0d to %.0d, of %.0d total: \n',ith_fit, ith_fit+1, NfitsInSequence-1);
+
+    arc_parameters     = fitSequence_parameters{ith_fit};
+    arc2_parameters    = fitSequence_parameters{ith_fit+1};
+
+    % Is a C2 solution feasible?
+    [C2_flag_is_feasible, C2_feasibility_distance, C2_closest_feasible_arc2_parameters, C2_d12, C2_merge_distance] = ...
+        fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+
+    [C1_flag_is_feasible, C1_feasibility_distance, C1_closest_feasible_arc2_parameters, C1_d12, C1_merge_distance] = ...
+        fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+
+    % Summarize results
+    fprintf(1,'FEASIBILITY: \n\tC1 feas: %.0f\n\tC2 feas: %.0f\n\n',...
+        C1_flag_is_feasible, C2_flag_is_feasible);
+
+    fprintf(1,'FEASIBILITY DISTANCE: \n\tC1_f_dist: %.4f\n\tC2_f_dist: %.4f\n\n',...
+        C1_feasibility_distance, C2_feasibility_distance);
+
+    fprintf(1,'DISTANCE_12: \n\tC1_d12: %.4f\n\tC2_d12: %.4f\n\n',...
+        C1_d12, C2_d12);
+
+    fprintf(1,'MERGE DISTANCE: \n\t C1_merge_dist: %.4f\n\t C1_merge_dist: %.4f\n\n',...
+        C1_merge_distance, C2_merge_distance);
+
+
+    fitSequence_revised_parameters_C1{ith_fit+1} = C1_closest_feasible_arc2_parameters;
+    fitSequence_revised_parameters_C2{ith_fit+1} = C2_closest_feasible_arc2_parameters;
+end
+
+
+%% Print the results
+
+NleadCharacters = 20;
+NfitsInSequence = length(fitSequence_bestFitType);
+
+fprintf(1,'\n\nPARAMETER FIT COMPARISON:\n');
+for ith_fit = 1:NfitsInSequence
+    fprintf(1,'\n\nFit Sequence Number: %.0d\n', ith_fit); 
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),NleadCharacters));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType{ith_fit}, fitSequence_parameters{ith_fit},1)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('INPUTS'),NleadCharacters));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType{ith_fit}, fitSequence_parameters{ith_fit},0)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('MODIFIED C1'),NleadCharacters));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType{ith_fit}, fitSequence_revised_parameters_C1{ith_fit},0)
+
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('MODIFIED C2'),NleadCharacters));
+    fcn_INTERNAL_printFitDetails(fitSequence_bestFitType{ith_fit}, fitSequence_revised_parameters_C2{ith_fit},0)
+
+end
+fprintf(1,'\n');
+
+
+%% Start alignment
 % Fill in starter values for the output parameters by using an empty cell
 % array
 N_revisedFits                     = 0;
 revised_fitSequence_types{1}      = '';
 revised_fitSequence_parameters{1} = [];
 max_feasibility_distance          = -inf;
-lastFit_type                      = fitSequence_bestFitType{1};
 lastFit_parameters                = fitSequence_parameters{1}; 
 
 in_boundary_margin = 0.01;
@@ -291,22 +366,10 @@ for ith_fit = 1:NfitsInSequence-1
 
     fprintf(1,'Performing fit %.0d of %.0d\n',ith_fit,NfitsInSequence-1);
 
-    current_fit_type = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(lastFit_type);
-    next_fit_type    = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(fitSequence_bestFitType{ith_fit+1});
-
     current_fit_parameters = lastFit_parameters;
     next_fit_parameters    = fitSequence_parameters{ith_fit+1};
 
-    switch current_fit_type
-        case 'segment'
-            [revised_subSequence_types, revised_sequence_parameters, flag_fit_failed, feasibility_distance] = fcn_INTERNAL_alignSegmentToX(current_fit_parameters, next_fit_parameters, next_fit_type, continuity_level, threshold, in_boundary_margin);            
-        case 'arc'
-            [revised_subSequence_types, revised_sequence_parameters, flag_fit_failed, feasibility_distance] = fcn_INTERNAL_alignArcToX(current_fit_parameters, next_fit_parameters, next_fit_type, continuity_level, threshold, in_boundary_margin);
-        otherwise
-            warning('on','backtrace');
-            warning('An error will be thrown at this point due to missing code.');
-            error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
-    end
+    [revised_subSequence_types, revised_sequence_parameters, flag_fit_failed, feasibility_distance] = fcn_INTERNAL_alignArcToX(current_fit_parameters, next_fit_parameters, 'arc', continuity_level, threshold, in_boundary_margin);
 
     max_feasibility_distance = max(max_feasibility_distance,feasibility_distance);
     
@@ -470,7 +533,7 @@ end
 end % Ends fcn_INTERNAL_covertComplexShapeNamesToSimpleNames
 
 %% fcn_INTERNAL_alignArcToX
-function [revised_sequence_types, revised_sequence_parameters, flag_fit_failed, feasibility_distance] = fcn_INTERNAL_alignArcToX(arc_parameters, X_parameters, X_fitType, continuity_level, threshold, in_boundary_margin)
+function [revised_sequence_types, revised_sequence_parameters, flag_fit_failed, feasibility_distance] = fcn_INTERNAL_alignArcToX(arc_parameters, arc2_parameters, X_fitType, continuity_level, threshold, in_boundary_margin)
 
 if length(threshold(1,:))>1
     transverse_threshold = threshold(1,2);
@@ -481,101 +544,51 @@ end
 % Initialize values
 feasibility_distance = 0;
 
-switch X_fitType
-    case 'segment'
-        % Arc to Segment
-        
-        segment_parameters = X_parameters;
 
-        if 2==continuity_level
-            %%%%
-            % Check feasibility
-            % Format:
-            % [flag_is_feasible, feasibility_distance, closest_feasible_line_parameters] = ...
-            % fcn_geometry_isC2FeasibleArcToLine( circle_parameters, line_parameters, (threshold), (in_boundary_margin), (fig_num));
 
-            % Is a C2 solution feasible?
-            [flag_is_feasible, feasibility_distance, closest_feasible_segment_parameters] = ...
-                fcn_geometry_isC2FeasibleArcToLine( arc_parameters, segment_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+if 2==continuity_level
+    %%%%
+    % Check feasibility
+    % Format:
+    % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
+    % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
 
-            % If not C2, then is a C1 solution feasible?
-            if 0==flag_is_feasible
-                [flag_is_feasible, feasibility_distance, closest_feasible_segment_parameters] = ...
-                    fcn_geometry_isC2FeasibleArcToLine( arc_parameters, segment_parameters, (transverse_threshold), (in_boundary_margin), (-1));
-                if 0==flag_is_feasible
-                    error('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
-                    revised_arc_parameters = nan*arc_parameters;
-                end
-                continuity_level = 1;
+    % Is a C2 solution feasible?
+    [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+        fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
 
-            end
-        else
-            closest_feasible_segment_parameters = segment_parameters;
-            flag_is_feasible = 1;
-        end
+    % If not C2, then is a C1 solution feasible?
+    if 0==flag_is_feasible
+        C2_feasibility_distance = feasibility_distance;
+        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+            fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+        if 0==flag_is_feasible
+            C1_feasibility_distance = feasibility_distance;
 
-        % If possible, try to calculate the revised parameters
-        if 1==flag_is_feasible
-            %%%%
-            % Calculate parameters
-            [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcSegment(...
-                arc_parameters, closest_feasible_segment_parameters, (threshold), (continuity_level), (-1));
-        end
-
-    case 'arc'
-        % Arc to Arc2
-
-        arc2_parameters = X_parameters;
-        
-        if 2==continuity_level
-            %%%%
-            % Check feasibility
-            % Format:
-            % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
-            % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
-
-            % Is a C2 solution feasible?
-            [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
-            fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
-
-            % If not C2, then is a C1 solution feasible?
-            if 0==flag_is_feasible
-                C2_feasibility_distance = feasibility_distance;
+            if C2_feasibility_distance<=C1_feasibility_distance
+                [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+                    fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
+            else
                 [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
                     fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
-                if 0==flag_is_feasible
-                    C1_feasibility_distance = feasibility_distance;
-
-                    if C2_feasibility_distance<=C1_feasibility_distance
-                        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
-                            fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
-                    else
-                        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
-                            fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
-                    end
-                    flag_is_feasible = 1; % FORCE the code to continue
-                    warning('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
-                end
-                continuity_level = 1;
             end
-            
-        else
-            closest_feasible_arc2_parameters = arc2_parameters;
-            flag_is_feasible = 1;
+            flag_is_feasible = 1; % FORCE the code to continue
+            warning('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
         end
+        continuity_level = 1;
+    end
 
-        % If possible, try to calculate the revised parameters
-        if 1==flag_is_feasible
-            %%%%
-            % Calculate parameters
-            [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
-                arc_parameters, closest_feasible_arc2_parameters, (threshold), (continuity_level), (2689));
-        end
+else
+    closest_feasible_arc2_parameters = arc2_parameters;
+    flag_is_feasible = 1;
+end
 
-    otherwise
-        warning('on','backtrace');
-        warning('An error will be thrown at this point due to missing code.');
-        error('Alignments are not yet supported for curves from fit type: %s',current_fit_type);
+% If possible, try to calculate the revised parameters
+if 1==flag_is_feasible
+    %%%%
+    % Calculate parameters
+    [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
+        arc_parameters, closest_feasible_arc2_parameters, (threshold), (continuity_level), (2689));
 end
 
 % Check to see if any of the functions return NaN values. If so, this is a
@@ -700,4 +713,60 @@ end
 end % Ends fcn_INTERNAL_alignSegmentToX
 
 
+%% fcn_INTERNAL_printFitDetails
+function fcn_INTERNAL_printFitDetails(fit_type,fit_parameters, flag_print_header)
 
+if contains(fit_type,{'arc','circle'})
+    print_type = 'arc';            
+    header_strings = {'centerX','centerY','radius','startAngle(deg)','endAngle(deg)','isCircle','turnsLeft'};
+elseif contains(fit_type,{'segment','line'})
+    print_type = 'line';
+    header_strings = {'startX','startY','theta(deg)','Slength'};
+end
+
+NumColumnChars = 15;
+
+% Print header?
+if flag_print_header
+    % Print values
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(' '),20));
+
+    parameter_string = '';
+    for ith_parameter = 1:length(fit_parameters)
+        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
+        parameter_string = cat(2,parameter_string,number_string);
+    end
+    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
+else
+    % Print values
+    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit type: %s ',print_type),20));
+
+    % Print parameters
+    parameter_string = '';
+    for ith_parameter = 1:length(fit_parameters)
+
+        % For arcs, the 4th and 5th parameter are angles that must be
+        % converted into degrees. Same is true for the line type, 3rd
+        % parameter.
+        if strcmp(print_type,'arc') && ((ith_parameter==4)||(ith_parameter==5))
+            fit_parameters(ith_parameter) = mod(fit_parameters(ith_parameter),2*pi); % Convert to positive angles only
+            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f ',fit_parameters(ith_parameter)*180/pi),NumColumnChars);
+        elseif strcmp(print_type,'line') && (ith_parameter==3)
+            fit_parameters(ith_parameter) = mod(fit_parameters(ith_parameter),2*pi); % Convert to positive angles only
+            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f ',fit_parameters(ith_parameter)*180/pi),NumColumnChars);
+        else
+            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.4f ',fit_parameters(ith_parameter)),NumColumnChars);
+        end
+
+        % If start of the number has a minus sign, end-pad it. Otherwise,
+        % front-pad it. 
+        if strcmp(number_string(1),'-')
+            parameter_string = cat(2,parameter_string,number_string, ' ');
+        else
+            parameter_string = cat(2,parameter_string,' ', number_string);
+        end
+    end
+    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
+end
+
+end % Ends fcn_INTERNAL_printFitDetails

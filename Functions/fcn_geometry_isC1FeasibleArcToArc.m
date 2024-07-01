@@ -1,4 +1,4 @@
-function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, varargin)
+function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, varargin)
 %% fcn_geometry_isC1FeasibleArcToArc
 % Given two arc geometries, checks if the arcs can be joined with C1
 % continuity. If not, it finds the closest C1 feasible arc2 given arc1.
@@ -48,13 +48,18 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % OUTPUTS:
 %
 %      flag_is_feasible: a value of 1 if C1 continuity between arc1 and
-%      arc2 is feasible for the given tolerance, 0 otherwise. 
+%      arc2 is feasible for the given tolerance, 0 otherwise.
 %
 %      feasibility_distance: the distance between arc1 and arc2 that gives
 %      feasibile C1 continuity.
 %
 %      closest_feasible_arc2_parameters: the closest parameters that give
 %      feasible continuity between arc2 and arc1.
+%
+%      d12: the signed distance between centers of the arcs.
+%
+%      merge_distance: the distance in [r2 d12] space wherein, if arc2 were
+%      moved, it would match arc1.
 %
 % DEPENDENCIES:
 %
@@ -65,12 +70,15 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % See the script: script_test_fcn_geometry_isC1FeasibleArcToArc
 % for a full test suite.
 %
-% This function was written on 2024_05_26 by S. Brennan
+% This function was written on 2024_06_29 by S. Brennan
 % Questions or comments? sbrennan@psu.edu
 
 % Revision history:
 % 2024_06_29 - S Brennan
 % -- wrote the code
+% 2024_06_22 - S Brennan
+% -- added signed distance testing
+% -- added d12, merge_distance output metrics
 
 %% Debugging and Input checks
 
@@ -213,153 +221,224 @@ r1                            = arc1_parameters(1,3);
 arc2_center_xy                = arc2_parameters(1,1:2);
 r2                            = arc2_parameters(1,3);
 
-d12 = real(sum((arc1_center_xy-arc2_center_xy).^2,2).^0.5);
+%% Find d12 - signed
+% First, find the absolute value of d12 - this is just the distance from
+% center of arc1 to center of arc2
+vector_from_arc1_center_to_arc2_center = arc2_center_xy-arc1_center_xy;
+abs_d12 = real(sum(vector_from_arc1_center_to_arc2_center.^2,2).^0.5);
+
+
+% Now, find the sign of d12
+if flag_arc1_is_arc
+    arc1_end_angle_in_radians = arc1_parameters(1,5);
+    arc1_end_point = arc1_center_xy + r1*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
+    vector_from_arc1_center_to_arc1_end_point = arc1_end_point - arc1_center_xy;
+    cross_product_result = cross([vector_from_arc1_center_to_arc1_end_point 0],[vector_from_arc1_center_to_arc2_center 0]);
+
+    % Is result very very close to zero? If so, make it zer
+    if abs(cross_product_result(3))<(1000*eps)
+        cross_product_result(3) = 0;
+    end
+
+    % Check
+    if cross_product_result(3)>=0
+        if 1 == arc1_parameters(1,7)
+            % Positive cross product, CCW rotation
+            sign_d12 = 1;
+        else
+            % Positive cross product, CW rotation
+            sign_d12 = -1;
+        end
+    else
+        if 1 == arc1_parameters(1,7)
+            % Negative cross product, CCW rotation
+            sign_d12 = -1;
+        else
+            % Negative cross product, CW rotation
+            sign_d12 = 1;
+        end
+    end
+else
+    sign_d12 = 1;
+end
+
+% Deactivate negative sign check until it comes up
+d12 = sign_d12*abs_d12;
 
 query_point = [r2 d12];
 
-% Method: 
-% An arc2 is C1 feasible connected to arc1 if it is one of 3 cases:
-% 1) r2<r1, both circles are oriented the same direction, and the circle of arc2
-% is NOT completely encircled by the circle for arc1 (same orientation) 
-% 2) r2>r1, both circles are oriented the same direction, and the circle of arc2
-% does NOT completely encircle the circle for arc1  (same orientation)
-% 3) both circles are oriented in opposite direction, and the circle of arc2
-% exists entirely outside the circle for arc1 (opposite orientation) 
-%
-% Each of these cases produces an inequality requirement for the radius of
-% arc2 (r2) and the distance from the center of the circles for arc1
-% and arc2 (d12), given a radius of arc1 (r1).
-%
-% Specifically:
-%
-% CASE 1: This only occurs if (r2 < r1), both CW or both CCW
-%
-% For case 1, when r2 is smaller than r1, the circle2 is NOT inside circle1
-% only if:
-%  
-% r2 > (r1 - d12) 
-%
-% this can be rewritten with d12 as the dependent variable (y-axis):
-%
-%  d12 > r1 - r2
-% 
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of -1 and r1 as the y-intercept. The line
-% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
-% expected. 
-%
-% To determine the distance of a query point (r2,d12) to this line, a
-% vector can be created to the query point from either (0, r1) or (r1,0).
-% The dot product of this vector with the projection normal from this
-% boundary, in the [-1 -1] direction, is the distance to the boundary.
-%
-% CASE 2: This only occurs if (r2 > r1), both CW or both CCW
-%
-% For case 2, when r2 is larger than r1, the circle2 is NOT encircling circle1
-% only if:
-%  
-% r2 < (r1 + d12) 
-%
-% this can be rewritten with d12 as the dependent variable (y-axis):
-%
-%  d12 > r2 - r1
-% 
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of 1 and -r1 as the y-intercept. The line
-% intercepts the x-axis at the location where r2=r1 and d12 is zero, as
-% expected. The feasible range exists only for d12 greater than zero, e.g.
-% above the right triangle whose corner starts at (r1, 0).
-%
-% To determine the distance of a query point (r2,d12) to this line, a
-% vector can be created to the query point from either (0, -r1) or (r1,0).
-% The dot product of this vector with the projection normal from the
-% boundary, in the [1 -1] direction, is the distance to the boundary.
-%
-% CASE 3: one arc is CW the other is CCW
-%
-% For case 3, the only feasible solution is when the circle for arc2 is
-% completely outside the cirlce for arc1. This occurs only if:
-%  
-% d12 > (r1 + r2) 
-%
-% If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
-% creates a line with slope of 1 and r1 as the intercept. The line 
-% intercepts the x-axis at the location where r2=-r1 and d12 is zero which
-% is not physically possible (negative radius). The feasible range exists
-% only for d12 greater than zero, e.g. within a right triangle whose corner
-% starts at (0, r1).
-%
-% To determine the distance of a query point (r2,d12) to this line, a
-% vector can be created to the query point from either (0, r1) or (-r1,0).
-% The dot product of this vector with the projection normal from the
-% boundary, in the [1 -1] direction, is the distance to the boundary.
-%
-% These inequalities therefore give the method to find both feasibility and
-% the closest location: project the test point (r2, d12) into each of the 3
-% directions. Only 1 of them can be negative, and if this is the case, then
-% the C1 connectivity is feaible. If none are negative, then take the
-% minimum distance solution, project this distance into the feasible space
-% to find the feasible solution. As well, compare this projection distance
-% to the threshold to see if the projection would be allowed to determine
-% feasibility.
+flag_project_into_feasible_area = 1;
+if d12<=0
+    % Commented out if check to force all negative situations into same
+    % correction. 
+    % if (d12<r1-r2) && (d12<r2-r1)
+    % The closest feasible distance is simply to move d12 to zero and r2 to
+    % r1, e.g. to effectively match arc1 to arc2
 
-cases_test_vectors = query_point - [r1, 0];
+    closest_feasible_arc2_parameters = arc2_parameters;
+    closest_feasible_arc2_parameters(1,1:3) = arc1_parameters(1,1:3);
 
-if flag_check_arcs
-    if flag_oriented_same_direction
+    if d12 < (-1*threshold)
+        flag_is_feasible = 0;
+    else
+        flag_is_feasible = 1;
+    end
+    feasibility_distance = abs_d12 + abs(r2-r1);
+    corrected_parameters_r2_d12 = [r1 0];
+    flag_project_into_feasible_area = 0;
+    % end
+end
+
+if flag_project_into_feasible_area
+
+    % Method:
+    % An arc2 is C1 feasible connected to arc1 if it is one of 3 cases:
+    % 1) r2<r1, both circles are oriented the same direction, and the circle of arc2
+    % is NOT completely encircled by the circle for arc1 (same orientation)
+    % 2) r2>r1, both circles are oriented the same direction, and the circle of arc2
+    % does NOT completely encircle the circle for arc1  (same orientation)
+    % 3) both circles are oriented in opposite direction, and the circle of arc2
+    % exists entirely outside the circle for arc1 (opposite orientation)
+    %
+    % Each of these cases produces an inequality requirement for the radius of
+    % arc2 (r2) and the distance from the center of the circles for arc1
+    % and arc2 (d12), given a radius of arc1 (r1).
+    %
+    % Specifically:
+    %
+    % CASE 1: This only occurs if (r2 < r1), both CW or both CCW
+    %
+    % For case 1, when r2 is smaller than r1, the circle2 is NOT inside circle1
+    % only if:
+    %
+    % r2 > (r1 - d12)
+    %
+    % this can be rewritten with d12 as the dependent variable (y-axis):
+    %
+    %  d12 > r1 - r2
+    %
+    % If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+    % creates a line with slope of -1 and r1 as the y-intercept. The line
+    % intercepts the x-axis at the location where r2=r1 and d12 is zero, as
+    % expected.
+    %
+    % To determine the distance of a query point (r2,d12) to this line, a
+    % vector can be created to the query point from either (0, r1) or (r1,0).
+    % The dot product of this vector with the projection normal from this
+    % boundary, in the [-1 -1] direction, is the distance to the boundary.
+    %
+    % CASE 2: This only occurs if (r2 > r1), both CW or both CCW
+    %
+    % For case 2, when r2 is larger than r1, the circle2 is NOT encircling circle1
+    % only if:
+    %
+    % r2 < (r1 + d12)
+    %
+    % this can be rewritten with d12 as the dependent variable (y-axis):
+    %
+    %  d12 > r2 - r1
+    %
+    % If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+    % creates a line with slope of 1 and -r1 as the y-intercept. The line
+    % intercepts the x-axis at the location where r2=r1 and d12 is zero, as
+    % expected. The feasible range exists only for d12 greater than zero, e.g.
+    % above the right triangle whose corner starts at (r1, 0).
+    %
+    % To determine the distance of a query point (r2,d12) to this line, a
+    % vector can be created to the query point from either (0, -r1) or (r1,0).
+    % The dot product of this vector with the projection normal from the
+    % boundary, in the [1 -1] direction, is the distance to the boundary.
+    %
+    % CASE 3: one arc is CW the other is CCW
+    %
+    % For case 3, the only feasible solution is when the circle for arc2 is
+    % completely outside the cirlce for arc1. This occurs only if:
+    %
+    % d12 > (r1 + r2)
+    %
+    % If this is plotted with d12 on the y-axis and r2 on the x-axis, then it
+    % creates a line with slope of 1 and r1 as the intercept. The line
+    % intercepts the x-axis at the location where r2=-r1 and d12 is zero which
+    % is not physically possible (negative radius). The feasible range exists
+    % only for d12 greater than zero, e.g. within a right triangle whose corner
+    % starts at (0, r1).
+    %
+    % To determine the distance of a query point (r2,d12) to this line, a
+    % vector can be created to the query point from either (0, r1) or (-r1,0).
+    % The dot product of this vector with the projection normal from the
+    % boundary, in the [1 -1] direction, is the distance to the boundary.
+    %
+    % These inequalities therefore give the method to find both feasibility and
+    % the closest location: project the test point (r2, d12) into each of the 3
+    % directions. Only 1 of them can be negative, and if this is the case, then
+    % the C1 connectivity is feaible. If none are negative, then take the
+    % minimum distance solution, project this distance into the feasible space
+    % to find the feasible solution. As well, compare this projection distance
+    % to the threshold to see if the projection would be allowed to determine
+    % feasibility.
+
+    cases_test_vectors = query_point - [r1, 0];
+
+    if flag_check_arcs
+        if flag_oriented_same_direction
+            if r2<=r1
+                cases_unit_projection_vectors = [-1 -1]/(2^0.5);
+            else
+                % r2>r1
+                cases_unit_projection_vectors = [1 -1]/(2^0.5);
+            end
+        else
+            % Oriented different direction
+            cases_test_vectors = query_point - [0, r1];
+            cases_unit_projection_vectors = [1 -1]/(2^0.5);
+        end
+    else
         if r2<=r1
             cases_unit_projection_vectors = [-1 -1]/(2^0.5);
         else
             % r2>r1
             cases_unit_projection_vectors = [1 -1]/(2^0.5);
         end
-    else
-        % Oriented different direction
-        cases_test_vectors = query_point - [0, r1];
-        cases_unit_projection_vectors = [1 -1]/(2^0.5);        
     end
-else
-    if r2<=r1
-        cases_unit_projection_vectors = [-1 -1]/(2^0.5);
-    else
-        % r2>r1
-        cases_unit_projection_vectors = [1 -1]/(2^0.5);
-    end
-end
 
-distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
-[closest_distance,case_number] = min(distances_by_case);
+    distances_by_case = sum(cases_unit_projection_vectors.*cases_test_vectors,2);
+    [closest_distance,case_number] = min(distances_by_case);
 
-if closest_distance<=0
-    % In this case, the join is fully feasible without correction
-    flag_is_feasible = 1;
-    feasibility_distance = closest_distance;
-    closest_feasible_arc2_parameters = arc2_parameters;
-    corrected_parameters_r2_d12 = [r2 d12];
-else
-    % Some correction is necessary for the join to be feasible
-
-    % Find closest parameters
-    corrected_parameters_r2_d12 = query_point - cases_unit_projection_vectors(case_number,:)*(closest_distance + in_boundary_margin);
-    closest_feasible_arc2_parameters = arc2_parameters;
-
-    % The radius is the first value
-    closest_feasible_arc2_parameters(1,3) = corrected_parameters_r2_d12(1,1);
-
-    % The new center can be calculated by the center-to-center vector
-    updated_d12 = corrected_parameters_r2_d12(1,2);
-    vector_center1_to_center2 = arc2_center_xy - arc1_center_xy;
-    unit_vector_center1_to_center2 = fcn_geometry_calcUnitVector(vector_center1_to_center2);
-    updated_arc2_center_xy = arc1_center_xy + unit_vector_center1_to_center2*updated_d12;
-    closest_feasible_arc2_parameters(1,1:2) = updated_arc2_center_xy;
-    feasibility_distance = closest_distance;
-
-    if closest_distance <= threshold
+    if closest_distance<=0
+        % In this case, the join is fully feasible without correction
         flag_is_feasible = 1;
+        feasibility_distance = closest_distance;
+        closest_feasible_arc2_parameters = arc2_parameters;
+        corrected_parameters_r2_d12 = [r2 d12];
     else
-        flag_is_feasible = 0;
+        % Some correction is necessary for the join to be feasible
+
+        % Find closest parameters
+        corrected_parameters_r2_d12 = query_point - cases_unit_projection_vectors(case_number,:)*(closest_distance + in_boundary_margin);
+        closest_feasible_arc2_parameters = arc2_parameters;
+
+        % The radius is the first value
+        closest_feasible_arc2_parameters(1,3) = corrected_parameters_r2_d12(1,1);
+
+        % The new center can be calculated by the center-to-center vector
+        updated_d12 = corrected_parameters_r2_d12(1,2);
+        vector_center1_to_center2 = arc2_center_xy - arc1_center_xy;
+        unit_vector_center1_to_center2 = fcn_geometry_calcUnitVector(vector_center1_to_center2);
+        updated_arc2_center_xy = arc1_center_xy + unit_vector_center1_to_center2*updated_d12;
+        closest_feasible_arc2_parameters(1,1:2) = updated_arc2_center_xy;
+        feasibility_distance = closest_distance;
+
+        if closest_distance <= threshold
+            flag_is_feasible = 1;
+        else
+            flag_is_feasible = 0;
+        end
     end
 end
+
+%% Calculate the merge_distance
+merge_distance = real(sum((query_point - [r1 0]).^2,2).^0.5);
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -382,7 +461,7 @@ if flag_do_plots
     end
     % end
 
-    % Plot the input geometries 
+    % Plot the input geometries
     subplot(1,2,1);
     hold on;
     grid on;
@@ -393,7 +472,7 @@ if flag_do_plots
     % Plot the inputs
     segment_length = [];
     format1_string = sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',7 ');
-    
+
     if 1==flag_arc1_is_arc
         fcn_geometry_plotGeometry('arc', arc1_parameters,segment_length, format1_string, (fig_num));
     else
@@ -432,16 +511,16 @@ if flag_do_plots
     hold on;
     grid on;
     axis equal;
-    xlabel('r2/r1 [meters]');
-    ylabel('d12/r1 [meters]');
-    
+    xlabel('r2 [meters]');
+    ylabel('d12 [meters]');
+
     % Plot the cases
     plot([0 1],[1 0],'b-','LineWidth',3);
     plot([1 2],[0 1],'m-','LineWidth',3);
     plot([0 1],[1 2],'c-','LineWidth',3);
-    plot(query_point(1,1)/r1,query_point(1,2)/r1,'r.','MarkerSize',30);
-    plot(corrected_parameters_r2_d12(1,1)/r1,corrected_parameters_r2_d12(1,2)/r1,'g.','MarkerSize',30);
-    
+    plot(query_point(1,1),query_point(1,2),'r.','MarkerSize',30);
+    plot(corrected_parameters_r2_d12(1,1),corrected_parameters_r2_d12(1,2),'g.','MarkerSize',30);
+
     legend('Case1','Case2','Case3','Query','Fixed')
 
     % Make axis slightly larger?

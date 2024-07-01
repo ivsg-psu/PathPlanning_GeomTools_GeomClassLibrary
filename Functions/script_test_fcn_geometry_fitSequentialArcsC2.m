@@ -1,5 +1,5 @@
-%% script_test_fcn_geometry_fitSequentialArcs
-% Exercises the function: fcn_geometry_fitSequentialArcs
+%% script_test_fcn_geometry_fitSequentialArcsC2C2
+% Exercises the function: fcn_geometry_fitSequentialArcsC2C2
 
 % 2024_04_14 - S. Brennan
 % -- wrote the code
@@ -25,7 +25,7 @@ rng(1); % Fix the random number, for debugging
 
 arc_pattern = [...
     1/20, 15; 
-    0 20];
+    -1/40 20];
 
 M = 10; % How many points per meter
 sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
@@ -85,7 +85,7 @@ end
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2C2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
 
 % Plot the true results
 subplot(2,2,4);
@@ -96,7 +96,7 @@ fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array
 fitting_tolerance = 0.1; % Units are meters
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
-    fcn_geometry_fitSequentialArcs(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
 
 % Plot the true results
 subplot(2,2,4);
@@ -343,13 +343,86 @@ small_XY_data = XY_data(small_XY_data_indicies,:);
 fitting_tolerance = [1 10]; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
 
 
 % Perform the fit backwards
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
-    fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
+
+%% Plot results
+fig_num = 234343;
+figure(fig_num);
+clf;
+
+subplot(1,2,1);
+hold on;
+grid on;
+axis equal;
+xlabel('X [meters]');
+ylabel('Y [meters]');
+title('Forward fit');
+
+
+% Plot the input points very large
+current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+plot(small_XY_data(:,1),small_XY_data(:,2),'.','Color',current_color,'MarkerSize',10);
+
+% Plot the domain points
+for ith_domain = 1:length(fitSequence_points_forward)
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+    current_fitSequence_points = fitSequence_points_forward{ith_domain};
+    current_fitSequence_shape  = fitSequence_shapes_forward{ith_domain};
+    plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);
+    plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',3,'EdgeAlpha',0);
+end
+
+% Plot the domain fits
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, fitSequence_parameters_forward,(fig_num));
+
+% Make axis slightly larger?
+temp = axis;
+%     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+axis_range_x = temp(2)-temp(1);
+axis_range_y = temp(4)-temp(3);
+percent_larger = 0.3;
+axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
+
+subplot(1,2,2);
+hold on;
+grid on;
+axis equal;
+xlabel('X [meters]');
+ylabel('Y [meters]');
+title('Backward fit');
+
+% Plot the input points very large
+current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+plot(small_XY_data(:,1),small_XY_data(:,2),'.','Color',current_color,'MarkerSize',10);
+
+% Plot the domain points
+for ith_domain = 1:length(fitSequence_points_backward)
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+    current_fitSequence_points = fitSequence_points_backward{ith_domain};
+    current_fitSequence_shape  = fitSequence_shapes_backward{ith_domain};
+    plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);
+    plot(current_fitSequence_shape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',3,'EdgeAlpha',0);
+end
+
+% Plot the domain fits
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, fitSequence_parameters_backward,(fig_num));
+
+% Make axis slightly larger?
+temp = axis;
+%     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+axis_range_x = temp(2)-temp(1);
+axis_range_y = temp(4)-temp(3);
+percent_larger = 0.3;
+axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
 
 
 

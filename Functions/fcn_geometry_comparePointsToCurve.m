@@ -311,7 +311,11 @@ if flag_do_plots
         % Get color
         error_ratio = min(current_distance/max_allowable_error,1);
         current_color_index = round(error_ratio*(Ncolors-1))+1;
-        current_color = error_colormap(current_color_index,:);
+        try
+            current_color = error_colormap(current_color_index,:);
+        catch
+            error('stop here');
+        end
 
         plot(line_points(:,1),line_points(:,2),'-','LineWidth',lineWidth_value,'Color',current_color);
     end

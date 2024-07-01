@@ -50,15 +50,16 @@ figure(fig_num);clf;
 fitting_tolerance = [10 0.2];
 continuity_level = 2;
 
+% fits_to_check_types = fitSequence_bestFitType_forward;
+% fits_to_check_parameters = fitSequence_parameters_forward;
+
 clear fits_to_check_types fits_to_check_parameters
-% N_fits = 0;
-% for ith_fit = [1 2 3 4 5 6]
-%     N_fits = N_fits+1;
-%     fits_to_check_types{N_fits}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
-%     fits_to_check_parameters{N_fits} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
-% end
-fits_to_check_types = fitSequence_bestFitType_forward;
-fits_to_check_parameters = fitSequence_parameters_forward;
+N_fits = 0;
+for ith_fit = [4 5 6]
+    N_fits = N_fits+1;
+    fits_to_check_types{N_fits}      = fitSequence_bestFitType_forward{ith_fit}; %#ok<SAGROW>
+    fits_to_check_parameters{N_fits} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
+end
 
 [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
     fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
