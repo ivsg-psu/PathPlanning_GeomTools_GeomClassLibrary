@@ -714,6 +714,7 @@ end % Ends fcn_INTERNAL_alignSegmentToX
 
 
 %% fcn_INTERNAL_printFitDetails
+% See also: fcn_INTERNAL_printResults in other functions
 function fcn_INTERNAL_printFitDetails(fit_type,fit_parameters, flag_print_header)
 
 if contains(fit_type,{'arc','circle'})

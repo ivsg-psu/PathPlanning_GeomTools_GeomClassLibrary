@@ -29,7 +29,7 @@ if ~exist('fitSequence_points_forward','var') || ~exist('fitSequence_points_back
 
     fitting_tolerance = [30 2]; % Units are meters, in St form
 
-    % Since the XY data is very dense, keep only 1 of every "keep_every" points
+    % Since the XY data is very dense, keep only some of points
     keep_every = 100;
     indicies = (1:length(XY_data(:,1)))';
     small_XY_data_indicies = find(0==mod(indicies,keep_every));
@@ -44,6 +44,9 @@ if ~exist('fitSequence_points_forward','var') || ~exist('fitSequence_points_back
     flag_find_only_best_agreement = 0;
     flag_use_permutations = [];
 
+    %%%%% 
+    % HOUGH FIT
+    % Perform the fit using Hough
     fig_num = 11;
     figure(fig_num);
     clf;
@@ -55,17 +58,21 @@ if ~exist('fitSequence_points_forward','var') || ~exist('fitSequence_points_back
     % [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
     %     fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
+    %%%%% 
+    % FORWARDS
     % Perform the fit forwards and backwards
-
-    flag_fit_backwards = 0;
-
     fig_num = 12;
     figure(fig_num);
     clf;
 
+    flag_fit_backwards = 0;
+
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
        fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
 
+    %%%%% 
+    % BACKWARDS
+    % Perform the fit backwards
     fig_num = 13;
     figure(fig_num);
     clf;

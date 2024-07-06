@@ -34,12 +34,11 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % 
 %      fitting_tolerance: the distance allowable from a point to an arc fit
 %      wherein the point is considered "fitted" to the arc. Default is 0.1
-%      meters. If this is entered as a 2x1 or 1x2, then this specifies the
-%      threshold first in the transverse direction, and then in the station
-%      direction. For example, an entry of [0.02 3] would have 0.02 meters
-%      threshold in the transverse direction, but 3 meters threshold in the
+%      meters.  If this is entered as a 2x1 or 1x2, then this specifies the
+%      distance first in the station direction, and then in the transverse
+%      direction. For example, an entry of [3 0.02] would have 0.02 meters
+%      tolerance in the transverse direction, but 3 meters tolerance in the
 %      station direction.
-
 %
 %      flag_fit_backwards: a flag that, if set to 1, causes the fitting
 %      process to proceed "backwards", e.g. from the end of the data set to
@@ -130,7 +129,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -217,6 +216,15 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 NtestPoints = length(points_to_fit(:,1));
+
+% Grab the tolerances
+if length(fitting_tolerance)==1
+    % station_tolerance = fitting_tolerance; % Use the user-specified tolerance
+    transverse_tolerance = fitting_tolerance;
+else
+    % station_tolerance = fitting_tolerance(1,1);
+    transverse_tolerance = fitting_tolerance(1,2);
+end
 
 
 % Set the fit direction
@@ -474,7 +482,7 @@ if 1==0
             % 2*tolerance. However, the first and last points may be very
             % slightly outside this, and so we make the height 3 times the
             % tolerance.
-            if arc_height < 3*fitting_tolerance(1)
+            if arc_height < 3*transverse_tolerance
                 % This is a line - redo the fit with a line
                 Hough_domain.points_in_domain = fitSequence_points{ith_domain};
                 Hough_domain.best_fit_source_indicies = [1 length(fitSequence_points{ith_domain}(:,1))];
@@ -485,7 +493,7 @@ if 1==0
                 angle_of_segment = atan2(vector_from_first_to_last(2),vector_from_first_to_last(1));
                 length_of_domain = sum(vector_from_first_to_last.^2,2).^0.5;
                 Hough_domain.best_fit_parameters = [first_point angle_of_segment length_of_domain];
-                regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, fitting_tolerance(1), -1);
+                regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
 
                 % Update the data with the regression fit
                 fitSequence_shapes{ith_domain} = regression_domain.best_fit_domain_box;

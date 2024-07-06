@@ -17,9 +17,9 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 %      project in both the positive and negative directions to produce the
 %      best_fit_domain_box. If left empty, defaults to 2 standard
 %      deviations to thus give a box that is +/- 2 sigma. If this is
-%      entered as a 2x1 or 1x2, then this specifies the distance first in
-%      the transverse direction, and then in the station direction. For
-%      example, an entry of [0.02 3] would have 0.02 meters tolerance in
+%      entered as a 2x1 or 1x2, then this specifies the St tolerance: first in
+%      the station direction, and then in the transverse direction. For
+%      example, an entry of [3 0.02] would have 0.02 meters tolerance in
 %      the transverse direction, but 3 meters tolerance in the station
 %      direction.
 %
@@ -65,6 +65,9 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % used in the track data
 % -- added option to best_fit_domain_box_projection_distance to allow both
 % transverse AND station tolerances
+% 2024_07_05 - S. Brennan
+% -- fixed ordering so that best_fit_domain_box_projection_distance is in
+% St coordinate ordering, station - then transverse
 
 %% Debugging and Input checks
 
@@ -202,12 +205,15 @@ circleRadius = regression_fit_circle_center_and_radius(1,3);
 
 if ~isempty(best_fit_domain_box_projection_distance)
     if length(best_fit_domain_box_projection_distance)==1
-        station_tolerance = 10*best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+        station_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+        transverse_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
     else
-        station_tolerance = best_fit_domain_box_projection_distance(2);
+        station_tolerance = best_fit_domain_box_projection_distance(1);
+        transverse_tolerance = best_fit_domain_box_projection_distance(2);
     end
 
 else
+    transverse_tolerance = [];
     station_tolerance = circleRadius*3*pi; % Allow the arc to go all the way around, we only do this to force the check below to use all the points
 end
 
@@ -250,7 +256,7 @@ end
 
 %% Shift the solution via C2 continuity check
 % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, varargin)
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (best_fit_domain_box_projection_distance/2), (0.0001), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (transverse_tolerance/2), (0.0001), (fig_num));
 
 regression_domain.best_fit_parameters = possible_best_fit_parameters;
 regression_domain.best_fit_parameters(1,1:3) = closest_feasible_arc2_parameters(1,1:3);
@@ -273,7 +279,7 @@ domain_box_3_sigma = fcn_geometry_domainBoxByType('arc', circleCenter, circleRad
 regression_domain.best_fit_1_sigma_box = domain_box_1_sigma;
 regression_domain.best_fit_2_sigma_box = domain_box_2_sigma;
 regression_domain.best_fit_3_sigma_box = domain_box_3_sigma;
-if isempty(best_fit_domain_box_projection_distance)
+if isempty(transverse_tolerance)
     regression_domain.best_fit_domain_box  = regression_domain.best_fit_2_sigma_box;
 else
     additional_arc_radians = station_tolerance/circleRadius;
@@ -283,7 +289,7 @@ else
         direction_of_angles = -1;
     end
     angles_padded = [start_angle_in_radians - direction_of_angles*additional_arc_radians; angles; end_angle_in_radians + direction_of_angles*additional_arc_radians];
-    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  best_fit_domain_box_projection_distance(1),-1);
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded, transverse_tolerance,-1);
 end
 
 

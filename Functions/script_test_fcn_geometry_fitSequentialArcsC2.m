@@ -1,8 +1,10 @@
-%% script_test_fcn_geometry_fitSequentialArcsC2C2
-% Exercises the function: fcn_geometry_fitSequentialArcsC2C2
+%% script_test_fcn_geometry_fitSequentialArcsC2
+% Exercises the function: fcn_geometry_fitSequentialArcsC2
 
 % 2024_04_14 - S. Brennan
 % -- wrote the code
+% 2024_07_06 - S. Brennan
+% -- typo fix in function calls
 
 close all;
 
@@ -82,10 +84,10 @@ end
 
 
 %% Perform the fit forwards
-fitting_tolerance = 0.1; % Units are meters
+fitting_tolerance = [1 0.1]; % Station is 1 meter, transverse is 0.1 meter 
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcsC2C2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
 
 % Plot the true results
 subplot(2,2,4);
@@ -93,7 +95,7 @@ fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array
 
 
 %% Perform the fit backwards
-fitting_tolerance = 0.1; % Units are meters
+fitting_tolerance = [1 0.1]; % Station is 1 meter, transverse is 0.1 meter 
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
     fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);

@@ -1,29 +1,12 @@
-function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = fcn_geometry_fitSequentialArcs(points_to_fit, varargin)
-%% fcn_geometry_fitSequentialArcs
-% Given a set of XY data, attempts to fit the data in sequential order with
-% an arc until the points in the fit fall outside of a fitting tolerance.
-% Note that line segment fitting also occurs as line segments are simply
-% arcs with infinite radius and this function can work with infinite radius
-% arc segments. 
-% 
-% The function proceeds point-by-point from one end of data to the other
-% attempting a fit of points in sequence until the fitted data no longer
-% fall within the fitting tolerance. Once the tolerance is violated, a new
-% arc fit is started to create a new domain of fitting. When the end of the
-% point sequence is reached, the function returns information about each of
-% the domains where an arc fit was found. The results are useful to quickly
-% approximate XY data as a sequence of joined arcs and lines.
-%
-% A flag option allows the search to proceed either from first point to end
-% point (default) or from last point to first point. If proceeding from the
-% last point as the starting point, the outputs are rearranged so that the
-% domains and respective indicies are ordered from first point to last
-% point, allowing easy comparison to results obtained from fitting in the
-% typical first-point as starting piont.
+function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = fcn_geometry_fitSequentialArcsC2(points_to_fit, varargin)
+%% fcn_geometry_fitSequentialArcsC2
+% This function is a repeat of fcn_geometry_fitSequentialArcs, but forcing
+% C2 continuity between arcs in sequence. See the original function for
+% more details.
 % 
 % Format: 
 % [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = ...
-% fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (fig_num))
+% fcn_geometry_fitSequentialArcsC2(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (fig_num))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed to
@@ -81,6 +64,7 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % DEPENDENCIES:
 %
 %      fcn_geometry_fitArcRegressionFromHoughFit
+%      fcn_geometry_fitArcRegressionFromHoughFitC2
 %
 % EXAMPLES:
 %      
@@ -132,7 +116,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -221,7 +205,7 @@ end
 NtestPoints = length(points_to_fit(:,1));
 
 % Get transverse tolerance
-if length(fitting_tolerance(1,:))>=2)
+if length(fitting_tolerance(1,:))>=2
     transverse_tolerance = fitting_tolerance(1,2);
 else
     transverse_tolerance = fitting_tolerance(1,1);
@@ -298,7 +282,7 @@ if flag_do_plots==1 && 1==flag_plot_subfigs
     % Plot the fit shape
     Hough_domain.points_in_domain = points_to_fit(:,1:2);
     Hough_domain.best_fit_source_indicies = [1 2 NtestPoints];
-    regression_fit  =  fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, 0.1, -1);
+    regression_fit  =  fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
 
     fitShape = regression_fit.best_fit_domain_box;
     current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);

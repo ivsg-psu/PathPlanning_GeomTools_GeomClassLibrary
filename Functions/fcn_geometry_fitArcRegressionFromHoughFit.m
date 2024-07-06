@@ -68,6 +68,8 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % 2024_07_01 - Sean Brennan
 % -- changed fitting_tolerance to St form, with station first then
 % transverse (it was the reverse, previously - confusing)
+% 2024_07_06 - Sean Brennan
+% -- fixed bug due to angles not being bounded by modulo 2*pi
 
 %% Debugging and Input checks
 
@@ -206,10 +208,10 @@ circleRadius = regression_fit_circle_center_and_radius(1,3);
 if ~isempty(best_fit_domain_box_projection_distance)
     if length(best_fit_domain_box_projection_distance)==1
         station_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
-        transverse_toleraance = best_fit_domain_box_projection_distance;
+        transverse_tolerance = best_fit_domain_box_projection_distance;
     else
         station_tolerance = best_fit_domain_box_projection_distance(1,1);
-        transverse_toleraance = best_fit_domain_box_projection_distance(1,2); 
+        transverse_tolerance = best_fit_domain_box_projection_distance(1,2); 
     end
 
 else
@@ -231,6 +233,10 @@ else
 
     [~, ~, start_angle_in_radians, end_angle_in_radians] = ...
         fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
+
+    % Make sure the angles are 0 to 2*pi
+    start_angle_in_radians = mod(start_angle_in_radians,2*pi);
+    end_angle_in_radians   = mod(end_angle_in_radians,2*pi);
 
     % Check the direction. If direction is not aligned with the input regression direction, flip it
     degree_step = min(1,(end_angle_in_radians-start_angle_in_radians)*1/10*180/pi);
@@ -281,7 +287,7 @@ else
         direction_of_angles = -1;
     end
     angles_padded = [start_angle_in_radians - direction_of_angles*additional_arc_radians; angles; end_angle_in_radians + direction_of_angles*additional_arc_radians];
-    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  transverse_toleraance,-1);
+    regression_domain.best_fit_domain_box  = fcn_geometry_domainBoxByType('arc', circleCenter, circleRadius, angles_padded,  transverse_tolerance,-1);
 end
 
 
