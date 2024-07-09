@@ -5,7 +5,7 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 % user-defined FID. 
 %
 % Format:
-%      XY_data = fcn_geometry_printGeometry(plot_type_string, parameters, (flag_print_header), (lead_string), (fig_num))
+%      fcn_geometry_printGeometry(plot_type_string, parameters, (flag_print_header), (lead_string), (fig_num))
 %
 % INPUTS:
 %
@@ -19,12 +19,20 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 %
 %      (OPTIONAL INPUTS)
 %
-%      flag_print_header: if flag=1, prints the descriptive header only
-%      without printing hte parameters, if flag = 0 (default) then prints
-%      the parameters. 
+%      flag_print_header: sets the header/units printing style
+%
+%          if flag=1, prints the descriptive header only without printing
+%          the parameters (only need this at start of printing),
+% 
+%          if flag = 0 (default) then prints the parameters only as
+%          numbers,
+% 
+%          if flag = -1 then prints the parameters as numbers then followed
+%          immediately by the units (for example: 2.4567m instead of
+%          2.4567).
 %
 %      lead_string: A string that goes in front of the parameter set,
-%      usually a descriptor
+%      usually a descriptor.
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -137,15 +145,13 @@ end
 
 % Does user want to specify fig_num?
 flag_do_plots = 0;
+fid = 1; % Default is to print to console
 if 0==flag_max_speed
-    flag_do_plots = 1;
     if 5<= nargin
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            fid = temp;
         end
-    else
-        fig_num = gcf;
     end
 end
 
@@ -164,9 +170,9 @@ end
 % Print the lead-in to the print
 NleadCharacters = 20;
 if flag_print_header
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),NleadCharacters));
+    fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),NleadCharacters));
 else
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(lead_string),NleadCharacters));
+    fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(lead_string),NleadCharacters));
 end
 
 % Set up printing based on type
@@ -174,8 +180,8 @@ switch lower(plot_type_string)
     case {'none'}
         header_strings = {'(no parameters)'};
         simple_type = 'none';
-        is_degrees  = [0];
-        is_meters   = [0];
+        is_degrees  = 0;
+        is_meters   = 0;
 
     case {'line'}
         header_strings = {'startX[m]','startY[m]','theta(deg)'};
@@ -217,9 +223,79 @@ end
 
 
 % Print the header? If so, need to fill in the headers.
-if flag_print_header
+NumColumnChars = 15;
+
+% Print header?
+if 1==flag_print_header
+    final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
+
+    % Print headers. Note, the number of characters is +1 versus
+    % specification because, for negative numbers (below), a space is
+    % required before them and thus actual prints take +1 spaces.
+    for ith_parameter = 1:length(header_strings)
+        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
+        final_print_string = cat(2,final_print_string,number_string);
+
+        % Do we need to print units? This adds 3 more spaces at end of each
+        % entry
+        if -1==flag_print_header
+            final_print_string = cat(2,final_print_string,'   ');
+        end
+    end
+    fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
+else
+
+    if -1==flag_print_header
+        final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
+    else
+        final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',' '),NumColumnChars+1);
+    end
 
 
+    % Print parameters?
+    if ~strcmp('none',simple_type)
+        for ith_parameter = 1:length(header_strings)
+            number_to_print = parameters(1,ith_parameter);
+
+            % Do we need to print units? This adds three spaces to end of each
+            % entry
+            if -1==flag_print_header
+                if 1== is_meters(1,ith_parameter)
+                    trailer_string = sprintf('%s','m  ');
+                elseif -1== is_meters(1,ith_parameter)
+                    trailer_string = sprintf('%s','1/m');
+                elseif is_degrees(1,ith_parameter)
+                    trailer_string = sprintf('%s','deg');
+                else
+                    trailer_string = sprintf('%s','   ');
+                end
+            end
+
+            % If the parameter is in degrees, make sure it is between 0 and 2pi
+            % to start, then convert to degrees, and only print to 2 decimal
+            % places. If it is not a degrees number, print to 4 decimal places.
+            if 1==is_degrees(1,ith_parameter)
+                number_to_print = mod(number_to_print,2*pi)*180/pi;
+                number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f%s ',number_to_print,trailer_string),NumColumnChars);
+            else
+                number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.4f%s ',number_to_print,trailer_string),NumColumnChars);
+            end
+
+            
+
+            % If start of the number has a minus sign, end-pad it. Otherwise,
+            % front-pad it. This ensures the numbers have consistent numbers of
+            % spaces.
+            if strcmp(number_string(1),'-')
+                final_print_string = cat(2,final_print_string,number_string, ' ');
+            else
+                final_print_string = cat(2,final_print_string,' ', number_string);
+            end
+        end
+    end
+
+    % The longest parameters ever printed require 7 columns
+    fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
 end
 
 
@@ -363,56 +439,4 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-%% fcn_INTERNAL_printFitDetails
-% See also: fcn_INTERNAL_printResults in other functions
-function fcn_INTERNAL_printFitDetails(fit_type, fit_parameters, flag_print_header)
-
-URHERE - need to move this to top
-
-NumColumnChars = 15;
-
-% Print header?
-if flag_print_header
-    % Print values
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(' '),20));
-
-    parameter_string = '';
-    for ith_parameter = 1:length(fit_parameters)
-        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
-        parameter_string = cat(2,parameter_string,number_string);
-    end
-    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
-else
-    % Print values
-    fprintf(1,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('Fit type: %s ',print_type),20));
-
-    % Print parameters
-    parameter_string = '';
-    for ith_parameter = 1:length(fit_parameters)
-
-        % For arcs, the 4th and 5th parameter are angles that must be
-        % converted into degrees. Same is true for the line type, 3rd
-        % parameter.
-        if strcmp(print_type,'arc') && ((ith_parameter==4)||(ith_parameter==5))
-            fit_parameters(ith_parameter) = mod(fit_parameters(ith_parameter),2*pi); % Convert to positive angles only
-            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f ',fit_parameters(ith_parameter)*180/pi),NumColumnChars);
-        elseif strcmp(print_type,'line') && (ith_parameter==3)
-            fit_parameters(ith_parameter) = mod(fit_parameters(ith_parameter),2*pi); % Convert to positive angles only
-            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f ',fit_parameters(ith_parameter)*180/pi),NumColumnChars);
-        else
-            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.4f ',fit_parameters(ith_parameter)),NumColumnChars);
-        end
-
-        % If start of the number has a minus sign, end-pad it. Otherwise,
-        % front-pad it. 
-        if strcmp(number_string(1),'-')
-            parameter_string = cat(2,parameter_string,number_string, ' ');
-        else
-            parameter_string = cat(2,parameter_string,' ', number_string);
-        end
-    end
-    fprintf(1,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',parameter_string),7*NumColumnChars));
-end
-
-end % Ends fcn_INTERNAL_printFitDetails
 
