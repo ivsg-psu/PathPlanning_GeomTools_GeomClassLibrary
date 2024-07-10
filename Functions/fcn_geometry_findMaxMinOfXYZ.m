@@ -174,7 +174,11 @@ if flag_do_plots
 
     hold on;
     grid on;
-    axis equal
+    % axis equal
+    xlabel('X [m]')
+    ylabel('Y [m]')
+    zlabel('Z [m]')
+    title('ENU Trace Geometry')
 
     %plot of points
     if isscalar(N_points(1,:))  % N by 1
@@ -213,6 +217,7 @@ if flag_do_plots
         hold on 
         colors = z;
         scatter3(x,y,z,20,colors);
+        % scatter3(x,y,z,20)
         scatter3(x(idx_min_x),y(idx_min_x),z(idx_min_x),100, 'r'); % Min x
         scatter3(x(idx_max_x),y(idx_max_x),z(idx_max_x),100, 'r'); % max x
         scatter3(x(idx_min_y),y(idx_min_y),z(idx_min_y),200, 'g'); % min y
@@ -221,7 +226,7 @@ if flag_do_plots
         scatter3(x(idx_max_z),y(idx_max_z),z(idx_max_z),300, 'y'); % max z
         colormap('jet'); % You can use 'viridis' if you have it, or other colormaps
         colorbar; % Add a color bar to show the color mapping
-        view(3)
+        view(2)
         hold off
     end
     hold off

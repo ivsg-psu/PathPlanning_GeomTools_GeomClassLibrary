@@ -240,8 +240,8 @@ if flag_do_plots
     % plot(boundary_points_falling_x(:,1),boundary_points_falling_x(:,2),'c.','Markersize',40);
     % plot(boundary_points_rising_x(:,1),boundary_points_rising_x(:,2),'m.','Markersize',40);
     
-    p1 = plot(boundary_points(:,1),boundary_points(:,2),'c.','Markersize',40);
-    plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+    plot(boundary_points(:,1),boundary_points(:,2),'c.','Markersize',40);
+    p1 = plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
     legend(p1,{'Boundary points'})
 

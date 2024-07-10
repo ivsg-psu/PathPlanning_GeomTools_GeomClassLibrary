@@ -1,6 +1,7 @@
 function [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
-    non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z]... 
-= fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, varargin)
+    non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids]... 
+= fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, varargin)
 %% fcn_geometry_surfaceAnalysis
 %
 % This function classifies the LiDAR data into mapped and unmapped
@@ -97,6 +98,14 @@ function [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_gr
 % analysis
 % 2024_06_26 - Aneesh Batchu
 % -- Added "angle_btw_unit_normals_and_vertical" and "standard_deviation_in_z" as the outputs
+% 2024_06_28 - Aneesh Batchu
+% -- Added "gridlines of the mapped, unmapped, drivable, and non-drivable
+% gridlines" as the inputs
+% -- Changed the plotting into internal functions
+% 2024_07_08 - Aneesh Batchu
+% -- Added "z_height_threshold" as the input and
+% "mean_z_height_of_mapped_grids" as the output. 
+% 2024_07_09 - Aneesh Batchu
 
 %% Debugging and Input checks
 
@@ -104,7 +113,7 @@ function [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_gr
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==8 && isequal(varargin{end},-1))
+if (nargin==9 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -144,7 +153,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs
         % Are there the right number of inputs?
-        narginchk(6,8);
+        narginchk(7,9);
         % Test if is numeric input
         if ~isnumeric(input_points)
             error('The inputPoints must be numeric')
@@ -173,7 +182,7 @@ end
 
 % Does user want to plot in 3D?
 flag_plot_in_3D = 0;
-if (7<=nargin)
+if (8<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
         flag_plot_in_3D = temp;
@@ -186,7 +195,7 @@ end
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (8<= nargin)
+if (0==flag_max_speed) && (9<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -226,6 +235,9 @@ original_unmapped_grid_numbers = find(total_N_points_in_each_grid(:,1) < point_d
 % Output
 unmapped_grids = original_unmapped_grid_numbers; 
 
+% Grid centers of unmapped grids
+gridCenters_unmapped_grids = [gridCenters(unmapped_grids,1), gridCenters(unmapped_grids,2), gridCenters(unmapped_grids,3), zeros(length(unmapped_grids),1)]; 
+
 % Mapped grids. Later these grids are classified into drivable and non
 % drivable
 original_mapped_grid_numbers = find(total_N_points_in_each_grid(:,1) >= point_density); 
@@ -233,11 +245,11 @@ original_mapped_grid_numbers = find(total_N_points_in_each_grid(:,1) >= point_de
 % The indices of the mapped grids are extracted and concatenated 
 original_mapped_grids = gridIndices_cell_array(original_mapped_grid_numbers); 
 
-% Indices of points in mapped grids
-indices_original_mapped_grids = vertcat(original_mapped_grids{:}); 
-
-% Input points in the mapped grids
-points_in_original_mapped_grids = input_points(indices_original_mapped_grids,:); 
+% % Indices of points in mapped grids
+% indices_original_mapped_grids = vertcat(original_mapped_grids{:}); 
+% 
+% % Input points in the mapped grids
+% points_in_original_mapped_grids = input_points(indices_original_mapped_grids,:); 
 
 % Total number of mapped grids
 total_mapped_grids = length(original_mapped_grids); 
@@ -253,6 +265,8 @@ unit_normal_vectors = zeros(total_mapped_grids,3);
 % standard_deviation_in_plane_orthogonals = zeros(total_mapped_grids,1); 
 standard_deviation_in_z = zeros(total_mapped_grids,1); 
 
+% z_height of all the points 
+mean_z_height_of_mapped_grids = zeros(total_mapped_grids,1); 
 
 % Loop through all the combos, recording agreement with each combo
 if 0==flag_max_speed
@@ -263,39 +277,97 @@ end
 for ith_mapped_grid = 1:total_mapped_grids
     % [parameters, standard_deviation_in_z(ith_mapped_grid,:), z_fit, unit_normal_vectors(ith_mapped_grid,:), base_point, standard_deviation_in_plane_orthogonals(ith_mapped_grid,:)] = fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_grids{ith_mapped_grid},:),-1);
     % [parameters, ~, ~, unit_normal_vectors(ith_mapped_grid,:), ~, standard_deviation_in_plane_orthogonals(ith_mapped_grid,:)] = fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_grids{ith_mapped_grid},:),-1);
-    [parameters, ~, ~, unit_normal_vectors(ith_mapped_grid,:), ~, ~] = fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_grids{ith_mapped_grid},:),-1);
+    [parameters, standard_deviation_in_z(ith_mapped_grid,:), ~, unit_normal_vectors(ith_mapped_grid,:), ~, ~] = fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_grids{ith_mapped_grid},:),-1);
     parameters_of_fitted_plane(ith_mapped_grid,:) = parameters';
-    standard_deviation_in_z(ith_mapped_grid,:) = std(input_points(original_mapped_grids{ith_mapped_grid},3));
+    mean_z_height_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_grids{ith_mapped_grid},3)); 
+    % standard_deviation_in_z(ith_mapped_grid,:) = std(input_points(original_mapped_grids{ith_mapped_grid},3));
 end
 
 % Plane analysis: setting thresholds
+if ~isempty(theta_threshold) && isempty(std_threshold) && isempty(z_height_threshold)
 
-% STEP 1
-% Comparing normal vector with verticle direction
-unit_vector_vertical_direction = [0 0 1];
+    % STEP 1
+    % Comparing normal vector with verticle direction
+    unit_vector_vertical_direction = [0 0 1];
 
-% The dot product is computed to find the angle between the vectors
-dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2); 
+    % The dot product is computed to find the angle between the vectors
+    dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
 
-% The angle between unit vertical and the unit_normal_vector is computed to
-% determine how close the normal vector is to vertical direction.
-angle_btw_unit_normals_and_vertical = acos(dot_product); 
+    % The angle between unit vertical and the unit_normal_vector is computed to
+    % determine how close the normal vector is to vertical direction.
+    angle_btw_unit_normals_and_vertical = acos(dot_product);
 
-% Find the grids (with a fitted plane) that are within the vertical
-% threshold (change to a different name: vertical threshold)
-mapped_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+    % Find the grids (with a fitted plane) that are within the vertical
+    % threshold (change to a different name: vertical threshold)
+    mapped_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
 
-% STEP 2: Standard deviation of the orthogonal (perpendicular) distances of
-% the points to the plane (after fit) 
-% Find the grids that are within standard deviation limit
-% This is not enough (delta Y) is also important
-% mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold; 
-mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold; 
+    % Grids that satisy the conditions (STEP 1). The grids that
+    % are within the vertical threshold
+    mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1);
 
-% Grids that satisy both the conditions (STEP 1 and STEP 2). The grids that
-% are within the vertical and std threshold
-mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 1);
+elseif isempty(theta_threshold) && ~isempty(std_threshold) && isempty(z_height_threshold)
 
+    % STEP 2: Standard deviation of the orthogonal (perpendicular) distances of
+    % the points to the plane (after fit)
+    % Find the grids that are within standard deviation limit
+    % This is not enough (delta Y) is also important
+    % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
+    mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+
+    % Grids that satisy the conditions (STEP 2). The grids that
+    % are within the std threshold
+    mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_std_threshold == 1);
+
+    % The angle between unit vertical and the unit_normal_vector is computed to
+    % determine how close the normal vector is to vertical direction.
+    angle_btw_unit_normals_and_vertical = [];
+
+elseif isempty(theta_threshold) && isempty(std_threshold) && ~isempty(z_height_threshold)
+
+    % STEP 3: Compare the mean of Z height of each grid with the z_height threshold
+    mapped_grids_within_z_height_threshold = (mean_z_height_of_mapped_grids > z_height_threshold(1)) & (mean_z_height_of_mapped_grids < z_height_threshold(2));
+
+    % Grids that satisy both the conditions (STEP 1 and STEP 2). The grids that
+    % are within the vertical and std threshold
+    mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_z_height_threshold == 1);
+
+    % The angle between unit vertical and the unit_normal_vector is computed to
+    % determine how close the normal vector is to vertical direction.
+    angle_btw_unit_normals_and_vertical = [];
+else
+    % STEP 1
+    % Comparing normal vector with verticle direction
+    unit_vector_vertical_direction = [0 0 1];
+
+    % The dot product is computed to find the angle between the vectors
+    dot_product = sum(unit_normal_vectors.*unit_vector_vertical_direction,2);
+
+    % The angle between unit vertical and the unit_normal_vector is computed to
+    % determine how close the normal vector is to vertical direction.
+    angle_btw_unit_normals_and_vertical = acos(dot_product);
+
+    % Find the grids (with a fitted plane) that are within the vertical
+    % threshold (change to a different name: vertical threshold)
+    mapped_grids_within_vertical_threshold = angle_btw_unit_normals_and_vertical < theta_threshold;
+
+    % STEP 2: Standard deviation of the orthogonal (perpendicular) distances of
+    % the points to the plane (after fit)
+    % Find the grids that are within standard deviation limit
+    % This is not enough (delta Y) is also important
+    % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
+    mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
+
+    if ~isempty(z_height_threshold)
+        % STEP 3: Compare the mean of Z height of each grid with the z_height threshold
+        mapped_grids_within_z_height_threshold = (mean_z_height_of_mapped_grids > z_height_threshold(1)) & (mean_z_height_of_mapped_grids < z_height_threshold(2));
+
+        % Grids that satisy both the conditions (STEP 1 and STEP 2). The grids that
+        % are within the vertical and std threshold
+        mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 1) & (mapped_grids_within_z_height_threshold == 1);
+    else
+        mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 1);
+    end
+end
 % Find the drivable grids (original)
 drivable_grids = original_mapped_grid_numbers(mapped_grids_within_vertical_and_std_thresholds); 
 
@@ -308,14 +380,15 @@ drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grid_numbe
 % Final non drivable grid numbers of the mapped grids
 non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grid_numbers, non_drivable_grids));
 
-% Grid centers of drivable grids (2D)
+% Grid centers of drivable grids 
 gridCenters_drivable_grids = [gridCenters(drivable_grids,1), gridCenters(drivable_grids,2), gridCenters(drivable_grids,3), ones(length(drivable_grids),1)]; 
 
-% Grid centers of nondrivable grids (2D)
+% Grid centers of nondrivable grids
 gridCenters_non_drivable_grids = [gridCenters(non_drivable_grids,1), gridCenters(non_drivable_grids,2), gridCenters(non_drivable_grids,3), zeros(length(non_drivable_grids),1)]; 
 
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
-gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids]; 
+gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
+
 
 if 0==flag_max_speed
     close(h_waitbar)
@@ -334,47 +407,20 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-
+    
     fig_num_c = fig_num - 1;
     temp_h = figure(fig_num_c);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end
+    
+    % Plots the mapped and unmapped grids
+    unmapped_grid_numbers = unmapped_grids;
+    mapped_grid_numbers = original_mapped_grid_numbers;
 
-    hold on;
-    grid on;
-    axis equal
-    xlabel('X [m]')
-    ylabel('Y [m]')
-    zlabel('Z [m]')
-    title('Mapped and Unmapped regions')
-    % legend('Mapped','Unmapped')
-
-    % The indices of the mapped grids are extracted and concatenated
-    original_unmapped_grids = gridIndices_cell_array(original_unmapped_grid_numbers);
-
-    % Indices of points in mapped grids
-    indices_original_unmapped_grids = vertcat(original_unmapped_grids{:});
-
-    % Input points in the mapped grids
-    points_in_original_unmapped_grids = input_points(indices_original_unmapped_grids,:);
-    plot_3D = 0;
-    if plot_3D
-        view(3)
-        % Plot the unmapped points red
-        plot3(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),points_in_original_unmapped_grids(:,3),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
-        % Plot the mapped points green
-        plot3(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),points_in_original_mapped_grids(:,3),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
-    else
-        % Plot the unmapped points red
-        p2 = plot(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
-        % Plot the mapped points green
-        p1 = plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
-    end
-
-    legend([p1,p2],{'Mapped','Unmapped'})
-
+    [unmapped_gridlines,mapped_gridlines] = fcn_INTERNAL_plotMappedUnmappedGrids(unmapped_grid_numbers,mapped_grid_numbers,grid_AABBs,grid_size,gridIndices,input_points,point_density);
+    
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
@@ -384,254 +430,19 @@ if flag_do_plots
         percent_larger = 0.3;
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
-
-    % fig_num = 100012;
-    % figure(fig_num); clf;
-
+   
     temp_h = figure(fig_num);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end
+    
+    % Plots the drivable and non-drivable grids 
+    drivable_grid_numbers = drivable_grids;
+    non_drivable_grid_numbers = non_drivable_grids;
+    [drivable_gridlines,non_drivable_gridlines] = fcn_INTERNAL_plotDrivableNondrivableGrids(drivable_grid_numbers,non_drivable_grid_numbers,grid_AABBs,grid_size,gridCenters_drivable_grids,gridCenters_non_drivable_grids,flag_plot_in_3D);
 
-    hold on;
-    grid on;
-    axis equal
-    xlabel('X [m]')
-    ylabel('Y [m]')
-    zlabel('Z [m]')
-    title('Drivable and Non-drivable regions')
-
-    if flag_plot_in_3D
-
-        view(3)
-
-        % Plot all the points
-        plot3(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),points_in_original_mapped_grids(:,3),'.','MarkerSize',20,'Color',[0 0 0]);
-
-        for ith_domain = 1:length(drivable_grids)
-            % Get current color
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-            current_color = [0.4660 0.6740 0.1880];
-
-            % Plot current AABB
-            current_AABB = grid_AABBs(drivable_grids(ith_domain),:);
-
-            % Nudge the current AABB inward
-            current_AABB = current_AABB + grid_size/100*[1 -1 1 -1 1 -1];
-
-            % Calculate the gridlines
-            gridlines = [...
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan];
-
-            % Plot the result
-            plot3(gridlines(:,1),gridlines(:,2),gridlines(:,3),'-','Color',current_color,'LineWidth',3);
-
-
-            % Get all points in this domain and plot them
-            rows_in_domain = gridIndices==drivable_grids(ith_domain);
-            points_in_domain = input_points(rows_in_domain,:);
-            plot3(points_in_domain(:,1),points_in_domain(:,2),points_in_domain(:,3),'.','MarkerSize',20,'Color',current_color);
-            
-            % plot the grid centers
-            plot3(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), gridCenters_drivable_grids(ith_domain,3), '.','MarkerSize',40,'Color',[0 0 0]);
-
-            % Plot the unit normal vector
-            quiver3(gridCenters(drivable_grids(ith_domain),1),gridCenters(drivable_grids(ith_domain),2),gridCenters(drivable_grids(ith_domain),3), unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),1),unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),2),unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),3),0,'g','Linewidth',3);
-
-        end
-
-        for ith_domain = 1:length(non_drivable_grids)
-            % Get current color
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-            current_color = [0.6350 0.0780 0.1840];
-
-            % Plot current AABB
-            current_AABB = grid_AABBs(non_drivable_grids(ith_domain),:);
-
-            % Nudge the current AABB inward
-            current_AABB = current_AABB + grid_size/100*[1 -1 1 -1 1 -1];
-
-            % Calculate the gridlines
-            gridlines = [...
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
-                nan nan nan;
-                current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
-                current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
-                nan nan nan];
-
-            % Plot the result
-            plot3(gridlines(:,1),gridlines(:,2),gridlines(:,3),'-','Color',current_color,'LineWidth',3);
-
-
-            % Get all points in this domain and plot them
-            rows_in_domain = gridIndices==non_drivable_grids(ith_domain);
-            points_in_domain = input_points(rows_in_domain,:);
-            plot3(points_in_domain(:,1),points_in_domain(:,2),points_in_domain(:,3),'.','MarkerSize',20,'Color',current_color);
-
-             % plot the grid centers
-            plot3(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), gridCenters_non_drivable_grids(ith_domain,3), '.','MarkerSize',40,'Color',[0 0 0]);
-
-            % Plot the unit vector
-            quiver3(gridCenters(non_drivable_grids(ith_domain),1),gridCenters(non_drivable_grids(ith_domain),2),gridCenters(non_drivable_grids(ith_domain),3), unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),1),unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),2),unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),3),0,'g','Linewidth',3);
-        end
-
-    else
-        plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0, 0, 0]);
-
-        % Plot the input points by domain with different colors for each
-        % domain
-        for ith_domain = 1:length(drivable_grids)
-            % Get current color
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-
-            current_color = [0.4660 0.6740 0.1880];
-            % Plot current AABB
-            current_AABB = grid_AABBs(drivable_grids(ith_domain),1:4);
-
-            % Nudge the current AABB inward
-            current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
-
-            % Calculate the gridlines
-            gridlines = [...
-                current_AABB(1,1) current_AABB(1,3); ...
-                current_AABB(1,1) current_AABB(1,4); ...
-                nan nan;
-                current_AABB(1,2) current_AABB(1,3); ...
-                current_AABB(1,2) current_AABB(1,4); ...
-                nan nan;
-                current_AABB(1,1) current_AABB(1,3); ...
-                current_AABB(1,2) current_AABB(1,3); ...
-                nan nan;
-                current_AABB(1,1) current_AABB(1,4); ...
-                current_AABB(1,2) current_AABB(1,4); ...
-                ];
-
-            % Plot the result
-            p3 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
-
-            % Plot the grid centers
-            % plot(gridCenters(drivable_grids(ith_domain),1), gridCenters(drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
-
-            plot(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
-
-            % Get all points in this domain and plot them
-            rows_in_domain = gridIndices==drivable_grids(ith_domain);
-            points_in_domain = input_points(rows_in_domain,:);
-            plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
-        end
-
-        % Plot the input points by domain with different colors for each
-        % domain
-        for ith_domain = 1:length(non_drivable_grids)
-            % Get current color
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
-
-            current_color = [0.6350 0.0780 0.1840];
-            % Plot current AABB
-            current_AABB = grid_AABBs(non_drivable_grids(ith_domain),1:4);
-
-            % Nudge the current AABB inward
-            current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
-
-            % Calculate the gridlines
-            gridlines = [...
-                current_AABB(1,1) current_AABB(1,3); ...
-                current_AABB(1,1) current_AABB(1,4); ...
-                nan nan;
-                current_AABB(1,2) current_AABB(1,3); ...
-                current_AABB(1,2) current_AABB(1,4); ...
-                nan nan;
-                current_AABB(1,1) current_AABB(1,3); ...
-                current_AABB(1,2) current_AABB(1,3); ...
-                nan nan;
-                current_AABB(1,1) current_AABB(1,4); ...
-                current_AABB(1,2) current_AABB(1,4); ...
-                ];
-
-            % Plot the result
-            p4 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
-
-
-            % Plot the grid centers
-            % plot(gridCenters(non_drivable_grids(ith_domain),1), gridCenters(non_drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
-
-            plot(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
-
-            % Get all points in this domain and plot them
-            rows_in_domain = gridIndices==non_drivable_grids(ith_domain);
-            points_in_domain = input_points(rows_in_domain,:);
-            plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
-        end
-
-        legend([p3,p4],{'Drivable','Non-drivable'})
-    end
+  
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;
@@ -662,3 +473,420 @@ end % Ends main function
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+function [unmapped_gridlines,mapped_gridlines] = fcn_INTERNAL_plotMappedUnmappedGrids(unmapped_grid_numbers,mapped_grid_numbers,grid_AABBs,grid_size,gridIndices,input_points,point_density)
+%% fcn_geometry_plotMappedUnmappedGrids
+
+% Define the color map
+cmap = [
+    0, 0, 0;   % Grey
+    1, 0.2, 0.2;   % Bright Red
+    1, 0, 1 % Magenta
+    1, 1, 0 % Yellow
+    ];
+
+% cmap = [
+%     1, 0.2, 0.2;   % Bright Red
+%     1, 0.6, 0.2;   % Bright Orange
+%     1, 1, 0.2;     % Bright Yellow
+%     0.5, 1, 0.5;   % Bright Green
+%     0.2, 1, 0.2;   % Bright Lime Green
+%     0.8500, 0.3250, 0.0980;  % Orange Red
+%     0.9290, 0.6940, 0.1250;  % Mustard Yellow
+%     0.5, 1, 0.5;             % Lime Green
+%     0.13, 0.55, 0.13;        % Forest Green
+%     0.6350, 0.0780, 0.1840;  % Dark Red
+% ];
+
+hold on;
+grid on;
+axis equal
+xlabel('X [m]')
+ylabel('Y [m]')
+zlabel('Z [m]')
+title('Mapped and Unmapped Regions')
+
+plot_3D = 0; 
+
+if plot_3D
+    view(3)
+    % Plot the unmapped points red
+    plot3(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),points_in_original_unmapped_grids(:,3),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
+    % Plot the mapped points green
+    plot3(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),points_in_original_mapped_grids(:,3),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
+else
+    unmapped_gridlines = zeros(11*length(unmapped_grid_numbers),2); 
+    n = 0;
+    p = 0; 
+    q = 0; 
+    for ith_domain = 1:length(unmapped_grid_numbers)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+
+        % current_color = [0.6350 0.0780 0.1840];
+        % Plot current AABB
+        current_AABB = grid_AABBs(unmapped_grid_numbers(ith_domain),1:4);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,1) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,2) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,3); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,4); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            ];
+
+        % Plot the unmapped points red
+        % p2 = plot(points_in_original_unmapped_grids(:,1),points_in_original_unmapped_grids(:,2),'.','MarkerSize',20,'Color',[0.6350 0.0780 0.1840]);
+
+        % Get all points in this domain and plot them
+        rows_in_domain = gridIndices==unmapped_grid_numbers(ith_domain);
+        points_in_domain = input_points(rows_in_domain,:);
+        
+        length_points_in_domain = length(points_in_domain);
+        if(isempty(points_in_domain))
+            current_color = cmap(1,:);
+            n = n+1; 
+        elseif (~isempty(points_in_domain) && length_points_in_domain <= point_density)
+            p = p+1;
+            current_color = cmap(1,:);
+            %  elseif (length_points_in_domain > 10 && length_points_in_domain < point_density)
+            % 
+            % current_color = cmap(2,:);
+            % q = q+1;
+        end
+
+        length_gridlines = length(gridlines); 
+        % Plot the result
+        % p2 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+        plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+        unmapped_gridlines(1+(ith_domain-1)*length_gridlines:ith_domain*length_gridlines,:) = gridlines; 
+
+
+    end
+    
+    mapped_gridlines = zeros(11*length(mapped_grid_numbers),2); % length(gridlines) = 11
+    for ith_domain = 1:length(mapped_grid_numbers)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+
+        % current_color = [0.4660 0.6740 0.1880];
+        % Plot current AABB
+        current_AABB = grid_AABBs(mapped_grid_numbers(ith_domain),1:4);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,1) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,2) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,3); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,4); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            ];
+
+        % Get all points in this domain and plot them
+        rows_in_domain = gridIndices==mapped_grid_numbers(ith_domain);
+        points_in_domain = input_points(rows_in_domain,:);
+
+        length_points_in_domain = length(points_in_domain);
+
+        if (length_points_in_domain >= point_density && length_points_in_domain <= 2*point_density)
+            current_color = cmap(3,:);
+        elseif(length_points_in_domain > 2*point_density)
+            current_color = cmap(4,:);
+        end
+
+        length_gridlines = length(gridlines);
+        % % Plot the mapped points green
+        % p1 = plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0.4660 0.6740 0.1880]);
+
+        % Plot the result
+        % p1 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+        plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+        mapped_gridlines(1+(ith_domain-1)*length_gridlines:ith_domain*length_gridlines,:) = gridlines;
+    end
+end
+
+% legend([p1,p2],{'Mapped','Unmapped'})
+
+end % fcn_INTERNAL_plotMappedUnmappedGrids ends here
+
+function [drivable_gridlines,non_drivable_gridlines] = fcn_INTERNAL_plotDrivableNondrivableGrids(drivable_grid_numbers,non_drivable_grid_numbers,grid_AABBs,grid_size,gridCenters_drivable_grids,gridCenters_non_drivable_grids,flag_plot_in_3D)
+
+hold on;
+grid on;
+axis equal
+xlabel('X [m]')
+ylabel('Y [m]')
+zlabel('Z [m]')
+title('Drivable and Non-drivable Regions')
+
+if flag_plot_in_3D
+
+    view(3)
+
+    % Plot all the points
+    % plot3(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),points_in_original_mapped_grids(:,3),'.','MarkerSize',20,'Color',[0 0 0]);
+    
+    for ith_domain = 1:length(drivable_grid_numbers)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+        current_color = [0.4660 0.6740 0.1880];
+
+        % Plot current AABB
+        current_AABB = grid_AABBs(drivable_grids(ith_domain),:);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan];
+
+        % Plot the result
+        plot3(gridlines(:,1),gridlines(:,2),gridlines(:,3),'-','Color',current_color,'LineWidth',3);
+
+
+        % Get all points in this domain and plot them
+        rows_in_domain = gridIndices==drivable_grids(ith_domain);
+        points_in_domain = input_points(rows_in_domain,:);
+        plot3(points_in_domain(:,1),points_in_domain(:,2),points_in_domain(:,3),'.','MarkerSize',20,'Color',current_color);
+
+        % plot the grid centers
+        plot3(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), gridCenters_drivable_grids(ith_domain,3), '.','MarkerSize',40,'Color',[0 0 0]);
+
+        % Plot the unit normal vector
+        quiver3(gridCenters(drivable_grids(ith_domain),1),gridCenters(drivable_grids(ith_domain),2),gridCenters(drivable_grids(ith_domain),3), unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),1),unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),2),unit_normal_vectors(drivable_grid_numbers_in_mapped_grids(ith_domain),3),0,'g','Linewidth',3);
+
+    end
+
+    for ith_domain = 1:length(non_drivable_grids)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+        current_color = [0.6350 0.0780 0.1840];
+
+        % Plot current AABB
+        current_AABB = grid_AABBs(non_drivable_grids(ith_domain),:);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,5); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,5); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,3) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,3) current_AABB(1,6); ...
+            nan nan nan;
+            current_AABB(1,1) current_AABB(1,4) current_AABB(1,6); ...
+            current_AABB(1,2) current_AABB(1,4) current_AABB(1,6); ...
+            nan nan nan];
+
+        % Plot the result
+        plot3(gridlines(:,1),gridlines(:,2),gridlines(:,3),'-','Color',current_color,'LineWidth',3);
+
+
+        % Get all points in this domain and plot them
+        rows_in_domain = gridIndices==non_drivable_grids(ith_domain);
+        points_in_domain = input_points(rows_in_domain,:);
+        plot3(points_in_domain(:,1),points_in_domain(:,2),points_in_domain(:,3),'.','MarkerSize',20,'Color',current_color);
+
+        % plot the grid centers
+        plot3(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), gridCenters_non_drivable_grids(ith_domain,3), '.','MarkerSize',40,'Color',[0 0 0]);
+
+        % Plot the unit vector
+        quiver3(gridCenters(non_drivable_grids(ith_domain),1),gridCenters(non_drivable_grids(ith_domain),2),gridCenters(non_drivable_grids(ith_domain),3), unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),1),unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),2),unit_normal_vectors(non_drivable_grid_numbers_in_mapped_grids(ith_domain),3),0,'g','Linewidth',3);
+    end
+
+else
+    % plot(points_in_original_mapped_grids(:,1),points_in_original_mapped_grids(:,2),'.','MarkerSize',20,'Color',[0, 0, 0]);
+    
+    drivable_gridlines = zeros(11*length(drivable_grid_numbers),2); % length(gridlines) = 11
+    % Plot the input points by domain with different colors for each
+    % domain
+    for ith_domain = 1:length(drivable_grid_numbers)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+
+        current_color = [0,1,0];%[0.4660 0.6740 0.1880]; %[0.5, 1, 0.5]; 
+        % Plot current AABB
+        current_AABB = grid_AABBs(drivable_grid_numbers(ith_domain),1:4);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,1) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,2) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,3); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,4); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            ];
+        length_gridlines = length(gridlines); 
+        % Plot the result
+        p3 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+        % Plot the grid centers
+        % plot(gridCenters(drivable_grids(ith_domain),1), gridCenters(drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
+
+        % plot(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
+        % plot(gridCenters_drivable_grids(ith_domain,1), gridCenters_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',current_color);
+        drivable_gridlines(1+(ith_domain-1)*length_gridlines:ith_domain*length_gridlines,:) = gridlines;
+        % % Number the results (for clarity)
+        % for ith_label = 1:length(gridCenters_drivable_grids)
+        %     label_number = Z_greater_than(ith_label);
+        %     current_text = sprintf('%.0d',label_number);
+        %     text(X(label_number),Y(label_number),current_text,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
+        % end
+
+        % Get all points in this domain and plot them
+        % rows_in_domain = gridIndices==drivable_grids(ith_domain);
+        % points_in_domain = input_points(rows_in_domain,:);
+
+        % plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
+    end
+    
+    non_drivable_gridlines = zeros(11*length(non_drivable_grid_numbers),2); % length(gridlines) = 11
+    % Plot the input points by domain with different colors for each
+    % domain
+    for ith_domain = 1:length(non_drivable_grid_numbers)
+        % Get current color
+        % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+
+        current_color = [0.6350 0.0780 0.1840]; % [1, 0.2, 0.2]; 
+        % Plot current AABB
+        current_AABB = grid_AABBs(non_drivable_grid_numbers(ith_domain),1:4);
+
+        % Nudge the current AABB inward
+        current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+        % Calculate the gridlines
+        gridlines = [...
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,1) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,2) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,3); ...
+            current_AABB(1,2) current_AABB(1,3); ...
+            nan nan;
+            current_AABB(1,1) current_AABB(1,4); ...
+            current_AABB(1,2) current_AABB(1,4); ...
+            ];
+        
+        length_gridlines = length(gridlines); 
+        % Plot the result
+        p4 = plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+
+        % Plot the grid centers
+        % plot(gridCenters(non_drivable_grids(ith_domain),1), gridCenters(non_drivable_grids(ith_domain),2), '.','MarkerSize',40,'Color',[0 0 0]);
+
+        % plot(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',[0 0 0]);
+        % plot(gridCenters_non_drivable_grids(ith_domain,1), gridCenters_non_drivable_grids(ith_domain,2), '.','MarkerSize',30,'Color',current_color);
+        non_drivable_gridlines(1+(ith_domain-1)*length_gridlines:ith_domain*length_gridlines,:) = gridlines;
+        % Get all points in this domain and plot them
+        % rows_in_domain = gridIndices==non_drivable_grids(ith_domain);
+        % points_in_domain = input_points(rows_in_domain,:);
+        % plot(points_in_domain(:,1),points_in_domain(:,2),'.','MarkerSize',20,'Color',current_color);
+    end
+
+    % legend([p3,p4],{'Drivable','Non-drivable'})
+    legend([p3,p4],{'Drivable','Non-drivable'})
+end
+
+% legend([p3,p4],{'Drivable','Non-drivable'})
+
+end
+
+% [gridCenters_unmapped, gridCenters_mapped_with_low_point_density, gridCenters_mapped, gridCenters_drivable, gridCenters_non_drivable]
