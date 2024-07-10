@@ -4,6 +4,8 @@
 % This code uses GPS class and geom class  
 % This code is used to generate the plots for PPT
 % load the data - easiest way: double click the .mat file and load the data
+% Data Location: https://pennstateoffice365.sharepoint.com/:u:/r/sites/IntelligentVehiclesandSystemsGroup-Active/Shared%20Documents/IVSG/GitHubMirror/MappingVanDataCollection/ParsedData/2024-06-28/TestTrack_Entire_Loop.mat?csf=1&web=1&e=zIPfTp
+
 
 % Revision History
 % 
@@ -261,15 +263,15 @@ grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z];
 point_density = 60;
 
 % The maximum standard deviation limit of z_error (z - z_fit) after fitting a plane
-std_threshold = 0.03;
+std_threshold = 0.05;
 
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane
-theta_threshold =70*(pi/180); 
+theta_threshold =[]; 
 
 % Maximum and Minimum height threshold of mapped grids. The mean of Z
 % values of mapped grids are calulated and compared with z_height_threshold
-z_height_threshold = [mean(LiDAR_outer_edge(:,3))-0.4, mean(LiDAR_outer_edge(:,3))+0.4];
+z_height_threshold = [];
  
 % flag for plotting in 3D
 flag_plot_in_3D = 0; 
