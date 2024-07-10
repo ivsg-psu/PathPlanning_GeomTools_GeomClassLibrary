@@ -281,7 +281,8 @@ flag_plot_in_3D = 0;
 
 [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -297,6 +298,8 @@ assert(length(mapped_gridlines)>=1)
 assert(length(drivable_gridlines)>=1)
 assert(length(non_drivable_gridlines)>=1)
 assert(length(gridCenters_unmapped_grids)>=1)
+assert(length(gridCenters_zero_point_density)>=1)
+assert(length(gridCenters_low_point_density)>=1)
 
 %% Slide 10: Find the optimal value of std_threshold for classifying mapped grids into drivable and non-drivable regions 
 
@@ -353,7 +356,8 @@ flag_plot_in_3D = 0;
 
 [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -369,6 +373,8 @@ assert(length(mapped_gridlines)>=1)
 assert(length(drivable_gridlines)>=1)
 assert(length(non_drivable_gridlines)>=1)
 assert(length(gridCenters_unmapped_grids)>=1)
+assert(length(gridCenters_zero_point_density)>=1)
+assert(length(gridCenters_low_point_density)>=1)
 
 %% Slide 11: Find the optimal value of theta_threshold for classifying mapped grids into drivable and non-drivable regions 
 
@@ -426,7 +432,8 @@ flag_plot_in_3D = 0;
 
 [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -442,6 +449,8 @@ assert(length(mapped_gridlines)>=1)
 assert(length(drivable_gridlines)>=1)
 assert(length(non_drivable_gridlines)>=1)
 assert(length(gridCenters_unmapped_grids)>=1)
+assert(length(gridCenters_zero_point_density)>=1)
+assert(length(gridCenters_low_point_density)>=1)
 
 %% Slide 12: Find the optimal value of z_height_threshold for classifying mapped grids into drivable and non-drivable regions 
 
@@ -500,7 +509,8 @@ flag_plot_in_3D = 0;
 
 [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -516,6 +526,8 @@ assert(length(mapped_gridlines)>=1)
 assert(length(drivable_gridlines)>=1)
 assert(length(non_drivable_gridlines)>=1)
 assert(length(gridCenters_unmapped_grids)>=1)
+assert(length(gridCenters_zero_point_density)>=1)
+assert(length(gridCenters_low_point_density)>=1)
 
 %% Slide 13 and 14: Find the boundary points of drivable and non-drivable grids by choosing the optimal values for thresholds. 
 
@@ -553,18 +565,19 @@ std_threshold = 0.05;
 
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane:                                                        
-theta_threshold = [];%70*(pi/180); 
+theta_threshold = 60*(pi/180); 
 
 % Maximum and Minimum height threshold of mapped grids. The mean of Z
 % values of mapped grids are calulated and compared with z_height_threshold
-z_height_threshold = [];%[mean(LiDAR_outer_edge(:,3))-0.5, mean(LiDAR_outer_edge(:,3))+0.5];
+z_height_threshold = [mean(LiDAR_outer_edge(:,3))-0.5, mean(LiDAR_outer_edge(:,3))+0.5];
  
 % flag for plotting in 3D
 flag_plot_in_3D = 0; 
 
 [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density] = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, (flag_plot_in_3D), (fig_num));
 
 % assert(length(drivable_grids)>=1)
 % assert(length(non_drivable_grids)>=1)
@@ -640,7 +653,7 @@ y_limits = [];
 % Calculate boundary points
 figure(fig_num_mapped_unmapped);
 clf;
-boundary_points_mapped_unmapped = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+boundary_points_mapped_unmapped = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_mapped_unmapped);
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -706,7 +719,7 @@ y_limits = [];
 
 figure(fig_num_drivable_non_drivable)
 clf;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num_drivable_non_drivable);
 
 assert(length(drivable_grids)>=1)
 assert(length(non_drivable_grids)>=1)
@@ -724,9 +737,9 @@ not_boundary_points = boundary_points(members,:);
 
 true_boundary_points = boundary_points(members==0,:);
 
-% figure(fig_num_bd_pts_ENU)
-% clf;
-figure(10001)
+figure(fig_num_bd_pts_ENU)
+clf;
+% figure(10001)
 hold on
 plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40)
 plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30)
@@ -736,6 +749,7 @@ plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30
 
 fig_final_bd_pts = 113; 
 
+% Hand-labeled boundary points
 boundary_points_LLA = [40.865759464410559, -77.830964010633224, 0;
   40.865755710442414, -77.830956939857998, 0;
   40.865752421719513, -77.830948769793835, 0;
@@ -748,7 +762,7 @@ boundary_points_LLA = [40.865759464410559, -77.830964010633224, 0;
   40.865725645797589, -77.830897863602658, 0;
   40.865722297500483, -77.830890350824461, 0];
 
-
+% True boundary points
 Trace_coordinates = [true_boundary_points,zeros(length(true_boundary_points),1)]; 
 
  % Define GPS object
@@ -760,6 +774,25 @@ gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % L
 % Use the class to convert LLA to ENU
 LLA_data_computed_boundary_pts = gps_object.ENU2WGSLLA(Trace_coordinates);
 
+% Unmapped grid centers with zero point density in LLA
+LLA_gridCenters_zero_point_density = gps_object.ENU2WGSLLA(gridCenters_zero_point_density);
+
+% Unmapped grid centers with low point density in LLA
+LLA_gridCenters_low_point_density = gps_object.ENU2WGSLLA(gridCenters_low_point_density);
+
+% Mapped grid centers 
+LLA_gridCenters_mapped_grids = gps_object.ENU2WGSLLA(gridCenters_mapped_grids(:,1:3));
+
+% Drivable grid centers
+drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 1),1:3); 
+LLA_gridCenters_drivable_grids = gps_object.ENU2WGSLLA(drivable_grid_centers_ENU);
+
+% Non-drivable grid centers
+non_drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 0),1:3); 
+LLA_gridCenters_non_drivable_grids = gps_object.ENU2WGSLLA(non_drivable_grid_centers_ENU);
+
+
+
 % Plot the LLA boubndary points
 figure(fig_final_bd_pts);
 clf
@@ -767,14 +800,33 @@ clf
 xlabel('Latitude')
 ylabel('Longitude')
 
-geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'y.','MarkerSize',30);
-hold on
-geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'k.','MarkerSize',10);
 
-geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'c.','MarkerSize',40);
-geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',30);
+% Plot the unmapped grid centers with zero point density
+geoplot(LLA_gridCenters_zero_point_density(:,1),LLA_gridCenters_zero_point_density(:,2),'.','MarkerSize',10,'Color',[0.8 0.8 0.8]);
+hold on
+% Plot the unmapped grid centers with low point density
+geoplot(LLA_gridCenters_low_point_density(:,1),LLA_gridCenters_low_point_density(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
+
+% Plot the mapped grid centers 
+geoplot(LLA_gridCenters_mapped_grids(:,1),LLA_gridCenters_mapped_grids(:,2),'.','MarkerSize',30,'Color',[0.3 0.3 0.3]);
+
+% Plot the mapped grid centers 
+geoplot(LLA_gridCenters_drivable_grids(:,1),LLA_gridCenters_drivable_grids(:,2),'g.','MarkerSize',15);
+
+% Plot the mapped grid centers 
+geoplot(LLA_gridCenters_non_drivable_grids(:,1),LLA_gridCenters_non_drivable_grids(:,2),'r.','MarkerSize',15);
+
+% Plot the hand-labeled boundary points
+% geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'y.','MarkerSize',30);
+% % hold on
+% geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'k.','MarkerSize',10);
+
+% Plot the computed boundary points
+geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'y.','MarkerSize',40);
+% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'c.','MarkerSize',40);
+% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',30);
 
 title('Boundary Points in LLA ')
-
+hold off
 geobasemap satellite
 geotickformat -dd

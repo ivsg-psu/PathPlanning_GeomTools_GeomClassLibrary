@@ -1,6 +1,7 @@
 function [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_grids,drivable_grid_numbers_in_mapped_grids,...
     non_drivable_grid_numbers_in_mapped_grids,angle_btw_unit_normals_and_vertical,standard_deviation_in_z,...
-    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,mean_z_height_of_mapped_grids]... 
+    unmapped_gridlines,mapped_gridlines,drivable_gridlines,non_drivable_gridlines,gridCenters_unmapped_grids,...
+    mean_z_height_of_mapped_grids,gridCenters_zero_point_density,gridCenters_low_point_density]... 
 = fcn_geometry_surfaceAnalysis(input_points, grid_size, grid_boundaries, point_density, theta_threshold, std_threshold, z_height_threshold, varargin)
 %% fcn_geometry_surfaceAnalysis
 %
@@ -106,6 +107,8 @@ function [drivable_grids,non_drivable_grids,unmapped_grids,gridCenters_mapped_gr
 % -- Added "z_height_threshold" as the input and
 % "mean_z_height_of_mapped_grids" as the output. 
 % 2024_07_09 - Aneesh Batchu
+% -- Added gridCenters_with_low_point_density and
+% gridCenters_with_zero_point_density as the outputs
 
 %% Debugging and Input checks
 
@@ -235,7 +238,8 @@ original_unmapped_grid_numbers = find(total_N_points_in_each_grid(:,1) < point_d
 % Output
 unmapped_grids = original_unmapped_grid_numbers; 
 
-% Grid centers of unmapped grids
+% Grid centers of unmapped grids: These grid centers cotains the grids with
+% zero point density (zero points) and grids with low point density (points less than point density)
 gridCenters_unmapped_grids = [gridCenters(unmapped_grids,1), gridCenters(unmapped_grids,2), gridCenters(unmapped_grids,3), zeros(length(unmapped_grids),1)]; 
 
 % Mapped grids. Later these grids are classified into drivable and non
@@ -389,6 +393,17 @@ gridCenters_non_drivable_grids = [gridCenters(non_drivable_grids,1), gridCenters
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
 gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
 
+% [gridCenters_unmapped, gridCenters_mapped_with_low_point_density, ~, ~, ~] = fcn_INTERNAL_findGridCenters(gridCenters,gridIndices,input_points,unmapped_grids,original_mapped_grid_numbers,drivable_grids,non_drivable_grids);
+
+% Unmapped grid centers with zero point density
+gridCenters_zero_point_density = gridCenters((total_N_points_in_each_grid(:,1) == 0),1:3); 
+
+% Unmapped grid centers with low point density
+unmapped_grids_low_point_density = (total_N_points_in_each_grid(:,1) > 0) & (total_N_points_in_each_grid(:,1) < point_density);
+gridCenters_low_point_density = gridCenters(unmapped_grids_low_point_density,1:3); 
+
+
+
 
 if 0==flag_max_speed
     close(h_waitbar)
@@ -518,7 +533,7 @@ else
     unmapped_gridlines = zeros(11*length(unmapped_grid_numbers),2); 
     n = 0;
     p = 0; 
-    q = 0; 
+    % q = 0; 
     for ith_domain = 1:length(unmapped_grid_numbers)
         % Get current color
         % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
@@ -889,4 +904,35 @@ end
 
 end
 
-% [gridCenters_unmapped, gridCenters_mapped_with_low_point_density, gridCenters_mapped, gridCenters_drivable, gridCenters_non_drivable]
+% function [gridCenters_unmapped, gridCenters_mapped_with_low_point_density, gridCenters_mapped, gridCenters_drivable, gridCenters_non_drivable] = fcn_INTERNAL_findGridCenters(gridCenters,gridIndices,input_points,unmapped_grid_numbers,mapped_grid_numbers, drivable_grid_numbers,non_drivable_grid_numbers)
+% 
+% for ith_domain = 1:length(unmapped_grid_numbers)
+%     % Get all points in this domain and plot them
+%     rows_in_domain = gridIndices==unmapped_grid_numbers(ith_domain);
+%     points_in_domain = input_points(rows_in_domain,:);
+% 
+%     if(isempty(points_in_domain))
+%         % Grid centers with zero point density
+%         gridCenters_unmapped = gridCenters(unmapped_grid_numbers(ith_domain),:);
+% 
+%         % elseif (~isempty(points_in_domain) && length_points_in_domain <= point_density)
+%     else 
+%         % Grid centers with low point density
+%         gridCenters_mapped_with_low_point_density = gridCenters(unmapped_grid_numbers(ith_domain),:); %(~isempty(points_in_domain) && length_points_in_domain <= point_density)
+% 
+%     end
+% end
+% 
+% % Mapped grid centers: Grid centers with enough point density  
+% gridCenters_mapped = gridCenters(mapped_grid_numbers,:); 
+% 
+% % Grid centers of drivable grids
+% gridCenters_drivable = gridCenters(drivable_grid_numbers,:); 
+% 
+% % Grid centers of non_drivable grids
+% gridCenters_non_drivable = gridCenters(non_drivable_grid_numbers,:); 
+% 
+% end
+
+
+
