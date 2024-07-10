@@ -254,6 +254,9 @@ axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x, 
 % [length, width, height] = [1.25 1.25 1.25]
 grid_size = 1.25; %1.26
 
+% Find minimum and maximum values of x,y,z of LiDAR data
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
+
 % The grids are plotted only within the boundaries
 grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
 
@@ -267,11 +270,11 @@ std_threshold = 0.05;
 
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane
-theta_threshold =[]; 
+theta_threshold = 30*(pi/180); 
 
 % Maximum and Minimum height threshold of mapped grids. The mean of Z
 % values of mapped grids are calulated and compared with z_height_threshold
-z_height_threshold = [];
+z_height_threshold = [mean(LiDAR_outer_edge(:,3))-0.5, mean(LiDAR_outer_edge(:,3))+0.5];
  
 % flag for plotting in 3D
 flag_plot_in_3D = 0; 
@@ -307,12 +310,24 @@ assert(length(gridCenters_unmapped_grids)>=1)
 % Figure number
 fig_num = 10001;
 
+% Flag for plotting hand-labeled boundary points
+flag_plot_hand_labeled_boundary_points = 1; 
+
+if flag_plot_hand_labeled_boundary_points
+    % plot the ENU boundary points for reference
+    figure(fig_num);
+    clf;
+    plot(ENU_data(:,1), ENU_data(:,2), 'k.', 'MarkerSize', 20);
+end
 % Input points (LiDAR data)
 input_points = LiDAR_outer_edge; 
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 1.25; %1.26
+grid_size = 1.265; %1.26
+
+% Find minimum and maximum values of x,y,z of LiDAR data
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
 
 % The grids are plotted only within the boundaries
 grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -323,7 +338,7 @@ point_density = 60;
 % ------------------------------------------------------------------------
 % The maximum standard deviation limit of z_error (z - z_fit) after fitting a plane: THE OPTIMAL VALUE OF THIS PARAMETER IS FOUND HERE
 % ------------------------------------------------------------------------
-std_threshold = 0.05; 
+std_threshold = 0.03; 
 
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane
@@ -346,7 +361,7 @@ assert(length(unmapped_grids)>=1)
 assert(length(gridCenters_mapped_grids(:,1))>=1)
 assert(length(drivable_grid_numbers_in_mapped_grids)>=1)
 assert(length(non_drivable_grid_numbers_in_mapped_grids)>=1)
-assert(length(angle_btw_unit_normals_and_vertical)>=1)
+assert(isempty(angle_btw_unit_normals_and_vertical))
 assert(length(standard_deviation_in_z)>=1)
 assert(length(mean_z_height_of_mapped_grids)>=1)
 assert(length(unmapped_gridlines)>=1)
@@ -367,18 +382,25 @@ assert(length(gridCenters_unmapped_grids)>=1)
 % Figure number
 fig_num = 11001;
 
+% Flag for plotting hand-labeled boundary points
+flag_plot_hand_labeled_boundary_points = 1; 
 
-% plot the ENU boundary points for reference
-figure(fig_num);
-clf;
-plot(ENU_data(:,1), ENU_data(:,2), 'k.', 'MarkerSize', 20);
+if flag_plot_hand_labeled_boundary_points
+    % plot the ENU boundary points for reference
+    figure(fig_num);
+    clf;
+    plot(ENU_data(:,1), ENU_data(:,2), 'k.', 'MarkerSize', 20);
+end
 
 % Input points (LiDAR data)
 input_points = LiDAR_outer_edge; 
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 1.25; %1.26
+grid_size = 1.265; %1.26
+
+% Find minimum and maximum values of x,y,z of LiDAR data
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
 
 % The grids are plotted only within the boundaries
 grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -393,7 +415,7 @@ std_threshold = []; %0.05;
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane:                                                        THE OPTIMAL VALUE OF THIS PARAMETER IS FOUND HERE
 % ------------------------------------------------------------------------
-theta_threshold =30*(pi/180); 
+theta_threshold =50*(pi/180); 
 
 % Maximum and Minimum height threshold of mapped grids. The mean of Z
 % values of mapped grids are calulated and compared with z_height_threshold
@@ -433,12 +455,25 @@ assert(length(gridCenters_unmapped_grids)>=1)
 % Figure number
 fig_num = 12001;
 
+% Flag for plotting hand-labeled boundary points
+flag_plot_hand_labeled_boundary_points = 1; 
+
+if flag_plot_hand_labeled_boundary_points
+    % plot the ENU boundary points for reference
+    figure(fig_num);
+    clf;
+    plot(ENU_data(:,1), ENU_data(:,2), 'k.', 'MarkerSize', 20);
+end
+
 % Input points (LiDAR data)
 input_points = LiDAR_outer_edge; 
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 1.25; %1.26
+grid_size = 1.265; %1.26
+
+% Find minimum and maximum values of x,y,z of LiDAR data
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
 
 % The grids are plotted only within the boundaries
 grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -473,7 +508,7 @@ assert(length(unmapped_grids)>=1)
 assert(length(gridCenters_mapped_grids(:,1))>=1)
 assert(length(drivable_grid_numbers_in_mapped_grids)>=1)
 assert(length(non_drivable_grid_numbers_in_mapped_grids)>=1)
-assert(length(angle_btw_unit_normals_and_vertical)>=1)
+assert(isempty(angle_btw_unit_normals_and_vertical))
 assert(length(standard_deviation_in_z)>=1)
 assert(length(mean_z_height_of_mapped_grids)>=1)
 assert(length(unmapped_gridlines)>=1)
@@ -495,13 +530,17 @@ fig_num = 12001;
 % Figure numbers for boundary points plots
 fig_num_drivable_non_drivable = 700;
 fig_num_mapped_unmapped = 701; 
+fig_num_bd_pts_ENU = 702; 
 
 % Input points (LiDAR data)
 input_points = LiDAR_outer_edge; 
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 1.26; %1.26
+grid_size = 1.265; %1.26
+
+% Find minimum and maximum values of x,y,z of LiDAR data
+[Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
 
 % The grids are plotted only within the boundaries
 grid_boundaries = [Min_x Max_x Min_y Max_y Min_z Max_z]; 
@@ -514,11 +553,11 @@ std_threshold = 0.05;
 
 % Maximum limit of the angle between vertical and the unit normal vector of
 % the fitted plane:                                                        
-theta_threshold = 70*(pi/180); 
+theta_threshold = [];%70*(pi/180); 
 
 % Maximum and Minimum height threshold of mapped grids. The mean of Z
 % values of mapped grids are calulated and compared with z_height_threshold
-z_height_threshold = [mean(LiDAR_outer_edge(:,3))-0.5, mean(LiDAR_outer_edge(:,3))+0.5];
+z_height_threshold = [];%[mean(LiDAR_outer_edge(:,3))-0.5, mean(LiDAR_outer_edge(:,3))+0.5];
  
 % flag for plotting in 3D
 flag_plot_in_3D = 0; 
@@ -685,8 +724,9 @@ not_boundary_points = boundary_points(members,:);
 
 true_boundary_points = boundary_points(members==0,:);
 
-figure(fig_num_bd_pts_ENU)
-clf;
+% figure(fig_num_bd_pts_ENU)
+% clf;
+figure(10001)
 hold on
 plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40)
 plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30)
