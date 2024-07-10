@@ -87,6 +87,10 @@
 % 2024_06_24 - Aneesh Batchu
 % -- created "fcn_geometry_surfaceAnalysis" to classify mapped surfaces
 % into drivable and non-drivable surfaces. 
+% 2024_07_10 - Sean Brennan
+% -- added printing commands to show details of geometric fit, useful for
+% debugging geometric fitting steps. See fcn_geometry_printGeometry and
+% fcn_geometry_printFitSequences 
 
 %% To-do items
 % 2024_04_15 - S. Brennan

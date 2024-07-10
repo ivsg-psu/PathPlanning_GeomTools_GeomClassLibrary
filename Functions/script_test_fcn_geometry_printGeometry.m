@@ -12,7 +12,7 @@ close all;
 %% BASIC test - header plotting
 fid = 1;
 flag_print_header = 1;
-lead_string = '';
+lead_string = 'test0';
 
 fprintf(1,'\n\n');
 
@@ -26,7 +26,7 @@ fcn_geometry_printGeometry('spiral', [], (flag_print_header), (lead_string), (fi
 %% BASIC test - no header plotting - default numbers
 fid = 1;
 flag_print_header = 0;
-lead_string = 'test';
+lead_string = 'test1';
 
 fprintf(1,'\n\n');
 

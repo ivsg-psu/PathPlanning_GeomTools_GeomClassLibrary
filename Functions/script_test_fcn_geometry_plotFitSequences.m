@@ -18,10 +18,9 @@ line_s_end               = 1;
 
 % Fill the line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear line_parameters
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+line_parameters(1,4)   = line_s_start - line_s_end;
 
 
 % Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -71,10 +70,10 @@ line_s_end               = 1;
 
 % Fill the line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear line_parameters
-line_parameters(1,1:2) = line_unit_tangent_vector;
-line_parameters(1,3:4) = line_base_point_xy;
-line_parameters(1,5)   = line_s_start;
-line_parameters(1,6)   = line_s_end;
+line_parameters(1,1:2) = line_base_point_xy;
+line_parameters(1,3)   = atan2(line_unit_tangent_vector(2),line_unit_tangent_vector(1));
+line_parameters(1,4)   = line_s_start - line_s_end;
+
 
 
 % Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure

@@ -34,10 +34,8 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 %      lead_string: A string that goes in front of the parameter set,
 %      usually a descriptor.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
-%      input checking or debugging, no figures will be generated, and sets
-%      up code to maximize speed. If left empty, just plots to the current
-%      figure.
+%      fid: a file ID number to print results to a file. Default is 1 which
+%      forces printing to the console.
 %
 % OUTPUTS:
 %
@@ -143,7 +141,7 @@ if 4 <= nargin
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify fid?
 flag_do_plots = 0;
 fid = 1; % Default is to print to console
 if 0==flag_max_speed
@@ -169,11 +167,9 @@ end
 
 % Print the lead-in to the print
 NleadCharacters = 20;
-if flag_print_header
-    fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('   '),NleadCharacters));
-else
-    fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(lead_string),NleadCharacters));
-end
+
+% Print the header string
+fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(lead_string),NleadCharacters));
 
 % Set up printing based on type
 switch lower(plot_type_string)
@@ -223,12 +219,14 @@ end
 
 
 % Print the header? If so, need to fill in the headers.
-NumColumnChars = 15;
+NumColumnChars = 10;
+
+% Print the type
+final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
+
 
 % Print header?
 if 1==flag_print_header
-    final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
-
     % Print headers. Note, the number of characters is +1 versus
     % specification because, for negative numbers (below), a space is
     % required before them and thus actual prints take +1 spaces.
@@ -245,13 +243,6 @@ if 1==flag_print_header
     fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
 else
 
-    if -1==flag_print_header
-        final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
-    else
-        final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',' '),NumColumnChars+1);
-    end
-
-
     % Print parameters?
     if ~strcmp('none',simple_type)
         for ith_parameter = 1:length(header_strings)
@@ -259,6 +250,8 @@ else
 
             % Do we need to print units? This adds three spaces to end of each
             % entry
+            % Fill the default trailer string
+            trailer_string = sprintf('%s','   ');
             if -1==flag_print_header
                 if 1== is_meters(1,ith_parameter)
                     trailer_string = sprintf('%s','m  ');
@@ -266,8 +259,6 @@ else
                     trailer_string = sprintf('%s','1/m');
                 elseif is_degrees(1,ith_parameter)
                     trailer_string = sprintf('%s','deg');
-                else
-                    trailer_string = sprintf('%s','   ');
                 end
             end
 
