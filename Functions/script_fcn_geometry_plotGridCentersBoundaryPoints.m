@@ -31,8 +31,10 @@ ENU_data =[418.5194  230.3028 -344.2069;
 marker_size=30;
 RGB_triplet=[0.8 0.8 0.8];
 fig_num=1111;
+legend_option=1;
+legend_name='Legend Test';
 
-%fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,varargin)
-LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,fig_num);
+%fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
+LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,1234);
 
 %%
