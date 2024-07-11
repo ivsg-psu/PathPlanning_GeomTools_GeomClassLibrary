@@ -1,31 +1,15 @@
-
-ENU_data =[418.5194  230.3028 -344.2069;
-    419.1155  229.8859 -344.2069;
-    419.8043  229.5207 -344.2069;
-    420.3828  229.0694 -344.2070;
-    421.0570  228.7612 -344.2070;
-    421.5912  228.2227 -344.2070;
-    422.2313  227.8078 -344.2070;
-    422.9040  227.4922 -344.2071;
-    423.4936  227.0386 -344.2071;
-    424.0961  226.5475 -344.2071;
-    424.7295  226.1757 -344.2071];
-
-
-
 function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,varargin)
 % This function takes in various boundary points and then generates a plot
 % that shows where the boundary,driveable/non-driveable area, and unmapped area
 % 
 % FORMAT:  
-% [LLA] = fcn_geometry_plotGridCentersBoundaryPoints(hand_labeled_boundary_points_LLA,true_boundary_points, gridCenters_zero_point_density,gridCenters_low_point_density,gridCenters_mapped_grids,fig_num)
+% [LLA] =
+% fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(fig_num))
 %
 % INPUTS:
-% hand_labeled_boundary_points_LLA: Boundary points which were hand labeled
-% true_boundary_points: computer predicted boundary
-% gridCenters_zero_point_density: density of zero point density grid centers
-% gridCenters_low_point_density: density of low point density grid centers 
-% gridCenters_mapped_grids
+% ENU_data: Data points 
+% marker_size: size of the points that are going to be plotted
+% RGB_triplet: Color of the markers
 % (OPTIONAL INPUT)
 % fig_num: figure number
 %
@@ -36,13 +20,15 @@ function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_s
 % GPS CLASS
 %
 % EXAMPLES:
-% See script: 
+% See script: script_fcn_geometry_plotGridCentersBoundaryPoints
 %
 % Revision History
 % 2024_07_10 - Aneesh Batchu 
 % -- wrote the code originally
 % 2024_07_10 - Aleksandr Goncharov
 % -- Funtionlized this code
+% 2024_07_11 - Aleksandr Goncharov
+% -- Shortened and cleaned up the function to be more universal
 %
 
 flag_do_debug = 0; % Flag to plot the results for debugging
@@ -71,14 +57,14 @@ end
 
 if flag_max_speed==0
     % Are there the right number of inputs?
-    narginchk(5,6);
+    narginchk(3,4);
 end
 
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (6<= nargin)
+if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -149,8 +135,9 @@ clf;
 hold on
 xlabel('Latitude')
 ylabel('Longitude')
+hold off 
 
-% Plot the unmapped grid centers with zero point density
+% Plot
 geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet);
 
 % % Plot the unmapped grid centers with low point density
@@ -176,7 +163,7 @@ geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_tri
 % geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
 
 title('Boundary Points in LLA ')
-hold off
+%hold off
 geobasemap satellite
 geotickformat -dd
 
