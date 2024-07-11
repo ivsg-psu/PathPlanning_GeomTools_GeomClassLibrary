@@ -1,4 +1,19 @@
-function [LLA] = fcn_geometry_plotGridCentersBoundaryPoints(hand_labeled_boundary_points_ENU,varargin)
+
+ENU_data =[418.5194  230.3028 -344.2069;
+    419.1155  229.8859 -344.2069;
+    419.8043  229.5207 -344.2069;
+    420.3828  229.0694 -344.2070;
+    421.0570  228.7612 -344.2070;
+    421.5912  228.2227 -344.2070;
+    422.2313  227.8078 -344.2070;
+    422.9040  227.4922 -344.2071;
+    423.4936  227.0386 -344.2071;
+    424.0961  226.5475 -344.2071;
+    424.7295  226.1757 -344.2071];
+
+
+
+function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,varargin)
 % This function takes in various boundary points and then generates a plot
 % that shows where the boundary,driveable/non-driveable area, and unmapped area
 % 
@@ -83,8 +98,8 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% True boundary points
-Trace_coordinates = [true_boundary_points,zeros(length(true_boundary_points),1)]; 
+% % True boundary points
+% Trace_coordinates = [true_boundary_points,zeros(length(true_boundary_points),1)]; 
 
  % Define GPS object
 reference_latitude = 40.86368573;
@@ -93,26 +108,26 @@ reference_altitude = 344.189;
 gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
 
 % Use the class to convert LLA to ENU
-LLA_data_computed_boundary_pts = gps_object.ENU2WGSLLA(Trace_coordinates);
+LLA_data = gps_object.ENU2WGSLLA(ENU_data);
 
-% Unmapped grid centers with zero point density in LLA
-LLA_gridCenters_zero_point_density = gps_object.ENU2WGSLLA(gridCenters_zero_point_density);
-
-% Unmapped grid centers with low point density in LLA
-LLA_gridCenters_low_point_density = gps_object.ENU2WGSLLA(gridCenters_low_point_density);
-
-% Mapped grid centers 
-LLA_gridCenters_mapped_grids = gps_object.ENU2WGSLLA(gridCenters_mapped_grids(:,1:3));
-
-% Drivable grid centers
-drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 1),1:3); 
-LLA_gridCenters_drivable_grids = gps_object.ENU2WGSLLA(drivable_grid_centers_ENU);
-
-% Non-drivable grid centers
-non_drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 0),1:3); 
-LLA_gridCenters_non_drivable_grids = gps_object.ENU2WGSLLA(non_drivable_grid_centers_ENU);
-
-LLA=[LLA_data_computed_boundary_pts,LLA_gridCenters_zero_point_density,LLA_gridCenters_low_point_density,LLA_gridCenters_drivable_grids,LLA_gridCenters_non_drivable_grids];
+% % Unmapped grid centers with zero point density in LLA
+% LLA_gridCenters_zero_point_density = gps_object.ENU2WGSLLA(gridCenters_zero_point_density);
+% 
+% % Unmapped grid centers with low point density in LLA
+% LLA_gridCenters_low_point_density = gps_object.ENU2WGSLLA(gridCenters_low_point_density);
+% 
+% % Mapped grid centers 
+% LLA_gridCenters_mapped_grids = gps_object.ENU2WGSLLA(gridCenters_mapped_grids(:,1:3));
+% 
+% % Drivable grid centers
+% drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 1),1:3); 
+% LLA_gridCenters_drivable_grids = gps_object.ENU2WGSLLA(drivable_grid_centers_ENU);
+% 
+% % Non-drivable grid centers
+% non_drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 0),1:3); 
+% LLA_gridCenters_non_drivable_grids = gps_object.ENU2WGSLLA(non_drivable_grid_centers_ENU);
+% 
+% LLA=[LLA_data_computed_boundary_pts,LLA_gridCenters_zero_point_density,LLA_gridCenters_low_point_density,LLA_gridCenters_drivable_grids,LLA_gridCenters_non_drivable_grids];
 
 %% Any debugging?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -131,34 +146,34 @@ if flag_do_plots
 % Plot the LLA boundary points
 figure(fig_num);
 clf;
-
+hold on
 xlabel('Latitude')
 ylabel('Longitude')
 
 % Plot the unmapped grid centers with zero point density
-geoplot(LLA_gridCenters_zero_point_density(:,1),LLA_gridCenters_zero_point_density(:,2),'.','MarkerSize',10,'Color',[0.8 0.8 0.8]);
-hold on
-% Plot the unmapped grid centers with low point density
-geoplot(LLA_gridCenters_low_point_density(:,1),LLA_gridCenters_low_point_density(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
+geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet);
 
-% Plot the mapped grid centers 
-geoplot(LLA_gridCenters_mapped_grids(:,1),LLA_gridCenters_mapped_grids(:,2),'.','MarkerSize',30,'Color',[0.3 0.3 0.3]);
-
-% Plot the mapped grid centers 
-geoplot(LLA_gridCenters_drivable_grids(:,1),LLA_gridCenters_drivable_grids(:,2),'g.','MarkerSize',15);
-
-% Plot the mapped grid centers 
-geoplot(LLA_gridCenters_non_drivable_grids(:,1),LLA_gridCenters_non_drivable_grids(:,2),'r.','MarkerSize',15);
-
-% Plot the hand-labeled boundary points
-geoplot(hand_labeled_boundary_points_LLA(:,1),hand_labeled_boundary_points_LLA(:,2),'y.','MarkerSize',40);
-% % hold on
-% geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'k.','MarkerSize',10);
-
-% Plot the computed boundary points
-% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'y.','MarkerSize',40);
-geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'c.','MarkerSize',30);
-geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
+% % Plot the unmapped grid centers with low point density
+% geoplot(LLA_gridCenters_low_point_density(:,1),LLA_gridCenters_low_point_density(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
+% 
+% % Plot the mapped grid centers 
+% geoplot(LLA_gridCenters_mapped_grids(:,1),LLA_gridCenters_mapped_grids(:,2),'.','MarkerSize',30,'Color',[0.3 0.3 0.3]);
+% 
+% % Plot the mapped grid centers 
+% geoplot(LLA_gridCenters_drivable_grids(:,1),LLA_gridCenters_drivable_grids(:,2),'g.','MarkerSize',15);
+% 
+% % Plot the mapped grid centers 
+% geoplot(LLA_gridCenters_non_drivable_grids(:,1),LLA_gridCenters_non_drivable_grids(:,2),'r.','MarkerSize',15);
+% 
+% % Plot the hand-labeled boundary points
+% geoplot(hand_labeled_boundary_points_LLA(:,1),hand_labeled_boundary_points_LLA(:,2),'y.','MarkerSize',40);
+% % % hold on
+% % geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'k.','MarkerSize',10);
+% 
+% % Plot the computed boundary points
+% % geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'y.','MarkerSize',40);
+% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'c.','MarkerSize',30);
+% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
 
 title('Boundary Points in LLA ')
 hold off
