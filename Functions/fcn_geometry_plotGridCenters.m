@@ -34,6 +34,7 @@ function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triple
 % -- Shortened and cleaned up the function to be more universal
 % 2024_07-12 - Aneesh Batchu
 % -- Changed the name of the function to "fcn_geometry_plotGridCenters"
+% -- Made minor changes in the legend position options
 
 flag_do_debug = 0; % Flag to plot the results for debugging
 flag_max_speed = 0; % Flag to perform input checking
@@ -82,6 +83,7 @@ if 5<=nargin
 end
 
 %legend position
+legend_position = [];
 if 6<=nargin
     temp=varargin{3};
     if ~isempty(temp)
@@ -150,7 +152,12 @@ hold on
 
 %Adding Legend
 if flag_create_legend == 1
-    legend('Position',legend_position);
+    if ~isempty(legend_position)
+        legend('Position',legend_position);
+    else
+        legend()
+    end
+
 end
 
 title('Boundary Points in LLA ')
