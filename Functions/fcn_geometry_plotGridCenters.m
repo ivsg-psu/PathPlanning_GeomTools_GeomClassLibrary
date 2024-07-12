@@ -152,16 +152,16 @@ if flag_do_plots
 
 % Plot the LLA boundary points
 figure(fig_num);
-hold on
-xlabel('Latitude')
-ylabel('Longitude')
+%hold on
+%xlabel('Latitude')
+%ylabel('Longitude')
 
 
-hold off 
+%hold off 
 
 % Plot
 geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet);
-
+hold on
 if flag_create_legend == 1
     legend(legend_name)
 end
@@ -188,7 +188,6 @@ end
 % geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
 
 title('Boundary Points in LLA ')
-% hold off
 geobasemap satellite
 geotickformat -dd
 
