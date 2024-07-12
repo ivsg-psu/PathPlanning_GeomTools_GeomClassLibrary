@@ -1,9 +1,9 @@
-function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,varargin)
+function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,varargin)
 % This function takes in various boundary points and then generates a plot
 % that shows where the boundary,driveable/non-driveable area, and unmapped area
 % 
 % FORMAT:  
-% [LLA] =
+% LLA_data =
 % fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(fig_num))
 %
 % INPUTS:
@@ -22,7 +22,7 @@ function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_s
 % GPS CLASS
 %
 % EXAMPLES:
-% See script: script_fcn_geometry_plotGridCentersBoundaryPoints
+% See script: script_test_fcn_geometry_plotGridCenters
 %
 % Revision History
 % 2024_07_10 - Aneesh Batchu 
@@ -31,7 +31,8 @@ function LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_s
 % -- Funtionlized this code
 % 2024_07_11 - Aleksandr Goncharov
 % -- Shortened and cleaned up the function to be more universal
-%
+% 2024_07-12 - Aneesh Batchu
+% -- Changed the name of the function to "fcn_geometry_plotGridCenters"
 
 flag_do_debug = 0; % Flag to plot the results for debugging
 flag_max_speed = 0; % Flag to perform input checking
@@ -151,7 +152,6 @@ if flag_do_plots
 
 % Plot the LLA boundary points
 figure(fig_num);
-clf;
 hold on
 xlabel('Latitude')
 ylabel('Longitude')
@@ -188,7 +188,7 @@ end
 % geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
 
 title('Boundary Points in LLA ')
-%hold off
+% hold off
 geobasemap satellite
 geotickformat -dd
 

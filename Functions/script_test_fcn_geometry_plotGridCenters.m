@@ -1,5 +1,5 @@
-%script_fcn_geometry_plotGridCentersBoundaryPoints
-%script for fcn_geometry_plotGridCentersBoundaryPoints
+%script_fcn_geometry_plotGridCenters
+%script for fcn_geometry_plotGridCenters
 %
 %
 %% Basic Example
@@ -31,10 +31,10 @@ ENU_data =[418.5194  230.3028 -344.2069;
 marker_size=30;
 RGB_triplet=[0.8 0.8 0.8];
 fig_num=1111;
-legend_option=1;
+legend_option=0;
 legend_name='Legend Test';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-LLA_data = fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,1234);
+LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,1234);
 
 %%
