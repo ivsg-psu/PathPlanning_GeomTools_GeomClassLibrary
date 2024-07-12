@@ -13,6 +13,7 @@ function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triple
 % (OPTIONAL INPUT)
 % legend_options: enable the plot to display a legend
 % legend_name: name of the legend
+% legend_position: position of the legend
 % fig_num: figure number
 %
 % OUTPUTS:
@@ -60,7 +61,7 @@ end
 
 if flag_max_speed==0
     % Are there the right number of inputs?
-    narginchk(3,6);
+    narginchk(3,7);
 end
 
 %does user want a legend
@@ -80,12 +81,20 @@ if 5<=nargin
     end
 end
 
+%legend position
+if 6<=nargin
+    temp=varargin{3};
+    if ~isempty(temp)
+        legend_position=temp;
+    end
+end
+
 
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (6<= nargin)
+if (0==flag_max_speed) && (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -117,24 +126,6 @@ gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % L
 % Use the class to convert LLA to ENU
 LLA_data = gps_object.ENU2WGSLLA(ENU_data);
 
-% % Unmapped grid centers with zero point density in LLA
-% LLA_gridCenters_zero_point_density = gps_object.ENU2WGSLLA(gridCenters_zero_point_density);
-% 
-% % Unmapped grid centers with low point density in LLA
-% LLA_gridCenters_low_point_density = gps_object.ENU2WGSLLA(gridCenters_low_point_density);
-% 
-% % Mapped grid centers 
-% LLA_gridCenters_mapped_grids = gps_object.ENU2WGSLLA(gridCenters_mapped_grids(:,1:3));
-% 
-% % Drivable grid centers
-% drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 1),1:3); 
-% LLA_gridCenters_drivable_grids = gps_object.ENU2WGSLLA(drivable_grid_centers_ENU);
-% 
-% % Non-drivable grid centers
-% non_drivable_grid_centers_ENU = gridCenters_mapped_grids((gridCenters_mapped_grids(:,4) == 0),1:3); 
-% LLA_gridCenters_non_drivable_grids = gps_object.ENU2WGSLLA(non_drivable_grid_centers_ENU);
-% clc
-% LLA=[LLA_data_computed_boundary_pts,LLA_gridCenters_zero_point_density,LLA_gridCenters_low_point_density,LLA_gridCenters_drivable_grids,LLA_gridCenters_non_drivable_grids];
 
 %% Any debugging?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,40 +143,15 @@ if flag_do_plots
 
 % Plot the LLA boundary points
 figure(fig_num);
-%hold on
-%xlabel('Latitude')
-%ylabel('Longitude')
-
-
-%hold off 
 
 % Plot
-geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet);
+geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet,'DisplayName',legend_name);
 hold on
+
+%Adding Legend
 if flag_create_legend == 1
-    legend(legend_name)
+    legend('Position',legend_position);
 end
-% % Plot the unmapped grid centers with low point density
-% geoplot(LLA_gridCenters_low_point_density(:,1),LLA_gridCenters_low_point_density(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
-% 
-% % Plot the mapped grid centers 
-% geoplot(LLA_gridCenters_mapped_grids(:,1),LLA_gridCenters_mapped_grids(:,2),'.','MarkerSize',30,'Color',[0.3 0.3 0.3]);
-% 
-% % Plot the mapped grid centers 
-% geoplot(LLA_gridCenters_drivable_grids(:,1),LLA_gridCenters_drivable_grids(:,2),'g.','MarkerSize',15);
-% 
-% % Plot the mapped grid centers 
-% geoplot(LLA_gridCenters_non_drivable_grids(:,1),LLA_gridCenters_non_drivable_grids(:,2),'r.','MarkerSize',15);
-% 
-% % Plot the hand-labeled boundary points
-% geoplot(hand_labeled_boundary_points_LLA(:,1),hand_labeled_boundary_points_LLA(:,2),'y.','MarkerSize',40);
-% % % hold on
-% % geoplot(boundary_points_LLA(:,1),boundary_points_LLA(:,2),'k.','MarkerSize',10);
-% 
-% % Plot the computed boundary points
-% % geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'y.','MarkerSize',40);
-% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'c.','MarkerSize',30);
-% geoplot(LLA_data_computed_boundary_pts(:,1),LLA_data_computed_boundary_pts(:,2),'b.','MarkerSize',15);
 
 title('Boundary Points in LLA ')
 geobasemap satellite

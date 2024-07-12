@@ -37,13 +37,16 @@ RGB_triplet2=[1 1 0];
 RGB_triplet3=[0 1 1];
 fig_num=1111;
 legend_option=1;
+
+legend_position=[.75 .8 0 0];
+
 legend_name='Legend Test';
 legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,fig_num);
-LLA_data2 = fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,fig_num);
-LLA_data3 = fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,fig_num);
+LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+LLA_data2 = fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
+LLA_data3 = fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
 
 %%
