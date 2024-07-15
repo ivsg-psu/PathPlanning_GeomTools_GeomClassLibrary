@@ -215,11 +215,11 @@ end
 N_colors = length(color_ordering(:,1));
 
 if isempty(string_identifier)
-    if plot_number>=1
+    if all(plot_number>=1)
         color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
     else
         % Make sure the plot number is a fraction between 0 and 1
-        plot_number = max(0,plot_number); 
+        plot_number = min(max(0,plot_number),1); 
 
         % Convert the plot number to a row
         color_row = floor((N_colors-1)*plot_number) + 1;

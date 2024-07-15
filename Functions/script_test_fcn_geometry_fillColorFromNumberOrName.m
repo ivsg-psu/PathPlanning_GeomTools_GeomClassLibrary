@@ -44,12 +44,11 @@ for ith_point = 1:Npoints
 end
 
 %% Basic call - fractional color number with red to green color map
-
 Npoints = 100;
-x_data = linspace(-2,2,Npoints)';
-y_data = x_data*3 + 7;
-max_y = max(y_data);
-min_y = min(y_data);
+x_data = linspace(0,100,Npoints)';
+y_data = x_data*0.5 + 15;
+max_y = 50; % max(y_data);
+min_y = 25; % min(y_data);
 points = [x_data y_data];
 
 fractional_y_data = (y_data - min_y)/(max_y - min_y);
@@ -59,16 +58,23 @@ color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data,[],'redt
 assert(isequal(size(color_vector),[Npoints 3]));
 
 % Make the plot
-fig_num = 2;
+fig_num = 3;
 figure(fig_num);
 clf;
 hold on;
 grid on;
 axis equal;
+ylabel('Speed (mph)');
+xlabel('Location on on-ramp (meters)');
+
 
 for ith_point = 1:Npoints
     plot(points(ith_point,1),points(ith_point,2),'.','Color',color_vector(ith_point,:));
 end
+
+plot([min(x_data) max(x_data)],[max_y max_y],'g-','LineWidth',3);
+plot([min(x_data) max(x_data)],[min_y min_y],'r-','LineWidth',3);
+
 
 %% Basic call - fractional color number with custom colormap
 
@@ -92,6 +98,8 @@ clf;
 hold on;
 grid on;
 axis equal;
+ylabel('Speed (mph)');
+xlabel('Location on on-ramp (meters)')
 
 for ith_point = 1:Npoints
     plot(points(ith_point,1),points(ith_point,2),'.','Color',color_vector(ith_point,:));
