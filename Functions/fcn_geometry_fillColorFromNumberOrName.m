@@ -18,6 +18,10 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 %      MATLAB command: "orderedcolors('gem12')". If the 'gem12' colorspace
 %      is not available, then defaults to the "colororder" sequence, e.g.
 %      the default sequence for MATLAB.
+%      OR: the user can specify a fractional input from 0 to .99999. In
+%      this case, the colormap is used as a reference and the colors
+%      represent the percentage along the colormap. NOTE: the string
+%      identifier must be empty to use fractional inputs.
 %
 %      (OPTIONAL INPUTS)
 % 
@@ -32,6 +36,11 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 %
 %      'Vector regression segment fit': plots lines or segments in blue
 %      
+%      colormap_string: a string representing the colormap in MATLAB to
+%      use for calculating the color. See:
+%      https://www.mathworks.com/help/matlab/ref/colormap.html
+%      NOTE: because the team commonly plots data in red to green, a custom
+%      colormap is available in this function called "redtogreen".
 %
 %      fig_num: a figure number to plot results (not yet implemented). If
 %      set to -1, skips any input checking or debugging, no figures will be
@@ -73,6 +82,8 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % -- added none type
 % 2024_05_15 - Aneesh Batchu
 % -- added a case for "cubic polynomial"
+% 2024_07_15 - S. Brennan
+% -- adeed colormap_string input option
 
 %% Debugging and Input checks
 
@@ -80,7 +91,7 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==4 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -121,7 +132,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(1,3);
+        narginchk(1,4);
 
         % % Check the source_points input to be length exactly equal to 2
         % fcn_DebugTools_checkInputsToFunctions(...
@@ -133,7 +144,7 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify best_fit_domain_box_projection_distance?
+% Does user want to specify string_identifier?
 string_identifier = [];
 if (2<=nargin)
     temp = varargin{1};
@@ -142,10 +153,20 @@ if (2<=nargin)
     end
 end
 
+
+% Does user want to specify colormap_string?
+colormap_string = [];
+if (3<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        colormap_string = temp;
+    end
+end
+
 % Does user want to specify fig_num?
 fig_num = []; %#ok<NASGU> % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (3<= nargin)
+if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp; %#ok<NASGU>
@@ -166,16 +187,46 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get the color ordering?
-try
-    color_ordering = orderedcolors('gem12');
-catch
-    color_ordering = colororder;
+% For V2023b onward, uses orderecolors
+% For older versions, uses colororder
+if isempty(colormap_string)
+    if (plot_number>=1)
+        try
+            color_ordering = orderedcolors('gem12');
+        catch
+            color_ordering = colororder;
+        end
+    else
+        color_ordering = colormap;
+    end
+else
+    % Use user-defined colormap_string?    
+    old_colormap = colormap;
+    if strcmp(colormap_string,'redtogreen')
+        new_colormap = colormap('hsv');
+        color_ordering = [new_colormap(1:85,:); [0 1 0]];
+    else
+        color_ordering = colormap(colormap_string);
+    end
+    colormap(old_colormap);
+    
 end
 
 N_colors = length(color_ordering(:,1));
 
 if isempty(string_identifier)
-    color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
+    if plot_number>=1
+        color_vector = color_ordering(mod(plot_number,N_colors)+1,:);
+    else
+        % Make sure the plot number is a fraction between 0 and 1
+        plot_number = max(0,plot_number); 
+
+        % Convert the plot number to a row
+        color_row = floor((N_colors-1)*plot_number) + 1;
+
+        % Find the color
+        color_vector = color_ordering(color_row,:);
+    end
 else
     switch lower(string_identifier)
         case {'none',''}  % Nones are white

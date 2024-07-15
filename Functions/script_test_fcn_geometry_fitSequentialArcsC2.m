@@ -74,7 +74,7 @@ ylabel('Y [meters]');
 modifiedArcStartIndicies = [trueArcStartIndicies; length(test_points(:,1))];
 for ith_plot = 1:length(trueArcStartIndicies(:,1))
     if ~isempty(trueNamedCurveTypes)
-        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,trueNamedCurveTypes{ith_plot},-1);
+        current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,trueNamedCurveTypes{ith_plot},[],-1);
     else
         current_color = [0 0 0];
     end
@@ -162,7 +162,7 @@ figure(fig_num_array(1));
 subplot(2,2,3);
 for ith_start = 1:NfitsInSequence
     
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_start,fitSequence_bestFitType_forward{ith_start},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_start,fitSequence_bestFitType_forward{ith_start},[],-1);
 
     plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
 end
@@ -174,7 +174,7 @@ subplot(2,2,4);
 % there will be one color incorrectly on top of another, for example a red
 % point on top of a blue underlying point.
 for ith_plot = 1:NfitsInSequence
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,fitSequence_bestFitType_forward{ith_plot},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_plot,fitSequence_bestFitType_forward{ith_plot},[],-1);
     index_range = probable_arc_boundary_indicies(ith_plot):probable_arc_boundary_indicies(ith_plot+1);
     plot(test_points(index_range,1),test_points(index_range,2),'.','Color',current_color,'MarkerSize',10);
 end
@@ -368,13 +368,13 @@ title('Forward fit');
 
 
 % Plot the input points very large
-current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[],-1);
 plot(small_XY_data(:,1),small_XY_data(:,2),'.','Color',current_color,'MarkerSize',10);
 
 % Plot the domain points
 for ith_domain = 1:length(fitSequence_points_forward)
-    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},[],-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],[],-1);
     current_fitSequence_points = fitSequence_points_forward{ith_domain};
     current_fitSequence_shape  = fitSequence_shapes_forward{ith_domain};
     plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);
@@ -402,13 +402,13 @@ ylabel('Y [meters]');
 title('Backward fit');
 
 % Plot the input points very large
-current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[],-1);
 plot(small_XY_data(:,1),small_XY_data(:,2),'.','Color',current_color,'MarkerSize',10);
 
 % Plot the domain points
 for ith_domain = 1:length(fitSequence_points_backward)
-    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},[],-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],[],-1);
     current_fitSequence_points = fitSequence_points_backward{ith_domain};
     current_fitSequence_shape  = fitSequence_shapes_backward{ith_domain};
     plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);

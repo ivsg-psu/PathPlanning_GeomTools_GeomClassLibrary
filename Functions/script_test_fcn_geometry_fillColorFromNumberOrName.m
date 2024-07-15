@@ -16,6 +16,86 @@ color_vector = fcn_geometry_fillColorFromNumberOrName(2);
 assert(isequal(size(color_vector),[1 3]));
 
 
+%% Basic call - fractional color number with current color map
+
+Npoints = 100;
+x_data = linspace(-2,2,Npoints)';
+y_data = x_data*3 + 7;
+max_y = max(y_data);
+min_y = min(y_data);
+points = [x_data y_data];
+
+fractional_y_data = (y_data - min_y)/(max_y - min_y);
+color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data);
+
+% Check the output type and size
+assert(isequal(size(color_vector),[Npoints 3]));
+
+% Make the plot
+fig_num = 1;
+figure(fig_num);
+clf;
+hold on;
+grid on;
+axis equal;
+
+for ith_point = 1:Npoints
+    plot(points(ith_point,1),points(ith_point,2),'.','Color',color_vector(ith_point,:));
+end
+
+%% Basic call - fractional color number with red to green color map
+
+Npoints = 100;
+x_data = linspace(-2,2,Npoints)';
+y_data = x_data*3 + 7;
+max_y = max(y_data);
+min_y = min(y_data);
+points = [x_data y_data];
+
+fractional_y_data = (y_data - min_y)/(max_y - min_y);
+color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data,[],'redtogreen');
+
+% Check the output type and size
+assert(isequal(size(color_vector),[Npoints 3]));
+
+% Make the plot
+fig_num = 2;
+figure(fig_num);
+clf;
+hold on;
+grid on;
+axis equal;
+
+for ith_point = 1:Npoints
+    plot(points(ith_point,1),points(ith_point,2),'.','Color',color_vector(ith_point,:));
+end
+
+%% Basic call - fractional color number with custom colormap
+
+Npoints = 100;
+x_data = linspace(-2,2,Npoints)';
+y_data = x_data*3 + 7;
+max_y = max(y_data);
+min_y = min(y_data);
+points = [x_data y_data];
+
+fractional_y_data = (y_data - min_y)/(max_y - min_y);
+color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data,[],'jet');
+
+% Check the output type and size
+assert(isequal(size(color_vector),[Npoints 3]));
+
+% Make the plot
+fig_num = 3;
+figure(fig_num);
+clf;
+hold on;
+grid on;
+axis equal;
+
+for ith_point = 1:Npoints
+    plot(points(ith_point,1),points(ith_point,2),'.','Color',color_vector(ith_point,:));
+end
 %% Basic call - string color number
 
 color_vector = fcn_geometry_fillColorFromNumberOrName(2,'regression arc');
@@ -52,7 +132,7 @@ minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',fig_num);
+    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',[],fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

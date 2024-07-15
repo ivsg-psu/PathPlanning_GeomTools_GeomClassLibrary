@@ -316,7 +316,7 @@ if flag_do_plots
     axis equal;
 
     % Plot the fits    
-    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[], -1);
       
     
     if flag_do_debug

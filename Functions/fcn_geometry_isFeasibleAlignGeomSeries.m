@@ -262,8 +262,8 @@ if flag_do_plots
     %
     %     % Plot the fit results
     %     for ith_domain = 1:length(fitSequence_points)
-    %         % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-    %         current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+    %         % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},[],-1);
+    %         current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],[],-1);
     %         current_fitSequence_points = fitSequence_points{ith_domain};
     %         current_fitSequence_shape  = fitSequence_shapes{ith_domain};
     %         plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);

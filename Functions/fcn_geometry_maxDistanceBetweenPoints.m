@@ -186,7 +186,7 @@ if flag_do_plots
     plot(diagonal(:,1),diagonal(:,2),'m-','LineWidth',3);
 
     % Plot the input points very large
-    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[],-1);
     plot(points_to_check(:,1),points_to_check(:,2),'.','Color',current_color,'MarkerSize',10);
 
     % Put the title

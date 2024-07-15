@@ -272,7 +272,7 @@ if flag_do_plots==1 && 1==flag_plot_subfigs
     title('Input points');
 
     % Plot the input points
-    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points', [], -1);
     plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',2);
 
 
@@ -292,7 +292,7 @@ if flag_do_plots==1 && 1==flag_plot_subfigs
     ylabel('Y [meters]');
 
     % Plot the original data
-    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[],-1);
     plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',2);
 
     % Plot the fit shape
@@ -301,7 +301,7 @@ if flag_do_plots==1 && 1==flag_plot_subfigs
     regression_fit  =  fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, 0.1, -1);
 
     fitShape = regression_fit.best_fit_domain_box;
-    current_color = fcn_geometry_fillColorFromNumberOrName(1,[],-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(1,[],[],-1);
     h_plotFitShape = plot(fitShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
 
@@ -394,7 +394,7 @@ while 1==flag_keep_going
             figure(get(h_plotFitShape.Parent.Parent, 'Number'));
             subplot(2,2,2)
             domainShape = regression_domain.best_fit_domain_box;
-            current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,regression_domain.best_fit_type,-1);
+            current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,regression_domain.best_fit_type,[],-1);
             h_plotFitShape = plot(domainShape,'FaceColor',current_color,'EdgeColor',current_color,'Linewidth',1,'EdgeAlpha',0);
 
             % Add vertical lines to indicate where the segments are changing
@@ -424,7 +424,7 @@ if flag_plot_subfigs
     % Add vertical lines to first indicate where the segments are changing
     figure(get(h_plotFitShape.Parent.Parent, 'Number'));
     subplot(2,2,3);
-    current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,fitSequence_bestFitType{Ndomains},-1);
+    current_color = fcn_geometry_fillColorFromNumberOrName(Ndomains,fitSequence_bestFitType{Ndomains},[],-1);
     plot([absolute_start_index absolute_start_index],[-0.1 1.1],'-','Color',current_color);
 end
 
@@ -592,8 +592,8 @@ if flag_do_plots
 
         % Plot the fit results 
         for ith_domain = 1:length(fitSequence_points)
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},[],-1);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],[],-1);
             current_fitSequence_points = fitSequence_points{ith_domain};
             current_fitSequence_shape  = fitSequence_shapes{ith_domain};
             plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',10);
@@ -615,15 +615,15 @@ if flag_do_plots
         ylabel('Y [meters]');
 
         % Plot the input points very large 
-        current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',-1);
+        current_color = fcn_geometry_fillColorFromNumberOrName(1,'points',[],-1);
         plot(points_to_fit(:,1),points_to_fit(:,2),'.','Color',current_color,'MarkerSize',10);
 
 
 
         % Plot the domain points
         for ith_domain = 1:length(fitSequence_points)
-            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},-1);
-            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],-1);
+            % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,fitSequence_bestFitType{ith_domain},[],-1);
+            current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain,[],[],-1);
             current_fitSequence_points = fitSequence_points{ith_domain};
             current_fitSequence_shape  = fitSequence_shapes{ith_domain};
             plot(current_fitSequence_points(:,1),current_fitSequence_points(:,2),'.','Color',current_color*0.8,'MarkerSize',15);
