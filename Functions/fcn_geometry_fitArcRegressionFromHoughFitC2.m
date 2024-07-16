@@ -1,10 +1,11 @@
 function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcRegressionFromHoughFitC2(Hough_domain, prior_parameters, varargin)
-%% fcn_geometry_fitArcRegressionFromHoughFit
+%% fcn_geometry_fitArcRegressionFromHoughFitC2
 % Given a domain containing a set of points that are matched to an arc via
-% a Hough vote, finds the arc regression fit and domain box.
+% a Hough vote, finds the arc regression fit and domain box such that C2
+% continuity is preserved.
 % 
 % Format: 
-% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, prior_parameters, (best_fit_domain_box_projection_distance), (fig_num))
+% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFitC2(Hough_domain, prior_parameters, (best_fit_domain_box_projection_distance), (fig_num))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -43,7 +44,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 %
 % EXAMPLES:
 %      
-% See the script: script_test_fcn_geometry_fitArcRegressionFromHoughFit
+% See the script: script_test_fcn_geometry_fitArcRegressionFromHoughFitC2
 % for a full test suite.
 %
 % This function was written on 2024_01_09 by S. Brennan

@@ -84,7 +84,7 @@ if ~exist('fitSequence_points_forward','var') || ~exist('fitSequence_points_back
 
 end
 
-%% Forward fitting
+%% Perform alignment of forward arcs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  ______                               _
@@ -141,7 +141,8 @@ curve_test_segment_length = 0.5; % Check every 0.5 meters;
     revised_fitSequence_types, revised_fitSequence_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
 
-%% Backward fitting
+%% Perform alignment of backward arcs
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  ____             _                           _

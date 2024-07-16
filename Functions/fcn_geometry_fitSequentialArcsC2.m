@@ -203,6 +203,7 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 NtestPoints = length(points_to_fit(:,1));
+minNpoints = 10; % The minimum number of points allowed in a fit
 
 % Get transverse tolerance
 if length(fitting_tolerance(1,:))>=2
@@ -215,7 +216,7 @@ end
 if flag_fit_backwards
     current_segment_start_index = NtestPoints;
     direction_of_fit = -1;
-    current_point_index = NtestPoints - 3;
+    current_point_index = NtestPoints - minNpoints;
     absolute_start_index = NtestPoints;
     absolute_end_index   = 1;
     percentage_point_color = [1 0 0];
@@ -224,7 +225,7 @@ if flag_fit_backwards
 else
     current_segment_start_index = 1;
     direction_of_fit = 1;
-    current_point_index = 3;
+    current_point_index = minNpoints;
     absolute_start_index = 1;
     absolute_end_index   = NtestPoints;
     percentage_point_color = [0 1 0];
@@ -378,8 +379,11 @@ while 1==flag_keep_going
         previous_parameters = regression_domain.best_fit_parameters;
 
         % Set up for next loop
-        Ndomains = Ndomains + 1;        
-        current_segment_start_index = min(max(1,current_point_index-2*direction_of_fit),NtestPoints);
+        Ndomains = Ndomains + 1; % Increment the number of domains
+
+        % Move the index "backwards" to restart the fitting
+        desired_new_start_point = current_point_index-(minNpoints-1)*direction_of_fit;
+        current_segment_start_index = min(max(1,desired_new_start_point),NtestPoints);
 
         % Perform plot updates?
         if flag_plot_subfigs 

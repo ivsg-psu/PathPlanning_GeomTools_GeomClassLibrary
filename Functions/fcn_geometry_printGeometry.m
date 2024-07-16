@@ -178,30 +178,35 @@ switch lower(plot_type_string)
         simple_type = 'none';
         is_degrees  = 0;
         is_meters   = 0;
+        is_flags    = 0;
 
     case {'line'}
         header_strings = {'startX[m]','startY[m]','theta(deg)'};
         simple_type = 'line';
         is_degrees  = [0 0 1];
         is_meters   = [1 1 0];
+        is_flags    = [0 0 0];
 
     case {'segment','vector regression segment fit', 'line segment'}
         header_strings = {'startX[m]','startY[m]','theta(deg)','Slength[m]'};
         simple_type = 'segment';
         is_degrees  = [0 0 1 0];
         is_meters   = [1 1 0 1];
+        is_flags    = [0 0 0 0];
 
     case {'circle'}
         header_strings = {'centerX[m]','centerY[m]','radius[m]'};
         simple_type = 'circle';
         is_degrees  = [0 0 0];
         is_meters   = [1 1 1];
+        is_flags    = [0 0 0];
 
     case {'arc','regression arc'}
         header_strings = {'centerX[m]','centerY[m]','radius[m]','startAngle(deg)','endAngle(deg)','isCircle','CCW?'};
         simple_type = 'arc';
         is_degrees  = [0 0 0 1 1 0 0];
         is_meters   = [1 1 1 0 0 0 0];
+        is_flags    = [0 0 0 0 0 1 1];
 
 
     case {'spiral'}
@@ -209,6 +214,7 @@ switch lower(plot_type_string)
         simple_type = 'spiral';
         is_degrees  = [0 0 1 0  0  0];
         is_meters   = [1 1 0 1 -1 -1];
+        is_flags    = [0 0 0 0  0  0];
 
     otherwise
         warning('on','backtrace');
@@ -219,7 +225,7 @@ end
 
 
 % Print the header? If so, need to fill in the headers.
-NumColumnChars = 10;
+NumColumnChars = 15;
 
 % Print the type
 final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
@@ -266,8 +272,12 @@ else
             % to start, then convert to degrees, and only print to 2 decimal
             % places. If it is not a degrees number, print to 4 decimal places.
             if 1==is_degrees(1,ith_parameter)
+                % This is an angle field. Convert to degrees and print
                 number_to_print = mod(number_to_print,2*pi)*180/pi;
                 number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.2f%s ',number_to_print,trailer_string),NumColumnChars);
+            elseif 1==is_flags(1,ith_parameter)
+                % This is a flag field. Print no decimal places.
+                number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.0f%s ',number_to_print,trailer_string),NumColumnChars);
             else
                 number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%.4f%s ',number_to_print,trailer_string),NumColumnChars);
             end
