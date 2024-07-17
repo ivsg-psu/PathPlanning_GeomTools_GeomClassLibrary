@@ -166,7 +166,7 @@ end
 
 %% Do we need to set up the work space?
 if ~exist('flag_GeomClass_Folders_Initialized','var')
-    this_project_folders = {'Functions','Data'};
+    this_project_folders = {'Functions','Data','LargeData'};
     fcn_INTERNAL_initializeUtilities(library_name,library_folders,library_url,this_project_folders);
     flag_GeomClass_Folders_Initialized = 1;
 end

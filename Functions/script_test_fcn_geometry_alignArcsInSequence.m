@@ -54,8 +54,12 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         small_XY_data_indicies = find(0==mod(indicies,keep_every));
         small_XY_data = XY_data(small_XY_data_indicies,:);
 
-        % Option 0 is to fit forward sequentially, option 1 is to fit
-        % backward sequentially
+
+        %% Fit the data - one can choose many options
+        % Option 0 is to fit forward sequentially, 
+        % Option 1 is to fit backward sequentially,
+        % Option 2 is to fit using Hough (only works for small data),
+        % Option 3 is to fit using curvature,
         if 0==flag_fit_type || 1==flag_fit_type
             %%%%%
             % Perform the fit forwards or backwards
