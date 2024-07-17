@@ -202,6 +202,8 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+flag_be_verbose = 0;
+
 NtestPoints = length(points_to_fit(:,1));
 minNpoints = 10; % The minimum number of points allowed in a fit
 
@@ -327,7 +329,10 @@ plotting_increment_interval = 10;
 
 while 1==flag_keep_going
     current_point_index = current_point_index + 1*direction_of_fit;
-    fprintf(1,'Checking current point: %.0d of %.0d\n',current_point_index,NtestPoints)
+
+    if 1 == flag_be_verbose
+        fprintf(1,'Checking current point: %.0d of %.0d\n',current_point_index,NtestPoints)
+    end
 
     flag_update_plots = (0==mod(current_point_index,plotting_increment_interval));
     

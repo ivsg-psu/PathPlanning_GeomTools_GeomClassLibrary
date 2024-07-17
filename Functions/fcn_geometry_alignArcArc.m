@@ -211,12 +211,21 @@ end
 %% Plot inputs?
 fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
 
+% % Is a C2 solution feasible?
+% [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+%     fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (.2), (0.01), (-1))
+
 %% Check to see if arc1 and arc2 intersect
 intersection_point1 = fcn_INTERNAL_ArcArcIntersection(arc1_parameters, arc2_parameters, 1, debug_fig_num);
 
 %% Rearrange parameters so line is always the 1st input, arc is 2nd
 % Fix the parameters to make the ordering is correct
 [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point1, debug_fig_num);
+
+% % Is a C2 solution feasible?
+% [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+%     fcn_geometry_isC2FeasibleArcToArc(clean_arc1_parameters, clean_arc2_parameters, (.2), (0.01), (-1))
+
 
 %% Get new intersection point, if arcs changed shape
 intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clean_arc2_parameters, 2, debug_fig_num);
@@ -358,148 +367,155 @@ end % Ends main function
 function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point, debug_fig_num)
 % This function takes the parameter inputs and produces parameter sets such
 % that the arc1 is first, it is oriented so that it ends at the junction
-% with arc2, and the arc2 starts at the junction. 
+% with arc2, and the arc2 starts at the junction. It only does this check
+% if the arcs are oriented in opposite directions
 
-% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc1_center_xy                = arc1_parameters(1,1:2);
-arc1_radius                   = arc1_parameters(1,3);
-arc1_start_angle_in_radians   = arc1_parameters(1,4);
-arc1_end_angle_in_radians     = arc1_parameters(1,5);
-arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
-arc1_is_counter_clockwise     = arc1_parameters(1,7);
+if arc1_parameters(1,7)~=arc2_parameters(1,7)
 
-% Find the change in angle of the arc
-arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
-arc1_end_unit_vector          = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)  ];
-if arc1_is_counter_clockwise
-    cross_product_direction = 1;
+    % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+    arc1_center_xy                = arc1_parameters(1,1:2);
+    arc1_radius                   = arc1_parameters(1,3);
+    arc1_start_angle_in_radians   = arc1_parameters(1,4);
+    arc1_end_angle_in_radians     = arc1_parameters(1,5);
+    arc1_start_xy                 = arc1_center_xy + arc1_radius*[cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+    arc1_end_xy                   = arc1_center_xy + arc1_radius*[cos(arc1_end_angle_in_radians) sin(arc1_end_angle_in_radians)];
+    arc1_is_counter_clockwise     = arc1_parameters(1,7);
+
+    % Find the change in angle of the arc
+    arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
+    arc1_end_unit_vector          = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)  ];
+    if arc1_is_counter_clockwise
+        cross_product_direction = 1;
+    else
+        cross_product_direction = -1;
+    end
+    arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, cross_product_direction);
+
+
+    % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
+    arc2_center_xy                = arc2_parameters(1,1:2);
+    arc2_radius                   = arc2_parameters(1,3);
+    arc2_start_angle_in_radians   = arc2_parameters(1,4);
+    arc2_end_angle_in_radians     = arc2_parameters(1,5);
+    arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+    arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
+    arc2_is_counter_clockwise     = arc2_parameters(1,7);
+
+    % Find the change in angle of the arc
+    arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
+    arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
+    if arc2_is_counter_clockwise
+        cross_product_direction = 1;
+    else
+        cross_product_direction = -1;
+    end
+    arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, cross_product_direction);
+
+
+    % Find arc1 and arc2 join points, e.g. where they meet. This can
+    % happen at either end
+    if ~any(isnan(intersection_point))
+        arc1_endPoint = intersection_point;
+    else
+        arc1_endPoint = arc1_end_xy;
+    end
+
+    distances_to_check = sum((...
+        [arc1_start_xy; arc1_start_xy; arc1_endPoint; arc1_endPoint] - [arc2_start_xy; arc2_end_xy; arc2_start_xy; arc2_end_xy]).^2,2).^0.5;
+    [~,closest_pair] = min(distances_to_check);
+
+    % Fix the arc or line depending on which combo is closest
+    switch closest_pair
+        case 1 % arc1 start, arc2 start
+            % The arc1 is entering the junction at its start. This is
+            % not correct. Need to "flip" the arc1's orientation.
+            if 1==arc1_is_counter_clockwise
+                corrected_arc1_is_counter_clockwise = 0;
+            else
+                corrected_arc1_is_counter_clockwise = 1;
+            end
+            corrected_arc1_start_angle_in_radians = atan2(arc1_end_unit_vector(2),arc1_end_unit_vector(1));
+            corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians - arc1_change_in_angle;
+
+            % The arc2 is leaving the junction at its start. This is
+            % correct so just pass through the variables
+            corrected_arc2_is_counter_clockwise   = arc2_is_counter_clockwise;
+            corrected_arc2_start_angle_in_radians = atan2(arc2_start_unit_vector(2),arc2_start_unit_vector(1));
+            corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians + arc2_change_in_angle;
+
+        case 2 % arc1 start, arc2 end
+            % The arc1 is entering the junction at its start. This is
+            % not correct. Need to "flip" the arc1's orientation.
+            if 1==arc1_is_counter_clockwise
+                corrected_arc1_is_counter_clockwise = 0;
+            else
+                corrected_arc1_is_counter_clockwise = 1;
+            end
+            corrected_arc1_start_angle_in_radians = atan2(arc1_end_unit_vector(2),arc1_end_unit_vector(1));
+            corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians - arc1_change_in_angle;
+
+            % The arc2 is entering the junction at its end. This is
+            % not correct. Need to "flip" the arc2's orientation.
+            if 1==arc2_is_counter_clockwise
+                corrected_arc2_is_counter_clockwise = 0;
+            else
+                corrected_arc2_is_counter_clockwise = 1;
+            end
+            corrected_arc2_start_angle_in_radians = atan2(arc2_end_unit_vector(2),arc2_end_unit_vector(1));
+            corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians - arc2_change_in_angle;
+
+        case 3 % arc1 end, arc2 start
+            % The arc1 is entering the junction at its end. This is
+            % correct so just pass through the variables
+            corrected_arc1_is_counter_clockwise   = arc1_is_counter_clockwise;
+            corrected_arc1_start_angle_in_radians = atan2(arc1_start_unit_vector(2),arc1_start_unit_vector(1));
+            corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians + arc1_change_in_angle;
+
+            % The arc2 is leaving the junction at its start. This is
+            % correct so just pass through the variables
+            corrected_arc2_is_counter_clockwise = arc2_is_counter_clockwise;
+            corrected_arc2_start_angle_in_radians = atan2(arc2_start_unit_vector(2),arc2_start_unit_vector(1));
+            corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians + arc2_change_in_angle;
+
+        case 4 % arc1 end, arc2 end
+            % The arc1 is entering the junction at its end. This is
+            % correct so just pass through the variables
+            corrected_arc1_is_counter_clockwise   = arc1_is_counter_clockwise;
+            corrected_arc1_start_angle_in_radians = atan2(arc1_start_unit_vector(2),arc1_start_unit_vector(1));
+            corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians + arc1_change_in_angle;
+
+            % The arc2 is entering the junction at its end. This is
+            % not correct. Need to "flip" the arc2's orientation.
+            if 1==arc2_is_counter_clockwise
+                corrected_arc2_is_counter_clockwise = 0;
+            else
+                corrected_arc2_is_counter_clockwise = 1;
+            end
+            corrected_arc2_start_angle_in_radians = atan2(arc2_end_unit_vector(2),arc2_end_unit_vector(1));
+            corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians - arc2_change_in_angle;
+
+        otherwise
+            error('Impossible case encountered - must stop!');
+    end
+
+    % Set the outputs
+
+    clean_arc1_parameters(1,1:2)   = arc1_parameters(1,1:2); % center of the arc does not change
+    clean_arc1_parameters(1,3)     = arc1_parameters(1,3);   % radius of the arc does not change
+    clean_arc1_parameters(1,4:5)   = [corrected_arc1_start_angle_in_radians corrected_arc1_end_angle_in_radians];
+    clean_arc1_parameters(1,6)     = arc1_parameters(1,6);   % flag is circle
+    clean_arc1_parameters(1,7)     = corrected_arc1_is_counter_clockwise;
+
+
+    clean_arc2_parameters(1,1:2)   = arc2_parameters(1,1:2); % center of the arc does not change
+    clean_arc2_parameters(1,3)     = arc2_parameters(1,3);   % radius of the arc does not change
+    clean_arc2_parameters(1,4:5)   = [corrected_arc2_start_angle_in_radians corrected_arc2_end_angle_in_radians];
+    clean_arc2_parameters(1,6)     = arc2_parameters(1,6);   % flag is circle
+    clean_arc2_parameters(1,7)     = corrected_arc2_is_counter_clockwise;
 else
-    cross_product_direction = -1;
+    clean_arc1_parameters = arc1_parameters;
+    clean_arc2_parameters = arc2_parameters;
 end
-arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, cross_product_direction);
-
-
-% Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
-arc2_center_xy                = arc2_parameters(1,1:2);
-arc2_radius                   = arc2_parameters(1,3);
-arc2_start_angle_in_radians   = arc2_parameters(1,4);
-arc2_end_angle_in_radians     = arc2_parameters(1,5);
-arc2_start_xy                 = arc2_center_xy + arc2_radius*[cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-arc2_end_xy                   = arc2_center_xy + arc2_radius*[cos(arc2_end_angle_in_radians) sin(arc2_end_angle_in_radians)];
-arc2_is_counter_clockwise     = arc2_parameters(1,7);
-
-% Find the change in angle of the arc
-arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
-arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
-if arc2_is_counter_clockwise
-    cross_product_direction = 1;
-else
-    cross_product_direction = -1;
-end
-arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, cross_product_direction);
-
-
-% Find arc1 and arc2 join points, e.g. where they meet. This can
-% happen at either end
-if ~any(isnan(intersection_point))
-    arc1_endPoint = intersection_point;
-else
-    arc1_endPoint = arc1_end_xy;
-end
-
-distances_to_check = sum((...
-    [arc1_start_xy; arc1_start_xy; arc1_endPoint; arc1_endPoint] - [arc2_start_xy; arc2_end_xy; arc2_start_xy; arc2_end_xy]).^2,2).^0.5;
-[~,closest_pair] = min(distances_to_check);
-
-% Fix the arc or line depending on which combo is closest
-switch closest_pair
-    case 1 % arc1 start, arc2 start
-        % The arc1 is entering the junction at its start. This is
-        % not correct. Need to "flip" the arc1's orientation.
-        if 1==arc1_is_counter_clockwise
-            corrected_arc1_is_counter_clockwise = 0;
-        else
-            corrected_arc1_is_counter_clockwise = 1;
-        end
-        corrected_arc1_start_angle_in_radians = atan2(arc1_end_unit_vector(2),arc1_end_unit_vector(1));
-        corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians - arc1_change_in_angle;
-
-        % The arc2 is leaving the junction at its start. This is
-        % correct so just pass through the variables
-        corrected_arc2_is_counter_clockwise   = arc2_is_counter_clockwise;
-        corrected_arc2_start_angle_in_radians = atan2(arc2_start_unit_vector(2),arc2_start_unit_vector(1));
-        corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians + arc2_change_in_angle;
-
-    case 2 % arc1 start, arc2 end
-        % The arc1 is entering the junction at its start. This is
-        % not correct. Need to "flip" the arc1's orientation.
-        if 1==arc1_is_counter_clockwise
-            corrected_arc1_is_counter_clockwise = 0;
-        else
-            corrected_arc1_is_counter_clockwise = 1;
-        end
-        corrected_arc1_start_angle_in_radians = atan2(arc1_end_unit_vector(2),arc1_end_unit_vector(1));
-        corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians - arc1_change_in_angle;
-
-        % The arc2 is entering the junction at its end. This is
-        % not correct. Need to "flip" the arc2's orientation.
-        if 1==arc2_is_counter_clockwise
-            corrected_arc2_is_counter_clockwise = 0;
-        else
-            corrected_arc2_is_counter_clockwise = 1;
-        end
-        corrected_arc2_start_angle_in_radians = atan2(arc2_end_unit_vector(2),arc2_end_unit_vector(1));
-        corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians - arc2_change_in_angle;
-
-    case 3 % arc1 end, arc2 start
-        % The arc1 is entering the junction at its end. This is
-        % correct so just pass through the variables
-        corrected_arc1_is_counter_clockwise   = arc1_is_counter_clockwise;
-        corrected_arc1_start_angle_in_radians = atan2(arc1_start_unit_vector(2),arc1_start_unit_vector(1));
-        corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians + arc1_change_in_angle;
-
-        % The arc2 is leaving the junction at its start. This is
-        % correct so just pass through the variables
-        corrected_arc2_is_counter_clockwise = arc2_is_counter_clockwise;
-        corrected_arc2_start_angle_in_radians = atan2(arc2_start_unit_vector(2),arc2_start_unit_vector(1));
-        corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians + arc2_change_in_angle;
-
-    case 4 % arc1 end, arc2 end
-        % The arc1 is entering the junction at its end. This is
-        % correct so just pass through the variables
-        corrected_arc1_is_counter_clockwise   = arc1_is_counter_clockwise;
-        corrected_arc1_start_angle_in_radians = atan2(arc1_start_unit_vector(2),arc1_start_unit_vector(1));
-        corrected_arc1_end_angle_in_radians   = corrected_arc1_start_angle_in_radians + arc1_change_in_angle;
-
-        % The arc2 is entering the junction at its end. This is
-        % not correct. Need to "flip" the arc2's orientation.
-        if 1==arc2_is_counter_clockwise
-            corrected_arc2_is_counter_clockwise = 0;
-        else
-            corrected_arc2_is_counter_clockwise = 1;
-        end
-        corrected_arc2_start_angle_in_radians = atan2(arc2_end_unit_vector(2),arc2_end_unit_vector(1));
-        corrected_arc2_end_angle_in_radians   = corrected_arc2_start_angle_in_radians - arc2_change_in_angle;
-
-    otherwise
-        error('Impossible case encountered - must stop!');
-end
-
-% Set the outputs
-
-clean_arc1_parameters(1,1:2)   = arc1_parameters(1,1:2); % center of the arc does not change
-clean_arc1_parameters(1,3)     = arc1_parameters(1,3);   % radius of the arc does not change
-clean_arc1_parameters(1,4:5)   = [corrected_arc1_start_angle_in_radians corrected_arc1_end_angle_in_radians];
-clean_arc1_parameters(1,6)     = arc1_parameters(1,6);   % flag is circle
-clean_arc1_parameters(1,7)     = corrected_arc1_is_counter_clockwise;
-
-
-clean_arc2_parameters(1,1:2)   = arc2_parameters(1,1:2); % center of the arc does not change
-clean_arc2_parameters(1,3)     = arc2_parameters(1,3);   % radius of the arc does not change
-clean_arc2_parameters(1,4:5)   = [corrected_arc2_start_angle_in_radians corrected_arc2_end_angle_in_radians];
-clean_arc2_parameters(1,6)     = arc2_parameters(1,6);   % flag is circle
-clean_arc2_parameters(1,7)     = corrected_arc2_is_counter_clockwise;
 
 if ~isempty(debug_fig_num)
     figure(debug_fig_num);
@@ -683,11 +699,11 @@ arc1_is_counter_clockwise     = arc1_parameters(1,7);
 % Find the change in angle of the arc
 % arc1_start_unit_vector        = [cos(arc1_start_angle_in_radians) sin(arc1_start_angle_in_radians)];
 % arc1_end_unit_vector          = [cos(arc1_end_angle_in_radians)   sin(arc1_end_angle_in_radians)  ];
-if arc1_is_counter_clockwise
-    arc1_cross_product_direction = 1;
-else
-    arc1_cross_product_direction = -1;
-end
+% if arc1_is_counter_clockwise
+%     arc1_cross_product_direction = 1;
+% else
+%     arc1_cross_product_direction = -1;
+% end
 % arc1_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc1_start_unit_vector, arc1_end_unit_vector, cross_product_direction);
 
 
@@ -703,11 +719,11 @@ arc2_is_counter_clockwise     = arc2_parameters(1,7);
 % Find the change in angle of the arc
 % arc2_start_unit_vector        = [cos(arc2_start_angle_in_radians) sin(arc2_start_angle_in_radians)];
 % arc2_end_unit_vector          = [cos(arc2_end_angle_in_radians)   sin(arc2_end_angle_in_radians)  ];
-if arc2_is_counter_clockwise
-    arc2_cross_product_direction = 1;
-else
-    arc2_cross_product_direction = -1;
-end
+% if arc2_is_counter_clockwise
+%     arc2_cross_product_direction = 1;
+% else
+%     arc2_cross_product_direction = -1;
+% end
 % arc2_change_in_angle = fcn_geometry_findAngleUsing2PointsOnCircle([0 0],1, arc2_start_unit_vector, arc2_end_unit_vector, cross_product_direction);
 
 
@@ -1055,6 +1071,9 @@ end
 % Calculate the distance between the circles and the join point
 space_between_circles = fcn_geometry_gapCircleToCircle(arc1_radius, arc2_radius, arc2_center_xy, arc2_sign_counter_clockwise,-1);
 
+% % Is a C2 solution feasible?
+%     [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+%         fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (transverse_threshold), ([]), (-1));
 
 % With the cleaned parameters, the line vector always
 % points in the direction of the join point.
