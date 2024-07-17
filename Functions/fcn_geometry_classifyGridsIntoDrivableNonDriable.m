@@ -1,4 +1,9 @@
-function [standard_deviation_in_z,angle_btw_unit_normals_and_vertical,original_drivable_grids,original_non_drivable_grids,current_drivable_grid_numbers_in_mapped_grids,current_non_drivable_grid_numbers_in_mapped_grids,gridCenters_drivable_grids,gridCenters_non_drivable_grids] = fcn_geometry_classifyGridsIntoDrivableNonDriable(original_grids_with_required_point_density,input_points,std_threshold,theta_threshold,gridCenters, varargin)
+function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
+    original_drivable_grids, original_non_drivable_grids, ...
+    current_drivable_grid_numbers_in_mapped_grids, ...
+    current_non_drivable_grid_numbers_in_mapped_grids, ...
+    gridCenters_drivable_grids,gridCenters_non_drivable_grids] = ...
+    fcn_geometry_classifyGridsIntoDrivableNonDriable(original_grids_with_required_point_density, input_points,std_threshold, theta_threshold, gridCenters, varargin)
 %% fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable
 % classify mapped grids into drivable and non-drivable
 % 
@@ -8,13 +13,14 @@ function [standard_deviation_in_z,angle_btw_unit_normals_and_vertical,original_d
 %
 % INPUTS:     
 %       
-%      original_grids_with_required_point_density:The grid numbers belong to the initial grid indices cell array
+%      original_grids_with_required_point_density:The grid numbers belong
+%      to the initial grid indices cell array
 %
-%      input_points: outer range of mapping data 
+%      input_points: outer range of mapping data
 %
 %      std_threshold: standard deviation of threshold
 %
-%      theta_threshold: angle of threshold 
+%      theta_threshold: angle of threshold
 %
 %      gridCenters: center of grids
 %      
@@ -53,6 +59,7 @@ function [standard_deviation_in_z,angle_btw_unit_normals_and_vertical,original_d
 %       test suite.
 %
 % This function was written on 2024_07_15 by Aneesh Batchu
+
 % -- Seperated this code from fcn_geometry_surfaceAnalysis
 % Funclionalize this code on 7/16/2024 by Jiabao Zhao
 
@@ -277,26 +284,26 @@ gridCenters_non_drivable_grids = [gridCenters(original_non_drivable_grids,1), gr
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
 %                            __/ |
-%                           |___/ 
+%                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-        
-marker_size = 30;
-RGB_triplet = [0, 1, 0]; 
-legend_option = 1;
-legend_name = 'Drivable grids';
-legend_position = [];
-plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)]; 
-[~] = fcn_geometry_plotGridCenters(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
 
-% plot grid centers
-marker_size = 30;
-RGB_triplet = [1, 0, 0]; 
-legend_option = 1;
-legend_name = 'Non-drivable grids';
-legend_position = [];
-plot_gridCenters_non_drivable_grids = [gridCenters_non_drivable_grids(:,1:2), zeros(length(gridCenters_non_drivable_grids(:,1)),1)]; 
-[~] = fcn_geometry_plotGridCenters(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    marker_size = 30;
+    RGB_triplet = [0, 1, 0];
+    legend_option = 1;
+    legend_name = 'Drivable grids';
+    legend_position = [];
+    plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)];
+    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+
+    % plot grid centers
+    marker_size = 30;
+    RGB_triplet = [1, 0, 0];
+    legend_option = 1;
+    legend_name = 'Non-drivable grids';
+    legend_position = [];
+    plot_gridCenters_non_drivable_grids = [gridCenters_non_drivable_grids(:,1:2), zeros(length(gridCenters_non_drivable_grids(:,1)),1)];
+    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
 end % Ends check if plotting
 
 if flag_do_debug
