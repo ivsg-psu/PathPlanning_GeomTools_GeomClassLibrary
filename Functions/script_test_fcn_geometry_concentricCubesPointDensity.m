@@ -38,7 +38,7 @@ diagonal_flag=[];
 fig_num=1111;
 
 %Function
-[points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+[points] = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
 
 
 %%  BASIC example 2 - Generate points inside twocubes, noise added
@@ -55,7 +55,7 @@ diagonal_flag=[];
 fig_num=2222;
 
 %Function
-[points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
 
 
 %% BASIC_example 3 - Create a diagonal line across, noise added
@@ -64,7 +64,7 @@ fig_num=2222;
 %to 1
 
 %input variables
-exterior_size=5; %units
+exterior_size=5;
 interior_size=1; %units
 exterior_density=1; %points per unit
 interior_density=100; %points per unit
@@ -74,7 +74,7 @@ diagonal_flag=1;
 fig_num=2222;
 
 %Function
-[points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
 
 %% BASIC_example 4 - Create a diagonal line across, noise added, fig 31
 %Function inputs exterior size 5, interior size 1, density of 1 point in
@@ -92,6 +92,6 @@ diagonal_flag=1;
 fig_num=31;
 
 %Function
-[points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
 
 %%

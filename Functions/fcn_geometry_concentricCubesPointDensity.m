@@ -1,4 +1,5 @@
-function [points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,interior_size,exterior_density,interior_density,varargin)
+function [points] = fcn_geometry_concentricCubesPointDensity(...
+    exterior_size,interior_size,exterior_density,interior_density,varargin)
 
 % Given the number of points and the range of the points, generates two
 % concentric squares with the external having a length of (ext_length) and
@@ -35,7 +36,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,int
 % EXAMPLES: 
 %
 %       See the script:
-%       script_test_fcn_geometry_concentricSquaresPointDensity for a full
+%       script_test_fcn_geometry_concentricCubesPointDensity for a full
 %       test suite.
 %
 % This function was written on 2024_6_15 by Aleksandr Goncharov
@@ -56,17 +57,14 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(exterior_size,int
 flag_max_speed = 0;
 if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
     MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
         flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
-        flag_check_inputs  = str2double(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS);
     end
 end
 if flag_do_debug
@@ -108,12 +106,10 @@ if nargin==4
 end
 
 %Did the user want noise?
-flag_create_noise = 0;
 if 5 <= nargin
     temp = varargin{1};
     noise=0;
     if ~isempty(temp)
-        flag_create_noise = 1;
         noise=temp;
     end
 end
