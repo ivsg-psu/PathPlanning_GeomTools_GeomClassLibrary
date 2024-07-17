@@ -107,15 +107,13 @@ plot(test_scan(:,2),test_scan(:,3),'k.','MarkerSize',20);
 plot(test_scan(drivable_row_start:drivable_row_end,2),...
     test_scan(drivable_row_start:drivable_row_end,3),'g.','MarkerSize',10);
 
-
 %%
-
 
 % Fill drivable area LiDAR data 
 LiDAR_drivablePoints = [];
 for ith_row = row_start:row_end
     LiDAR_drivablePoints = [LiDAR_drivablePoints; ...
-        LiDAR_ENU_cell{ith_row}(drivable_row_start:drivable_row_end,:); nan*LiDAR_ENU_cell{ith_row}(1,:)]; %#ok<AGROW>
+        LiDAR_allPoints_ENU(drivable_row_start:drivable_row_end,:); nan*LiDAR_allPoints_ENU(1,:)]; %#ok<AGROW>
 end
 
 
@@ -149,7 +147,7 @@ reference_altitude = 344.189;
 gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
 
 % Use the class to convert LLA to ENU
-LLA_LIDAR_allPoints = gps_object.ENU2WGSLLA(Trace_coordinates);
+LLA_LIDAR_allPoints = gps_object.ENU2WGSLLA(LiDAR_allPoints_ENU);
 LLA_LIDAR_drivablePoints = gps_object.ENU2WGSLLA(LiDAR_drivablePoints);
 
 
@@ -672,7 +670,7 @@ legend_position = [];
 
 %% Boundary Points
 
-%% Pre the grid centers for finding boundary points
+%% Prep the grid centers for finding boundary points
 
 % Revision History
 % Funtionalized this code
