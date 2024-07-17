@@ -152,23 +152,23 @@ end
 %
 % inv(X'*X)*(X'z) = P
 
-x = points(:,1);
-y = points(:,2);
-N_points = length(x(:,1));
+x_planeFit = points(:,1);
+y_planeFit = points(:,2);
+N_points = length(x_planeFit(:,1));
 
-X = [x, y, ones(length(points(:,1)),1)];
-z = points(:,3);
+X = [x_planeFit, y_planeFit, ones(length(points(:,1)),1)];
+z_planeFit = points(:,3);
 
 if abs(det((X'*X)))>0.00001
-    P = (X'*X)\(X'*z);
+    P = (X'*X)\(X'*z_planeFit);
 else
     P = nan(3,1);
 end
 
 parameters = P;
 
-z_fit = [x y ones(N_points,1)]*parameters; % Solve for z vertices data
-z_error = z - z_fit;
+z_fit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
+z_error = z_planeFit - z_fit;
 standard_deviation_in_z = std(z_error, 0, 1);
 
 %% Calculate A, B, and C for unit vector
@@ -211,9 +211,11 @@ if flag_do_plot
         flag_rescale_axis = 1;
     end      
 
+    % In subplot 1, plot the fit in 3D
+    subplot(1,3,1);
     hold on;
     grid on;
-    axis equal;
+    % axis equal;
 
     % Plot the points
     plot3(points(:,1),points(:,2),points(:,3),'k.','MarkerSize',20);
@@ -235,22 +237,98 @@ if flag_do_plot
 
     % Plot the plane
     % x = [1 -1 -1 1]; % Generate data for x vertices
-    x = [temp_axis(2) temp_axis(1) temp_axis(1) temp_axis(2)]';
+    x_planeFit = [temp_axis(2) temp_axis(1) temp_axis(1) temp_axis(2)]';
 
     % y = [1 1 -1 -1]; % Generate data for y vertices
-    y = [temp_axis(4) temp_axis(4) temp_axis(3) temp_axis(3)]';
+    y_planeFit = [temp_axis(4) temp_axis(4) temp_axis(3) temp_axis(3)]';
 
-    N_points = length(x(:,1));
-    z = [x y ones(N_points,1)]*parameters; % Solve for z vertices data
+    N_points = length(x_planeFit(:,1));
+    z_planeFit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
 
-    h_patch = patch(x, y, z, [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
+    h_patch = patch(x_planeFit, y_planeFit, z_planeFit, [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
 
     % Plot the base point
     plot3(base_point(1,1),base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
 
     % Plot the unit vector
-    quiver3(base_point(1,1),base_point(1,2),base_point(1,3), unit_vector(1,1),unit_vector(1,2),unit_vector(1,3),0,'g','Linewidth',3);
+    quiver3(x_planeFit(1,1),y_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,2),unit_vector(1,3),0,'g','Linewidth',3);
 
+    % Plot the vertical vector
+    quiver3(x_planeFit(1,1),y_planeFit(1,1),z_planeFit(1,1), 0,0,1,0,'k','Linewidth',3);
+
+
+    %% In subplot 2, plot the fit in 2D as X versus Z
+    subplot(1,3,2);
+    hold on;
+    grid on;
+    axis equal;
+
+    % Plot the points
+    plot(points(:,1),points(:,3),'k.','MarkerSize',20);
+    plot(points(:,1),z_fit,'.','MarkerSize',20);
+   
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp_axis = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp_axis(2)-temp_axis(1);
+        axis_range_y = temp_axis(4)-temp_axis(3);
+        percent_larger = 0.3;
+        axis([temp_axis(1)-percent_larger*axis_range_x, temp_axis(2)+percent_larger*axis_range_x,  temp_axis(3)-percent_larger*axis_range_y, temp_axis(4)+percent_larger*axis_range_y]);
+    else
+        temp_axis = axis;
+    end
+
+
+       % Plot the "plane"
+    plot(x_planeFit,z_planeFit,'-','Color',[0 0 1]);
+
+    % Plot the base point
+    plot(base_point(1,1),base_point(1,3),'r.','MarkerSize',50);
+
+    % Plot the unit vector
+    quiver(x_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,3),0,'g','Linewidth',3);
+
+    % Plot the vertical vector
+    quiver(x_planeFit(1,1),z_planeFit(1,1), 0,1,0,'k','Linewidth',3);
+
+    %% In subplot 3, plot the fit in 2D as y versus z
+    subplot(1,3,3);
+    hold on;
+    grid on;
+    axis equal;
+
+   % Plot the points
+    plot(points(:,2),points(:,3),'k.','MarkerSize',20);
+    plot(points(:,2),z_fit,'.','MarkerSize',20);
+   
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp_axis = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp_axis(2)-temp_axis(1);
+        axis_range_y = temp_axis(4)-temp_axis(3);
+        percent_larger = 0.3;
+        axis([temp_axis(1)-percent_larger*axis_range_x, temp_axis(2)+percent_larger*axis_range_x,  temp_axis(3)-percent_larger*axis_range_y, temp_axis(4)+percent_larger*axis_range_y]);
+    else
+        temp_axis = axis;
+    end
+
+
+       % Plot the "plane"
+    plot(y_planeFit,z_planeFit,'-','Color',[0 0 1]);
+
+    % Plot the base point
+    plot(base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
+
+    % Plot the unit vector
+    quiver(y_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,3),0,'g','Linewidth',3);
+
+    % Plot the vertical vector
+    quiver(y_planeFit(1,1),z_planeFit(1,1), 0,1,0,'k','Linewidth',3);
+    
 end % Ends check if plotting
 
 if flag_do_debug
