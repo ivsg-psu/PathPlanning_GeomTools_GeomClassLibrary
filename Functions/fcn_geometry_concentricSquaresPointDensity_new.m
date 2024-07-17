@@ -34,7 +34,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,in
 % EXAMPLES: 
 %
 %       See the script:
-%       script_test_fcn_GeomTools_concentricSquaresPointDensity for a full
+%       script_test_fcn_geometry_concentricSquaresPointDensity_new for a full
 %       test suite.
 %
 % This function was written on 2024_6_15 by Aleksandr Goncharov
@@ -51,17 +51,14 @@ function [points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,in
 flag_max_speed = 0;
 if (nargin==7 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
         flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
-        flag_check_inputs  = str2double(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS);
     end
 end
 if flag_do_debug
