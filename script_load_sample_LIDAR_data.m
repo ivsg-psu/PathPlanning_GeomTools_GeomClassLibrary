@@ -1,19 +1,17 @@
-%% 
+%% script_load_sample_LIDAR_data.m
 % Demonstrates the loading of vehicle pose and LIDAR data with many
 % conditional checks to confirm the file is present, the variables were not
 % already loaded, the files are up-to-date, etc.
 
 % Revision history:
-% 2024_04_19 - S Brennan
+% 2024_07_17 - S Brennan
 % -- wrote the code
-% 2024_05_02 - S Brennan / A. Batchu
-% -- add more test cases
-% 2024_06_26 - S Brennan
-% -- working with test track data
 
-% Revision history
 
+
+%% Code inputs
 % Set the "inputs" to the file loading process - need the date and names
+% and date of file creation for the Vehicle Pose data file
 
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
