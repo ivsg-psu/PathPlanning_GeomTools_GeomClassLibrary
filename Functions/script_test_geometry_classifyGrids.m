@@ -1,4 +1,11 @@
 
+
+% This code should be run section by section. 
+% This code uses GPS class and geom class  
+% load the data - easiest way: double click the .mat file and load the data
+% Data Location: https://pennstateoffice365-my.sharepoint.com/personal/abb6486_psu_edu/_layouts/15/onedrive.aspx?id=%2Fsites%2FIntelligentVehiclesandSystemsGroup%2DActive%2FShared%20Documents%2FIVSG%2FGitHubMirror%2FMappingVanDataCollection%2FParsedData%2F2024%2D06%2D28&listurl=https%3A%2F%2Fpennstateoffice365%2Esharepoint%2Ecom%2Fsites%2FIntelligentVehiclesandSystemsGroup%2DActive%2FShared%20Documents&viewid=aa025233%2D06cc%2D49ea%2Dbed2%2Db847e0f89798
+% File name: Velodyne_LiDAR_Scan_ENU.mat
+
 %% Get the LiDAR data based on ring
 
 % INPUTS: LiDAR_Scan_ENU_Entire_Loop, ringID, row_start, row_end, fig_num (use varargin)
@@ -11,7 +18,7 @@ reference_altitude = 344.189;
 
 % figure number
 fig_num_LLA = 3001;
-ring = 15; 
+ring = 1; 
 
 % Fill raw LiDAR data
 row_start = 1400;
