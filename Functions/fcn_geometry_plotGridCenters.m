@@ -35,18 +35,31 @@ function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triple
 % 2024_07-12 - Aneesh Batchu
 % -- Changed the name of the function to "fcn_geometry_plotGridCenters"
 % -- Made minor changes in the legend position options
+% 2024_07_17 - Aleksandr Goncharov
+% -- Added max speed flag
 
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_max_speed = 0; % Flag to perform input checking
-
+flag_max_speed = 0;
+if (nargin==7 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
+    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
+    end
+end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; 
+    debug_fig_num = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; 
+    debug_fig_num = []; %#ok<NASGU>
 end
-%
+
+
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____                   _
@@ -141,7 +154,7 @@ LLA_data = gps_object.ENU2WGSLLA(ENU_data);
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_do_plots
+if flag_do_plots && flag_max_speed==0
 
 % Plot the LLA boundary points
 figure(fig_num);
