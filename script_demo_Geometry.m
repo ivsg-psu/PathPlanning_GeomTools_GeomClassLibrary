@@ -132,11 +132,11 @@ library_name{ith_library}    = 'PathClass_v2024_03_14';
 library_folders{ith_library} = {'Functions'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2024_03_14.zip';
 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'GPSClass_v2023_06_29';
-% library_folders{ith_library} = {'Functions'};
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_GPSRelatedCodes_GPSClass/archive/refs/tags/GPSClass_v2023_06_29.zip';
-% 
+ith_library = ith_library+1;
+library_name{ith_library}    = 'GPSClass_v2023_06_29';
+library_folders{ith_library} = {'Functions'};
+library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_GPSRelatedCodes_GPSClass/archive/refs/tags/GPSClass_v2023_06_29.zip';
+
 % ith_library = ith_library+1;
 % library_name{ith_library}    = 'LineFitting_v2023_07_24';
 % library_folders{ith_library} = {'Functions'};
