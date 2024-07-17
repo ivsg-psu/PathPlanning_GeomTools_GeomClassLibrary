@@ -6,13 +6,13 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
     fcn_geometry_classifyGridsIntoDrivableNonDriable(original_grids_with_required_point_density, input_points,std_threshold, theta_threshold, gridCenters, varargin)
 %% fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable
 % classify mapped grids into drivable and non-drivable
-% 
+%
 % FORMAT:
 %
 %      [standard_deviation_in_z,angle_btw_unit_normals_and_vertical,original_drivable_grids,original_non_drivable_grids,current_drivable_grid_numbers_in_mapped_grids,current_non_drivable_grid_numbers_in_mapped_grids,gridCenters_drivable_grids,gridCenters_non_drivable_grids] = fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable(original_grids_with_required_point_density,input_points,std_threshold,theta_threshold,gridCenters, varargin)
 %
-% INPUTS:     
-%       
+% INPUTS:
+%
 %      original_grids_with_required_point_density:The grid numbers belong
 %      to the initial grid indices cell array
 %
@@ -23,7 +23,7 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
 %      theta_threshold: angle of threshold
 %
 %      gridCenters: center of grids
-%      
+%
 %      (OPTIONAL INPUTS)
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
@@ -33,20 +33,20 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
 % OUTPUTS:
 %
 %     standard_deviation_in_z: standard deviation in z direction
-% 
+%
 %     angle_btw_unit_normals_and_vertical: the angle between unit normals and vertical
-% 
+%
 %     original_drivable_grids: drivable grids
-% 
+%
 %     original_non_drivable_grids: non-derivable grids
-% 
+%
 %     current_drivable_grid_numbers_in_mapped_grids: drivable grid numbers of the mapped grids
-% 
+%
 %     current_non_drivable_grid_numbers_in_mapped_grids: non-drivable grid numbers of the mapped grids
-% 
-%     gridCenters_drivable_grids: Grid centers of drivable grids 
-% 
-%     gridCenters_non_drivable_grids: Grid centers of non-drivable grids 
+%
+%     gridCenters_drivable_grids: Grid centers of drivable grids
+%
+%     gridCenters_non_drivable_grids: Grid centers of non-drivable grids
 %
 % DEPENDENCIES:
 %
@@ -55,8 +55,8 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable.m for a full
-%       test suite.
+%       script_test_fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable.m
+%       for a full test suite.
 %
 % This function was written on 2024_07_15 by Aneesh Batchu
 
@@ -80,7 +80,7 @@ else
     MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
     MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG); 
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
         flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
@@ -139,49 +139,49 @@ end
 
 %% Solve for the Maxs and Mins
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   __  __       _       
-%  |  \/  |     (_)      
-%  | \  / | __ _ _ _ __  
-%  | |\/| |/ _` | | '_ \ 
+%   __  __       _
+%  |  \/  |     (_)
+%  | \  / | __ _ _ _ __
+%  | |\/| |/ _` | | '_ \
 %  | |  | | (_| | | | | |
 %  |_|  |_|\__,_|_|_| |_|
-% 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-% The indices of the mapped grids are extracted and concatenated 
-original_mapped_gridIndices_cell = gridIndices_cell_array(original_grids_with_required_point_density); 
+% The indices of the mapped grids are extracted and concatenated
+original_mapped_gridIndices_cell = gridIndices_cell_array(original_grids_with_required_point_density);
 
 % Total number of mapped grids
-total_mapped_grids = length(original_mapped_gridIndices_cell); 
+total_mapped_grids = length(original_mapped_gridIndices_cell);
 
 % Standard deviations in orthogonal distances of points in the grid to
 % plane
-% standard_deviation_in_plane_orthogonals = zeros(total_mapped_grids,1); 
-standard_deviation_in_z = zeros(total_mapped_grids,1); 
+% standard_deviation_in_plane_orthogonals = zeros(total_mapped_grids,1);
+standard_deviation_in_z = zeros(total_mapped_grids,1);
 
 % Unit normal vectors of the plane fits of each mapped grid
-unit_normal_vectors = zeros(total_mapped_grids,3); 
+unit_normal_vectors = zeros(total_mapped_grids,3);
 
 
-% z_height of all the points 
-% mean_z_of_mapped_grids = zeros(total_mapped_grids,1); 
+% z_height of all the points
+% mean_z_of_mapped_grids = zeros(total_mapped_grids,1);
 
 % Loop through all the mapped grids, recording standard deviation, unit
-% vectors 
+% vectors
 % if 0==flag_max_speed
 %     h_waitbar = waitbar(0,'Performing surface analysis...');
 % end
 
 for ith_mapped_grid = 1:total_mapped_grids
     [~, standard_deviation_in_z(ith_mapped_grid,:), ~, unit_normal_vectors(ith_mapped_grid,:), ~, ~] =...
-    fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
-    mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
-    z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
+        fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),-1);
+    % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
+    % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids));
 end
 
-% standard_deviation_in_z = round(standard_deviation_in_z,4); 
+% standard_deviation_in_z = round(standard_deviation_in_z,4);
 if ~isempty(std_threshold) && isempty(theta_threshold)
 
     % STEP 1: Standard deviation of the orthogonal (perpendicular) distances of
@@ -190,14 +190,14 @@ if ~isempty(std_threshold) && isempty(theta_threshold)
     % This is not enough (delta Y) is also important
     % mapped_grids_within_std_threshold = standard_deviation_in_plane_orthogonals < std_threshold;
     mapped_grids_within_std_threshold = standard_deviation_in_z < std_threshold;
-    
+
     % Grids that satisy the conditions of (STEP 1). The grids that
     % are within the std threshold
     mapped_grids_within_all_thresholds = (mapped_grids_within_std_threshold == 1);
 
     % The angle between unit vertical and the unit_normal_vector is computed to
     % determine how close the normal vector is to vertical direction. In
-    % this case, the angle between unit normals and vertical is empty. 
+    % this case, the angle between unit normals and vertical is empty.
     angle_btw_unit_normals_and_vertical = [];
 
 elseif isempty(std_threshold) && ~isempty(theta_threshold)
@@ -248,14 +248,14 @@ else
     % Grids that satisy the conditions of (STEP 1 & STEP 2). The grids that
     % are within the standar deviation and vertical threshold
     mapped_grids_within_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 1);
-    
-    % mapped grids within all the thresholds 
+
+    % mapped grids within all the thresholds
     mapped_grids_within_all_thresholds = mapped_grids_within_vertical_and_std_thresholds;
 
 end
 
 % Find the drivable grids (original)
-original_drivable_grids = original_grids_with_required_point_density(mapped_grids_within_all_thresholds); 
+original_drivable_grids = original_grids_with_required_point_density(mapped_grids_within_all_thresholds);
 
 % Find the non-drivable grids (original)
 original_non_drivable_grids = original_grids_with_required_point_density(mapped_grids_within_all_thresholds == 0);
@@ -266,20 +266,20 @@ current_drivable_grid_numbers_in_mapped_grids = find(ismember(original_grids_wit
 % Final non drivable grid numbers of the mapped grids
 current_non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_grids_with_required_point_density, original_non_drivable_grids));
 
-% Grid centers of drivable grids 
-gridCenters_drivable_grids = [gridCenters(original_drivable_grids,1), gridCenters(original_drivable_grids,2), ones(length(original_drivable_grids),1)]; 
+% Grid centers of drivable grids
+gridCenters_drivable_grids = [gridCenters(original_drivable_grids,1), gridCenters(original_drivable_grids,2), ones(length(original_drivable_grids),1)];
 
 % Grid centers of nondrivable grids
-gridCenters_non_drivable_grids = [gridCenters(original_non_drivable_grids,1), gridCenters(original_non_drivable_grids,2), zeros(length(original_non_drivable_grids),1)]; 
+gridCenters_non_drivable_grids = [gridCenters(original_non_drivable_grids,1), gridCenters(original_non_drivable_grids,2), zeros(length(original_non_drivable_grids),1)];
 
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
 % gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
+%   _____       _
+%  |  __ \     | |
+%  | |  | | ___| |__  _   _  __ _
 %  | |  | |/ _ \ '_ \| | | |/ _` |
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
