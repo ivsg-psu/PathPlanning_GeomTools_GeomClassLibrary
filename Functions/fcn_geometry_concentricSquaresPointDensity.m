@@ -15,7 +15,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 %   
 %       N_Points: Number of points to plot
 %       ext_length: Length of external side of the square
-%       inr_length: Length of internal side of the square
+%       int_length: Length of internal side of the square
 %       (OPTIONAL INPUTS)
 %
 %       noise_lvl: Noise to give the figure
@@ -33,7 +33,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 % EXAMPLES: 
 %
 %       See the script:
-%       script_test_fcn_GeomTools_concentricSquaresPointDensity for a full
+%       script_test_fcn_geometry_concentricSquaresPointDensity for a full
 %       test suite.
 %
 % This function was written on 2024_6_15 by Aleksandr Goncharov
@@ -47,17 +47,14 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 flag_max_speed = 0;
 if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
 else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_check_inputs = 1; % Flag to perform input checking
     MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
     MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
     if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
         flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
-        flag_check_inputs  = str2double(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS);
     end
 end
 if flag_do_debug
@@ -95,16 +92,13 @@ end
 
 if nargin==3
     noise=0;
-   
 end
 
 %Did the user want noise?
-flag_create_noise = 0;
 if 4 <= nargin
     temp = varargin{1};
     noise=0;
     if ~isempty(temp)
-        flag_create_noise = 1;
         noise=temp;
     end
 end
@@ -205,19 +199,11 @@ if flag_create_diagonal == 1
     %Differentiating noisy and non noisy points
     %Noisy
     noisy_points_X_out=X_out(noisy_area_out);
-    noisy_points_Y_out=Y_out(noisy_area_out);
     noisy_points_X_in=X_in(noisy_area_in);
-    noisy_points_Y_in=Y_in(noisy_area_in);
-    %Non-noisy
-    undisturbed_X_out = X_out(~noisy_area_out);
-    undisturbed_Y_out = Y_out(~noisy_area_out);
-    undisturbed_X_in = X_in(~noisy_area_in);
-    undisturbed_Y_in = Y_in(~noisy_area_in);
+
     %number of points inside and outside that are noisy/undisturbed
     num_Z_noisy_out=zeros(size(noisy_points_X_out));
     num_Z_noisy_in=zeros(size(noisy_points_X_in));
-    num_Z_undisturbed_out=zeros(size(undisturbed_X_out));
-    num_Z_undisturbed_in=zeros(size(undisturbed_X_in));
     %apply noise
     noisy_Z_out=num_Z_noisy_out + noise * randn(sum(noisy_area_out),1);
     noisy_Z_in=num_Z_noisy_in + noise * randn(sum(noisy_area_in),1);

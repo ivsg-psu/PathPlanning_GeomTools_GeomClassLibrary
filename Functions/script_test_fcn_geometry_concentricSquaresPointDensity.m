@@ -1,6 +1,6 @@
-%script_test_fcn_GeomTools_concentricSquaresPointDensity.m
+%script_test_fcn_geometry_concentricSquaresPointDensity.m
 %This script is used to exercise the function:
-%fcn_geometry_concentricSquaresPointsDenisty
+%fcn_geometry_concentricSquaresPointDensity
 %This function was written on 2024_6_17 by A. Goncharov, opg5041@psu.edu
 %
 %% Basic Example
