@@ -10,7 +10,7 @@ function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusT
 % indistinguishable from a line fit. This maximum radius is returned.
 % 
 % Format: 
-% [arcRadius, radius_maximum] = fcn_geometry_fitRadiusToPoints(points_to_fit, (fig_num))
+% [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, (fig_num))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed
@@ -212,7 +212,7 @@ radial_errors = radial_distances - arcRadius;
 standard_deviation = std(radial_errors);
 
 % Define the domain width
-sigma_multiplier = 2;
+sigma_multiplier = 3;
 max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
 
 %% Step 3: Align the circle's box with middle of points

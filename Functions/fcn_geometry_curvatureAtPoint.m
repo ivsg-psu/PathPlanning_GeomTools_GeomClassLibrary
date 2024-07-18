@@ -154,6 +154,16 @@ end
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% The method used here is to take the given test point index, and first
+% check if it is close to the ends of the data that it cannot be used to
+% fit a circle. If it is close, fill all the results with nan values.
+%
+% Otherwise, for all possible points equidistant from the index point, with
+% increasing range from the index point, calculate the regression-fit
+% circle radius, the center of that circle radius, and the maximum possible
+% circle radius that could fit within the same points, given the standard
+% deviation seen in the data used for the regression times a certain number
+% of standard deviations.
 
 % Fill in commonly used variables
 Npoints = length(points_to_fit(:,1));

@@ -604,7 +604,7 @@ if flag_do_plots
         end
 
         % Plot the domain fits
-        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[],[],(fig_num));
 
         axis(original_axis);
 
@@ -634,7 +634,7 @@ if flag_do_plots
         end
 
         % Plot the domain fits
-        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[],[],(fig_num));
 
         % Make axis slightly larger?
         if flag_rescale_axis

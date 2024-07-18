@@ -67,12 +67,12 @@ ylabel('North position [m]');
 % INPUTS: LiDAR_Scan_ENU_Entire_Loop, ringID, row_start, row_end, fig_num (use varargin)
 % OUTPUTS: LiDAR_allPoints_of_ring
 
-% rings_to_analyze = [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]; 
-rings_to_analyze = [7 9 12]; 
+rings_to_analyze = [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]; 
+% rings_to_analyze = [7 9 12]; 
 
 % Fill raw LiDAR data
-scanLineNumber_start = 1;
-scanLineNumber_end   = 1450;
+scanLineNumber_start = 1400;
+scanLineNumber_end   = 1500;
 
 % Initialize concatenation arrays
 concatenate_scanLine_rings = [];
@@ -169,7 +169,8 @@ if 1==0
     % Plot the LIDAR data simply as blue points
     plot3(concatenate_LiDAR_XYZ_points(:,1),concatenate_LiDAR_XYZ_points(:,2),concatenate_LiDAR_XYZ_points(:,3), '.','Color',[0 0 1],'MarkerSize',1);
 else
-    intensity_fraction = concatenate_LIDAR_intensity/(intensity_max - intensity_min);
+    scaling = 3;
+    intensity_fraction = scaling*concatenate_LIDAR_intensity/(intensity_max - intensity_min);
     
     % Use user-defined colormap_string to map intensity to colors. For a
     % full example, see fcn_geometry_fillColorFromNumberOrName
@@ -198,6 +199,8 @@ else
             concatenate_LiDAR_XYZ_points(index_in_this_color,3), '.','Color',color_vector,'MarkerSize',5);
     end
 end
+
+set(gca,'CameraViewAngle',6)
 
 %% Plot the LIDAR in XZ ENU
 ENU_XZ_fig_num = 4;
@@ -282,12 +285,14 @@ if 1==0
     geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'mo','MarkerSize',10);
     geoplot(concatenate_LiDAR_LLA_points(:,1),concatenate_LiDAR_LLA_points(:,2),'k.','MarkerSize',10);
 else
-    intensity_fraction = concatenate_LIDAR_intensity/(intensity_max - intensity_min);
-    
+    scaling = 3;
+    intensity_fraction = scaling*concatenate_LIDAR_intensity/(intensity_max - intensity_min);
+      
     % Use user-defined colormap_string to map intensity to colors. For a
     % full example, see fcn_geometry_fillColorFromNumberOrName
     old_colormap = colormap;
-    color_ordering = colormap('hot');
+    % color_ordering = colormap('hot');
+    color_ordering = flipud(colormap('sky'));
     colormap(old_colormap);
     N_colors = length(color_ordering(:,1));
 

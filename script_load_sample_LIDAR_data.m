@@ -16,7 +16,7 @@
 test_date_string = '2024_06_28'; % The date of testing. This defines the folder where the data should be found within LargeData main folder
 vehicle_pose_string = 'VehiclePose_ENU.mat'; % The name of the file containing VehiclePose
 LIDAR_file_string   = 'Velodyne_LiDAR_Scan_ENU.mat'; % The name of the file containing the LIDAR data
-permanent_file_date = '17-Jul-2024 12:38:35'; % The exact date and time of the files
+permanent_file_date = '17-Jul-2024 22:25:09'; % The exact date and time of the files
 
 %% Check to see if data was loaded earlier
 
