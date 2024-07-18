@@ -3,26 +3,35 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
     current_drivable_grid_numbers_in_mapped_grids, ...
     current_non_drivable_grid_numbers_in_mapped_grids, ...
     gridCenters_drivable_grids,gridCenters_non_drivable_grids] = ...
-    fcn_geometry_classifyGridsIntoDrivableNonDriable(original_grids_with_required_point_density, input_points,std_threshold, theta_threshold, gridCenters, varargin)
-%% fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable
+    fcn_geometry_classifyGridsAsDrivable(original_grids_with_required_point_density,...
+    input_points,std_threshold, theta_threshold, gridCenters, varargin)
+%% fcn_geometry_classifyGridsAsDrivable
 % classify mapped grids into drivable and non-drivable
 %
 % FORMAT:
 %
-%      [standard_deviation_in_z,angle_btw_unit_normals_and_vertical,original_drivable_grids,original_non_drivable_grids,current_drivable_grid_numbers_in_mapped_grids,current_non_drivable_grid_numbers_in_mapped_grids,gridCenters_drivable_grids,gridCenters_non_drivable_grids] = fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable(original_grids_with_required_point_density,input_points,std_threshold,theta_threshold,gridCenters, varargin)
+%    [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
+%    original_drivable_grids, original_non_drivable_grids, ...
+%    current_drivable_grid_numbers_in_mapped_grids, ...
+%    current_non_drivable_grid_numbers_in_mapped_grids, ...
+%    gridCenters_drivable_grids,gridCenters_non_drivable_grids] = ...
+%    fcn_geometry_classifyGridsAsDrivable(original_grids_with_required_point_density,...
+%    input_points,std_threshold, theta_threshold, gridCenters, (fig_num))
 %
 % INPUTS:
+%
+%      (MANDATORY INPUTS)
 %
 %      original_grids_with_required_point_density:The grid numbers belong
 %      to the initial grid indices cell array
 %
-%      input_points: outer range of mapping data
+%      input_points: Lidar data from the outer edge of the road
 %
 %      std_threshold: standard deviation of threshold
 %
 %      theta_threshold: angle of threshold
 %
-%      gridCenters: center of grids
+%      gridCenters: Centers of the grids.
 %
 %      (OPTIONAL INPUTS)
 %
@@ -32,21 +41,25 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
 %
 % OUTPUTS:
 %
-%     standard_deviation_in_z: standard deviation in z direction
+%     standard_deviation_in_z: standard deviation in z direction.
 %
-%     angle_btw_unit_normals_and_vertical: the angle between unit normals and vertical
+%     angle_btw_unit_normals_and_vertical: the angle between unit normals
+%     and vertical.
 %
-%     original_drivable_grids: drivable grids
+%     original_drivable_grids: drivable grids from the original data.
 %
-%     original_non_drivable_grids: non-derivable grids
+%     original_non_drivable_grids: non-derivable grids from the original
+%     data.
 %
-%     current_drivable_grid_numbers_in_mapped_grids: drivable grid numbers of the mapped grids
+%     current_drivable_grid_numbers_in_mapped_grids: Final drivable grid
+%     numbers of the mapped grids.
 %
-%     current_non_drivable_grid_numbers_in_mapped_grids: non-drivable grid numbers of the mapped grids
+%     current_non_drivable_grid_numbers_in_mapped_grids: Final non-drivable
+%     grid numbers of the mapped grids.
 %
-%     gridCenters_drivable_grids: Grid centers of drivable grids
+%     gridCenters_drivable_grids: Grid centers of drivable grids.
 %
-%     gridCenters_non_drivable_grids: Grid centers of non-drivable grids
+%     gridCenters_non_drivable_grids: Grid centers of non-drivable grids.
 %
 % DEPENDENCIES:
 %
@@ -55,11 +68,13 @@ function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_geometry_classifyMappedGridsIntoDrivableAndNondrivable.m
+%       script_test_fcn_geometry_classifyGridsAsDrivable.m
 %       for a full test suite.
 %
+%
+%REVISION HISTORY: 
+%
 % This function was written on 2024_07_15 by Aneesh Batchu
-
 % -- Seperated this code from fcn_geometry_surfaceAnalysis
 % Funclionalize this code on 7/16/2024 by Jiabao Zhao
 
