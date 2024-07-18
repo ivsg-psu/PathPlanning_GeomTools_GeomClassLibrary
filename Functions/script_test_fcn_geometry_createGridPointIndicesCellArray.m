@@ -1,5 +1,5 @@
-%% script_test_fcn_geometry_gridPointIndices
-% Exerrcises the function: fcn_geometry_gridPointIndices
+%% script_test_fcn_geometry_createGridPointIndicesCellArray
+% Exerrcises the function: fcn_geometry_createGridPointIndicesCellArray.m
 % Revision history:
 % 2024_6_17
 % Jiabao Zhao wrote the code

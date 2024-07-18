@@ -1,20 +1,30 @@
-function [original_grids_with_required_point_density,gridCenters_low_point_density,gridCenters_required_point_density,current_grids_with_low_point_density,current_grids_with_required_point_density] = fcn_geometry_GridsIntoMappedUnmapped(point_density,total_N_points_in_each_grid,grids_greater_than_zero_points,gridCenters,varargin)
+function [original_grids_with_required_point_density, gridCenters_low_point_density, gridCenters_required_point_density,...
+current_grids_with_low_point_density, current_grids_with_required_point_density]...
+= fcn_geometry_GridsIntoMappedUnmapped(point_density, total_N_points_in_each_grid, ...
+grids_greater_than_zero_points, gridCenters,varargin)
 %% fcn_geometry_GridsIntoMappedUnmapped 
 % classify grids with more than zero points into mapped and unmapped  
 % 
 % FORMAT:
 %
-%      [original_grids_with_required_point_density] = fcn_geometry_classifyGridsintoMappedUnmapped(point_density,total_N_points_in_each_grid,grids_greater_than_zero_points,grid_centers,varargin)
+%      [original_grids_with_required_point_density, gridCenters_low_point_density, gridCenters_required_point_density,...
+%      current_grids_with_low_point_density, current_grids_with_required_point_density]...
+%      = fcn_geometry_GridsIntoMappedUnmapped(point_density, total_N_points_in_each_grid, ...
+%      grids_greater_than_zero_points, gridCenters,(fig_num))
 %
 % INPUTS:     
-%       
-%      point_density: density of point
 %
-%      total_N_points_in_each_grid
+%     (MANDATORY INPUTS)
 %
-%      grids_greater_than_zero_points: grids with more than zero points
+%      point_density: The density of points (this is could be entered
+%      manually) 
 %
-%      gridCenters: grid Centers of the grids 
+%      total_N_points_in_each_grid: The number of points in each grid.
+%
+%      grids_greater_than_zero_points: Grids that contain more than zero
+%      points.
+%
+%      gridCenters: Centers of the grids.
 %
 %      (OPTIONAL INPUTS)
 %
@@ -24,15 +34,20 @@ function [original_grids_with_required_point_density,gridCenters_low_point_densi
 %
 % OUTPUTS:
 %
-%      original_grids_with_required_point_density: The grid numbers belong to the initial grid indices cell array
+%      original_grids_with_required_point_density: The grid numbers belong 
+%      to the initial grid indices cell array
 %
-%      gridCenters_low_point_density: Grid Centers of the grids with low point density (Unmapped grid centers)
+%      gridCenters_low_point_density: Grid Centers of the grids with low 
+%      point density (Unmapped grid centers)
 %
-%      gridCenters_required_point_density: Grid Centers of the grids with required point density (Mapped grid centers)
+%      gridCenters_required_point_density: Grid Centers of the grids with 
+%      required point density (Mapped grid centers)
 %
-%      current_grids_with_low_point_density: Current grid numbers of the grids with low point density
+%      current_grids_with_low_point_density: Current grid numbers of the 
+%      grids with low point density
 %
-%      current_grids_with_required_point_density: grid numbers of the grids with respect to grids_greater_than_zero_points
+%      current_grids_with_required_point_density: grid numbers of the grids 
+%      with respect to grids_greater_than_zero_points
 %
 % DEPENDENCIES:
 %
@@ -41,7 +56,7 @@ function [original_grids_with_required_point_density,gridCenters_low_point_densi
 % EXAMPLES:
 %
 %       See the script:
-%       script_test_fcn_geometry_classifyGridsintoMappedUnmapped
+%       script_test_fcn_geometry_GridsIntoMappedUnmapped.m
 %       test suite.
 %
 % Revision History
@@ -136,6 +151,8 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % Find grids with low point density but not zero point density (Unmapped grid centers)
 % Original: The grid numbers belong to the initial grid indices cell array
 % The numbering does not start from "1"
@@ -176,8 +193,7 @@ current_grids_with_required_point_density = find(total_N_points_in_each_grid(gri
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    fig_num = 11; 
-    figure(fig_num);clf
+   
 
     marker_size = 30;
     RGB_triplet = [0.8, 0.8, 0.8];

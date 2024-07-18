@@ -1,19 +1,29 @@
-function [gridIndices_cell_array,total_N_points_in_each_grid,gridCenters, grids_with_zero_points, grids_greater_than_zero_points, gridCenters_zero_point_density, gridCenters_greater_than_zero_point_density] = fcn_geometry_findGridsWithPoints(input_points,grid_size,grid_boundaries,varargin)
+function [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grids_with_zero_points,...
+    grids_greater_than_zero_points, gridCenters_zero_point_density,...
+    gridCenters_greater_than_zero_point_density] = fcn_geometry_findGridsWithPoints(input_points,...
+    grid_size,grid_boundaries,varargin)
 %% fcn_geometry_fcn_geometry_findGridsWithPoints
 % divide a set of input points into a grid and analyze the distribution of points within these grids 
 % 
 %
 % FORMAT:
 %
-%      [gridIndices_cell_array,total_N_points_in_each_grid,gridCenters, grids_with_zero_points, grids_greater_than_zero_points ] = fcn_geometry_findGridsWithPoints(input_points,grid_size,grid_boundaries,varargin)
+%      [gridIndices_cell_array, total_N_points_in_each_grid, gridCenters, grids_with_zero_point,
+%      grids_greater_than_zero_points, gridCenters_zero_point_density,
+%      gridCenters_greater_than_zero_point_density] = fcn_geometry_findGridsWithPoints(input_points,
+%      grid_size,grid_boundaries,(fig_num))
 %
 % INPUTS:     
+%      
+%      (MANDATORY INPUTS)
 %       
-%      input_points: points in LLA coordination
+%      input_points: Lidar data from the outer edge of the road.
 %
-%      grid_size: size of grid we want separate the points into
+%      grid_size: Size of grid that we want to seperate the points into 
+%      grid size of each grid in 3 dimensions [length, width, height]. 
 %
-%      grid_boundaries: assign the boundary for each grid size
+%      grid_boundaries: The boundaries of data in term of X, Y, Z
+%      coordnate. For example, max and min of X, Y, Z coordination.
 %      
 %      (OPTIONAL INPUTS)
 %
@@ -23,19 +33,23 @@ function [gridIndices_cell_array,total_N_points_in_each_grid,gridCenters, grids_
 %
 % OUTPUTS:
 %
-%      gridIndices_cell_array: all indices to a cell array
+%      gridIndices_cell_array: Cell array that find the repeated number and
+%      its indices of each number, and count the total.
 %
-%      total_N_points_in_each_grid: number of points in each grid
+%      total_N_points_in_each_grid: The number of points in each grid.
 %
-%      gridCenters: grid Centers of the grids 
+%      gridCenters: Centers of the grids.
 %
-%      grids_with_zero_points: grids with zeros points
+%      grids_with_zero_points: Grids that contain zeros points.
 %
-%      grids_greater_than_zero_points: grids with more than zero points
+%      grids_greater_than_zero_points: Grids that contain more than zero
+%      points.
 %
-%      gridCenters_zero_point_density: grid Centers of the grids with zero point density 
+%      gridCenters_zero_point_density: Centers of the grids with zero
+%      point density.
 %
-%      gridCenters_greater_than_zero_point_density: Grid Centers of the grids with more than zero point density
+%      gridCenters_greater_than_zero_point_density: Centers of the
+%      grids with more than zero point density.
 
 
 % DEPENDENCIES:
