@@ -1,11 +1,11 @@
-function [point_curvature, point_circle_center, index_range, point_curvature_minimum] = fcn_geometry_curvatureAtPoint(points_to_fit, index_to_test, varargin)
+function [point_curvature, point_circle_center, index_range, point_curvature_minimum, best_SNR] = fcn_geometry_curvatureAtPoint(points_to_fit, index_to_test, varargin)
 %% fcn_geometry_curvatureAtPoint
 % Given a set of XY data, finds the "point" curvature which is defined as
 % the variance-minimizing circle radius measured at that point, from points
 % around that point.
 % 
 % Format: 
-% [point_curvature, radius_maximum] = fcn_geometry_curvatureAtPoint(points_to_fit, index_to_test, (fig_num))
+% [point_curvature, radius_maximum] = fcn_geometry_curvatureAtPoint(points_to_fit, index_to_test, (data_width), (fig_num))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed
@@ -38,6 +38,9 @@ function [point_curvature, point_circle_center, index_range, point_curvature_min
 %      calculated tolerance of fit, would be indistinguishable from a line.
 %      This is usefult to calculate the signal to noise ratio of the fit,
 %      e.g. SNR = point_curvature/point_curvature_minimum
+%
+%      best_SNR: the signal to noise ratio of the fit, equvalent to
+%      radius_maximum/arcRadius or point_curvature/point_curvature_minimum.
 %
 % DEPENDENCIES:
 %
@@ -175,18 +178,19 @@ Npoints = length(points_to_fit(:,1));
 % inward from each edge.
 
 if index_to_test<3 || index_to_test>(Npoints-2)
-    curvature_SNR = nan;
-    index_width = nan;
+    curvature_SNRs = nan;
+    best_SNR_index_width = nan;
     point_curvature = nan;
     point_circle_center = [nan nan];
     point_curvature_minimum = nan;
     index_range = nan;
+    best_SNR = nan;
 else
-
     curvature_indicies = nan(Npoints,1);
     curvatures         = nan(Npoints,1);
     curvature_minimums = nan(Npoints,1);
     circle_centers     = nan(Npoints,2);
+    curvature_SNRs     = nan(Npoints,1);
     if isempty(data_width)
         Nsearch = Npoints;
     else
@@ -205,21 +209,35 @@ else
         elseif max_index>Npoints
             break
         end
-        [arcRadius, radius_maximum, arcCenter_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit(min_index:max_index,:));
+
+        % Make sure points are not all in a line
+        start_point = points_to_fit(min_index,:);
+        end_point   = points_to_fit(max_index,:);
+        unit_vector_from_start_to_end_point = fcn_geometry_calcUnitVector(end_point-start_point);
+        vector_length = real(sum(unit_vector_from_start_to_end_point.^2,2).^0.5);
+        unit_orthog_from_start_to_end_point = unit_vector_from_start_to_end_point*[0 1; -1 0];
+
+        transverse_point_offsets = sum((points_to_fit(min_index:max_index,:) - start_point).*unit_orthog_from_start_to_end_point,2);
+        if max(abs(transverse_point_offsets))<0.0001*vector_length
+            warning('on','backtrace');
+            warning('An arc fit is attempted on points that are nearly linear!');
+        end
+        [arcRadius, radius_maximum, arcCenter_xy, SNR] = fcn_geometry_fitRadiusToPoints(points_to_fit(min_index:max_index,:),-1);
+
+
         curvature_indicies(ith_expansion,1) = ith_expansion;
         curvatures(ith_expansion,1)         = 1/arcRadius;
         curvature_minimums(ith_expansion,1) = 1/radius_maximum;
         circle_centers(ith_expansion,:)     = arcCenter_xy;
-
+        curvature_SNRs(ith_expansion,1)     = SNR;
     end
 
-    curvature_SNR = curvatures./curvature_minimums;
-    [~,index_width] = max(curvature_SNR);
+    [best_SNR,best_SNR_index_width] = max(curvature_SNRs);    
 
-    point_curvature = curvatures(index_width);
-    point_circle_center = circle_centers(index_width,:);
-    point_curvature_minimum = curvature_minimums(index_width);
-    index_range = index_width;
+    point_curvature = curvatures(best_SNR_index_width);
+    point_circle_center = circle_centers(best_SNR_index_width,:);
+    point_curvature_minimum = curvature_minimums(best_SNR_index_width);
+    index_range = best_SNR_index_width;
 end
 
 
@@ -266,7 +284,9 @@ if flag_do_plots
     % Plot the circle fit at the point
     fcn_geometry_plotCircle(point_circle_center, 1/point_curvature,'r-',fig_num);
     
-    
+    % Plot the circle center
+    plot(point_circle_center(:,1),point_circle_center(:,2),'r+','MarkerSize',30)
+
     % Plot the index range
     min_index = index_to_test-index_range;
     max_index = index_to_test+index_range;
@@ -276,8 +296,8 @@ if flag_do_plots
     plot(points_to_fit(index_to_test,1),points_to_fit(index_to_test,2),'g.','MarkerSize',30)
 
     axis(temp_axis);
-
-    title('Input points');
+      
+    title(sprintf('Input points. Radius is: %.2f',1/point_curvature));
 
     %%%%%%%%%%%%%%%%%%%%%%
     subplot(1,3,2);
@@ -286,25 +306,28 @@ if flag_do_plots
     semilogy(curvature_indicies,curvatures,'k-');
     hold on;
     semilogy(curvature_indicies,curvature_minimums,'-','Color',[0.6 0.6 0.6]);
-    plot(index_width,point_curvature_minimum,'g.','Markersize',20);
+    plot(best_SNR_index_width,point_curvature_minimum,'g.','Markersize',20);
+    semilogy(curvature_indicies(best_SNR_index_width), curvatures(best_SNR_index_width),'g.','Markersize',30);
 
     grid on;
-    xlabel('index [count]');
-    ylabel('curvature [1/m]');
+    xlabel('Index width from center point [count]');
+    ylabel('Curvature [1/m]');
     title('Curvatures')
+
+    legend('Curvatures from points','Min curvature from noise','Best SNR point')
 
     %%%%%%%%%%%%%%%%%%%%%%
     subplot(1,3,3);
     cla;
-    grid on;
+
+    semilogy(curvature_indicies, curvature_SNRs,'k-');
     hold on;
+    semilogy(curvature_indicies(best_SNR_index_width), curvature_SNRs(best_SNR_index_width),'g.','Markersize',30);
 
-    plot(curvature_indicies, curvature_SNR,'k-');
-    plot(curvature_indicies(index_width), curvature_SNR(index_width),'g.','Markersize',30);
-
-    xlabel('index [count]');
+    xlabel('Index width from center point [count]');
     ylabel('SNR [unitless]');
     title('Curvature SNR')
+    legend('Curvature SNRs','Best SNR point')
 
 
 end % Ends check if plotting

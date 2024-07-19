@@ -604,6 +604,7 @@ warning('Spiral has a bug');
 % 
 % % Check the spiral results
 % assert(isequal([1.5662         0   -0.7674         0         0    1.0000], round(revised_spiral_join_parameters,4)));
+        warning('on','backtrace');
 warning('Spiral has a bug');
 
 %% Fail conditions

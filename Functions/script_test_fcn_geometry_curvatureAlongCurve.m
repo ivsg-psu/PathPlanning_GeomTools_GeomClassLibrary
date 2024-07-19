@@ -6,6 +6,8 @@
 
 close all;
 
+flag_be_verbose = 1;
+
 %% Fill Data
 rng(1); % Fix the random number, for debugging
 
@@ -23,7 +25,7 @@ if 1==1
     % ADD THIS?
 
     % Since the XY data is very dense, keep only 1 of every "keep_every" points
-    keep_every = 1; % 100 works OK
+    keep_every = 20; % 100 works OK
     indicies = (1:length(XY_data(:,1)))';
     small_XY_data_indicies = find(0==mod(indicies,keep_every));
     small_XY_data = XY_data(small_XY_data_indicies,:);
@@ -44,15 +46,19 @@ else
     % arc_pattern = [...
     %     1/20, 45;
     %     0 20;
-    %     -1/5 10;
+    %     -1/10 10;
     %     0 10];
 
-    M = 1; % How many points per meter
+    M = 5; % How many points per meter
     sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
 
     [points_to_fit, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
 end
+
+% Add the tiniest bit of noise - this prevents singularities when doing
+% regressions
+points_to_fit = points_to_fit + 0.001*rand(size(points_to_fit));
 
 % Plot the raw data
 fig_num = 1;
@@ -70,6 +76,8 @@ plot(points_to_fit(:,1),points_to_fit(:,2),'k.','MarkerSize',20);
 %% Assess the data properties
 % to find average spacing, number of points, etc.
 Npoints = length(points_to_fit(:,1));
+minimum_island_separation = 10; % Units are meters. See comments below for explanation
+
 
 spatial_differences = diff(points_to_fit(:,1:2));
 spatial_distances   = real(sum(spatial_differences.^2,2).^0.5);
@@ -80,28 +88,33 @@ distance_XY_from_start = real(sum((points_to_fit(:,1:2) - points_to_fit(1,1:2)).
 max_distance_XY_from_start = max(distance_XY_from_start);
 distance_start_to_end  = real(sum((points_to_fit(end,1:2) - points_to_fit(1,1:2)).^2,2).^0.5);
 flag_is_a_loop = 0;
-if distance_start_to_end<(5*average_spacing)
+
+% Make sure the start/end are not 5 standard deviations away from each
+% other, and no more than 2 island separations (e.g. there's a chance they
+% are connected to each other).
+if distance_start_to_end<(5*average_spacing) || distance_start_to_end<(2*minimum_island_separation)
     flag_is_a_loop = 1;
 end
 
-% Report results
-fprintf(1,'\n\n');
-fprintf(1,'RAW DATA ASSESSMENT:\n');
-fprintf(1,'Number of points: %.0f\n',Npoints);
-fprintf(1,'Spacing:\n');
-fprintf(1,'Mean spacing: %.3f meters\n',average_spacing);
-fprintf(1,'Stdv spacing: %.3f meters\n',std(spatial_distances));
-fprintf(1,'Max  spacing: %.3f meters\n',max(spatial_distances));
-fprintf(1,'Min  spacing: %.3f meters\n',min(spatial_distances));
-fprintf(1,'Looping:\n');
-fprintf(1,'Max data distance from start: %.3f meters\n',max_distance_XY_from_start);
-fprintf(1,'Distance from start to end: %.3f meters\n',distance_start_to_end);
-fprintf(1,'Is this data a loop? %.0f \n',flag_is_a_loop);
+if 1==flag_be_verbose
+    % Report results
+    fprintf(1,'\n\n');
+    fprintf(1,'RAW DATA ASSESSMENT:\n');
+    fprintf(1,'Number of points: %.0f\n',Npoints);
+    fprintf(1,'Spacing:\n');
+    fprintf(1,'Mean spacing: %.3f meters\n',average_spacing);
+    fprintf(1,'Stdv spacing: %.3f meters\n',std(spatial_distances));
+    fprintf(1,'Max  spacing: %.3f meters\n',max(spatial_distances));
+    fprintf(1,'Min  spacing: %.3f meters\n',min(spatial_distances));
+    fprintf(1,'Looping:\n');
+    fprintf(1,'Max data distance from start: %.3f meters\n',max_distance_XY_from_start);
+    fprintf(1,'Distance from start to end: %.3f meters\n',distance_start_to_end);
+    fprintf(1,'Is this data a loop? %.0f \n',flag_is_a_loop);
+end
 
 
 
-
-%% Calculate any islands in geometric information
+%% Calculate curvatures to find any islands in geometric information
 % Islands are where there are interconnected arcs that have no line
 % segments within. Islands are useful for analysis because calculations
 % done within an island are not affected by calculations in other islands,
@@ -125,123 +138,60 @@ fprintf(1,'Is this data a loop? %.0f \n',flag_is_a_loop);
 
 % Set up the distances wherein the islands must be separated to be an
 % "island"
-minimum_island_separation = 1; % Units are meters
-data_width = ceil(minimum_island_separation/average_spacing); 
-if data_width<=2
-    error('Not enough data for curvature calculations. Quitting.');
+if Npoints>100
+    data_width = ceil(minimum_island_separation/average_spacing);
+    if data_width<=2
+        data_width = [];
+        warning('Not enough data for curvature calculations. Using all data.');
+    end
+    % 20 points is usually plenty
+    data_width = max(data_width,20);
 end
 
-
-% Initialize storage arrays
-index_curvatures = nan(Npoints,1); % Records which index was tested
-curvatures = nan(Npoints,1);  % Records the best-fit curvature at each point
-arc_centers = nan(Npoints,2); % Records the arc centers of each point
-index_ranges = nan(Npoints,1); % Records how "wide" the curvature calculation was able to expand
-point_curvature_minimums = nan(Npoints,1); % Records the largest radius (min curvature) that could possibly fit the curvature (best case)
-
-% For each point, calculate curvature and SNR, and save result
-for ith_point = 1:Npoints
-    fprintf(1,'Testing point %.0d of %.0d\n',ith_point,Npoints);
-    [point_curvature, point_circle_center, index_range, point_curvature_minimum] = fcn_geometry_curvatureAtPoint(points_to_fit, ith_point, data_width, (-1));
-    index_curvatures(ith_point,1) = ith_point;
-    curvatures(ith_point,1) = point_curvature;
-    arc_centers(ith_point,:) = point_circle_center;
-    index_ranges(ith_point,1) = index_range;
-    point_curvature_minimums(ith_point,1) = point_curvature_minimum;
-end
-
-% Fix NaN values at start/end of data. These are areas where the curvature
-% is undefined since curves cannot be fit at the end of the data
-% (regression requires minimum 3 points). To fix, we have the end points
-% inheret the values from their closest neighbors.
-
-N_to_fix = find(~isnan(curvatures),1)-1;
-
-% Fix NaN values at start
-index_to_inheret = N_to_fix+1;
-range_to_fix = 1:N_to_fix;
-curvatures(range_to_fix,1) = curvatures(index_to_inheret,1);
-arc_centers(range_to_fix,1) = arc_centers(index_to_inheret,1);
-arc_centers(range_to_fix,2) = arc_centers(index_to_inheret,2);
-index_ranges(range_to_fix,1) = index_ranges(index_to_inheret,1);
-point_curvature_minimums(range_to_fix,1) = point_curvature_minimums(index_to_inheret,1);
-
-% Fix NaN values at end
-index_to_inheret = Npoints - N_to_fix;
-range_to_fix = (Npoints - N_to_fix + 1):Npoints;
-curvatures(range_to_fix,1) = curvatures(index_to_inheret,1);
-arc_centers(range_to_fix,1) = arc_centers(index_to_inheret,1);
-arc_centers(range_to_fix,2) = arc_centers(index_to_inheret,2);
-index_ranges(range_to_fix,1) = index_ranges(index_to_inheret,1);
-point_curvature_minimums(range_to_fix,1) = point_curvature_minimums(index_to_inheret,1);
+fig_num = 1234;
 
 
-
-% Plot the results
-%%%%%%%%%%%%%%%%%%%%%%
-island_curvature_fig_num = 444;
-figure(island_curvature_fig_num)
-clf;
-
-subplot(1,2,1);
-
-semilogy(index_curvatures,curvatures,'k-');
-hold on;
-semilogy(index_curvatures,point_curvature_minimums,'-','Color',[0.6 0.6 0.6]);
-
-grid on;
-xlabel('index [count]');
-ylabel('curvature [1/m]');
-title('Curvatures')
-
-%%%%%%%%%%%%%%%%%%%%%%
-subplot(1,2,2);
-
-semilogy(index_curvatures, curvature_SNR,'k-');
-hold on;
-
-xlabel('index [count]');
-ylabel('SNR [unitless]');
-title('Curvature SNR')
-
+[curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(points_to_fit, (data_width), (fig_num));
 
 % Assign islands to locations where the SNR is less than 1, e.g. it's more
-% likely that the data is a line than an arc
-is_island = curvature;
+% likely that the data is a line than an arc. We make it 3 here to give it
+% a bit of wiggle-room (some are right on edge).
+is_island = curvature_SNRs>3;
 
+%% Fix loops
+% In the test track, and in any data that forms a loop, it is common that
+% the start/end of data will be on a curve. The results will be an island
+% at start and at end, but with straightaways somehwere before and after
+% the end. 
+%
+% If this is the case, they can be fixed by shifting the data to start at
+% the first "lake" part after the island.
 
+lake_exists_in_data = any(~is_island);
+if is_island(1,1) && is_island(end,1) && lake_exists_in_data
+    % Need to fix the data
 
+    island_starts = find(~is_island,1);
+    % Make everything a lake up to where the lake starts. This makes
+    % finding where the lake ends very trivial
+    filled_data = is_island;
+    filled_data(1:island_starts) = 0; 
+    lake_ends = find(filled_data==1,1);
+    mid_lake = round((island_starts+lake_ends)/2);
 
-%% Calculate the curvatures at each point
-% Code starts here
-
-data_width = []; % The number of data points to consider to right and left of the test point. Default is to use them all
-
-% Initialize storage arrays
-index_curvatures = nan(Npoints,1);
-curvatures = nan(Npoints,1);
-arc_centers = nan(Npoints,2);
-index_ranges = nan(Npoints,1);
-point_curvature_minimums = nan(Npoints,1);
-
-% For each point, calculate curvature and SNR, and save result
-for ith_point = 1:Npoints
-    fprintf(1,'Testing point %.0d of %.0d\n',ith_point,Npoints);
-    [point_curvature, point_circle_center, index_range, point_curvature_minimum] = fcn_geometry_curvatureAtPoint(points_to_fit, ith_point, data_width, (-1));
-    index_curvatures(ith_point,1) = ith_point;
-    curvatures(ith_point,1) = point_curvature;
-    arc_centers(ith_point,:) = point_circle_center;
-    index_ranges(ith_point,1) = index_range;
-    point_curvature_minimums(ith_point,1) = point_curvature_minimum;
+    % Shift the points so they start mid-lake
+    shifted_points = [points_to_fit(mid_lake+1:end,:); points_to_fit(1:mid_lake,:)];
+    
+    % Recalculate the data using the shifted points
+    fig_num = 2345;
+    [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(shifted_points, (data_width), (fig_num));
+else
+    shifted_points = points_to_fit;
 end
+is_island = curvature_SNRs>3;
 
-% Fix line data, which can have bad curvatures
-point_curvature_minimums(curvatures<0.001) = 1;
-
-curvature_SNR = curvatures./point_curvature_minimums;
-
-%% Plot the results
-fit_fig_num = 2343;
+% Plot the results
+fit_fig_num = 13232;
 figure(fit_fig_num);
 clf;
 
@@ -251,9 +201,70 @@ axis equal
 xlabel('X [m]');
 ylabel('Y [m]');
 
-plot(points_to_fit(:,1),points_to_fit(:,2),'k.','MarkerSize',20);
-bad_points = find(curvature_SNR<20);
-plot(points_to_fit(bad_points,1),points_to_fit(bad_points,2),'r.','MarkerSize',10);
+plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
+plot(shifted_points(is_island,1),shifted_points(is_island,2),'r.','MarkerSize',20);
+
+%% Find islands
+% TO DO: recode this as a for loop, not while loop. The number of islands
+% is equal to the number of transitions from 0 to 1 in the is_island vector
+
+N_islands = 0;
+island_ranges = {};
+filled_islands = is_island;
+
+while any(filled_islands)
+
+    island_starts = find(filled_islands,1);
+
+
+    % Make everything an island up to where the island starts. This makes
+    % finding where the island ends very trivial
+    filled_islands(1:island_starts) = 1;
+    island_ends = find(filled_islands==0,1);
+
+    % If nothing found, then everything remaining was an island
+    if isempty(island_ends)
+        island_ends = Npoints;
+    end
+
+    % Set everything up to end of island a lake
+    filled_islands(1:island_ends) = 0;
+
+    % Update count and information for the island
+    N_islands = N_islands+1;
+    island_ranges{N_islands} = (island_starts:island_ends)'; %#ok<SAGROW>
+
+
+end
+
+% Plot the results
+fit_fig_num = 67543;
+figure(fit_fig_num);
+clf;
+
+hold on;
+grid on;
+axis equal
+xlabel('X [m]');
+ylabel('Y [m]');
+
+plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
+for ith_island = 1:N_islands
+    this_island_range = island_ranges{ith_island};
+    plot(shifted_points(this_island_range,1),shifted_points(this_island_range,2),'.','MarkerSize',10);
+end
+
+%% Calculate the curvatures of each island
+fig_num = 2346;
+
+for ith_island = 1:1 %N_islands
+    this_island_range = island_ranges{ith_island};
+    this_island_points = shifted_points(this_island_range,:);
+
+    data_width = []; % Default is to use all possible points
+    [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (fig_num+ith_island));
+
+end
 
 
 %% Pull out the fits by ranking them via SNRs
@@ -261,11 +272,11 @@ N_fits = 0;
 best_fit_arcs = [];
 best_fit_SNRs = [];
 best_fit_ranges = [];
-remaining_curvature_SNR = curvature_SNR;
+remaining_curvature_SNR = curvature_SNRs;
 
 remaining_curvature_SNR(remaining_curvature_SNR<20) = nan;
 
-best_fit_number_at_each_index = nan*curvature_SNR;
+best_fit_number_at_each_index = nan*curvature_SNRs;
 
 flag_do_debug = 1;
 debug_fig_num = 38383;
@@ -298,7 +309,7 @@ while ~all(isnan(remaining_curvature_SNR))
         if 1==flag_first_time
 
             % Plot the input points
-            plot(points_to_fit(:,1),points_to_fit(:,2),'b.','MarkerSize',20);
+            plot(this_island_points(:,1),this_island_points(:,2),'b.','MarkerSize',20);
 
 
             temp = axis;
@@ -319,11 +330,11 @@ while ~all(isnan(remaining_curvature_SNR))
         % Plot the index range
         min_index = best_SNR_index-index_ranges(best_SNR_index);
         max_index = best_SNR_index+index_ranges(best_SNR_index);
-        index_range = (min_index:max_index)';
-        plot(points_to_fit(min_index:max_index,1),points_to_fit(min_index:max_index,2),'m.','MarkerSize',10)
+        this_index_range = (min_index:max_index)';
+        plot(this_island_points(min_index:max_index,1),this_island_points(min_index:max_index,2),'m.','MarkerSize',10)
 
         % Plot the max SNR point
-        plot(points_to_fit(best_SNR_index,1),points_to_fit(best_SNR_index,2),'g.','MarkerSize',30)
+        plot(this_island_points(best_SNR_index,1),this_island_points(best_SNR_index,2),'g.','MarkerSize',30)
 
         axis(temp_axis);
 
@@ -333,12 +344,12 @@ while ~all(isnan(remaining_curvature_SNR))
         subplot(1,3,2);
         % cla;
 
-        semilogy(index_curvatures,curvatures,'k-');
+        semilogy(this_island_range,curvatures,'k-');
         hold on;
-        semilogy(index_curvatures,point_curvature_minimums,'-','Color',[0.6 0.6 0.6]);
+        semilogy(this_island_range,point_curvature_minimum,'-','Color',[0.6 0.6 0.6]);
 
         % Plot the part covered by this fit
-        plot(index_range,curvatures(best_SNR_index)*ones(length(index_range)),'k-','Markersize',20,'LineWidth',3);
+        plot(this_island_range(this_index_range),curvatures(best_SNR_index)*ones(length(this_index_range)),'k-','Markersize',20,'LineWidth',3);
 
         grid on;
         xlabel('index [count]');
@@ -351,11 +362,11 @@ while ~all(isnan(remaining_curvature_SNR))
         grid on;
         hold on;
 
-        plot(index_curvatures, remaining_curvature_SNR,'k-');
+        plot(this_island_range, remaining_curvature_SNR,'k-');
 
         % Plot the part covered by this fit
-        plot(index_range, remaining_curvature_SNR(index_range,:),'k-','LineWidth',3);
-        plot(index_curvatures(best_SNR_index), remaining_curvature_SNR(best_SNR_index),'g.','Markersize',30);
+        plot(this_island_range(this_index_range), remaining_curvature_SNR(this_index_range,:),'k-','LineWidth',3);
+        plot(this_island_range(best_SNR_index), remaining_curvature_SNR(best_SNR_index),'g.','Markersize',30);
 
         xlabel('index [count]');
         ylabel('SNR [unitless]');
@@ -370,11 +381,11 @@ while ~all(isnan(remaining_curvature_SNR))
     % Block out the indicies of this fit
     min_index = best_SNR_index-index_ranges(best_SNR_index);
     max_index = best_SNR_index+index_ranges(best_SNR_index);
-    index_range = (min_index:max_index)';
+    this_index_range = (min_index:max_index)';
 
-    remaining_curvature_SNR(index_range) = nan;
-    is_zeros = find(best_fit_number_at_each_index(index_range)==0);
-    unfilled_index_range = index_range(is_zeros);
+    remaining_curvature_SNR(this_index_range) = nan;
+    is_zeros = find(best_fit_number_at_each_index(this_index_range)==0);
+    unfilled_index_range = this_index_range(is_zeros);
     best_fit_number_at_each_index(unfilled_index_range) = NumFits;
 
     % Save fit parameters
@@ -388,11 +399,11 @@ while ~all(isnan(remaining_curvature_SNR))
     %               ]
     best_arc_center                    = arc_centers(best_SNR_index,:);
     best_arc_radius                    = 1/curvatures(best_SNR_index);
-    vector_from_circle_center_to_start = points_to_fit(min_index,:)-best_arc_center;
-    vector_from_circle_center_to_end   = points_to_fit(max_index,:)-best_arc_center;
+    vector_from_circle_center_to_start = this_island_points(min_index,:)-best_arc_center;
+    vector_from_circle_center_to_end   = this_island_points(max_index,:)-best_arc_center;
     best_arc_start_angle_in_radians    = mod(atan2(vector_from_circle_center_to_start(2),vector_from_circle_center_to_start(1)),2*pi);
     best_arc_end_angle_in_radians      = mod(atan2(vector_from_circle_center_to_end(2),vector_from_circle_center_to_end(1)),2*pi);
-    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points_to_fit(min_index,:), points_to_fit(best_SNR_index,:), points_to_fit(max_index,:),-1);
+    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(this_island_points(min_index,:), this_island_points(best_SNR_index,:), this_island_points(max_index,:),-1);
     best_arc_flag_is_counterclockwise  = (1==is_counterClockwise);
     best_arc_flag_this_is_a_circle     = 0;
     best_fit_arc = [...
@@ -419,7 +430,7 @@ end
 
 %% Plot raw results
 
-SNR_threshold = 20;
+SNR_threshold = 30;
 good_fits = find(best_fit_SNRs>SNR_threshold);
 good_arcs = best_fit_arcs(good_fits,:);
 NumFitsGood = length(good_fits);

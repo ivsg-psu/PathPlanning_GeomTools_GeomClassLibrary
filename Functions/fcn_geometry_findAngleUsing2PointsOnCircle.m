@@ -185,6 +185,7 @@ unit_radial_to_outpoints = (end_points_on_circle - centers)./radii;
 
 %% Step 2: calculate the dot product angle from in and out unit vectors
 dot_product = sum(unit_radial_to_inpoints.*unit_radial_to_outpoints,2);
+dot_product = max(-1,min(dot_product,1));
 
 %% Step 3: calculate the cross products from in to out
 num_circles = length(centers(:,1));
@@ -194,6 +195,8 @@ cross_in_to_out = cross(...
     [unit_radial_to_outpoints, zeros(num_circles,1)],2);
 cross_product = cross_in_to_out(:,3);
 cross_product(cross_product==0) = cross_product_direction(cross_product==0);
+cross_product = max(-1,min(cross_product,1));
+
 
 % Combine them to get the angle
 angles = acos(dot_product).*sign(asin(cross_product));

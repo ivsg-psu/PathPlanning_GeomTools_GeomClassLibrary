@@ -245,6 +245,7 @@ fcn_INTERNAL_prepDebugFigure(arc_parameters, line_parameters, debug_fig_num);
 %% Check to see if arc and line intersect
 intersection_point1 = fcn_INTERNAL_ArcLineIntersection(arc_parameters, line_parameters, 1, debug_fig_num);
 if (length(intersection_point1(:,1))>1)&&(0==continuity_level)
+    warning('on','backtrace');
     warning('Multiple intersection points found between a line and arc geometry with a requested connection type of C0 continuity. Unable to resolve which intersection to use.');
 end
 

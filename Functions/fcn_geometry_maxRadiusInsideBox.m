@@ -9,7 +9,14 @@ function max_radius = fcn_geometry_maxRadiusInsideBox(box_width, box_height, var
 % with uncertainty of +/- 2 with an arc of base width 5, and assume the
 % radius of the fit is 7. This is similar to assuming an arc exists within
 % a box 4 high and 5 wide. If this 4x5 box allows radii to exist that are 6
-% or larger, then the fit may actually be a line, not an arc.
+% or larger, then the fit may actually be a line, not an arc. In other
+% words, if a regression fit of an arc produces a radius LARGER than that
+% predicted by this function, then that radius should not be trusted - the
+% data is possibly a line. A measure of the quality of the fit is the ratio
+% of the fitted curvature to the curvature of this function, e.g. the
+% signal to noise ratio. SNR = C_fitted/C_minimum = (1/Rfitted)/(1/R_max).
+% This simplifies to SNR = max_radius/fitted_radius, wherein this function
+% calculates the max_radius.
 % 
 % Format: 
 % max_radius = fcn_geometry_maxRadiusInsideBox(box_width, box_height, (fig_num))

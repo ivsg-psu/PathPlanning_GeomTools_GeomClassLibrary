@@ -393,6 +393,7 @@ switch fit_type_to_search
         expected_radii_range = [2 8];
         flag_find_only_best_agreement = [];
         flag_use_permutations = [];
+        warning('on','backtrace');
         warning('expected radii range for circle fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
 
         % Check circle fitting - minimum model order is 3 points
@@ -410,7 +411,7 @@ switch fit_type_to_search
             expected_radii_range = [2 8];
             flag_find_only_best_agreement = [];
             flag_use_permutations = [];
-
+            warning('on','backtrace');
             warning('expected radii range for arc fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
 
             % Check circle fitting - minimum model order is 3 points
@@ -421,6 +422,8 @@ switch fit_type_to_search
             Hough_domains  = fcn_geometry_fillEmptyDomainStructure;
         end
     otherwise
+        warning('on','backtrace');
+        warning('An error will be thrown here due to unknown fit type to search.');
         error('Unknown fit type detected - unable to continue!');
 end
 

@@ -1,4 +1,4 @@
-function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, varargin)
+function [arcRadius, radius_maximum, circle_center_xy, SNR] = fcn_geometry_fitRadiusToPoints(points_to_fit, varargin)
 %% fcn_geometry_fitRadiusToPoints
 % Given a set of XY data, fits a circle to the data and finds the
 % uncertainty in the radius fit using a bounding box relative to 2 standard
@@ -8,8 +8,8 @@ function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusT
 % arc being fit. The bounding box then puts a upper constraint on the
 % maximum radius that can be fit that would be statistically
 % indistinguishable from a line fit. This maximum radius is returned.
-% 
-% Format: 
+%
+% Format:
 % [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, (fig_num))
 %
 % INPUTS:
@@ -18,7 +18,14 @@ function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusT
 %      not in sequence
 %
 %      (OPTIONAL INPUTS)
-% 
+%
+%      minimum_radius: the minimum allowable radius. Default is [] which
+%      allows any radius for the fit. However, for situations where the is
+%      significant noise, the best-fit circle may simple "encompass" the
+%      points and not actually fit them, resulting in a small radius. If
+%      the small radius is less than the user-given minimum raidus, then
+%      all outputs are set to NaN values.
+%
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
@@ -32,17 +39,20 @@ function [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusT
 %
 %      circle_center_xy: the location of the best-fit circle center
 %
+%      SNR: the signal to noise ratio of the fit, calculated from
+%      radius_maximum/arcRadius.
+%
 % DEPENDENCIES:
 %
 %      fcn_geometry_fitArcRegressionFromHoughFit
 %
 % EXAMPLES:
-%      
+%
 % See the script: script_test_fcn_geometry_fitRadiusToPoints
 % for a full test suite.
 %
 % This function was written on 2024_06_27 by S. Brennan
-% Questions or comments? sbrennan@psu.edu 
+% Questions or comments? sbrennan@psu.edu
 
 % Revision history:
 % 2024_06_27 - S. Brennan
@@ -75,22 +85,22 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; 
+    debug_fig_num = 34838;
 else
-    debug_fig_num = []; 
+    debug_fig_num = [];
 end
 
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____                   _       
-%  |_   _|                 | |      
-%    | |  _ __  _ __  _   _| |_ ___ 
+%   _____                   _
+%  |_   _|                 | |
+%    | |  _ __  _ __  _   _| |_ ___
 %    | | | '_ \| '_ \| | | | __/ __|
 %   _| |_| | | | |_) | |_| | |_\__ \
 %  |_____|_| |_| .__/ \__,_|\__|___/
-%              | |                  
-%              |_| 
+%              | |
+%              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -111,7 +121,7 @@ end
 %         fitting_tolerance = temp;
 %     end
 % end
-% 
+%
 % % Does user want to specify flag_fit_backwards?
 % flag_fit_backwards = 0;
 % if (3<=nargin)
@@ -121,30 +131,30 @@ end
 %     end
 % end
 
-
+minimum_radius = 4;
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
-    if ~isempty(temp)        
+    if ~isempty(temp)
         fig_num = temp;
         flag_do_plots = 1;
-        
+
     end
 end
 
 
 %% Solve for the radius
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   __  __       _       
-%  |  \/  |     (_)      
-%  | \  / | __ _ _ _ __  
-%  | |\/| |/ _` | | '_ \ 
+%   __  __       _
+%  |  \/  |     (_)
+%  | \  / | __ _ _ _ __
+%  | |\/| |/ _` | | '_ \
 %  | |  | | (_| | | | | |
 %  |_|  |_|\__,_|_|_| |_|
-% 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -187,7 +197,12 @@ end
 %% Step 1: Circle fit using Taubin's method
 [circle_center_xy, arcRadius] = CircleFitByTaubin(points_to_fit(:,1:2));
 
- 
+flag_this_is_a_bad_fit = 0;
+if arcRadius<minimum_radius
+    arcRadius = nan;
+    circle_center_xy = [nan nan];
+    flag_this_is_a_bad_fit = 1;
+end
 
 if flag_do_debug
     figure(debug_fig_num);
@@ -204,118 +219,188 @@ if flag_do_debug
     axis(temp_axis);
 end
 
+if 0==flag_this_is_a_bad_fit
 
-%% Step 2: Find standard deviation
-% This is used later to find the bounding box
-radial_distances = sum((points_to_fit-circle_center_xy).^2,2).^0.5;
-radial_errors = radial_distances - arcRadius;
-standard_deviation = std(radial_errors);
+    %% Step 2: Find standard deviation
+    % This is used later to find the bounding box
+    radial_distances = sum((points_to_fit-circle_center_xy).^2,2).^0.5;
+    radial_errors = radial_distances - arcRadius;
+    standard_deviation = std(radial_errors);
 
-% Define the domain width
-sigma_multiplier = 3;
-max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
+    % Make sure standard_deviation is never less than GPS accuracy, which is 2
+    % cm.
+    standard_deviation = max(standard_deviation,0.03);
 
-%% Step 3: Align the circle's box with middle of points
-% Find the "arc middle" of points
-vectors_from_center_to_points = points_to_fit - circle_center_xy;
-unit_vectors_from_center_to_points = fcn_geometry_calcUnitVector(vectors_from_center_to_points);
+    % Define the domain width
+    sigma_multiplier = 3;
+    max_orthogonal_distance = sigma_multiplier*standard_deviation; % max(abs(orthogonal_distances));
 
-% Which direction are the vectors oriented? Check with cross-product
-cross_product_vectors = cross([unit_vectors_from_center_to_points(1:Npoints-1,:) zeros(Npoints-1,1)],[unit_vectors_from_center_to_points(2:Npoints,:) zeros(Npoints-1,1)],2);
 
-% Remove any vectors that are repeated
-vector_difference = sum(diff(unit_vectors_from_center_to_points).^2,2);
-repeated_vector_indicies = vector_difference<1E-8;
-cross_product_vectors(repeated_vector_indicies,:) = 0;
+    %% Step 3: Align the circle's box with middle of points
+    % Find the "arc middle" of points. To do this, we find the vectors from
+    % the circle center to each points, convert these to unit vectors, and
+    % then check via cross products to see if the vectors are rotating one
+    % way or the other (e.g. all positive or all negative). 
+    vectors_from_center_to_points = points_to_fit - circle_center_xy;
+    unit_vectors_from_center_to_points = fcn_geometry_calcUnitVector(vectors_from_center_to_points);
 
-if all(cross_product_vectors(:,3)>=0) || all(cross_product_vectors(:,3)<=0)
-    % Good data! 
+    % Which direction are the vectors oriented? Check with cross-product
+    % from vectors created by adjacent values
+    cross_product_vectors = cross([unit_vectors_from_center_to_points(1:Npoints-1,:) zeros(Npoints-1,1)],[unit_vectors_from_center_to_points(2:Npoints,:) zeros(Npoints-1,1)],2);
+
+    % Remove any vectors that are repeated
+    vector_difference = sum(diff(unit_vectors_from_center_to_points).^2,2);
+    repeated_vector_indicies = vector_difference<1E-8;
+    cross_product_vectors(repeated_vector_indicies,:) = 0;
+
+    % Is the arc clockwise or counter-clockwise?
+    flag_cross_product_is_positive = mean(cross_product_vectors(:,3))>=0;
+    if all(cross_product_vectors(:,3)>0) || all(cross_product_vectors(:,3)<0)
+        if flag_cross_product_is_positive
+            is_counterClockwise = 1;
+            % Angles are all positive, e.g. the arc is CCW
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+        else
+            is_counterClockwise = -1;
+            % Angles are all positive, e.g. the arc is CCW
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+        end
+    elseif  all(cross_product_vectors(:,3)==0)
+        % This special case occurs if the points are almost perfectly
+        % aligned and the radius of the fit is very large. We need to
+        % figure out the arc angle to use, which means we need to know if
+        % the circle's center is to right or left of the points
+        
+        % Create a vector from the lowest point to highest point
+        vector_lowest_to_highest_point = points_to_fit(end,:) - points_to_fit(1,:);
+        unit_vector_lowest_to_highest_point = fcn_geometry_calcUnitVector(vector_lowest_to_highest_point);
+        unit_orthog_lowest_to_highest_point = unit_vector_lowest_to_highest_point*[0 1; -1 0];
+        
+        vector_lowest_to_center_of_arc = circle_center_xy - points_to_fit(1,:);
+        transverse_distance = sum(unit_orthog_lowest_to_highest_point.*vector_lowest_to_center_of_arc,2);
+        if transverse_distance<0
+            % CW arc
+            is_counterClockwise = -1;
+            % Angles are all positive, e.g. the arc is CCW
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+        else
+            is_counterClockwise = 1;
+            % Angles are all positive, e.g. the arc is CCW
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+        end
+
+
+    else
+        if any(cross_product_vectors(:,3)>0) && any(cross_product_vectors(:,3)<0)
+            warning('on','backtrace');
+            warning('The angles are not ordered - two different directions are detected for the arc. Unexpected results may occur as this function assumes only ordered points are used.');
+        end
+        if flag_cross_product_is_positive
+            % Assume angles are all positive, e.g. the arc is CCW
+            is_counterClockwise = 1;
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+        else
+            % Assume angles are all positive, e.g. the arc is CCW
+            is_counterClockwise = -11;
+            arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
+                circle_center_xy,...
+                arcRadius,...
+                points_to_fit(1,:),...
+                points_to_fit(end,:),...
+                is_counterClockwise, -1);
+
+        end
+    end
+
+    % Find the halfway point
+    half_angle = arc_angle_in_radians_start_to_end/2;
+    vector_center_to_start = points_to_fit(1,:)-circle_center_xy;
+    angle_start            = atan2(vector_center_to_start(2),vector_center_to_start(1));
+    if flag_cross_product_is_positive
+        angle_middle           = angle_start + half_angle;
+    else
+        angle_middle           = angle_start - half_angle;
+    end
+    position_middle = circle_center_xy + arcRadius*[cos(angle_middle) sin(angle_middle)];
+
+    if flag_do_debug
+
+        figure(debug_fig_num);
+        subplot(3,2,3);
+        cla;
+        hold on;
+        grid on;
+        axis equal
+        xlabel('X [m]');
+        ylabel('Y [m]');
+
+        title('Angle range');
+        plot(points_to_fit(:,1),points_to_fit(:,2),'k.');
+        points_start  = [circle_center_xy; points_to_fit(1,:)];
+        points_middle = [circle_center_xy; position_middle];
+        points_end    = [circle_center_xy; points_to_fit(end,:)];
+        plot(points_start(:,1),points_start(:,2),'g-');
+        plot(points_middle(:,1),points_middle(:,2),'b-');
+        plot(points_end(:,1),points_end(:,2),'r-');
+
+        axis(temp_axis);
+    end
+
+    %% Step 4: Find bounding box
+    box_width = arcRadius*abs(arc_angle_in_radians_start_to_end);
+    box_height = max_orthogonal_distance*2;
+    radius_maximum = fcn_geometry_maxRadiusInsideBox(box_width, box_height, -1);
+
+
+    SNR = radius_maximum/arcRadius;
 else
-    warning('on','backtrace');
-    warning('The angles are not ordered. Unexpected results may occur as this function assumes only ordered points are used.')
+    radius_maximum = nan;
+    SNR = nan; 
 end
-
-% Is the arc clockwise or counter-clockwise?
-flag_cross_product_is_positive = mean(cross_product_vectors(:,3))>=0;
-if flag_cross_product_is_positive
-    is_counterClockwise = 1;
-    % Angles are all positive, e.g. the arc is CCW
-    arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
-        circle_center_xy,...
-        arcRadius,...
-        points_to_fit(1,:),...
-        points_to_fit(end,:),...
-        is_counterClockwise, -1);
-else
-    is_counterClockwise = -1;
-    % Angles are all positive, e.g. the arc is CCW
-    arc_angle_in_radians_start_to_end = fcn_geometry_findAngleUsing2PointsOnCircle(...
-        circle_center_xy,...
-        arcRadius,...
-        points_to_fit(1,:),...
-        points_to_fit(end,:),...
-        is_counterClockwise, -1);
-end
-
-half_angle = arc_angle_in_radians_start_to_end/2;
-vector_center_to_start = points_to_fit(1,:)-circle_center_xy;
-angle_start            = atan2(vector_center_to_start(2),vector_center_to_start(1));
-if flag_cross_product_is_positive
-    angle_middle           = angle_start + half_angle;
-else
-    angle_middle           = angle_start - half_angle;
-end
-position_middle = circle_center_xy + arcRadius*[cos(angle_middle) sin(angle_middle)];
-
-if flag_do_debug
-    
-    figure(debug_fig_num);
-    subplot(3,2,3);
-    cla;
-    hold on;
-    grid on;
-    axis equal
-    xlabel('X [m]');
-    ylabel('Y [m]');
-
-    title('Angle range');
-    plot(points_to_fit(:,1),points_to_fit(:,2),'k.');
-    points_start  = [circle_center_xy; points_to_fit(1,:)];
-    points_middle = [circle_center_xy; position_middle];
-    points_end    = [circle_center_xy; points_to_fit(end,:)];
-    plot(points_start(:,1),points_start(:,2),'g-');
-    plot(points_middle(:,1),points_middle(:,2),'b-');
-    plot(points_end(:,1),points_end(:,2),'r-');
-
-    axis(temp_axis);
-end
-
-%% Step 4: Find bounding box
-box_width = arcRadius*abs(arc_angle_in_radians_start_to_end);
-box_height = max_orthogonal_distance*2;
-radius_maximum = fcn_geometry_maxRadiusInsideBox(box_width, box_height, -1);
-
-
-
-
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   _____       _                 
-%  |  __ \     | |                
-%  | |  | | ___| |__  _   _  __ _ 
+%   _____       _
+%  |  __ \     | |
+%  | |  | | ___| |__  _   _  __ _
 %  | |  | |/ _ \ '_ \| | | |/ _` |
 %  | |__| |  __/ |_) | |_| | (_| |
 %  |_____/ \___|_.__/ \__,_|\__, |
 %                            __/ |
-%                           |___/ 
+%                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    
+
     %%%%%%%%%%%%%%%%%%%%%%
     figure(fig_num)
-    subplot(1,2,1);
-    cla;
+    clf;
+
+    subplot(1,2,1);    
 
     hold on;
     grid on;
@@ -336,23 +421,25 @@ if flag_do_plots
 
     temp_axis = axis;
 
-    % Plot the circle fit
-    fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',fig_num);
-    axis(temp_axis);
+    if 0==flag_this_is_a_bad_fit
+        % Plot the circle fit
+        fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',fig_num);
 
-    % Plot angle range
-    plot(points_to_fit(:,1),points_to_fit(:,2),'k.');
-    points_start  = [circle_center_xy; points_to_fit(1,:)];
-    points_middle = [circle_center_xy; position_middle];
-    points_end    = [circle_center_xy; points_to_fit(end,:)];
+        axis(temp_axis);
 
-    plot(points_start(:,1),points_start(:,2),'g-');
-    plot(points_middle(:,1),points_middle(:,2),'b-');
-    plot(points_end(:,1),points_end(:,2),'r-');
+        % Plot angle range
+        plot(points_to_fit(:,1),points_to_fit(:,2),'k.');
+        points_start  = [circle_center_xy; points_to_fit(1,:)];
+        points_middle = [circle_center_xy; position_middle];
+        points_end    = [circle_center_xy; points_to_fit(end,:)];
+
+        plot(points_start(:,1),points_start(:,2),'g-');
+        plot(points_middle(:,1),points_middle(:,2),'b-');
+        plot(points_end(:,1),points_end(:,2),'r-');
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%
     subplot(1,2,2);
-    cla;
 
     hold on;
     grid on;
@@ -360,54 +447,72 @@ if flag_do_plots
     xlabel('S [m]');
     ylabel('t [m]');
 
-    % Plot the points in rotated format
-    % Use the SE2 toolbox to transform
-    % Start with translation of the arc's center to the origin
+    if 0==flag_this_is_a_bad_fit
+        % Plot the points in rotated format
+        % Use the SE2 toolbox to transform
+        % Start with translation of the arc's center to the origin
 
-    translation_to_center        = -circle_center_xy;          % Push circle to be at origin
-    transformMatrix_translation_into_center = se2(0,'theta',translation_to_center);
+        translation_to_center        = -circle_center_xy;          % Push circle to be at origin
+        transformMatrix_translation_into_center = se2(0,'theta',translation_to_center);
 
-    % Rotate everything to push the start of arc angle to -90 -half_angle
-    % degrees
-    rotation_angle = -1*(angle_middle + pi/2);
-    transformMatrix_rotation_into_St         = se2(rotation_angle,'theta',[0 0]);
+        % Rotate everything to push the start of arc angle to -90 -half_angle
+        % degrees
+        rotation_angle = -1*(angle_middle + pi/2);
+        try
+            transformMatrix_rotation_into_St         = se2(rotation_angle,'theta',[0 0]);
+        catch
+            disp('sptop here');
+        end
 
-    % Finally, translate everything upwards (counter-clockwise) or downwards (clockwise) to make arc1's end at the
-    % origin
-    translation_to_offset_center1  = [0 arcRadius];
-    transformMatrix_offset_center1 = se2(0,'theta',translation_to_offset_center1);
+        % Finally, translate everything upwards (counter-clockwise) or downwards (clockwise) to make arc1's end at the
+        % origin
+        translation_to_offset_center1  = [0 arcRadius];
+        transformMatrix_offset_center1 = se2(0,'theta',translation_to_offset_center1);
 
-    % Combine all the transformations
-    St_transform  = transformMatrix_offset_center1*transformMatrix_rotation_into_St*transformMatrix_translation_into_center;
+        % Combine all the transformations
+        St_transform  = transformMatrix_offset_center1*transformMatrix_rotation_into_St*transformMatrix_translation_into_center;
 
-    % Move points
-    points_rotated = transform(St_transform,points_to_fit);
+        % Move points
+        points_rotated = transform(St_transform,points_to_fit);
 
-    % Plot the bounding boxes
-    fcn_geometry_maxRadiusInsideBox(2*abs(points_rotated(1,1)), abs(points_rotated(1,2)), fig_num);
-        
-    % Plot the input square
-    square_points = [
-        -1*box_width/2 0
-        +1*box_width/2 0
-        +1*box_width/2 box_height
-        -1*box_width/2 box_height
-        -1*box_width/2 0        
-        ];
-    plot(square_points(:,1),square_points(:,2),'g-','LineWidth',2);
+        % Plot the rotated points
+        plot(points_rotated(:,1),points_rotated(:,2),'r.');
 
-    % Plot the rotated points
-    plot(points_rotated(:,1),points_rotated(:,2),'r.');
+        % Plot the bounding box for the original data
+        fcn_geometry_maxRadiusInsideBox(2*abs(points_rotated(1,1)), abs(points_rotated(1,2)), fig_num);
 
-    % Make axis slightly 
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+        % Make axis slightly larger
+        temp = axis;
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+
+        % Plot the input square for the SNR calculation
+        square_points = [
+            -1*box_width/2 0
+            +1*box_width/2 0
+            +1*box_width/2 box_height
+            -1*box_width/2 box_height
+            -1*box_width/2 0
+            ];
+        plot(square_points(:,1),square_points(:,2),'g-','LineWidth',2);
+
+        % Plot the circle within the input square for SNR calculation
+        circle_center = [0 radius_maximum];
+        point_start = [-1*box_width/2 box_height];
+        vector_from_center_to_start = point_start-circle_center;
+        angle_start = atan2(vector_from_center_to_start(2),vector_from_center_to_start(1));
+        angle_diff = -pi/2-angle_start;
+        angles = linspace(-pi/2-angle_diff, -pi/2+angle_diff,100)';
+
+        circle_points = circle_center + radius_maximum*[cos(angles) sin(angles)];
+        plot(circle_points(:,1),circle_points(:,2),'-','LineWidth',3,'Color',[0 0.5 0]);
 
 
-
+        axis(temp);
+    end
+    title(sprintf('SNR is: %.3f',SNR));
 
 end % Ends check if plotting
 
@@ -446,10 +551,10 @@ end % Ends main function
 % #22643).
 function [circleCenter, circleRadius] = CircleFitByTaubin(XY)
 %--------------------------------------------------------------------------
-%  
+%
 %     Circle fit by Taubin
 %      G. Taubin, "Estimation Of Planar Curves, Surfaces And Nonplanar
-%                  Space Curves Defined By Implicit Equations, With 
+%                  Space Curves Defined By Implicit Equations, With
 %                  Applications To Edge And Range Image Segmentation",
 %      IEEE Trans. PAMI, Vol. 13, pages 1115-1138, (1991)
 %
@@ -462,6 +567,9 @@ function [circleCenter, circleRadius] = CircleFitByTaubin(XY)
 %           so it can be easily programmed in any programming language
 %
 %--------------------------------------------------------------------------
+
+flag_be_verbose = 0;
+
 n = size(XY,1);      % number of data points
 centroid = mean(XY);   % the centroid of the data set
 %     computing moments (note: all moments will be normed, i.e. divided by n)
@@ -505,20 +613,26 @@ for iter=1:IterMax
     yold = ynew;
     ynew = A0 + xnew*(A1 + xnew*(A2 + xnew*A3));
     if abs(ynew) > abs(yold)
-       disp('Newton-Taubin goes wrong direction: |ynew| > |yold|');
-       xnew = 0;
-       break;
+        if flag_be_verbose
+            disp('Newton-Taubin goes wrong direction: |ynew| > |yold|');
+        end
+        xnew = 0;
+        break;
     end
     Dy = A1 + xnew*(A22 + xnew*A33);
     xold = xnew;
     xnew = xold - ynew/Dy;
     if (abs((xnew-xold)/xnew) < epsilon), break, end
     if (iter >= IterMax)
-        disp('Newton-Taubin will not converge');
+        if flag_be_verbose
+            disp('Newton-Taubin will not converge');
+        end
         xnew = 0;
     end
     if (xnew<0.)
-        fprintf(1,'Newton-Taubin negative root:  x=%f\n',xnew);
+        if flag_be_verbose
+            fprintf(1,'Newton-Taubin negative root:  x=%f\n',xnew);
+        end
         xnew = 0;
     end
 end

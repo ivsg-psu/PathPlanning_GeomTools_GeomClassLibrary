@@ -372,7 +372,7 @@ for ith_fit = 1:NfitsInSequence-1
     if 1 == flag_be_verbose
         fprintf(1,'Performing fit %.0d of %.0d\n',ith_fit,NfitsInSequence-1);
     end
-    
+
     current_fit_parameters = lastFit_parameters;
     next_fit_parameters    = fitSequence_parameters{ith_fit+1};
 
@@ -587,6 +587,7 @@ if 2==continuity_level
                     fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
             end
             flag_is_feasible = 1; % FORCE the code to continue
+            warning('on','backtrace');
             warning('Curves encountered that are neither C2 or C1 feasible - this should not be possible.');
         end
         continuity_level = 1;

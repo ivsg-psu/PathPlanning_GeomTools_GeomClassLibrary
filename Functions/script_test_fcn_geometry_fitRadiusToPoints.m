@@ -28,7 +28,7 @@ arc_pattern = [...
 ];
 
 M = 10; % How many points per meter
-sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
+sigma = 0.1; % The standard deviation in the points relative to the perfect function fit, in meters
 
 [test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, fig_num);
 

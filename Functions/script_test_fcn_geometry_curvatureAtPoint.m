@@ -24,6 +24,7 @@ rng(1); % Fix the random number, for debugging
 %     -1/10 20];
 
 arc_pattern = [...
+    0 10;
     1/20, 45; 
     0 20;
 ];
@@ -43,7 +44,7 @@ assert(isequal(size(index_range),[1 1]));
 assert(isequal(size(point_curvature_minimum),[1 1]));
 
 
-%% Basic example - normal case on line
+%% Basic example - normal case on line portion
 fig_num = 2;
 figure(fig_num);
 clf;
@@ -61,16 +62,17 @@ rng(1); % Fix the random number, for debugging
 %     -1/10 20];
 
 arc_pattern = [...
+    0 10;
     1/20, 45; 
     0 20;
 ];
 
 M = 10; % How many points per meter
-sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
+sigma = 0.05; % The standard deviation in the points relative to the perfect function fit, in meters
 
 [points_to_fit, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
-index_to_test = 500;
+index_to_test = 600;
 [point_curvature, point_circle_center, index_range, point_curvature_minimum] = fcn_geometry_curvatureAtPoint(points_to_fit, index_to_test, [], (fig_num));
 
 % Check sizes
@@ -97,12 +99,13 @@ rng(1); % Fix the random number, for debugging
 %     -1/10 20];
 
 arc_pattern = [...
+    0 10;
     1/20, 45; 
     0 20;
 ];
 
 M = 10; % How many points per meter
-sigma = 0.02; % The standard deviation in the points relative to the perfect function fit, in meters
+sigma = 0.05; % The standard deviation in the points relative to the perfect function fit, in meters
 
 [points_to_fit, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, -1);
 
