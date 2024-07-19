@@ -207,7 +207,7 @@ ylabel('Y [m]');
 plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
 plot(shifted_points(is_island,1),shifted_points(is_island,2),'r.','MarkerSize',20);
 
-%% Find islands
+%% findCurvatureIslands
 % TO DO: recode this as a for loop, not while loop. The number of islands
 % is equal to the number of transitions from 0 to 1 in the is_island vector
 
@@ -258,9 +258,19 @@ for ith_island = 1:N_islands
 end
 
 
-% INPUTS shifted_points, island_ranges, data_width
+% INPUTS shifted_points, island_ranges, SNR_threshold
 
-%% Calculate the curvatures of each island
+% Steps:
+% * associate each point with an island
+% * for each island, extractModelsFromCurvature
+% *      find full curvatures and SNRs
+% *      use the curvature SNRs to extract models at each island, recording model at each index
+% *      order the models in each island to be in correct order
+% *      correct the models in each island to ensure C2 continuity
+% * connect the islands to each other with line segments via C1-modified connectivity 
+% * connect all geometries to each other with C2 continuity
+
+%% STEP 1: Calculate the full curvatures of each island
 fig_num = 2346;
 
 for ith_island = 1:1 %N_islands
