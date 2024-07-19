@@ -78,6 +78,7 @@ plot(points_to_fit(:,1),points_to_fit(:,2),'k.','MarkerSize',20);
 Npoints = length(points_to_fit(:,1));
 minimum_island_separation = 10; % Units are meters. See comments below for explanation
 
+flag_be_verbose = 1;
 
 spatial_differences = diff(points_to_fit(:,1:2));
 spatial_distances   = real(sum(spatial_differences.^2,2).^0.5);
@@ -165,7 +166,9 @@ is_island = curvature_SNRs>3;
 % the end. 
 %
 % If this is the case, they can be fixed by shifting the data to start at
-% the first "lake" part after the island.
+% the first "lake" part after the island. This is basically "fixing" the
+% loops so that the loop's start/end does not break an island of arcs in
+% half (as is the case at the test track). 
 
 lake_exists_in_data = any(~is_island);
 if is_island(1,1) && is_island(end,1) && lake_exists_in_data
@@ -253,6 +256,9 @@ for ith_island = 1:N_islands
     this_island_range = island_ranges{ith_island};
     plot(shifted_points(this_island_range,1),shifted_points(this_island_range,2),'.','MarkerSize',10);
 end
+
+
+% INPUTS shifted_points, island_ranges, data_width
 
 %% Calculate the curvatures of each island
 fig_num = 2346;
