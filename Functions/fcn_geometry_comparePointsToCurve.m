@@ -201,9 +201,10 @@ end
 % Get the reference points from the curve plotting function
 
 if iscell(reference_curve_type_string)
-    reference_points_XY = fcn_geometry_plotFitSequences(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+    [reference_points_XY,fit_numbers_of_referenceData] = fcn_geometry_plotFitSequences(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
 else
     reference_points_XY = fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, [], (-1));
+    fit_numbers_of_referenceData = ones(length(reference_points_XY(:,1)),1);
 end
 
 % Now check similarity
@@ -251,6 +252,9 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end
     
+    %%%% 
+    % Color plot of data fit
+    subplot(1,2,1);
     hold on;
     grid on;
     axis equal;
@@ -329,6 +333,39 @@ if flag_do_plots
         percent_larger = 0.3;
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
+
+    %%%%%
+    % the error plot
+    subplot(1,2,2);
+    
+    hold on;
+    grid on;
+    xlabel('Indicies [Unitless]');
+    ylabel('Error [m]')
+
+    fit_numbers_of_testData = fit_numbers_of_referenceData(indicies_of_nearest_reference_points);
+    if iscell(reference_curve_type_string)
+        % For each model, plot the errors in different colors        
+        for ith_fit = 1:length(reference_curve_type_string)
+            indicies_in_this_fit = find(fit_numbers_of_testData==ith_fit);
+            plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','MarkerSize',20);
+        end
+    else
+        indicies_in_this_fit = find(fit_numbers_of_testData==1);
+        plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color',[0 0 0],'MarkerSize',20);
+
+    end
+      
+    % Summarize the fit
+    fprintf(1,'\n');
+    fprintf(1,'SUMMARY of fitting error: \n');
+    fprintf(1,'Number of test points: %.0f\n',NtestPoints);
+    fprintf(1,'Number of model fits: %.0d\n',length(reference_curve_type_string));
+    fprintf(1,'Model sampling interval (meters) to create reference points that approximate the model: %.3f\n',curve_test_segment_length);
+    fprintf(1,'Number of reference points created from model to compare to test points: %.0f\n',length(reference_points_XY(:,1)));
+    fprintf(1,'Mean fitting error:  %.3f meters\n',mean_error);
+    fprintf(1,'Max fitting error:  %.3f meters\n',max_error);
+    fprintf(1,'Std fitting error:  %.3f meters\n', std_dev_error);
 
 end % Ends check if plotting
 

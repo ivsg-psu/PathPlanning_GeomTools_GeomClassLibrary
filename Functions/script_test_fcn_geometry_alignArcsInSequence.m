@@ -129,6 +129,17 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
     [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance, flag_fit_failed] =  ...
         fcn_geometry_alignArcsInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
 
+    %% Check fitting quality
+    % Summarize the fit
+    fprintf(1,'\n');
+    fprintf(1,'SUMMARY for fit number: %.0f\n',Nfittings);
+    fprintf(1,'Fit type? %.0f\n',fit_results{Nfittings}.flag_fit_type);
+    fprintf(1,'Failed forward? %.0f\n',fit_results{Nfittings}.fit_failed);
+    fprintf(1,'Station tolerance: %.3fm\n',fit_results{Nfittings}.S_tolerance);
+    fprintf(1,'Transverse tolerance: %.3fm\n',fit_results{Nfittings}.t_tolerance);
+    fprintf(1,'Keep every # points: %.0f\n',fit_results{Nfittings}.keep_every);
+    fprintf(1,'\n');
+
     if 0==flag_fit_failed
         data_to_analyze = small_XY_data; % small_XY_data
         plot(data_to_analyze(:,1),data_to_analyze(:,2),'k.','MarkerSize',5);
@@ -171,25 +182,5 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
     fit_results{Nfittings}.mean_error                       = mean_error; %#ok<SAGROW>
     fit_results{Nfittings}.max_error                        = max_error; %#ok<SAGROW>
     fit_results{Nfittings}.std_dev_error                    = std_dev_error; %#ok<SAGROW>
-
-    %% Summarize the fit
-    fprintf(1,'\n');
-    fprintf(1,'SUMMARY for fit number: %.0f\n',Nfittings);
-    fprintf(1,'Fit type? %.0f\n',fit_results{Nfittings}.flag_fit_type);   
-    fprintf(1,'Failed forward? %.0f\n',fit_results{Nfittings}.fit_failed);
-    fprintf(1,'Station tolerance: %.3fm\n',fit_results{Nfittings}.S_tolerance);
-    fprintf(1,'Transverse tolerance: %.3fm\n',fit_results{Nfittings}.t_tolerance);
-    fprintf(1,'Keep every # points: %.0f\n',fit_results{Nfittings}.keep_every);
-    fprintf(1,'\n');
-    fprintf(1,'Number of forward fits: %.0d\n',length(fit_results{Nfittings}.revised_fitSequence_types));
-    fprintf(1,'Mean forward fitting error:  %.3f meters\n',fit_results{Nfittings}.mean_error);
-    fprintf(1,'Max forward fitting error:  %.3f meters\n',fit_results{Nfittings}.max_error);
-    fprintf(1,'Std forward fitting error:  %.3f meters\n', fit_results{Nfittings}.std_dev_error);
-    fprintf(1,'\n');
-    fprintf(1,'ORIGINAL fits:\n');
-    fcn_geometry_printFitSequences(fit_results{Nfittings}.fitSequence_bestFitType, fit_results{Nfittings}.fitSequence_parameters , (1), ('Original fit'), (1))
-    fprintf(1,'ALIGNED fits:\n');
-    fcn_geometry_printFitSequences(fit_results{Nfittings}.revised_fitSequence_types, fit_results{Nfittings}.revised_fitSequence_parameters , (1), ('Aligned fit'), (1))
-
 
 end

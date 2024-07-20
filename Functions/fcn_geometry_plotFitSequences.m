@@ -1,4 +1,4 @@
-function XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, varargin)
+function [XY_data, fit_numbers_of_data] = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, varargin)
 %% fcn_geometry_plotFitSequences
 % Plots an individual geometry defined by a string name and parameter set.
 %
@@ -39,6 +39,9 @@ function XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSeq
 %      XY_data: the data produced during plotting calculations. Note: this
 %      data is returned even if fig_num is empty or set to -1.
 %
+%     fit_numbers_of_data: the specific fit, one value for each XY data
+%     point, indicating which fit produced the XY data in the fit sequence
+%
 % DEPENDENCIES:
 %      
 %      fcn_geometry_plotGeometry
@@ -58,6 +61,8 @@ function XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSeq
 % -- added segment_length and format input options 
 % 2024_06_26 - S. Brennan
 % -- added XY_data output
+% 2024_07_20 - S. Brennan
+% -- added model number output
 
 %% Debugging and Input checks
 
@@ -171,12 +176,16 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 XY_data = [];
+fit_numbers_of_data = [];
+
 % Fill in XY data from the domain fits
 for ith_domain = 1:length(fitSequence_bestFitType)
     plot_type_string = fitSequence_bestFitType{ith_domain};
     parameters       = fitSequence_parameters{ith_domain};
     XY_domain = fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, -1);
     XY_data   = [XY_data; XY_domain]; %#ok<AGROW>
+    N_in_domain = length(XY_domain(:,1));
+    fit_numbers_of_data = [fit_numbers_of_data; ith_domain*ones(N_in_domain,1)]; %#ok<AGROW>
 end
 
 

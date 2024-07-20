@@ -359,6 +359,12 @@ for ith_fit = 1:NfitsInSequence-1
         axis(good_axis);
     end
 
+    fprintf(1,'\n');
+    fprintf(1,'UNALIGNED fits:\n');
+    fcn_geometry_printFitSequences(input_types, input_parameters , (1), ('Original fit'), (1))
+    fprintf(1,'ALIGNED fits:\n');
+    fcn_geometry_printFitSequences(revised_fitSequence_types, revised_fitSequence_parameters , (1), ('Aligned fit'), (1))
+
 end % Ends looping through fits
 
 % Save the last result

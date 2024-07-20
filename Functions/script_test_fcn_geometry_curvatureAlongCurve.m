@@ -78,8 +78,6 @@ plot(points_to_fit(:,1),points_to_fit(:,2),'k.','MarkerSize',20);
 Npoints = length(points_to_fit(:,1));
 minimum_island_separation = 10; % Units are meters. See comments below for explanation
 
-flag_be_verbose = 1;
-
 spatial_differences = diff(points_to_fit(:,1:2));
 spatial_distances   = real(sum(spatial_differences.^2,2).^0.5);
 average_spacing     = mean(spatial_distances);
@@ -115,12 +113,12 @@ end
 
 
 
-%% Calculate curvatures to find any islands in geometric information
+%% Show how to use fcn_geometry_curvatureAlongCurve to find any islands in geometric information
 % Islands are where there are interconnected arcs that have no line
 % segments within. Islands are useful for analysis because calculations
 % done within an island are not affected by calculations in other islands,
-% and so the data can be sub-grouped by island and thereby saving huge
-% amounts of computation.
+% and so the data can be sub-grouped by island and processed island by
+% island, thereby saving huge amounts of computation.
 %
 % We find islands by calculating if there are "gaps" in the
 % data wherein the curvature of the data, within the gaps, is
@@ -145,7 +143,9 @@ if Npoints>100
         data_width = [];
         warning('Not enough data for curvature calculations. Using all data.');
     end
-    % 20 points is usually plenty
+
+    % Enforce a minimum number of points, otherwise the SNR is very poor- we do not want to use less than
+    % 20 points typically
     data_width = max(data_width,20);
 end
 
@@ -159,16 +159,17 @@ fig_num = 1234;
 % a bit of wiggle-room (some are right on edge).
 is_island = curvature_SNRs>3;
 
-%% Fix loops
+%% Show how to use fcn_geometry_curvatureAlongCurve to fix loops
 % In the test track, and in any data that forms a loop, it is common that
 % the start/end of data will be on a curve. The results will be an island
 % at start and at end, but with straightaways somehwere before and after
 % the end. 
 %
 % If this is the case, they can be fixed by shifting the data to start at
-% the first "lake" part after the island. This is basically "fixing" the
-% loops so that the loop's start/end does not break an island of arcs in
-% half (as is the case at the test track). 
+% the middle of the first "lake" part after the starting island. This is
+% basically "fixing" the loops so that the loop's start/end does not break
+% a continuous island of arcs in half by putting the start/end point in the
+% middle of an arc (as is the case at the test track).
 
 lake_exists_in_data = any(~is_island);
 if is_island(1,1) && is_island(end,1) && lake_exists_in_data
@@ -207,42 +208,178 @@ ylabel('Y [m]');
 plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
 plot(shifted_points(is_island,1),shifted_points(is_island,2),'r.','MarkerSize',20);
 
-%% findCurvatureIslands
-% TO DO: recode this as a for loop, not while loop. The number of islands
-% is equal to the number of transitions from 0 to 1 in the is_island vector
+%% Use curvatureGroupAssignment to separate contiguous points into islands
+fig_num = 67543;
+island_ranges = fcn_INTERNAL_curvatureGroupAssignment(shifted_points, is_island, fig_num);
 
-N_islands = 0;
-island_ranges = {};
-filled_islands = is_island;
+%% Use extractModelsFromCurvature to convert each island into arcs
+entire_model_fit_ID_at_each_index = nan(Npoints,1);
+entire_arc_matrix_C2 = [];
+entire_model_SNRs = [];
+Nmodels = 0;
 
-while any(filled_islands)
+SNR_threshold = 30;
+for ith_island = 1:length(island_ranges)
+    this_island_range = island_ranges{ith_island};
+    this_island_points = shifted_points(this_island_range,:);
 
-    island_starts = find(filled_islands,1);
+    if 1==0
+        [~, ~, model_SNRs, sorted_model_fit_ID_at_each_index] = fcn_INTERNAL_extractModelsFromCurvature(this_island_points, SNR_threshold);
+    else
+        % STEP1: Calculate the full curvatures and SNRs of this data
+        debug_fig_num = 2346;
+        data_width = []; % Default is to use all possible points
+        [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
 
+        % STEP2: Use the curvature SNRs to extract models
+        fig_num = 75655;
+        [best_fit_arcs, best_fit_SNRs, best_fit_ranges, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
 
-    % Make everything an island up to where the island starts. This makes
-    % finding where the island ends very trivial
-    filled_islands(1:island_starts) = 1;
-    island_ends = find(filled_islands==0,1);
+        % STEP3: order the models to be in correct order
+        fig_num = 383834;
+        all_segments = [];
+        [~, ~, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, ~] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
 
-    % If nothing found, then everything remaining was an island
-    if isempty(island_ends)
-        island_ends = Npoints;
+        % STEP4: ensure arcs have C2 continuity
+        fig_num = 75633;
+        arc_matrix_C2 = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, fig_num);
+
     end
 
-    % Set everything up to end of island a lake
-    filled_islands(1:island_ends) = 0;
+    % Update the model IDs
+    % Set any unfilled (zero) values to NaN
+    sorted_model_fit_ID_at_each_index(sorted_model_fit_ID_at_each_index==0) = nan;
 
-    % Update count and information for the island
-    N_islands = N_islands+1;
-    island_ranges{N_islands} = (island_starts:island_ends)'; %#ok<SAGROW>
+    % Offset all the model IDs that were just measured so they match the
+    % rows of the updated parameter list
+    offset_model_fit_ID_at_each_index = Nmodels + sorted_model_fit_ID_at_each_index;
 
+    % Copy these data into the correct range area.
+    entire_model_fit_ID_at_each_index(this_island_range) = offset_model_fit_ID_at_each_index;
+
+    % Update the parameter lists
+    entire_arc_matrix_C2 = [entire_arc_matrix_C2; arc_matrix_C2]; %#ok<AGROW>
+    if ~isempty(entire_arc_matrix_C2)
+        Nmodels = length(entire_arc_matrix_C2(:,1));
+    end
+
+    % Update the SNRs
+    entire_model_SNRs = [entire_model_SNRs, model_SNRs];
 
 end
 
-% Plot the results
-fit_fig_num = 67543;
-figure(fit_fig_num);
+%% Fill the unfilled areas with line segments
+NumFitsGood = length(entire_arc_matrix_C2(:,1));
+revised_entire_model_fit_ID_at_each_index = entire_model_fit_ID_at_each_index;
+
+indicies_unfilled = isnan(entire_model_fit_ID_at_each_index);
+
+% Initialize the segments
+all_segments = [];
+
+flag_need_to_fill_start = 0;
+
+Nsegments = 0;
+while any(indicies_unfilled)
+
+    start_index = find(indicies_unfilled==1,1);
+    remainder   = indicies_unfilled;
+    remainder(1:start_index) = 1; % Fill in any zeros beforehand
+    end_index   = find(remainder==0,1); % Find first zero afterwards
+
+
+
+    % Check for situation where a loop is causing the first and last areas
+    % to be segments
+    flag_skip_fit = 0;
+    if 1==start_index && flag_is_a_loop
+        % Grab the arc at end, and use it as the start
+        start_index = find(~indicies_unfilled==1,1,'last');
+        fit_before = entire_model_fit_ID_at_each_index(start_index);
+        fit_after  = entire_model_fit_ID_at_each_index(end_index);
+
+        % Shut off the indicies searched thus far, in prep for next round,
+        % including the wrap-around portion
+        indicies_unfilled(1:end_index) = 0;
+        indicies_unfilled(start_index:end) = 0;
+
+    elseif 1==start_index
+        % Shut off the indicies searched thus far, in prep for next round
+        indicies_unfilled(1:end_index) = 0;
+        flag_skip_fit = 1;
+    else
+        % Grab the arc before and after the open area
+        fit_before = entire_model_fit_ID_at_each_index(start_index-1);
+        fit_after  = entire_model_fit_ID_at_each_index(end_index);
+
+        % Shut off the indicies searched thus far, in prep for next round
+        indicies_unfilled(1:end_index) = 0;
+
+    end
+
+
+    % Check for errors
+    if isempty(end_index)
+        error('Empty end indicies should never occur')
+    end
+
+    if 0==flag_skip_fit
+        Nsegments = Nsegments+1;
+
+        arc_before = entire_arc_matrix_C2(fit_before,:);
+        arc_after  = entire_arc_matrix_C2(fit_after,:);
+
+        continuity_level = 1;
+        [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
+            fcn_geometry_alignArcArc(arc_before, arc_after, (transverse_tolerance), (continuity_level),  (57894));
+
+        % Save arc revisions
+        entire_arc_matrix_C2(fit_before,:) = revised_arc1_parameters; %#ok<SAGROW>
+        entire_arc_matrix_C2(fit_after,:) = revised_arc2_parameters; %#ok<SAGROW>
+
+        segment_start_XY = revised_intermediate_geometry_join_parameters(1,1:2);
+        segment_angle    = revised_intermediate_geometry_join_parameters(1,3);
+        segment_length   = revised_intermediate_geometry_join_parameters(1,4);
+        segment_end_XY   = segment_start_XY + [cos(segment_angle) sin(segment_angle)]*segment_length;
+
+        % Make sure a segment is produced
+        assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
+
+        % Shift the segment away from the arcs very slightly so that C2
+        % continuity can be recovered
+        arc_before_center = arc_before(1,1:2);
+        arc_after_center  = arc_after(1,1:2);
+
+        vector_from_arc_before_center_to_segment_start = segment_start_XY - arc_before_center;
+        vector_from_arc_after_center_to_segment_end    = segment_end_XY   - arc_after_center;
+        unit_vector_from_arc_before_center_to_segment_start = fcn_geometry_calcUnitVector(vector_from_arc_before_center_to_segment_start);
+        unit_vector_from_arc_after_center_to_segment_end    = fcn_geometry_calcUnitVector(vector_from_arc_after_center_to_segment_end);
+
+        offset_nudge = 0.05;
+        revised_segment_start_XY = segment_start_XY + unit_vector_from_arc_before_center_to_segment_start*offset_nudge;
+        revised_segment_end_XY   = segment_end_XY   + unit_vector_from_arc_after_center_to_segment_end*offset_nudge;
+        revised_segment_vector   = revised_segment_end_XY - revised_segment_start_XY;
+        revised_segment_angle    = atan2(revised_segment_vector(2),revised_segment_vector(1));
+        revised_segment_length   = real(sum(revised_segment_vector.^2,2).^0.5);
+        revised_segment          = [revised_segment_start_XY revised_segment_angle revised_segment_length];
+
+        % Save results
+        all_segments = [all_segments; revised_segment]; %#ok<AGROW>
+
+        % Indicate where the line segments (negative numbering) are:
+        if start_index>end_index && flag_is_a_loop
+            revised_entire_model_fit_ID_at_each_index(start_index+1:end) = -1*Nsegments;
+            revised_entire_model_fit_ID_at_each_index(1:end_index-1) = -1*Nsegments;
+
+        else
+            revised_entire_model_fit_ID_at_each_index(start_index:(end_index-1),1) = -1*Nsegments;
+        end
+    end
+end
+
+% Plot the revised results
+arc_line_fig_num = 23434;
+figure(arc_line_fig_num);
 clf;
 
 hold on;
@@ -251,49 +388,170 @@ axis equal
 xlabel('X [m]');
 ylabel('Y [m]');
 
-plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
+for ith_fit = 1:length(entire_arc_matrix_C2(:,1))
+    fcn_geometry_plotGeometry('arc',entire_arc_matrix_C2(ith_fit,:));
+end
+
+
+for ith_fit = 1:length(all_segments(:,1))
+    fcn_geometry_plotGeometry('segment',all_segments(ith_fit,:));
+end
+
+%% Sort the fits to be in the correct order
+fig_num = 1111;
+[fitSequence_fitTypes, fitSequence_parameters, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, segment_matrix] = fcn_INTERNAL_curvatureModelSort(entire_arc_matrix_C2, all_segments, [], revised_entire_model_fit_ID_at_each_index, fig_num);
+
+
+%% Align fits to each other to ensure C2 continuity
+fig_num = 76767;
+continuity_level = 2;
+[revised_fitSequence_types, revised_fitSequence_parameters] = ...
+    fcn_geometry_alignGeometriesInSequence(fitSequence_fitTypes, fitSequence_parameters, transverse_tolerance, (continuity_level), (fig_num));
+
+%% Analyze error of model fitting
+data_to_analyze = points_to_fit; % small_XY_data
+plot(data_to_analyze(:,1),data_to_analyze(:,2),'k.','MarkerSize',5);
+
+% Check the fits
+fig_num = 1000*ith_fit;
+figure(fig_num);
+clf;
+
+threshold           = []; %max(max_feasibility_distance,fitting_tolerance(1,2));
+curve_test_segment_length = 0.5; % Check every 0.5 meters;
+
+% [flag_is_similar, minimum_distance_to_each_point, mean_error_forward, max_error_forward, std_dev_error_forward] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
+    fcn_geometry_comparePointsToCurve(...
+    revised_fitSequence_types, revised_fitSequence_parameters, data_to_analyze, ...
+    (threshold), (curve_test_segment_length), (fig_num));
+
+
+
+
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+%% fcn_INTERNAL_curvatureGroupAssignment
+function island_ranges = fcn_INTERNAL_curvatureGroupAssignment(shifted_points, is_island, fig_num)
+% Given an [Nx2] array of input points and an [Nx1] array flagging each
+% point as an island or not, this function groups the contigous groups or
+% "islands" of points into separate ranges, returning the range for each
+% "island" grouping
+
+% Find the number of islands
+jumps_in_islands = [is_island(1,1); diff(is_island); 0];
+
+% Each transition "up" from 0 to 1 will start a new island. We can count
+% these to determine number of island starts. Similarly, each transition
+% "down" from 1 to 0 will end the island. Again, we can count these
+
+indicies_island_start = find(jumps_in_islands>0.5);
+indicies_island_end = find(jumps_in_islands<-0.5);
+
+% Make sure these match in length!
+assert(length(indicies_island_start)==length(indicies_island_end));
+
+% How many islands do we have in this data?
+N_islands = length(indicies_island_start);
+
+% Initialize the output
+island_ranges{N_islands} = [];
+
+% Fill the outputs
 for ith_island = 1:N_islands
-    this_island_range = island_ranges{ith_island};
-    plot(shifted_points(this_island_range,1),shifted_points(this_island_range,2),'.','MarkerSize',10);
+    island_ranges{ith_island} = (indicies_island_start(ith_island):indicies_island_end(ith_island)); 
 end
 
+% Plot the results?
+if ~isempty(fig_num)
+    figure(fig_num);
+    clf;
 
-% INPUTS shifted_points, island_ranges, SNR_threshold
+    hold on;
+    grid on;
+    axis equal
+    xlabel('X [m]');
+    ylabel('Y [m]');
 
+    % Plot the points
+    plot(shifted_points(:,1),shifted_points(:,2),'k.','MarkerSize',20);
+
+    % Plot the islands
+    for ith_island = 1:N_islands
+        this_island_range = island_ranges{ith_island};
+        plot(shifted_points(this_island_range,1),shifted_points(this_island_range,2),'.','MarkerSize',10);
+    end
+end
+end % Ends fcn_INTERNAL_curvatureGroupAssignment
+
+%% fcn_INTERNAL_extractModelsFromCurvature
+function [fitSequence_fitTypes, fitSequence_parameters, model_SNRs, sorted_model_fit_ID_at_each_index] = fcn_INTERNAL_extractModelsFromCurvature(this_island_points, SNR_threshold)
 % Steps:
-% * associate each point with an island
-% * for each island, extractModelsFromCurvature
-% *      find full curvatures and SNRs
-% *      use the curvature SNRs to extract models at each island, recording model at each index
-% *      order the models in each island to be in correct order
-% *      correct the models in each island to ensure C2 continuity
-% * connect the islands to each other with line segments via C1-modified connectivity 
-% * connect all geometries to each other with C2 continuity
+% For each island, extractModelsFromCurvature function does the following
+% STEP1:  find full curvatures and SNRs
+% STEP2:  use the curvature SNRs to extract models at each island, recording model at each index
+% STEP3:  order the models in each island to be in correct order
 
-%% STEP 1: Calculate the full curvatures of each island
-fig_num = 2346;
+% STEP4?      correct the models in each island to ensure C2 continuity
+%% STEP1: Calculate the full curvatures and SNRs of this data
+debug_fig_num = 2346;
+data_width = []; % Default is to use all possible points
+[curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
 
-for ith_island = 1:1 %N_islands
-    this_island_range = island_ranges{ith_island};
-    this_island_points = shifted_points(this_island_range,:);
+%% STEP2: Use the curvature SNRs to extract models
+fig_num = 75655;
+[best_fit_arcs, best_fit_SNRs, best_fit_ranges, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
 
-    data_width = []; % Default is to use all possible points
-    [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (fig_num+ith_island));
+%% STEP3: order the models to be in correct order
+fig_num = 383834;
+all_segments = [];
+[fitSequence_fitTypes, fitSequence_parameters, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, segment_matrix] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
 
-end
+%% STEP4: ensure arcs have C2 continuity
+fig_num = 75633;
+[fitSequence_fitTypes_C2, fitSequence_parameters_C2] = fcn_INTERNAL_alignArcsBySNRandC2(fitSequence_fitTypes, fitSequence_parameters, model_SNRs, sorted_model_fit_ID_at_each_index, fig_num);
+
+end % Ends fcn_INTERNAL_extractModelsFromCurvature
 
 
-%% Pull out the fits by ranking them via SNRs
-N_fits = 0;
+%% fcn_INTERNAL_curvatureArcsFromSNR
+function [best_fit_arcs, best_fit_SNRs, best_fit_ranges, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num)
+
+% Find number of points
+Npoints = length(this_island_points(:,1));
+indiciesPoints = (1:Npoints)';
+
+% Initialize output variables
 best_fit_arcs = [];
 best_fit_SNRs = [];
 best_fit_ranges = [];
-remaining_curvature_SNR = curvature_SNRs;
 
-remaining_curvature_SNR(remaining_curvature_SNR<20) = nan;
+% Initialize internal array that keeps track of which SNRs we have already
+% analyzed. If this array has an NaN value, then that point has been
+% analyzed or should be ignored.
+remaining_curvature_SNRs = curvature_SNRs;
+remaining_curvatures = curvatures;
 
-best_fit_number_at_each_index = nan*curvature_SNRs;
+% Ignore any points that have an SNR below the threshold
+remaining_curvature_SNRs(curvature_SNRs<SNR_threshold) = nan;
+remaining_curvatures(curvature_SNRs<SNR_threshold) = nan;
 
+% Keep track of which models go with which points by setting all the model
+% numbers to zero
+model_fit_ID_at_each_index = 0*curvature_SNRs;
+
+% Set up a debugging figure
 flag_do_debug = 1;
 debug_fig_num = 38383;
 figure(debug_fig_num);clf;
@@ -302,12 +560,17 @@ flag_first_time = 1;
 
 NumFits = 0;
 
-while ~all(isnan(remaining_curvature_SNR))
+while ~all(isnan(remaining_curvature_SNRs))
 
     % Find the best remaining
-    [~,best_SNR_index] = max(remaining_curvature_SNR);
+    [~,best_SNR_index] = max(remaining_curvature_SNRs);
     NumFits = NumFits+1;
     
+    % Find the index range of this fit
+    min_index = best_SNR_index-index_ranges(best_SNR_index);
+    max_index = best_SNR_index+index_ranges(best_SNR_index);
+    this_index_range = (min_index:max_index)';
+
     % Plot results?
     if flag_do_debug
         %%%%%%%%%%%%%%%%%%%%%%
@@ -344,9 +607,6 @@ while ~all(isnan(remaining_curvature_SNR))
 
 
         % Plot the index range
-        min_index = best_SNR_index-index_ranges(best_SNR_index);
-        max_index = best_SNR_index+index_ranges(best_SNR_index);
-        this_index_range = (min_index:max_index)';
         plot(this_island_points(min_index:max_index,1),this_island_points(min_index:max_index,2),'m.','MarkerSize',10)
 
         % Plot the max SNR point
@@ -360,16 +620,17 @@ while ~all(isnan(remaining_curvature_SNR))
         subplot(1,3,2);
         % cla;
 
-        semilogy(this_island_range,curvatures,'k-');
+        semilogy(indiciesPoints,curvatures,'k-');
         hold on;
-        semilogy(this_island_range,point_curvature_minimum,'-','Color',[0.6 0.6 0.6]);
+        semilogy(indiciesPoints,remaining_curvatures,'b-', 'LineWidth',2);
+        semilogy(indiciesPoints,point_curvature_minimum,'-','Color',[0.6 0.6 0.6]);
 
         % Plot the part covered by this fit
-        plot(this_island_range(this_index_range),curvatures(best_SNR_index)*ones(length(this_index_range)),'k-','Markersize',20,'LineWidth',3);
+        plot(indiciesPoints(this_index_range),curvatures(best_SNR_index)*ones(length(this_index_range)),'k-','Markersize',20,'LineWidth',3);
 
         grid on;
-        xlabel('index [count]');
-        ylabel('curvature [1/m]');
+        xlabel('Index [count]');
+        ylabel('Curvature [1/m]');
         title('Curvatures')
 
         %%%%%%%%%%%%%%%%%%%%%%
@@ -378,33 +639,36 @@ while ~all(isnan(remaining_curvature_SNR))
         grid on;
         hold on;
 
-        plot(this_island_range, remaining_curvature_SNR,'k-');
+        plot(indiciesPoints, curvature_SNRs,'k-');
+        plot(indiciesPoints, remaining_curvature_SNRs,'b-', 'LineWidth',2);
 
         % Plot the part covered by this fit
-        plot(this_island_range(this_index_range), remaining_curvature_SNR(this_index_range,:),'k-','LineWidth',3);
-        plot(this_island_range(best_SNR_index), remaining_curvature_SNR(best_SNR_index),'g.','Markersize',30);
+        plot(indiciesPoints(this_index_range), remaining_curvature_SNRs(this_index_range,:),'k-','LineWidth',3);
 
-        xlabel('index [count]');
+        % Plot the best point
+        plot(indiciesPoints(best_SNR_index), remaining_curvature_SNRs(best_SNR_index),'g.','Markersize',30);
+
+        xlabel('Index [count]');
         ylabel('SNR [unitless]');
         title('Curvature SNR')
     end
     
     % Save results
-    best_fit_SNRs    = [best_fit_SNRs; remaining_curvature_SNR(best_SNR_index)]; %#ok<AGROW>
+    best_fit_SNRs    = [best_fit_SNRs; remaining_curvature_SNRs(best_SNR_index)]; %#ok<AGROW>
     best_fit_ranges = [best_fit_ranges; index_ranges(best_SNR_index)]; %#ok<AGROW>
     
 
     % Block out the indicies of this fit
-    min_index = best_SNR_index-index_ranges(best_SNR_index);
-    max_index = best_SNR_index+index_ranges(best_SNR_index);
-    this_index_range = (min_index:max_index)';
+    remaining_curvature_SNRs(this_index_range) = nan;
 
-    remaining_curvature_SNR(this_index_range) = nan;
-    is_zeros = find(best_fit_number_at_each_index(this_index_range)==0);
+    % Check which portion of these points has not yet been filled (model is
+    % 0) and ONLY fill these with the current model fit number
+    is_zeros = model_fit_ID_at_each_index(this_index_range)==0;
     unfilled_index_range = this_index_range(is_zeros);
-    best_fit_number_at_each_index(unfilled_index_range) = NumFits;
+    model_fit_ID_at_each_index(unfilled_index_range) = NumFits;
 
-    % Save fit parameters
+    % Save fit parameters. 
+    % The standard arc parameter format:
     %               [circleCenter_x.
     %                circleCenter_y,
     %                radius,
@@ -422,6 +686,7 @@ while ~all(isnan(remaining_curvature_SNR))
     is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(this_island_points(min_index,:), this_island_points(best_SNR_index,:), this_island_points(max_index,:),-1);
     best_arc_flag_is_counterclockwise  = (1==is_counterClockwise);
     best_arc_flag_this_is_a_circle     = 0;
+
     best_fit_arc = [...
         best_arc_center,...
         best_arc_radius,...
@@ -443,225 +708,245 @@ while ~all(isnan(remaining_curvature_SNR))
 
 end
 
+% Plot final results?
+if ~isempty(fig_num)
+    figure(fig_num);
+    clf;
 
-%% Plot raw results
+    hold on;
+    grid on;
+    axis equal
+    xlabel('X [m]');
+    ylabel('Y [m]');
 
-SNR_threshold = 30;
-good_fits = find(best_fit_SNRs>SNR_threshold);
-good_arcs = best_fit_arcs(good_fits,:);
-NumFitsGood = length(good_fits);
-
-
-%% Ensure C2 continuity
-transverse_tolerance = 2;
-revised_good_arcs = good_arcs;
-
-fit_fig_num = 2343;
-figure(fit_fig_num);
-clf;
-
-hold on;
-grid on;
-axis equal
-xlabel('X [m]');
-ylabel('Y [m]');
-
-for ith_fit = 1:length(good_arcs(:,1))
-    fcn_geometry_plotGeometry('arc',good_arcs(ith_fit,:));
-    if ith_fit>1
-
-        % Find any prior fits that are adjacent
-        first_index = find(best_fit_number_at_each_index==ith_fit,1,'first');
-        last_index  = find(best_fit_number_at_each_index==ith_fit,1,'last');
-        
-        if first_index>1 && best_fit_number_at_each_index(first_index-1)<ith_fit
-            adjacent_to_first = best_fit_number_at_each_index(first_index-1);
-        else
-            adjacent_to_first = nan;
-        end
-
-        if last_index<Npoints && best_fit_number_at_each_index(last_index+1)<ith_fit
-            adjacent_to_last = best_fit_number_at_each_index(last_index+1);
-        else
-            adjacent_to_last = nan;
-        end
-        data_to_check = [adjacent_to_first adjacent_to_last];
-
-        [priority_match, index_match] = min(data_to_check);
-
-        if ~isnan(priority_match)
-            [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
-                fcn_geometry_isC2FeasibleArcToArc(best_fit_arcs(priority_match,:), best_fit_arcs(ith_fit,:), (transverse_tolerance/2), (0.0001), (3456));
-            revised_good_arcs(ith_fit,:) = closest_feasible_arc2_parameters;
-        end
-
-        % Check the other side - if there's a curve there also, need to
-        % make sure it still fits
-        if flag_is_feasible && ~any(isnan(data_to_check))
-
-            if index_match==1
-                secondary_match =data_to_check(2);
-            else
-                secondary_match = data_to_check(1);
-            end
-            [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
-                fcn_geometry_isC2FeasibleArcToArc(best_fit_arcs(secondary_match,:), closest_feasible_arc2_parameters, 0, (0.0001), (3456));
-
-        end            
-
-        if 1~=flag_is_feasible
-            error('Unable to fit with C2 curvature')
-        end
+    % Plot the results
+    for ith_arc = 1:length(best_fit_arcs(:,1))
+        fcn_geometry_plotGeometry('arc',best_fit_arcs(ith_arc,:));
     end
-end
 
-%% Plot the revised results
-final_fig_num = 6456;
-figure(final_fig_num);
-clf;
+    % Plot the input points
+    plot(this_island_points(:,1),this_island_points(:,2),'b.','MarkerSize',5);
 
-hold on;
-grid on;
-axis equal
-xlabel('X [m]');
-ylabel('Y [m]');
-
-for ith_fit = 1:length(good_arcs(:,1))
-    fcn_geometry_plotGeometry('arc',revised_good_arcs(ith_fit,:));
-end
-
-%% Fill the unfilled areas
-indicies_unfilled = best_fit_number_at_each_index>NumFitsGood;
-
-all_segments = [];
-
-num_segments = 0;
-while any(indicies_unfilled)
-    num_segments = num_segments+1;
-
-    start_index = find(indicies_unfilled==1,1);
-    remainder   = indicies_unfilled;
-    remainder(1:start_index) = 1; % Fill in any zeros beforehand
-    end_index   = find(remainder==0,1); % Find first zero afterwards
-
-    % Shut off the indicies searched thus far, in prep for next round
-    indicies_unfilled(1:end_index) = 0;
-
-    % Check for errors
-    if 1==start_index
-        error('Start index should never be 1');
-    end
-    if isempty(end_index)
-        error('Empty end indicies should never occur')
-    end
-    
-    % Grab the arc before the open area
-    fit_before = best_fit_number_at_each_index(start_index-1);
-    fit_after  = best_fit_number_at_each_index(end_index);
-    arc_before = revised_good_arcs(fit_before,:);
-    arc_after  = revised_good_arcs(fit_after,:);
-
-    continuity_level = 1;
-    [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-        fcn_geometry_alignArcArc(arc_before, arc_after, (transverse_tolerance), (continuity_level),  (57894));
-
-    % Save arc revisions
-    revised_good_arcs(fit_before,:) = revised_arc1_parameters;
-    revised_good_arcs(fit_after,:) = revised_arc2_parameters;
-    
-    segment_start_XY = revised_intermediate_geometry_join_parameters(1,1:2);
-    segment_angle    = revised_intermediate_geometry_join_parameters(1,3);
-    segment_length   = revised_intermediate_geometry_join_parameters(1,4);
-    segment_end_XY   = segment_start_XY + [cos(segment_angle) sin(segment_angle)]*segment_length;
-
-    % Make sure a segment is produced
-    assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
-
-    % Shift the segment away from the arcs very slightly so that C2
-    % continuity can be recovered
-    arc_before_center = arc_before(1,1:2);
-    arc_after_center  = arc_after(1,1:2);
-    
-    vector_from_arc_before_center_to_segment_start = segment_start_XY - arc_before_center;
-    vector_from_arc_after_center_to_segment_end    = segment_end_XY   - arc_after_center;
-    unit_vector_from_arc_before_center_to_segment_start = fcn_geometry_calcUnitVector(vector_from_arc_before_center_to_segment_start);
-    unit_vector_from_arc_after_center_to_segment_end    = fcn_geometry_calcUnitVector(vector_from_arc_after_center_to_segment_end);
-
-    offset_nudge = 0.05;
-    revised_segment_start_XY = segment_start_XY + unit_vector_from_arc_before_center_to_segment_start*offset_nudge;
-    revised_segment_end_XY   = segment_end_XY   + unit_vector_from_arc_after_center_to_segment_end*offset_nudge;
-    revised_segment_vector   = revised_segment_end_XY - revised_segment_start_XY;
-    revised_segment_angle    = atan2(revised_segment_vector(2),revised_segment_vector(1));
-    revised_segment_length   = real(sum(revised_segment_vector.^2,2).^0.5);
-    revised_segment          = [revised_segment_start_XY revised_segment_angle revised_segment_length];
-
-    % Save results
-    all_segments = [all_segments; revised_segment]; %#ok<AGROW>
-
-    % Indicate where the line segments (negative numbering) are:
-    best_fit_number_at_each_index(start_index:(end_index-1),1) = -1*num_segments;
+    % Set the axis range
+    temp = axis;
+    axis_range_x = temp(2)-temp(1);
+    axis_range_y = temp(4)-temp(3);
+    percent_larger = 0.3;
+    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
 
 end
-
-%% Plot the revised results
-arc_line_fig_num = 23434;
-figure(arc_line_fig_num);
-clf;
-
-hold on;
-grid on;
-axis equal
-xlabel('X [m]');
-ylabel('Y [m]');
-
-for ith_fit = 1:length(good_arcs(:,1))
-    fcn_geometry_plotGeometry('arc',revised_good_arcs(ith_fit,:));
-end
+end % Ends fcn_INTERNAL_curvatureArcsFromSNR
 
 
-for ith_fit = 1:length(all_segments(:,1))
-    fcn_geometry_plotGeometry('segment',all_segments(ith_fit,:));
-end
+%% fcn_INTERNAL_curvatureModelSort
+function [fitSequence_fitTypes, fitSequence_parameters, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, segment_matrix] = fcn_INTERNAL_curvatureModelSort(revised_good_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num)
 
-%% Turn this into a sequence of fits
+% How many points do we have?
+Npoints = length(model_fit_ID_at_each_index(:,1));
+
+% Initialize output cell arrays and matricies
 fitSequence_parameters = {};
 fitSequence_fitTypes   = {};
+arc_matrix = [];
+segment_matrix = [];
+NumFits = 0;
 
-current_fit_type = best_fit_number_at_each_index(3);
-NumFits = 1;
+% Initialize the variable storing the model ordering
+model_ordering = [];
 
-if current_fit_type>0
-    fitSequence_fitTypes{NumFits}   = 'arc';
-    fitSequence_parameters{NumFits} = revised_good_arcs(current_fit_type,:);
-else
-    fitSequence_fitTypes{NumFits}   = 'segment';
-    fitSequence_parameters{NumFits} = all_segments(current_fit_type*-1,:);
-end
+% Find the first model
+index_of_first_model = find(model_fit_ID_at_each_index~=0,1);
 
-
-for ith_point = 3:Npoints
-    this_fit = best_fit_number_at_each_index(ith_point);
-    if ~isnan(this_fit)
+current_fit_type = 0;
+for ith_point = index_of_first_model:Npoints
+    this_fit = model_fit_ID_at_each_index(ith_point);
+    if 0~=this_fit
         if this_fit~=current_fit_type
             NumFits = NumFits+1;
             current_fit_type = this_fit;
+            model_ordering = [model_ordering; this_fit]; %#ok<AGROW>
             if current_fit_type>0
-                fitSequence_fitTypes{NumFits}   = 'arc';
-                fitSequence_parameters{NumFits} = revised_good_arcs(current_fit_type,:);
+                fitSequence_fitTypes{NumFits}   = 'arc'; %#ok<AGROW>
+                fitSequence_parameters{NumFits} = revised_good_arcs(current_fit_type,:); %#ok<AGROW>
+                arc_matrix = [arc_matrix; revised_good_arcs(current_fit_type,:)]; %#ok<AGROW>
             else
-                fitSequence_fitTypes{NumFits}   = 'segment';
-                fitSequence_parameters{NumFits} = all_segments(current_fit_type*-1,:);
+                fitSequence_fitTypes{NumFits}   = 'segment'; %#ok<AGROW>
+                fitSequence_parameters{NumFits} = all_segments(current_fit_type*-1,:); %#ok<AGROW>
+                segment_matrix = [segment_matrix; all_segments(current_fit_type*-1,:)]; %#ok<AGROW>
             end
         end
     end
 end
 
-% Plot the domain fits
-fig_num = 1111;
-fcn_geometry_plotFitSequences(fitSequence_fitTypes, fitSequence_parameters,[],[],(fig_num));
+% Fix the model ordering and assign SNRs
+sorted_model_fit_ID_at_each_index = 0*model_fit_ID_at_each_index;
+for ith_model = 1:length(model_ordering)
+    original_model_number = model_ordering(ith_model);
+    indicies_to_update = model_fit_ID_at_each_index==original_model_number;
+    sorted_model_fit_ID_at_each_index(indicies_to_update,1) = ith_model;
+end
 
-%% Align results
-fig_num = 76767;
-continuity_level = 2;
-revised_fitSequence_parameters = ...
-    fcn_geometry_alignGeometriesInSequence(fitSequence_fitTypes, fitSequence_parameters, transverse_tolerance, (continuity_level), (fig_num));
+% Check if SNRs need to be updated
+if ~isempty(best_fit_SNRs)
+    model_SNRs = 0*best_fit_SNRs;
+    for ith_model = 1:length(model_ordering)
+        original_model_number = model_ordering(ith_model);
+        model_SNRs(ith_model,1) = best_fit_SNRs(original_model_number,1);
+    end
+else
+    model_SNRs = [];
+end
+
+% Plot the domain fits
+Nmodels = length(fitSequence_fitTypes);
+for ith_model = 1:Nmodels
+    color = [1 0 0]*(1 - (ith_model-1)/Nmodels);
+    fcn_geometry_plotGeometry(fitSequence_fitTypes{ith_model},fitSequence_parameters{ith_model},[],color,fig_num);
+end
+   
+end % Ends fcn_INTERNAL_curvatureModelSort
+
+
+%% fcn_INTERNAL_alignArcsBySNRC2
+function arc_matrix_C2 = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, best_fit_number_at_each_index, fig_num)
+% Given fitSequence_fitTypes that are all arcs, and the arc's
+% fitSequence_parameters with a SNR for each arc fit, goes through the arcs
+% in order of SNR from highest to lowest, making sure that each arc is C2
+% continuous with all its adjacent arcs
+
+Npoints = length(best_fit_number_at_each_index);
+
+% Make sure the entries are same length
+NumArcs = length(arc_matrix(:,1));
+
+% NumArcs = length(fitSequence_fitTypes);
+% assert(length(fitSequence_parameters)==NumArcs);
+assert(length(model_SNRs)==NumArcs);
+
+% % Make sure all entries are 'arc' types
+% assert(all(strcmp(fitSequence_fitTypes,'arc')));
+% 
+% % Save all the arcs into a matrix, as it's easier to work with
+% arc_matrix = zeros(NumArcs,length(fitSequence_parameters{1}(1,:)));
+% for ith_arc_ranking = 1:NumArcs
+%     arc_matrix(ith_arc_ranking,:) = fitSequence_parameters{ith_arc_ranking}(1,:);
+% end
+
+% Sort the arcs by SNR
+[~,sort_order] = sort(model_SNRs,'descend');
+[~,inverse_sort_order] = sort(sort_order);
+
+transverse_tolerance = 2;
+
+% Initialize the output arc parameter array
+arcs_with_C2_continuity = arc_matrix;
+
+fitSequence_fitTypes{NumArcs} = [];
+fitSequence_parameters{NumArcs} = [];
+
+for ith_arc = 1:NumArcs
+    fitSequence_fitTypes{ith_arc} = 'arc';
+    fitSequence_parameters{ith_arc} = arc_matrix(ith_arc,:);
+end
+fcn_geometry_plotFitSequences(fitSequence_fitTypes, fitSequence_parameters,[],[0.2 0.2 0.2],(fig_num));
+
+% Proceed through the arcs from highest SNR to lowest
+for ith_arc_ranking = 1:NumArcs
+    this_arc = sort_order(ith_arc_ranking);
+    fcn_geometry_plotGeometry('arc',arc_matrix(this_arc,:),[],[1 0 0],fig_num);
+
+    if ith_arc_ranking>1
+
+        if this_arc>1
+            adjacent_before_model = this_arc-1;
+        else
+            adjacent_before_model = [];
+        end
+        if this_arc<NumArcs
+            adjacent_after_model = this_arc+1;
+        else
+            adjacent_after_model = [];
+        end
+
+        % Only worry about rankings that are lower than this one
+        adjacent_models = [adjacent_before_model; adjacent_after_model];
+        rankings_to_check = inverse_sort_order(adjacent_models);
+        rankings_to_check = rankings_to_check(rankings_to_check<ith_arc_ranking);
+                
+        % Take the minimum of all the adjacent rankings. If all adjacent
+        % rankings are Nan, this returns NaN
+        [priority_ranking, index_match] = min(rankings_to_check);
+
+        % Get the lowest ranked (e.g. best) arc that is adjacent, and use
+        % this as the reference
+        flag_is_feasible = 1;
+        if ~isempty(priority_ranking) && ~isnan(priority_ranking)
+            adjacent_model_to_prioritize = adjacent_models(index_match);
+            [flag_is_feasible, ~, closest_feasible_arc2_parameters] = ...
+                fcn_geometry_isC2FeasibleArcToArc(arc_matrix(adjacent_model_to_prioritize,:), arc_matrix(this_arc,:), (transverse_tolerance), (0.0001), (3456));
+            arcs_with_C2_continuity(this_arc,:) = closest_feasible_arc2_parameters;
+        end
+
+        % Was it feasible?
+        if 1~=flag_is_feasible
+            % Method that would fix this: perform C1 continuity, then shift
+            % C1 line segment to get C2 continuity. 
+            error('Unable to merge arcs');
+            % % Perform C1 continuity 
+            % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
+            %     % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+
+        end
+
+        % Check the other side - if there's a curve there also, need to
+        % make sure it still fits. If it doesn't fit, do not move it - this
+        % would break the code.
+        if flag_is_feasible && length(rankings_to_check)==2
+
+            if index_match==1
+                secondary_match = 2;
+            else
+                secondary_match = 1;
+            end
+            adjacent_model_to_prioritize = adjacent_models(secondary_match);
+
+            [flag_is_feasible, ~, closest_feasible_arc2_parameters] = ...
+                fcn_geometry_isC2FeasibleArcToArc(arc_matrix(adjacent_model_to_prioritize,:), closest_feasible_arc2_parameters, transverse_tolerance, (0.0001), (3456));
+
+        end
+
+        if 1~=flag_is_feasible
+            error('Unable to fit with C2 curvature')
+            % Method to fix this: remove this arc from the list and attempt
+            % to connect the two adjacent to each other with C2 and then C1
+        end
+    end
+end
+
+arc_matrix_C2 = arcs_with_C2_continuity; 
+
+fitSequence_fitTypes_C2 = fitSequence_fitTypes;
+fitSequence_parameters_C2 = fitSequence_parameters; 
+for ith_arc_ranking = 1:NumArcs
+    fitSequence_parameters_C2{ith_arc_ranking} = arcs_with_C2_continuity(ith_arc_ranking,:);
+end
+
+% Plot the revised results
+figure(fig_num);
+clf;
+
+hold on;
+grid on;
+axis equal
+xlabel('X [m]');
+ylabel('Y [m]');
+
+% Plot the input sequence:
+format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',4 ');
+fcn_geometry_plotFitSequences(fitSequence_fitTypes, fitSequence_parameters,[],format_string,(fig_num));
+
+% Plot the output sequence
+format_string = sprintf(' ''-'',''Color'',[0 0 1],''LineWidth'',2 ');
+fcn_geometry_plotFitSequences(fitSequence_fitTypes_C2, fitSequence_parameters_C2,[],format_string,(fig_num));
+
+end % Ends fcn_INTERNAL_alignArcsBySNRC2
