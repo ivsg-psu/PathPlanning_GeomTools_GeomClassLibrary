@@ -116,8 +116,9 @@ for ith_row = row_start:row_end
         LiDAR_allPoints_ENU(drivable_row_start:drivable_row_end,:); nan*LiDAR_allPoints_ENU(1,:)]; %#ok<AGROW>
 end
 
-
+%%
 % LiDAR_outer_edge = vertcat(LiDAR_ENU_cell{1400:1410});
+LiDAR_allPoints = concatenate_LiDAR_XYZ_points_under_vehicle(:,1:3);
 
 % Input points (LiDAR data)
 input_points = LiDAR_allPoints(:,1:2); 
@@ -147,10 +148,10 @@ reference_altitude = 344.189;
 gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
 
 % Use the class to convert LLA to ENU
-LLA_LIDAR_allPoints = gps_object.ENU2WGSLLA(LiDAR_allPoints_ENU);
-LLA_LIDAR_drivablePoints = gps_object.ENU2WGSLLA(LiDAR_drivablePoints);
+LLA_LIDAR_allPoints = gps_object.ENU2WGSLLA(LiDAR_allPoints);
+% LLA_LIDAR_drivablePoints = gps_object.ENU2WGSLLA(LiDAR_drivablePoints);
 
-
+fig_num_LLA = 1234;
 % Plot the ENU results
 figure(fig_num_LLA);clf;
 
@@ -160,11 +161,13 @@ ylabel('Longitude')
 geoplot(LLA_LIDAR_allPoints(:,1),LLA_LIDAR_allPoints(:,2),'mo','MarkerSize',10);
 hold on
 geoplot(LLA_LIDAR_allPoints(:,1),LLA_LIDAR_allPoints(:,2),'k.','MarkerSize',10);
-geoplot(LLA_LIDAR_drivablePoints(:,1),LLA_LIDAR_drivablePoints(:,2),'g.','MarkerSize',10);
+% geoplot(LLA_LIDAR_drivablePoints(:,1),LLA_LIDAR_drivablePoints(:,2),'g.','MarkerSize',10);
 
 title('LLA Trace geometry')
 
 geobasemap satellite
+geotickformat -dd  % Sets the tick marks to decimal format, not degrees/minutes/seconds which is default
+
 
 %% Hand Labeled Boundary points
 
@@ -385,8 +388,8 @@ mapped_gridlines = zeros(11*length(grids_greater_than_zero_points),2); % length(
         text(gridCenters_greater_than_zero_point_density(ith_text,1), gridCenters_greater_than_zero_point_density(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
     end
     % plot the drivable path
-    plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'g.', 'MarkerSize', 40);
-    plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'k.', 'MarkerSize', 20);
+    % plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'g.', 'MarkerSize', 40);
+    % plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'k.', 'MarkerSize', 20);
 
     point_density = median(length_points_in_domain_grids_greater_than_zero)/2; 
 
@@ -470,8 +473,8 @@ for ith_text = 1:length(current_grids_with_required_point_density(:,1))
 end
 
 % plot the drivable path
-plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'g.', 'MarkerSize', 40);
-plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'k.', 'MarkerSize', 20);
+% plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'g.', 'MarkerSize', 40);
+% plot(ENU_drivable_path_1400_1410(:,1), ENU_drivable_path_1400_1410(:,2), 'k.', 'MarkerSize', 20);
 
 %% MAIN - classify mapped grids into drivable and non-drivable
 
