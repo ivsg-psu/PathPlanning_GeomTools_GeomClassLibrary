@@ -32,7 +32,7 @@ test_points_XY      = [2 2];
 threshold           = [];
 curve_test_segment_length = [];
 
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error]  = ...
     fcn_geometry_comparePointsToCurve(...
     reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -42,6 +42,8 @@ curve_test_segment_length = [];
 assert(islogical(flag_is_similar));
 assert(length(minimum_distance_to_each_point(1,:))==1);
 assert(length(minimum_distance_to_each_point(:,1))==length(test_points_XY(:,1)));
+assert(length(indicies_of_nearest_reference_points(1,:))==1);
+assert(length(indicies_of_nearest_reference_points(:,1))==length(test_points_XY(:,1)));
 assert(isequal(size(mean_error),[1 1]));
 assert(isequal(size(max_error),[1 1]));
 assert(isequal(size(std_dev_error),[1 1]));
@@ -80,8 +82,7 @@ test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1)
 
 threshold           = 2;
 curve_test_segment_length = [];
-
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -126,7 +127,7 @@ test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1)
 threshold           = 1;
 curve_test_segment_length = [];
 
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -175,7 +176,7 @@ test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1)
 threshold           = 1;
 curve_test_segment_length = [];
 
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -226,7 +227,7 @@ test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1)
 threshold           = 2;
 curve_test_segment_length = [];
 
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -255,7 +256,7 @@ fitSequence_parameters{2} = [15.1675 6.7996 0.7499 17.9000];
 fitSequence_types{1} = 'arc';
 fitSequence_types{2} = 'segment';
 
-seed_points = [0 1; 20 10];
+seed_points = [0 1; 30 10];
 M = 3;
 sigma = 0.05;
 test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
@@ -263,7 +264,45 @@ test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1)
 threshold           = 2;
 curve_test_segment_length = [];
 
-[flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
+    fcn_geometry_comparePointsToCurve(...
+    fitSequence_types, fitSequence_parameters, test_points_XY, ...
+    (threshold), (curve_test_segment_length), (fig_num));
+
+
+% Test sizes of variables
+assert(islogical(flag_is_similar));
+assert(length(minimum_distance_to_each_point(1,:))==1);
+assert(length(minimum_distance_to_each_point(:,1))==length(test_points_XY(:,1)));
+assert(isequal(size(mean_error),[1 1]));
+assert(isequal(size(max_error),[1 1]));
+assert(isequal(size(std_dev_error),[1 1]));
+
+% Test contents of variables
+assert(0==flag_is_similar);
+
+%% Test 302: evaluate HUGE numbers of points versus a sequence of geometries
+% Uses a fast plotting operation
+fig_num = 301;
+figure(fig_num); clf;
+
+% Fill the fit sequences
+% NOTE: these were taken from fitSequentialArcs test script
+fitSequence_parameters{1} = [-0.1225 20.3593 20.3705 4.7184 5.5674 0 1];
+fitSequence_parameters{2} = [15.1675 6.7996 0.7499 17.9000];
+
+fitSequence_types{1} = 'arc';
+fitSequence_types{2} = 'segment';
+
+seed_points = [0 1; 30 10];
+M = 30;
+sigma = 0.05;
+test_points_XY      = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
+
+threshold           = 2;
+curve_test_segment_length = [];
+
+[flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     fitSequence_types, fitSequence_parameters, test_points_XY, ...
     (threshold), (curve_test_segment_length), (fig_num));
@@ -318,7 +357,7 @@ REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+    [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
         fcn_geometry_comparePointsToCurve(...
         reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
         (threshold), (curve_test_segment_length), (fig_num));
@@ -333,7 +372,7 @@ minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
+    [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
         fcn_geometry_comparePointsToCurve(...
         reference_curve_type_string, reference_curve_parameters, test_points_XY, ...
         (threshold), (curve_test_segment_length), (fig_num));

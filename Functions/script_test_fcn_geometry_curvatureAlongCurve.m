@@ -299,6 +299,7 @@ while any(indicies_unfilled)
             % to both arcs. However, this approach ignores any points
             % between the arcs, and thus can introduce errors.
             continuity_level = 1;
+            transverse_tolerance = 0;
             [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
                 fcn_geometry_alignArcArc(arc_before, arc_after, (transverse_tolerance), (continuity_level),  (57894));
 
@@ -324,6 +325,7 @@ while any(indicies_unfilled)
             % segment, and then prune ONLY the points that are within the
             % correct area.
             continuity_level = 1;
+            transverse_tolerance = 0;
             [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
                 fcn_geometry_alignArcArc(arc_before, arc_after, (transverse_tolerance), (continuity_level),  (57894));
             reference_segment = revised_intermediate_geometry_join_parameters;

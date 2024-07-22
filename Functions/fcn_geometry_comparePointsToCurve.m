@@ -1,4 +1,4 @@
-function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
+function [flag_is_similar, signed_minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(reference_curve_type_string, reference_curve_parameters, test_points_XY, varargin)
 %% fcn_geometry_comparePointsToCurve
 % Finds how "close" a set of test points is to a reference curve.
@@ -11,7 +11,7 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 %
 % Format:
 % [flag_is_similar, ...
-%  minimum_distance_to_each_point,...
+%  signed_minimum_distance_to_each_point,...
 %  indicies_of_nearest_reference_points, ...
 %  mean_error, max_error, std_dev_error] = ...
 % fcn_geometry_comparePointsToCurve(...
@@ -63,7 +63,7 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 %      threshold (default if no threshold given), or "false" if any point
 %      is larger than the threshold
 %
-%      minimum_distance_to_each_point: an [Mx1] set of the distances from
+%      signed_minimum_distance_to_each_point: an [Mx1] set of the distances from
 %      each test point to the closest reference point.
 %
 %      mean_error: the average error between the reference points and the
@@ -92,6 +92,8 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 % Revision history:
 % 2024_04_14 - S. Brennan
 % -- wrote the code
+% 2024_07_22 - S. Brennan
+% -- changed minimum_distance_to_each_point distance to signed_minimum_distance_to_each_point
 
 %% Debugging and Input checks
 
@@ -207,11 +209,17 @@ else
     fit_numbers_of_referenceData = ones(length(reference_points_XY(:,1)),1);
 end
 
+% Calculate the directionality of the reference points
+reference_unit_tangent_vectors = fcn_geometry_calcUnitVector(diff(reference_points_XY),-1);
+reference_unit_tangent_vectors = [reference_unit_tangent_vectors(1,:); reference_unit_tangent_vectors];
+reference_unit_orthogo_vectors = reference_unit_tangent_vectors*[0 1; -1 0];
+
 % Now check similarity
 flag_is_similar = true;
 
 NtestPoints = length(test_points_XY(:,1));
 minimum_distance_to_each_point       = nan(NtestPoints,1);
+signed_minimum_distance_to_each_point       = nan(NtestPoints,1);
 indicies_of_nearest_reference_points = nan(NtestPoints,1);
 
 
@@ -223,15 +231,20 @@ for ith_point = 1:NtestPoints
     indicies_of_nearest_reference_points(ith_point,1) = min_index;
 end
 
+% Find the signs
+vectors_from_reference_to_test_points = test_points_XY-reference_points_XY(indicies_of_nearest_reference_points,:);
+ortho_distances = sum(vectors_from_reference_to_test_points.*reference_unit_orthogo_vectors(indicies_of_nearest_reference_points,:),2);
+signed_minimum_distance_to_each_point = sign(ortho_distances).*minimum_distance_to_each_point;
+
 % Make sure all the points "pass"
-if ~isempty(threshold) && any(minimum_distance_to_each_point>threshold)
+if ~isempty(threshold) && any(abs(signed_minimum_distance_to_each_point)>threshold)
     flag_is_similar = false;
 end
 
 % find mean, max, and std
-mean_error    = mean(minimum_distance_to_each_point,"all","omitmissing");
-max_error     = max(minimum_distance_to_each_point,[],"all","omitmissing");
-std_dev_error = std(minimum_distance_to_each_point, 0,"all","omitmissing");
+mean_error    = mean(abs(signed_minimum_distance_to_each_point),"all","omitmissing");
+max_error     = max(abs(signed_minimum_distance_to_each_point),[],"all","omitmissing");
+std_dev_error = std(abs(signed_minimum_distance_to_each_point), 0,"all","omitmissing");
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -322,7 +335,7 @@ if flag_do_plots
     lineWidth_value = 5;
 
     % Sort the test point results by distance
-    [sorted_distances,sorted_indicies] = sort(minimum_distance_to_each_point);
+    [sorted_distances,~] = sort(signed_minimum_distance_to_each_point);
 
     % Figure out which max error to use
     if isempty(threshold)
@@ -332,20 +345,32 @@ if flag_do_plots
     end
 
     % Plot the results, changing color based on distance
-    for ith_test_point = 1:NtestPoints
-        current_index = sorted_indicies(ith_test_point);
-        current_distance = minimum_distance_to_each_point(current_index);
-        current_test_point = test_points_XY(current_index,:);
-        closest_ref_point  = reference_points_XY(indicies_of_nearest_reference_points(current_index),:);
-        line_points = [current_test_point; closest_ref_point];
 
-        % Get color
-        error_ratio = min(current_distance/max_allowable_error,1);
-        current_color_index = round(error_ratio*(Ncolors-1))+1;
-        current_color = error_colormap(current_color_index,:);
+    closest_ref_points  = reference_points_XY(indicies_of_nearest_reference_points,:);
+    line_points = [test_points_XY closest_ref_points];
 
+    % Get color
+    error_ratios = min(abs(signed_minimum_distance_to_each_point)/max_allowable_error,1);
+    current_color_indicies = round(error_ratios*(Ncolors-1))+1;
 
-        plot(line_points(:,1),line_points(:,2),'-','LineWidth',lineWidth_value,'Color',current_color);
+    if NtestPoints<Ncolors
+        line_colors = error_colormap(current_color_indicies,:);
+        for ith_test_point = 1:NtestPoints
+            plot([line_points(ith_test_point,1) line_points(ith_test_point,3)],[line_points(ith_test_point,2) line_points(ith_test_point,4)],'-','LineWidth',lineWidth_value,'Color',line_colors(ith_test_point,:));
+        end
+    else
+        X_data = [line_points(:,1) line_points(:,3) nan(NtestPoints,1)];
+        Y_data = [line_points(:,2) line_points(:,4) nan(NtestPoints,1)];
+        for ith_color = 1:Ncolors
+            plotting_indicies = find(current_color_indicies==ith_color);
+            if ~isempty(plotting_indicies)
+                line_color = error_colormap(ith_color,:);
+                X_data_reshaped = reshape(X_data(plotting_indicies,:)',[],1);
+                Y_data_reshaped = reshape(Y_data(plotting_indicies,:)',[],1);
+                plot(X_data_reshaped, Y_data_reshaped, ...
+                    '-','LineWidth',lineWidth_value,'Color',line_color);
+            end
+        end
     end
 
     % Make axis slightly larger?
@@ -377,11 +402,11 @@ if flag_do_plots
         for ith_fit = 1:length(reference_curve_type_string)
             indicies_in_this_fit = find(fit_numbers_of_testData==ith_fit);
             color_vector = fcn_geometry_fillColorFromNumberOrName(ith_fit);
-            plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color', color_vector,'MarkerSize',20);
+            plot(indicies_in_this_fit, signed_minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color', color_vector,'MarkerSize',20);
         end
     else
         indicies_in_this_fit = find(fit_numbers_of_testData==1);
-        plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color',[0 0 0],'MarkerSize',20);
+        plot(indicies_in_this_fit, signed_minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color',[0 0 0],'MarkerSize',20);
 
     end
       
