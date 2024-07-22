@@ -131,7 +131,11 @@ function [revised_arc_parameters, revised_segment_parameters, revised_intermedia
 % 2024_06_26 - Sean Brennan
 % -- fixed bug in segment distance calculation in spiral calculation when
 % doing C2 calculations
-
+% 2024_07_21 - Sean Brennan
+% -- fixed bug where some calculations were wrong due to numerical
+% precision. Added epsilon checks to avoid this.
+% -- fixed bug where join fails if the line segment sticks out past arc's
+% start
 
 %% Debugging and Input checks
 
@@ -259,7 +263,41 @@ end
 % sure the line and arc point into and then out of the junction
 % respectively. For situations where arc is actually the first input, this
 % is fixed in later steps using a flag.
-[clean_arc_parameters, clean_segment_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc_parameters, segment_parameters, intersection_point1, debug_fig_num);
+
+% This code often fails, and causes more bugs than it helps. The code must
+% assume that the user is entering the parameters correctly and should not
+% try to fix them. By "fixing" some cases and not others, it makes a
+% nightmare to debug and is producing strange results for real-world data.
+if 1==0
+    [clean_arc_parameters, clean_segment_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc_parameters, segment_parameters, intersection_point1, debug_fig_num);
+else
+    clean_arc_parameters     = arc_parameters;
+    clean_segment_parameters = segment_parameters;
+
+    if ~isempty(debug_fig_num)
+        figure(debug_fig_num);
+        subplot(3,2,1);
+        debug_axis = axis;
+
+        % Plot the cleaned inputs
+        subplot(3,2,2);
+
+        fcn_geometry_plotCircle(clean_arc_parameters(1,1:2),clean_arc_parameters(1,3),...
+            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+
+        fcn_geometry_plotGeometry('arc',clean_arc_parameters);
+        fcn_geometry_plotGeometry('segment',clean_segment_parameters);
+
+        axis(debug_axis);
+        hold on;
+        grid on;
+        axis equal;
+        xlabel('X [meters]');
+        ylabel('Y [meters]')
+
+        title('Corrected inputs');
+    end
+end
 
 
 %% Get new intersection point, if arcs changed shape
@@ -812,12 +850,9 @@ segment_length              = segment_parameters(1,4);
 segment_unit_ortho_vector = segment_unit_tangent_vector*[0 1; -1 0];
 
 % Calculate the distance from the arc to the segment
-vector_from_arc_center_to_segment_joint = segment_base_point_xy - arc_center_xy;
-if arc_is_counter_clockwise
-    distance_from_arc_center_to_segment = -sum(segment_unit_ortho_vector.*vector_from_arc_center_to_segment_joint,2);
-else
-    distance_from_arc_center_to_segment = sum(segment_unit_ortho_vector.*vector_from_arc_center_to_segment_joint,2);
-end
+vector_from_segment_base_to_arc_center = arc_center_xy - segment_base_point_xy;
+signed_distance_from_arc_center_to_segment = sum(segment_unit_ortho_vector.*vector_from_segment_base_to_arc_center,2);
+distance_from_arc_center_to_segment = abs(signed_distance_from_arc_center_to_segment);
 
 
 % Calculate the distance between the circles and the join point
@@ -839,8 +874,8 @@ switch continuity_level
 
         if ~any(isnan(intersection_point))
             % Arc will end at the intersection, which is at the origin
-            vector_from_arc_center_to_segment_joint = [0 0] - arc_center_xy;
-            angle_of_intersection = atan2(vector_from_arc_center_to_segment_joint(2),vector_from_arc_center_to_segment_joint(1));
+            vector_from_segment_base_to_arc_center = [0 0] - arc_center_xy;
+            angle_of_intersection = atan2(vector_from_segment_base_to_arc_center(2),vector_from_segment_base_to_arc_center(1));
 
             desired_arc_parameters        = arc_parameters;
             desired_arc_parameters(1,5)   = angle_of_intersection; % Update where the spiral ends
@@ -1099,11 +1134,11 @@ flag_shift_is_possible = 0;
 % representing total distances. Check each.
 if length(threshold)==1
     shift_distance = abs(sum(St_shift.^2,2).^0.5);
-    if shift_distance<=threshold
+    if shift_distance<=(threshold + 1000*eps)
         flag_shift_is_possible = 1;
     end
 else
-    if abs(St_shift(1))<=threshold(1) && abs(St_shift(2))<=threshold(2)
+    if abs(St_shift(1))<=(threshold(1) + 1000*eps) && abs(St_shift(2))<=(threshold(2) + 1000*eps)
         flag_shift_is_possible = 1;
     end
 

@@ -21,6 +21,8 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 %
 %      flag_print_header: sets the header/units printing style
 %
+%          if flag=2, prints underscores to separate data
+%
 %          if flag=1, prints the descriptive header only without printing
 %          the parameters (only need this at start of printing),
 % 
@@ -57,6 +59,8 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 % Revision history:
 % 2024_07_06 - S. Brennan
 % -- wrote the code, using fcn_geometry_plotGeometry as a starter
+% 2024_07_21 - S. Brennan
+% -- added crossbar options for separation
 
 %% Debugging and Input checks
 
@@ -168,7 +172,7 @@ end
 % Print the lead-in to the print
 NleadCharacters = 20;
 
-% Print the header string
+% Print the header string?
 fprintf(fid,'%s',fcn_DebugTools_debugPrintStringToNCharacters(sprintf(lead_string),NleadCharacters));
 
 % Set up printing based on type
@@ -227,26 +231,49 @@ end
 % Print the header? If so, need to fill in the headers.
 NumColumnChars = 15;
 
-% Print the type
-final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
+% Print the type?
+if (2==flag_print_header)
+    final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('_____________________________',simple_type),NumColumnChars+1);
+else
+    final_print_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',simple_type),NumColumnChars+1);
+end
 
 
 % Print header?
-if 1==flag_print_header
-    % Print headers. Note, the number of characters is +1 versus
-    % specification because, for negative numbers (below), a space is
-    % required before them and thus actual prints take +1 spaces.
-    for ith_parameter = 1:length(header_strings)
-        number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
-        final_print_string = cat(2,final_print_string,number_string);
+if (1==flag_print_header) || (2==flag_print_header)
+    if 2==flag_print_header
+        % Print headers. Note, the number of characters is +1 versus
+        % specification because, for negative numbers (below), a space is
+        % required before them and thus actual prints take +1 spaces.
+        for ith_parameter = 1:length(header_strings)
+            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ','___________________'),NumColumnChars+1);
+            final_print_string = cat(2,final_print_string,number_string);
 
-        % Do we need to print units? This adds 3 more spaces at end of each
-        % entry
-        if -1==flag_print_header
-            final_print_string = cat(2,final_print_string,'   ');
+            % Do we need to print units? This adds 3 more spaces at end of each
+            % entry
+            if -1==flag_print_header
+                final_print_string = cat(2,final_print_string,'   ');
+            end
         end
+        fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
     end
-    fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
+    if 1==flag_print_header
+        % Print header "underscores". Note, the number of characters is +1 versus
+        % specification because, for negative numbers (below), a space is
+        % required before them and thus actual prints take +1 spaces.
+        for ith_parameter = 1:length(header_strings)
+            number_string = fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s ',header_strings{ith_parameter}),NumColumnChars+1);
+            final_print_string = cat(2,final_print_string,number_string);
+
+            % Do we need to print units? This adds 3 more spaces at end of each
+            % entry
+            if -1==flag_print_header
+                final_print_string = cat(2,final_print_string,'   ');
+            end
+        end
+        fprintf(fid,'%s\n',fcn_DebugTools_debugPrintStringToNCharacters(sprintf('%s',final_print_string),7*NumColumnChars));
+    end
+
 else
 
     % Print parameters?
@@ -257,14 +284,14 @@ else
             % Do we need to print units? This adds three spaces to end of each
             % entry
             % Fill the default trailer string
-            trailer_string = sprintf('%s','   ');
+            trailer_string = sprintf('%s','    ');
             if -1==flag_print_header
                 if 1== is_meters(1,ith_parameter)
-                    trailer_string = sprintf('%s','m  ');
+                    trailer_string = sprintf('%s',' m  ');
                 elseif -1== is_meters(1,ith_parameter)
-                    trailer_string = sprintf('%s','1/m');
+                    trailer_string = sprintf('%s',' m-1');
                 elseif is_degrees(1,ith_parameter)
-                    trailer_string = sprintf('%s','deg');
+                    trailer_string = sprintf('%s',' deg');
                 end
             end
 

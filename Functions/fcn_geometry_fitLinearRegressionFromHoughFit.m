@@ -86,7 +86,8 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 %              heading,
 %              s_Length,
 %             ]
-
+% 2024_07_21 - S Brennan
+% -- simplified by functionalizing code into fcn_geometry_fitSegmentViaRegression
 
 
 %% Debugging and Input checks
@@ -186,7 +187,7 @@ regression_domain = fcn_geometry_fillEmptyDomainStructure;
 % Pull out key variables
 best_fit_type            = Hough_domain.best_fit_type;
 points_in_domain         = Hough_domain.points_in_domain;
-best_fit_parameters      = Hough_domain.best_fit_parameters;
+
 
 % Check to make sure we have a Hough fit input
 switch best_fit_type
@@ -203,113 +204,16 @@ regression_domain.points_in_domain = points_in_domain;
 % Pull out parameters from the Hough domain fit
 associated_points_in_domain = points_in_domain;
 
-%% First, sort all the points in the original direction
-% Find the unit vector (in fast mode) connecting base to end point.
-base_point_of_domain          = best_fit_parameters(1,1:2);
-unit_tangent_vector_of_domain = [cos(best_fit_parameters(1,3)) sin(best_fit_parameters(1,3))];
-
-% Find domain ranges related to point-to-point fit
-projection_vectors_from_base = associated_points_in_domain - base_point_of_domain;
-tangent_distances = sum(projection_vectors_from_base.*unit_tangent_vector_of_domain,2);
-% orthogonal_distances = sum(projection_vectors_from_base.*unit_orthogonal_vector_of_domain,2);
-
-% Sort the points in direction of point-to-point projection
-[~,sorted_indicies] = sort(tangent_distances);
-sorted_points_in_domain = associated_points_in_domain(sorted_indicies,:);
-
-% What angle is the projection vector at?
-projection_vector_angle = atan2(unit_tangent_vector_of_domain(:,2),unit_tangent_vector_of_domain(:,1));
-
-%% Next, find best-fit line
-% In the early form of this function, linear regression was used. The code
-% for this is kept below in case we need to use it again sometime later.
-
-flag_use_vector_regression = 1;
-if flag_use_vector_regression
-    [root_point, unit_vector] = fcn_geometry_fitVectorToNPoints(sorted_points_in_domain,-1);
-    base_point_on_line = root_point;
-    regression_vector_angle = atan2(unit_vector(1,2),unit_vector(1,1));
-
-
-else
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(sorted_points_in_domain,-1);
-
-    % Convert slope into projection and orthogonal vectors
-    regression_vector_angle = atan2(slope,1);
-
-    % Find new base point that uses regression fit
-    y_value_on_line = slope*base_point_of_domain(1,1)+intercept;
-    base_point_on_line = [base_point_of_domain(1,1) y_value_on_line];
-
-end
-
-% Fix both angles to 0 to 2pi range
-projection_vector_angle = mod(projection_vector_angle,2*pi);
-regression_vector_angle = mod(regression_vector_angle,2*pi);
-
-
-% Check if regression slope angle was calculated in wrong direction. If so,
-% add pi onto it and fix
-if abs(projection_vector_angle - regression_vector_angle)>pi/2
-    if flag_do_debug
-        fprintf(1,'Correcting angle...\n')
-    end
-    regression_vector_angle = regression_vector_angle + pi;
-    regression_vector_angle = mod(regression_vector_angle,2*pi);
-end
-
-% Check if angles are in alignment?
-% Convert angles into positions on unit circle, so that we do not worry
-% about wrap-around errors
-projection_angle_position = [cos(projection_vector_angle) sin(projection_vector_angle)];
-regression_angle_position = [cos(regression_vector_angle) sin(regression_vector_angle)];
-distance_squared_in_unit_circle = sum((projection_angle_position - regression_angle_position).^2,2);
-
-threshold_angle_squared = (20*pi/180)^2;
-if distance_squared_in_unit_circle>threshold_angle_squared
-    warning('on','backtrace');
-    warning('Regression angle and fitted angle are signficantly different. ');
-    warning('Projection angle is (degrees): %.3f',projection_vector_angle*180/pi);
-    warning('Regression angle is (degrees): %.3f',regression_vector_angle*180/pi);
-    error('Regression angle and fitted angle are so different that an error likely occurred!');
-end
-
-unit_converted_regression_vector = [cos(regression_vector_angle) sin(regression_vector_angle)];
-unit_converted_orthogonal_vector = unit_converted_regression_vector*[0 1; -1 0];
-
-
-% Project the base point onto the line segment using the dot
-% product to create a new base point
-projection_to_lowest_point = sorted_points_in_domain(1,:) - base_point_on_line;
-transverse_distance_to_lowest_point = sum(projection_to_lowest_point.*unit_converted_regression_vector,2);
-updated_base_point_on_line  = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_regression_vector;
-% min_regression_point = base_point_on_line + transverse_distance_to_lowest_point*unit_converted_projection_vector;
-
-projection_to_highest_point = sorted_points_in_domain(end,:) - base_point_on_line;
-transverse_distance_to_highest_point = sum(projection_to_highest_point.*unit_converted_regression_vector,2);
-% max_regression_point = base_point_on_line + transverse_distance_to_highest_point*unit_converted_projection_vector;
-
-% Find the transverse distances and standard deviations of
-% transverse distances
-projections = sorted_points_in_domain - base_point_on_line;
-orthogonal_distances = sum(projections.*unit_converted_orthogonal_vector,2);
-
-% Save point-to-point best-fit line segment
-% regression_fit_line_segment = [min_regression_point; max_regression_point];
-% [unit_projection_vectors(best_agreement_index,:) points(base_point_index,:) current_station_distances];
-% regression_domain.best_fit_parameters = [min_regression_point max_regression_point];
-
-% OLD: commented out on 2024_06_22
-% regression_domain.best_fit_parameters = [unit_converted_projection_vector base_point_on_line transverse_distance_to_lowest_point transverse_distance_to_highest_point];
-% NEW: added on 2024_06_22
-updated_segment_angle = atan2(unit_converted_regression_vector(2),unit_converted_regression_vector(1));
-updated_segment_length = transverse_distance_to_highest_point - transverse_distance_to_lowest_point;
-regression_domain.best_fit_parameters = [updated_base_point_on_line updated_segment_angle updated_segment_length];
-
+[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(associated_points_in_domain, -1);
+regression_domain.best_fit_parameters = best_fit_parameters;
+base_point_on_line = best_fit_parameters(1,1:2);
+segment_angle      = best_fit_parameters(1,3);
+segment_length     = best_fit_parameters(1,4);
+unit_converted_regression_vector = [cos(segment_angle) sin(segment_angle)];
+transverse_distance_to_lowest_point = 0;
+transverse_distance_to_highest_point = segment_length;
 
 %% Calculate the domain boxes
-std_dev_orthogonal_distance = std(orthogonal_distances);
-
 % Make sure the standard deviation is not close to zero. If it is, then the
 % bounding box becomes degenerate and gives errors in other functions that
 % use the bounding box. The lowest standard deviation we would ever
@@ -371,15 +275,15 @@ if flag_do_plots
     axis equal;
 
     % Plot the input points
-    plot(sorted_points_in_domain(:,1),sorted_points_in_domain(:,2),'k.','MarkerSize',10);
+    plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'k.','MarkerSize',10);
 
     % Plot the fits    
     ith_domain = 1;
     current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain); %#ok<NASGU>
       
     % Plot the base point and vector
-    plot(base_point_of_domain(1,1),base_point_of_domain(1,2),'g.','MarkerSize',30);
-    quiver(base_point_of_domain(:,1),base_point_of_domain(:,2),unit_tangent_vector_of_domain(:,1),unit_tangent_vector_of_domain(:,2),0,'g','Linewidth',5);
+    plot(base_point_on_line(1,1),base_point_on_line(1,2),'g.','MarkerSize',30);
+    quiver(base_point_on_line(:,1),base_point_on_line(:,2),unit_converted_regression_vector(:,1),unit_converted_regression_vector(:,2),0,'g','Linewidth',5);
         
     % Plot the domain
     fcn_geometry_plotFitDomains(regression_domain, fig_num);

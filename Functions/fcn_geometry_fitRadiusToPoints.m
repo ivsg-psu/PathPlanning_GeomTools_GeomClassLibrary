@@ -242,7 +242,7 @@ if 0==flag_this_is_a_bad_fit
     % then check via cross products to see if the vectors are rotating one
     % way or the other (e.g. all positive or all negative). 
     vectors_from_center_to_points = points_to_fit - circle_center_xy;
-    unit_vectors_from_center_to_points = fcn_geometry_calcUnitVector(vectors_from_center_to_points);
+    unit_vectors_from_center_to_points = fcn_geometry_calcUnitVector(vectors_from_center_to_points,-1);
 
     % Which direction are the vectors oriented? Check with cross-product
     % from vectors created by adjacent values
@@ -283,7 +283,7 @@ if 0==flag_this_is_a_bad_fit
         
         % Create a vector from the lowest point to highest point
         vector_lowest_to_highest_point = points_to_fit(end,:) - points_to_fit(1,:);
-        unit_vector_lowest_to_highest_point = fcn_geometry_calcUnitVector(vector_lowest_to_highest_point);
+        unit_vector_lowest_to_highest_point = fcn_geometry_calcUnitVector(vector_lowest_to_highest_point,-1);
         unit_orthog_lowest_to_highest_point = unit_vector_lowest_to_highest_point*[0 1; -1 0];
         
         vector_lowest_to_center_of_arc = circle_center_xy - points_to_fit(1,:);

@@ -8,8 +8,52 @@
 % -- add more test cases
 % 2024_06_26 - S Brennan 
 % -- working with test track data
+% 2024_07_21 - S Brennan 
+% -- added a few more test cases
+
+% TO-DO
+% 2024_07_21 - S. Brennan
+% -- Need to add systematic assertions and testing
+
+%% segment joining an offset arc
+segment_start = [-20 -0.05];
+segment_angle = 0;
+segment_length = 60;
+segment_parameters = [segment_start segment_angle segment_length];
+
+%               [circleCenter_x.
+%                circleCenter_y,
+%                radius,
+%                start_angle_in_radians, 
+%                end_angle_in_radians,
+%                flag_this_is_a_circle
+%                flag_arc_is_counterclockwise
+%               ] 
+arc_center = [0 40];
+arc_radius = 40;
+arc_start_angle = -pi/2;
+arc_end_angle = 0;
+arc_flag_this_is_a_circle = 0;
+arc_flag_arc_is_counterclockwise = 1;
+arc_parameters = [arc_center arc_radius arc_start_angle arc_end_angle arc_flag_this_is_a_circle arc_flag_arc_is_counterclockwise];
+
+fits_to_check_types = {'segment','arc'};
+fits_to_check_parameters = {segment_parameters, arc_parameters};
+fitting_tolerance = 0;
+continuity_level = 2;
+fig_num = 1;
+flag_is_a_loop = 0;
+
+[revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (fig_num));
+
+% Check lengths
+assert(length(revised_fitSequence_types)==3);
+assert(length(revised_fitSequence_parameters)==3);
+assert(length(max_feasibility_distance)==1);
 
 %% REAL WORLD TEST CASE
+
 % Test with real-world data (test track)
 fig_num = 1;
 
@@ -44,11 +88,12 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
 end
 
 
-%% Connect the fits so that the lines perfectly align with the arcs
+% Connect the fits so that the lines perfectly align with the arcs
 fig_num = 2;
 figure(fig_num);clf;
 fitting_tolerance = [10 0.2];
 continuity_level = 2;
+flag_is_a_loop = 1;
 
 % fits_to_check_types = fitSequence_bestFitType_forward;
 % fits_to_check_parameters = fitSequence_parameters_forward;
@@ -62,7 +107,7 @@ for ith_fit = [4 5 6]
 end
 
 [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
-    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (fig_num));
 
 test_points_XY = [];
 for ith_fit = 1:length(fitSequence_points_forward)
@@ -71,7 +116,7 @@ for ith_fit = 1:length(fitSequence_points_forward)
     test_points_XY = [test_points_XY; points_to_plot]; %#ok<AGROW>
 end
 
-%% Check the fits
+% Check the fits
 fig_num = 3;
 figure(fig_num);
 clf;

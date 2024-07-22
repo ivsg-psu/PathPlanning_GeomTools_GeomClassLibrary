@@ -487,8 +487,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[ 0.0000    0.8000    1.0000   -2.0944   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-2.5000   -0.0660   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.5000    0.8660    1.0000   -2.0944   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[ -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -665,8 +665,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[ 0.0000    0.9000    1.0000   -2.0218   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-2.4359    0.0000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[0.4359    0.9000    1.0000   -2.0218   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -781,8 +781,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.1000    1.0000    1.5708    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000   -0.1000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[-0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -953,8 +953,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000   -0.9000    1.0000    1.5708    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000    0.1000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[-0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[ -2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1095,8 +1095,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000    0.8000    1.0000   -1.5708   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000   -0.2000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[-0.0000    1.0000    1.0000   -1.5708   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1273,8 +1273,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000    0.9000    1.0000   -1.5708   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000   -0.1000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[ -0.0000    1.0000    1.0000   -1.5708   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1391,8 +1391,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.1000    1.0000    1.5708    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000   -0.1000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[-0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1565,8 +1565,8 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000   -1.1000    1.0000    1.5708    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000   -0.1000   -0.0000    2.0000]));
+assert(isequal(round(revised_arc_parameters,4),[ -0.0000   -1.0000    1.0000    1.5708    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[-2     0     0     2]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
@@ -1662,7 +1662,7 @@ tolerance = 0.4; % meters
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_unit_tangent_vector = [1 0];
 segment_base_point_xy       = [-2 0];
-segment_length              = 2;
+segment_length              = 4;
 
 clear segment_parameters
 segment_parameters(1,1:2) = segment_base_point_xy;
@@ -1704,10 +1704,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000    1.8674    1.0000   -0.7877   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000    0.7674   -0.0000    1.2326]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    1.1000    1.0000   -0.7877   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[-2.0000    0   -0.0000    1.2326]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674    0.7674         0    1.5662         0    1.0000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674    0         0    1.5662         0    1.0000]));
 
 %% Basic test 5.12 - checking the (-) cross product, NOT feasible, no intersection
 fig_num = 512;
@@ -1880,10 +1880,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000    1.8674    1.0000   -0.7877   -0.3491         0    1.0000]));
-assert(isequal(round(revised_segment_parameters,4),[-3.0000    0.7674   -0.0000    2.2326]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    1.1    1.0000   -0.7877   -0.3491         0    1.0000]));
+assert(isequal(round(revised_segment_parameters,4),[-3.0000    0   -0.0000    2.2326]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[  -0.7674    0.7674         0    1.5662         0    1.0000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[  -0.7674    0         0    1.5662         0    1.0000]));
 
 %% Basic test 5.22 - checking the (-) cross product, feasible, intersection, not feasible
 fig_num = 522;
@@ -1996,10 +1996,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[  0.0000   -0.2326    1.0000    0.7877    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.0000    0.8674   -0.0000    1.2326]));
+assert(isequal(round(revised_arc_parameters,4),[  0.0000   -1.0    1.0000    0.7877    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[-2.0000    0.1   -0.0000    1.2326]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674    0.8674   -0.0000    1.5662         0   -1.0000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674    0.1   -0.0000    1.5662         0   -1.0000]));
 
 
 %% Basic test 5.32 - checking the (+) cross product, NOT feasible, no intersection
@@ -2174,10 +2174,10 @@ assert(ischar(revised_intermediate_geometry_join_type));
 assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
 
 % Check values
-assert(isequal(round(revised_arc_parameters,4),[0.0000    0.1749    1.0000    0.4506    0.1745         0         0]));
-assert(isequal(round(revised_segment_parameters,4),[-2.5000    1.3749   -0.0000    1.4251]));
+assert(isequal(round(revised_arc_parameters,4),[0.0000    -0.9    1.0000    0.4506    0.1745         0         0]));
+assert(isequal(round(revised_segment_parameters,4),[-2.000    0.3   -0.0000    0.9251]));
 assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ -1.0749    1.3749   -0.0000    2.2403         0   -1.0000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ -1.0749    0.3000         0    2.2403         0   -1.0000]));
 
 
 %% Basic test 5.42 - checking the (+) cross product, feasible, intersection, not feasible

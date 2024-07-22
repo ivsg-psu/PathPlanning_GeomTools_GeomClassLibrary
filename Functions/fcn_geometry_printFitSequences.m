@@ -21,9 +21,9 @@ function fcn_geometry_printFitSequences(fitSequence_fitTypes, fitSequence_parame
 %      flag_all_parameters_same: sets the header/units printing style
 %
 %          if flag = 1, prints a descriptive header above all the
-%          parameters, using the first parameter type as the format for all
-%          of them. It then prints the parameters as numbers only (e.g.
-%          2.4567). It prints the lead string and type ONLY on header line.
+%          parameters, showing formats for all the parameter types. It then
+%          prints the parameters as numbers only (e.g. 2.4567). It prints
+%          the lead string and type ONLY on header line.
 %          
 % 
 %          if flag = 0, then prints the parameters line by line,
@@ -61,6 +61,9 @@ function fcn_geometry_printFitSequences(fitSequence_fitTypes, fitSequence_parame
 % Revision history:
 % 2024_07_10 - S. Brennan
 % -- wrote the code using fcn_geometry_plotFitSequences as starter
+% 2024_07_21 - S. Brennan
+% -- fixed bug where the headers are not printing correctly if mixed styles
+
 
 %% Debugging and Input checks
 
@@ -176,25 +179,37 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Ndomains = length(fitSequence_fitTypes);
 
-% If user did not specify print format, check to see if all the parameters
-% are the same
-if isempty(flag_all_parameters_same)
-    flag_all_parameters_same = 1;
-    for ith_domain = 1:Ndomains-1
-        current_type_string = fitSequence_fitTypes{ith_domain};
-        next_type_string = fitSequence_fitTypes{ith_domain+1};
-        if ~strcmp(current_type_string,next_type_string)
-            flag_all_parameters_same = 0;
-        end
+% Check to see if all the parameters
+% are the same type
+flag_all_parameters_same = 1;
+for ith_domain = 1:Ndomains-1
+    current_type_string = fitSequence_fitTypes{ith_domain};
+    this_type_string = fitSequence_fitTypes{ith_domain+1};
+    if ~strcmp(current_type_string,this_type_string)
+        flag_all_parameters_same = 0;
     end
 end
 
 % Print the header?
-if 1==flag_all_parameters_same
-    header_type_string = fitSequence_fitTypes{1};
+if 1==flag_forced_header || (0==flag_all_parameters_same)
+    % Print the first type
     flag_print_header = 1;
+    header_type_string = fitSequence_fitTypes{1};
     fcn_geometry_printGeometry(header_type_string, [], (flag_print_header), (lead_string), (fid))
 
+    header_types_printed_already = {header_type_string};
+
+    % Check to see if we need to print other types
+    for ith_domain = 2:Ndomains
+        this_type_string = fitSequence_fitTypes{ith_domain};
+        if ~any(strcmp(header_types_printed_already,this_type_string))
+            header_types_printed_already{end+1} = this_type_string; %#ok<AGROW>
+            header_type_string = this_type_string;
+            fcn_geometry_printGeometry(header_type_string, [], (flag_print_header), (lead_string), (fid))           
+        end
+    end
+
+    fcn_geometry_printGeometry('spiral', [], (2), (lead_string), (fid)) 
 end
 
 % Continue printing lead string?

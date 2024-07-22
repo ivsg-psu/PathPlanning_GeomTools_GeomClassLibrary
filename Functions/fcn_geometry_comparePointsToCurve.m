@@ -252,47 +252,74 @@ if flag_do_plots
         flag_rescale_axis = 1;
     end
     
-    %%%% 
-    % Color plot of data fit
-    subplot(1,2,1);
+    %%%%
+    % Color plot of point error
+    subplot(1,3,1);
     hold on;
     grid on;
     axis equal;
     xlabel('X [meters]');
     ylabel('Y [meters]')
 
+    % Plot the input curves
+    if iscell(reference_curve_type_string)
+        % For each model, plot the errors in different colors        
+        for ith_fit = 1:length(reference_curve_type_string)
+            fit_type = reference_curve_type_string{ith_fit};
+            fit_parameters = reference_curve_parameters{ith_fit};
+            color_vector = fcn_geometry_fillColorFromNumberOrName(ith_fit);
+            fcn_geometry_plotGeometry(fit_type,fit_parameters,[],color_vector,fig_num);
+        end
+
+    else
+        fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [], (fig_num));
+    end
+
+
+    % Make axis slightly larger?
+    if flag_rescale_axis
+        temp = axis;
+        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+        axis_range_x = temp(2)-temp(1);
+        axis_range_y = temp(4)-temp(3);
+        percent_larger = 0.3;
+        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    end
+
+    % Plot the points?
+    plot(test_points_XY(:,1),test_points_XY(:,2),'k.','MarkerSize',1);
+
+
+    %%%% 
+    % Color plot of point error
+    subplot(1,3,2);
+    hold on;
+    grid on;
+    axis equal;
+    xlabel('X [meters]');
+    ylabel('Y [meters]')
+
+
+    % Plot the input curves
+    if iscell(reference_curve_type_string)
+        % For each model, plot the errors in different colors
+        for ith_fit = 1:length(reference_curve_type_string)
+            fit_type = reference_curve_type_string{ith_fit};
+            fit_parameters = reference_curve_parameters{ith_fit};
+            color_vector = [0.7 0.7 0.7]; % fcn_geometry_fillColorFromNumberOrName(ith_fit);
+            fcn_geometry_plotGeometry(fit_type,fit_parameters,[],color_vector,fig_num);
+        end
+
+
+    else
+        fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [0.7 0.7 0.7], (fig_num));
+    end
+
     % Get the colormap
     error_colormap = turbo;
     Ncolors = length(error_colormap(:,1));
 
-    % Plot the input curves
-    if iscell(reference_curve_type_string)
-        format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',5 ');
-        fcn_geometry_plotFitSequences(reference_curve_type_string, reference_curve_parameters, curve_test_segment_length, format_string, (fig_num));
-
-        % Plot the input reference points
-        color_vector = 'k';
-        plot(reference_points_XY(:,1),reference_points_XY(:,2),'.','Color',color_vector,'MarkerSize',1);
-
-        % Plot the input test points
-        plot(test_points_XY(:,1),test_points_XY(:,2),'.','Color',[1 0 1 ],'MarkerSize',1);
-
-        lineWidth_value = 3;
-
-    else
-        fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [], (fig_num));
-        
-        % Plot the input reference points
-        color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(reference_curve_type_string));
-        plot(reference_points_XY(:,1),reference_points_XY(:,2),'.','Color',color_vector,'MarkerSize',20);
-
-        % Plot the input test points
-        plot(test_points_XY(:,1),test_points_XY(:,2),'.','Color',[1 0 1 ],'MarkerSize',20);
-
-        lineWidth_value = 3;
-    end
-
-
+    lineWidth_value = 5;
 
     % Sort the test point results by distance
     [sorted_distances,sorted_indicies] = sort(minimum_distance_to_each_point);
@@ -315,11 +342,8 @@ if flag_do_plots
         % Get color
         error_ratio = min(current_distance/max_allowable_error,1);
         current_color_index = round(error_ratio*(Ncolors-1))+1;
-        try
-            current_color = error_colormap(current_color_index,:);
-        catch
-            error('stop here');
-        end
+        current_color = error_colormap(current_color_index,:);
+
 
         plot(line_points(:,1),line_points(:,2),'-','LineWidth',lineWidth_value,'Color',current_color);
     end
@@ -334,9 +358,13 @@ if flag_do_plots
         axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
     end
 
+    % Plot the points?
+    % plot(reference_points_XY(:,1),reference_points_XY(:,2),'k.','Markersize',11);
+    % plot(test_points_XY(:,1),test_points_XY(:,2),'k.','MarkerSize',20);
+
     %%%%%
     % the error plot
-    subplot(1,2,2);
+    subplot(1,3,3);
     
     hold on;
     grid on;
@@ -348,7 +376,8 @@ if flag_do_plots
         % For each model, plot the errors in different colors        
         for ith_fit = 1:length(reference_curve_type_string)
             indicies_in_this_fit = find(fit_numbers_of_testData==ith_fit);
-            plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','MarkerSize',20);
+            color_vector = fcn_geometry_fillColorFromNumberOrName(ith_fit);
+            plot(indicies_in_this_fit, minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color', color_vector,'MarkerSize',20);
         end
     else
         indicies_in_this_fit = find(fit_numbers_of_testData==1);

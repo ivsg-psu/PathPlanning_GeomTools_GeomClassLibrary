@@ -20,7 +20,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %
 % Format:
 % revised_fitSequence_parameters = ...
-% fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (fig_num))
+% fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (flag_is_a_loop), (fig_num))
 %
 % INPUTS:
 %      fitSequence_bestFitType: a cell array of length N that contains
@@ -72,6 +72,9 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %           angle of a vehicle does not have to instantaneously change
 %           from one position to another in order for a vehicle to remain
 %           centered on a path.
+%
+%      flag_is_a_loop: a flag used to indicate if the data forms a loop
+%      (default is 0).
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -131,7 +134,10 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %             ]
 % 2024_06_21 - Sean Brennan
 % -- added continuity_level as an input option
-
+% 2024_07_21 - Sean Brennan
+% -- fixed bug where segments joining with spirals are not trimmed to the
+% spiral connection points due to data being in a loop. fixed this by
+% adding: (flag_is_a_loop),
 
 %% Debugging and Input checks
 
@@ -139,7 +145,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
-if (nargin==5 && isequal(varargin{end},-1))
+if (nargin==6 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -182,7 +188,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs == 1
         % Are there the right number of inputs?
-        narginchk(3,5);
+        narginchk(3,6);
 
     end
 end
@@ -196,11 +202,19 @@ if (4<=nargin)
     end
 end
 
+% Does user want to specify flag_is_a_loop?
+flag_is_a_loop = 0;
+if (5<=nargin)
+    temp = varargin{2};
+    if ~isempty(temp)
+        flag_is_a_loop = temp;
+    end
+end
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if  (0==flag_max_speed) && (5<= nargin)
+if  (0==flag_max_speed) && (6<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -285,10 +299,6 @@ in_boundary_margin = 0.01;
 % Loop through fits, connecting them together
 for ith_fit = 1:NfitsInSequence-1
 
-    if ith_fit==5
-        disp('Stop here');
-    end
-
     fprintf(1,'Performing fit %.0d of %.0d\n',ith_fit,NfitsInSequence-1);
 
     current_fit_type = fcn_INTERNAL_covertComplexShapeNamesToSimpleNames(lastFit_type);
@@ -372,6 +382,50 @@ N_revisedFits = N_revisedFits+1;
 revised_fitSequence_types{N_revisedFits}      = lastFit_type; 
 revised_fitSequence_parameters{N_revisedFits} = lastFit_parameters; 
 
+%% Fix the situation where the data is in a loop
+if 1==flag_is_a_loop
+    % Loops always start and end on a segment.
+
+    % Find out how long segment 1 should be
+    segment_angle = revised_fitSequence_parameters{1}(1,3);
+    segment_unit_tangent_vector = [cos(segment_angle) sin(segment_angle)];
+
+    old_segment_start = revised_fitSequence_parameters{1}(1,1:2);
+    old_segment_length = revised_fitSequence_parameters{1}(1,4);
+    old_end_point = old_segment_start + segment_unit_tangent_vector*old_segment_length;
+
+    new_segment_start = revised_fitSequence_parameters{N_revisedFits}(1,1:2);
+    new_length = real(sum((old_end_point-new_segment_start).^2,2).^0.5);
+
+    % Update the parameter length
+    revised_fitSequence_parameters{N_revisedFits}(1,4) = new_length;
+
+    % If the data is in a loop, then the last segment is actually the same
+    % as the first one.
+    revised_fitSequence_types{1}      = revised_fitSequence_types{N_revisedFits};
+    revised_fitSequence_parameters{1} = revised_fitSequence_parameters{N_revisedFits};
+    
+
+    % Remove the last fit. This is not easy for cell arrays. Basically, we
+    % have to erase the entire variable and recreate it.
+    
+    % save a copy before clearing
+    temp_types = revised_fitSequence_types;
+    temp_parameters = revised_fitSequence_parameters;
+
+    % clear the variables
+    clear revised_fitSequence_types revised_fitSequence_parameters
+
+    % Refill, but only up to next to last
+    Nrevisedfits = (length(temp_types)-1);
+    revised_fitSequence_types{Nrevisedfits} = [];
+    revised_fitSequence_parameters{Nrevisedfits} = [];
+    for ith_fit = 1:Nrevisedfits
+        revised_fitSequence_types{ith_fit} = temp_types{ith_fit};
+        revised_fitSequence_parameters{ith_fit} = temp_parameters{ith_fit};
+    end
+end
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _
@@ -433,8 +487,12 @@ if flag_do_plots
     % Plot the aligned geometries on the left
     fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,[],[],(fig_num));
 
+
     % Match axis
     axis(good_axis);
+
+    % Print the results
+    fcn_geometry_printFitSequences(revised_fitSequence_types,revised_fitSequence_parameters);
 
 end % Ends check if plotting
 
@@ -541,22 +599,22 @@ switch X_fitType
             % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
 
             % Is a C2 solution feasible?
-            [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+            [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, ~, ~] = ...
             fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
 
             % If not C2, then is a C1 solution feasible?
             if 0==flag_is_feasible
                 C2_feasibility_distance = feasibility_distance;
-                [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+                [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, ~, ~] = ...
                     fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
                 if 0==flag_is_feasible
                     C1_feasibility_distance = feasibility_distance;
 
                     if C2_feasibility_distance<=C1_feasibility_distance
-                        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+                        [~, feasibility_distance, closest_feasible_arc2_parameters, ~, ~] = ...
                             fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
                     else
-                        [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
+                        [~, feasibility_distance, closest_feasible_arc2_parameters, ~, ~] = ...
                             fcn_geometry_isC1FeasibleArcToArc(arc_parameters, arc2_parameters, (transverse_threshold), (in_boundary_margin), (-1));
                     end
                     flag_is_feasible = 1; % FORCE the code to continue

@@ -76,7 +76,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %              heading,
 %             ]
 %            
-%            'Hough segment', 'Vector regression segment fit' - 
+%            'segment', 'Hough segment', 'Vector regression segment fit' - 
 %
 %             [
 %              base_point_x, 
@@ -90,7 +90,7 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 %                circleCenter_y,
 %                radius]
 % 
-%            'Hough arc', 'Regression arc' - 
+%            'arc', 'Hough arc', 'Regression arc' - 
 %
 %               [circleCenter_x.
 %                circleCenter_y,

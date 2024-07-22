@@ -302,7 +302,7 @@ else
                 K0                = parameters(1,5);
                 Kf                = parameters(1,6);
 
-                s_range = linspace(0,spiralLength,20);
+                s_range = linspace(0,spiralLength,ceil(spiralLength/segment_length));
                 [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s_range,spiralLength,h0,x0,y0,K0,Kf);
 
                 XY_data = [x_spiral,y_spiral];
