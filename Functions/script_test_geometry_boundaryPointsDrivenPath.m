@@ -5,6 +5,9 @@
 % 2024_07_18 - Aneesh Batchu
 % -- wrote the code originally
 
+% To-DO: 
+% Need to use "shift" (a varible name) to shift the boundary points
+
 %% Calculate the vehicle orientation
 
 vehicle_change_in_pose_XY = diff(VehiclePose(:,1:2));

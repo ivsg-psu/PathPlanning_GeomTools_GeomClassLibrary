@@ -1,8 +1,10 @@
-% This script follows the surface analysis schema step by step
 
-% Delete "fcn_geometry_classifyIntoGrids" after making this script into a
-% function
+%% script_test_geometry_updatedSurfaceAnalysis
+% This script follows the updated surface analysis schema step by step
 
+% Delete "fcn_geometry_classifyIntoGrids", "fcn_geometry_surfaceAnalysis"
+% and "script_test_geometry_surface_analysis" after making this script into
+% a function
 
 % Revision History
 % 2024_07_18 - Aneesh Batchu
@@ -13,12 +15,18 @@
 % This is done in "script_load_sample_LIDAR_data"
 % This is done in "script_plot_sample_data"
 
+% These scripts are in the main directory of Geom Class
+% Just "run" the scripts. You don't need to run section by section
+
 % concatenate_LiDAR_XYZ_points
 % concatenate_scanLine_rings
 
 %% STEP 2: Find the driven path (left and right side points) (Yet to be functionalized)
 
-% This is done in "script_test_geometry_boundaryPointsDrivenPath"
+% This is done in "script_test_geometry_boundaryPointsDrivenPath" 
+
+% This script can be found in "Functions" directory of "Geom Class" repo
+% Just "run" the script. You don't need to run section by section
 
 % boundary_points_driven_path
 % boundary_points_driven_path_LLA
@@ -906,7 +914,7 @@ legend_position = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_geometry_plotGridCenters(plot_gridCenters_driven_path,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
 
-%% plot drivable grids centers in ENU
+%% Find the nearest boundary points in ENU - DrB
 
 
 % Write the grid number at the grid center for reference. 
@@ -927,7 +935,9 @@ title('Grid centers of drivable and non-drivable grids in ENU')
 
 % plot(gridCenters_mapped_grids(:,1), )
 
-plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
+% plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
+p1 = plot(gridCenters_drivable_grids(:,1), gridCenters_drivable_grids(:,2), '.','MarkerSize',45,'Color',[0.4660 0.6740 0.1880],'DisplayName','Drivable grids');
+p2 = plot(gridCenters_non_drivable_grids(:,1), gridCenters_non_drivable_grids(:,2), '.','MarkerSize',45,'Color',[0.6350 0.0780 0.1840], 'DisplayName','Non-drivable grids');
 
 for ith_text = 1:length(original_mapped_grids(:,1))
     current_text = sprintf('%.0d',original_mapped_grids(ith_text));
@@ -937,20 +947,15 @@ for ith_text = 1:length(original_mapped_grids(:,1))
 end
 
 % plot true boundary points
-plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40)
-plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30)
+plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40, 'DisplayName','Boundary points');
+p3 = plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30, 'DisplayName','Boundary points');
 
 % % plot the grids in the driven path
-plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
+p4 = plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 1 0], 'LineWidth',2, 'DisplayName','Driven path grids'); % points strictly inside
+% % plot the grids in the driven path
+plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 0 0], 'LineWidth',0.5) % points strictly inside
 
-% % Sort the mapped grid centers in y direction 
-% 
-% % sort the y coordinates combinedGridCenters
-% [sorted_y_coord_mapped_gridCenters, sorted_mapped_gridCenters_indices] = sort(gridCenters_mapped_grids(:,2)); 
-% 
-% % Sorted mapped grid centers in y direction
-% sorted_mapped_gridCenters_in_y_coord = gridCenters_mapped_grids(sorted_mapped_gridCenters_indices, :); 
-
+% ----------------------- TRAVERSING TOP TO BOTTOM -------------------------
 % Create a combined grid center matrix of mapped grid centers and boundary
 % points
 combined_gridCenters = [gridCenters_mapped_grids; true_boundary_points];
@@ -1039,11 +1044,12 @@ for ith_grid_center = 1:length(unique_x_coord_driven_path)
 
 end
 
-plot(top_boundary_points(:,1), top_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
-plot(bottom_boundary_points(:,1), bottom_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
+% plot the top-bottom boundary points
+p5 = plot(top_boundary_points(:,1), top_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2, 'DisplayName','Nearest boundary points');
+p6 = plot(bottom_boundary_points(:,1), bottom_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2, 'DisplayName','Nearest boundary points'); 
 
 
-%% 
+% ----------------------- TRAVERSING LEFT TO RIGHT -------------------------
 
 % Indices of the sorted the combined Grid Centers in x direction in
 % ascending order
@@ -1129,15 +1135,16 @@ for ith_grid_center = 1:length(unique_y_coord_driven_path)
 
 end
 
+% plot the left-right boundary points
 if ~isempty(left_boundary_points)
     plot(left_boundary_points(:,1), left_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
 end
-plot(right_boundary_points(:,1), right_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
+p7 = plot(right_boundary_points(:,1), right_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2,'DisplayName','Nearest boundary points'); 
 
 
 
 
-
+legend([p1 p2 p3 p4 p5])
 
 
 
