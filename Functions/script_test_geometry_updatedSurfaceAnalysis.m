@@ -958,10 +958,46 @@ p4 = plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerS
 % % plot the grids in the driven path
 plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 0 0], 'LineWidth',0.5) % points strictly inside
 
+% Offset distance of a driven grid from a 
+offset_distance = grid_size/2;
+
+% Compute new points directly using matrix operations
+% Initialize matrices for new points
+top_points_driven_path = gridCenters_driven_path + [0, offset_distance];
+bottom_points_driven_path = gridCenters_driven_path - [0, offset_distance];
+left_points_driven_path = gridCenters_driven_path - [offset_distance, 0];
+right_points_driven_path = gridCenters_driven_path + [offset_distance, 0];
+
+plot(top_points_driven_path(:,1), top_points_driven_path(:,2), 'k.', 'MarkerSize', 20); 
+plot(bottom_points_driven_path(:,1), bottom_points_driven_path(:,2), 'k.', 'MarkerSize', 20); 
+plot(left_points_driven_path(:,1), left_points_driven_path(:,2), 'k.', 'MarkerSize', 20); 
+plot(right_points_driven_path(:,1), right_points_driven_path(:,2), 'k.', 'MarkerSize', 20); 
+
+contatenated_gridCenters_driven_path = [gridCenters_driven_path; top_points_driven_path; bottom_points_driven_path; left_points_driven_path; right_points_driven_path];
+
+% Compute new points directly using matrix operations
+% Initialize matrices for new points
+top_points_mapped_gridCenters = gridCenters_mapped_grids + [0, offset_distance];
+bottom_points_mapped_gridCenters = gridCenters_mapped_grids - [0, offset_distance];
+left_points_mapped_gridCenters = gridCenters_mapped_grids - [offset_distance, 0];
+right_points_mapped_gridCenters = gridCenters_mapped_grids + [offset_distance, 0];
+
+plot_points_mapped_gridCenters = 0; 
+if 1 == plot_points_mapped_gridCenters 
+    plot(top_points_mapped_gridCenters(:,1), top_points_mapped_gridCenters(:,2), 'k.', 'MarkerSize', 20);
+    plot(bottom_points_mapped_gridCenters(:,1), bottom_points_mapped_gridCenters(:,2), 'k.', 'MarkerSize', 20);
+    plot(left_points_mapped_gridCenters(:,1), left_points_mapped_gridCenters(:,2), 'k.', 'MarkerSize', 20);
+    plot(right_points_mapped_gridCenters(:,1), right_points_mapped_gridCenters(:,2), 'k.', 'MarkerSize', 20);
+end
+
+concatenated_gridCenters_mapped_grids = [gridCenters_mapped_grids; top_points_mapped_gridCenters; bottom_points_mapped_gridCenters; left_points_mapped_gridCenters; right_points_mapped_gridCenters];
+
 % ----------------------- TRAVERSING TOP TO BOTTOM -------------------------
 % Create a combined grid center matrix of mapped grid centers and boundary
 % points
 combined_gridCenters = [gridCenters_mapped_grids; true_boundary_points];
+% combined_gridCenters = [concatenated_gridCenters_mapped_grids; true_boundary_points];
+
 
 % Indices of the sorted the combined Grid Centers in y direction in
 % descending order
@@ -974,10 +1010,13 @@ sorted_combined_gridCenters_in_y_direction = combined_gridCenters(sorted_combine
 sorted_combined_gridCenters_in_y_direction = round(sorted_combined_gridCenters_in_y_direction,4); 
 
 % Indices of the sorted grid centers of the driven path in x direction
-[~, sorted_driven_path_gridCenters_indices_in_x_direction] = sort(gridCenters_driven_path(:,1));
+% [~, sorted_driven_path_gridCenters_indices_in_x_direction] = sort(gridCenters_driven_path(:,1));
+[~, sorted_driven_path_gridCenters_indices_in_x_direction] = sort(contatenated_gridCenters_driven_path(:,1));
 
 % Sorted driven path grid centers in x direction
-sorted_driven_path_gridCenters_in_x_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_x_direction, :); 
+% sorted_driven_path_gridCenters_in_x_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_x_direction, :); 
+sorted_driven_path_gridCenters_in_x_direction = contatenated_gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_x_direction, :); 
+
 
 % Round the sorted driven path gridcenters to the fourth decimal
 sorted_driven_path_gridCenters_in_x_direction = round(sorted_driven_path_gridCenters_in_x_direction,4); 
@@ -1034,7 +1073,11 @@ for ith_grid_center = 1:length(unique_x_coord_driven_path)
     for bottom_grid = 1:total_bottom_gridCenters
         % Find the odd number in the top preliminary output. That grid
         % index indicate the grid center of the bottom boundary point
-        bottom_index_offset = total_top_gridCenters + 1; 
+        if sum(scaled_y_coordinate_difference == 0) == 1
+            bottom_index_offset = total_top_gridCenters + 1;
+        else
+            bottom_index_offset = total_top_gridCenters;
+        end
         if (mod(scaled_y_coordinate_difference(bottom_index_offset+bottom_grid),2) == 1)
             % The bottom boundary point index from the top
             bottom_boundary_point_index = bottom_index_offset + bottom_grid;
@@ -1065,10 +1108,12 @@ sorted_combined_gridCenters_in_x_direction = combined_gridCenters(sorted_combine
 sorted_combined_gridCenters_in_x_direction = round(sorted_combined_gridCenters_in_x_direction,4); 
 
 % Indices of the sorted grid centers of the driven path in y direction
-[~, sorted_driven_path_gridCenters_indices_in_y_direction] = sort(gridCenters_driven_path(:,2));
+% [~, sorted_driven_path_gridCenters_indices_in_y_direction] = sort(gridCenters_driven_path(:,2));
+[~, sorted_driven_path_gridCenters_indices_in_y_direction] = sort(contatenated_gridCenters_driven_path(:,2));
 
 % Sorted driven path grid centers in y direction
-sorted_driven_path_gridCenters_in_y_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_y_direction, :); 
+% sorted_driven_path_gridCenters_in_y_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_y_direction, :); 
+sorted_driven_path_gridCenters_in_y_direction = contatenated_gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_y_direction, :); 
 
 % Round the sorted driven path gridcenters to the fourth decimal
 sorted_driven_path_gridCenters_in_y_direction = round(sorted_driven_path_gridCenters_in_y_direction,4); 
@@ -1125,7 +1170,12 @@ for ith_grid_center = 1:length(unique_y_coord_driven_path)
     for right_grid = 1:total_right_gridCenters
         % Find the odd number in the top preliminary output. That grid
         % index indicate the grid center of the bottom boundary point
-        right_index_offset = total_left_gridCenters + 1; 
+        if sum(scaled_x_coordinate_difference == 0) == 1
+            right_index_offset = total_left_gridCenters + 1;
+        else
+            right_index_offset = total_left_gridCenters;
+        end
+
         if (mod(scaled_x_coordinate_difference(right_index_offset+right_grid),2) == 1)
             % The bottom boundary point index from the top
             right_boundary_point_index = right_index_offset + right_grid;
@@ -1139,11 +1189,10 @@ for ith_grid_center = 1:length(unique_y_coord_driven_path)
 end
 
 % plot the left-right boundary points
-if ~isempty(left_boundary_points)
+if ~isempty(left_boundary_points)       
     plot(left_boundary_points(:,1), left_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
 end
 p7 = plot(right_boundary_points(:,1), right_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2,'DisplayName','Nearest boundary points'); 
-
 
 
 
