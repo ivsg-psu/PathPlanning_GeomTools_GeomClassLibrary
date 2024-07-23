@@ -191,8 +191,6 @@ end
 
 %% STEP 5: Plot grid centers and boundary points in a same figure in ENU
 
-
-
 % "inpolygon" is used to find the grids within the boundary points 
 [in,on] = inpolygon(gridCenters_greater_than_zero_point_density(:,1),gridCenters_greater_than_zero_point_density(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
 
@@ -208,6 +206,8 @@ total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(origi
 % Total points in each grid with points greater than zero
 total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(grids_greater_than_zero_points); 
 
+% Grid centers of the driven path
+gridCenters_driven_path = [gridCenters_greater_than_zero_point_density(in,1),gridCenters_greater_than_zero_point_density(in,2)];
 
 
 fig_num_gridCenters_and_boundary_points_greater_than_zero = 51;
@@ -896,8 +896,243 @@ legend_position = [];
 [~] = fcn_geometry_plotGridCenters(plot_true_boundary_points,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
 
 
+% plot driven path
+marker_size = 30;
+RGB_triplet = [0 0 1]; 
+legend_option = 0;
+legend_name = 'Driven path grids';
+legend_position = [];
+
+plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
+[~] = fcn_geometry_plotGridCenters(plot_gridCenters_driven_path,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+
+%% plot drivable grids centers in ENU
 
 
+% Write the grid number at the grid center for reference. 
+
+fig_num = 3332; 
+figure(fig_num);clf;
+
+hold on
+axis on
+grid on 
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Grid centers of drivable and non-drivable grids in ENU')
+
+% gridCenters_drivable_grids
+% 
+% gridCenters_non_drivable_grids
+
+% plot(gridCenters_mapped_grids(:,1), )
+
+plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
+
+for ith_text = 1:length(original_mapped_grids(:,1))
+    current_text = sprintf('%.0d',original_mapped_grids(ith_text));
+
+    % Place the text on the grid center
+    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[1, 1, 0],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+end
+
+% plot true boundary points
+plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40)
+plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30)
+
+% % plot the grids in the driven path
+plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
+
+% % Sort the mapped grid centers in y direction 
+% 
+% % sort the y coordinates combinedGridCenters
+% [sorted_y_coord_mapped_gridCenters, sorted_mapped_gridCenters_indices] = sort(gridCenters_mapped_grids(:,2)); 
+% 
+% % Sorted mapped grid centers in y direction
+% sorted_mapped_gridCenters_in_y_coord = gridCenters_mapped_grids(sorted_mapped_gridCenters_indices, :); 
+
+% Create a combined grid center matrix of mapped grid centers and boundary
+% points
+combined_gridCenters = [gridCenters_mapped_grids; true_boundary_points];
+
+% Indices of the sorted the combined Grid Centers in y direction in
+% descending order
+[~, sorted_combined_gridCenters_indices_in_y_direction] = sort(combined_gridCenters(:,2),'descend'); 
+
+% Sorted combined grid centers in y direction in descending order
+sorted_combined_gridCenters_in_y_direction = combined_gridCenters(sorted_combined_gridCenters_indices_in_y_direction, :); 
+
+% Round the sorted combined gridcenters to the fourth decimal
+sorted_combined_gridCenters_in_y_direction = round(sorted_combined_gridCenters_in_y_direction,4); 
+
+% Indices of the sorted grid centers of the driven path in x direction
+[~, sorted_driven_path_gridCenters_indices_in_x_direction] = sort(gridCenters_driven_path(:,1));
+
+% Sorted driven path grid centers in x direction
+sorted_driven_path_gridCenters_in_x_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_x_direction, :); 
+
+% Round the sorted driven path gridcenters to the fourth decimal
+sorted_driven_path_gridCenters_in_x_direction = round(sorted_driven_path_gridCenters_in_x_direction,4); 
+
+% Find unique x coordinates of driven path grid centers
+[unique_x_coord_driven_path, unique_x_coor_driven_path_index] = unique(sorted_driven_path_gridCenters_in_x_direction(:,1)); 
+
+% Unique grid centers of driven path sorted in x direction
+driven_path_gridCenters_sorted_in_x_direction = sorted_driven_path_gridCenters_in_x_direction(unique_x_coor_driven_path_index,:);
+
+% Declare the top and bottom boundary points matrices
+top_boundary_points = []; 
+bottom_boundary_points = []; 
+
+% This loop traverse the points from top to bottom 
+for ith_grid_center = 1:length(unique_x_coord_driven_path)
+
+    % Store the indices of grid centers whose x coordinates match with the
+    % x coordinates of driven path
+    matching_gridIndices = find(sorted_combined_gridCenters_in_y_direction(:,1) == unique_x_coord_driven_path(ith_grid_center)); 
+    
+    % Get the matched grid centers using the stored indices
+    matched_gridCenters = sorted_combined_gridCenters_in_y_direction(matching_gridIndices,:); 
+
+    % Find the difference of y coordinate of driven path grid center
+    % sorted in x direction from y coordinates of matched grid centers
+    y_coordinate_difference = matched_gridCenters(:,2) - driven_path_gridCenters_sorted_in_x_direction(ith_grid_center, 2);
+
+    % Divide the above output with grid size and multiply with 2. The odd
+    % number in the output indicates the grid center
+    scaled_y_coordinate_difference = (y_coordinate_difference/grid_size)*2; 
+    
+    % Total number of top grid centers + bpoundary points
+    total_top_gridCenters = sum(scaled_y_coordinate_difference > 0);
+    
+    % Traverse top grids from the driven path grid center
+    for top_grid = total_top_gridCenters:-1:1
+        % Find the odd number in the top preliminary output. That grid
+        % index indicate the grid center of the top boundary point
+        if (mod(scaled_y_coordinate_difference(top_grid),2) == 1)
+            % The top boundary point index from the top
+            top_boundary_point_index = top_grid;
+            % Top boundary points
+            top_boundary_points = [top_boundary_points; matched_gridCenters(top_boundary_point_index,:)]; %#ok<AGROW>
+            break
+        end
+        top_boundary_point_index = NaN;  
+    end
+
+    % Total number of bottom grids
+    total_bottom_gridCenters = sum(scaled_y_coordinate_difference < 0);
+
+    % Traverse bottom grids from the driven path grid center
+    for bottom_grid = 1:total_bottom_gridCenters
+        % Find the odd number in the top preliminary output. That grid
+        % index indicate the grid center of the bottom boundary point
+        bottom_index_offset = total_top_gridCenters + 1; 
+        if (mod(scaled_y_coordinate_difference(bottom_index_offset+bottom_grid),2) == 1)
+            % The bottom boundary point index from the top
+            bottom_boundary_point_index = bottom_index_offset + bottom_grid;
+            % bottom boundary points
+            bottom_boundary_points = [bottom_boundary_points; matched_gridCenters(bottom_boundary_point_index,:)]; %#ok<AGROW>
+            break
+        end
+        bottom_boundary_point_index = NaN; 
+    end
+
+end
+
+plot(top_boundary_points(:,1), top_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
+plot(bottom_boundary_points(:,1), bottom_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
+
+
+%% 
+
+% Indices of the sorted the combined Grid Centers in x direction in
+% ascending order
+[~, sorted_combined_gridCenters_indices_in_x_direction] = sort(combined_gridCenters(:,1)); 
+
+% Sorted combined grid centers in x direction in descending order
+sorted_combined_gridCenters_in_x_direction = combined_gridCenters(sorted_combined_gridCenters_indices_in_x_direction, :); 
+
+% Round the sorted combined gridcenters to the fourth decimal
+sorted_combined_gridCenters_in_x_direction = round(sorted_combined_gridCenters_in_x_direction,4); 
+
+% Indices of the sorted grid centers of the driven path in y direction
+[~, sorted_driven_path_gridCenters_indices_in_y_direction] = sort(gridCenters_driven_path(:,2));
+
+% Sorted driven path grid centers in y direction
+sorted_driven_path_gridCenters_in_y_direction = gridCenters_driven_path(sorted_driven_path_gridCenters_indices_in_y_direction, :); 
+
+% Round the sorted driven path gridcenters to the fourth decimal
+sorted_driven_path_gridCenters_in_y_direction = round(sorted_driven_path_gridCenters_in_y_direction,4); 
+
+% Find unique y coordinates of driven path grid centers
+[unique_y_coord_driven_path, unique_y_coor_driven_path_index] = unique(sorted_driven_path_gridCenters_in_y_direction(:,2)); 
+
+% Unique grid centers of driven path sorted in x direction
+driven_path_gridCenters_sorted_in_y_direction = sorted_driven_path_gridCenters_in_y_direction(unique_y_coor_driven_path_index,:);
+
+% Declare the top and bottom boundary points matrices
+left_boundary_points = []; 
+right_boundary_points = []; 
+
+% This loop traverse the points from left to right 
+for ith_grid_center = 1:length(unique_y_coord_driven_path)
+
+    % Store the indices of grid centers whose y coordinates match with the
+    % y coordinates of driven path
+    matching_gridIndices = find(sorted_combined_gridCenters_in_x_direction(:,2) == unique_y_coord_driven_path(ith_grid_center)); 
+    
+    % Get the matched grid centers using the stored indices
+    matched_gridCenters = sorted_combined_gridCenters_in_x_direction(matching_gridIndices,:); 
+
+    % Find the difference of x coordinate of driven path grid center
+    % sorted in y direction from x coordinates of matched grid centers
+    x_coordinate_difference = matched_gridCenters(:,1) - driven_path_gridCenters_sorted_in_y_direction(ith_grid_center, 1);
+
+    % Divide the above output with grid size and multiply with 2. The odd
+    % number in the output indicates the grid center
+    scaled_x_coordinate_difference = (x_coordinate_difference/grid_size)*2; 
+    
+    % Total number of top grid centers + bpoundary points
+    total_left_gridCenters = sum(scaled_x_coordinate_difference < 0);
+    
+    % Traverse top grids from the driven path grid center
+    for left_grid = total_left_gridCenters:-1:1
+        % Find the odd number in the top preliminary output. That grid
+        % index indicate the grid center of the top boundary point
+        if (mod(scaled_x_coordinate_difference(left_grid),2) == 1)
+            % The top boundary point index from the top
+            left_boundary_point_index = left_grid;
+            % Top boundary points
+            left_boundary_points = [left_boundary_points; matched_gridCenters(left_boundary_point_index,:)]; %#ok<AGROW>
+            break
+        end
+        left_boundary_point_index = NaN; 
+    end
+
+    % Total number of bottom grids
+    total_right_gridCenters = sum(scaled_x_coordinate_difference > 0);
+
+    % Traverse bottom grids from the driven path grid center
+    for right_grid = 1:total_right_gridCenters
+        % Find the odd number in the top preliminary output. That grid
+        % index indicate the grid center of the bottom boundary point
+        right_index_offset = total_left_gridCenters + 1; 
+        if (mod(scaled_x_coordinate_difference(right_index_offset+right_grid),2) == 1)
+            % The bottom boundary point index from the top
+            right_boundary_point_index = right_index_offset + right_grid;
+            % bottom boundary points
+            right_boundary_points = [right_boundary_points; matched_gridCenters(right_boundary_point_index,:)]; %#ok<AGROW>
+            break
+        end
+        right_boundary_point_index = NaN; 
+    end
+
+end
+
+if ~isempty(left_boundary_points)
+    plot(left_boundary_points(:,1), left_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
+end
+plot(right_boundary_points(:,1), right_boundary_points(:,2), 'o','MarkerSize',20,'Color',[1 0 0], 'LineWidth',2)
 
 
 
