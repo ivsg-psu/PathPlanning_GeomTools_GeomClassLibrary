@@ -916,6 +916,9 @@ plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenter
 
 %% Find the nearest boundary points in ENU - DrB
 
+% Instructions
+% Run this script, after running the scripts in STEP 1 and STEP 2. 
+
 
 % Write the grid number at the grid center for reference. 
 
