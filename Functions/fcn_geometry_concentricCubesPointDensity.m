@@ -222,13 +222,13 @@ if flag_create_diagonal == 1
         diag_ext_area = y_ext <= x_ext;
         diag_int_area = y_int <= x_int;
 
-        x_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(x_ext(diag_ext_area),1),1) * noise;
-        y_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(y_ext(diag_ext_area),1),1) * noise;
-        z_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(z_ext(diag_ext_area),1),1) * noise;
+        x_ext_disp = (2*rand(size(x_ext(diag_ext_area),1),1) - 1) * spacing_ext * noise;
+        y_ext_disp = (2*rand(size(y_ext(diag_ext_area),1),1) - 1) * spacing_ext * noise;
+        z_ext_disp = (2*rand(size(z_ext(diag_ext_area),1),1) - 1) * spacing_ext * noise;
 
-        x_int_disp = -spacing_int + (spacing_int*2)*rand(size(x_int(diag_int_area),1),1) * noise;
-        y_int_disp = -spacing_int + (spacing_int*2)*rand(size(y_int(diag_int_area),1),1) * noise;
-        z_int_disp = -spacing_int + (spacing_int*2)*rand(size(z_int(diag_int_area),1),1) * noise;
+        x_int_disp = (2*rand(size(x_int(diag_int_area),1),1) - 1) * spacing_int * noise;
+        y_int_disp = (2*rand(size(y_int(diag_int_area),1),1) - 1) * spacing_int * noise;
+        z_int_disp = (2*rand(size(z_int(diag_int_area),1),1) - 1) * spacing_int * noise;
 
 
         x_ext(diag_ext_area)=x_ext(diag_ext_area)+x_ext_disp;
@@ -245,13 +245,13 @@ end
 %If no diagonal flag is present
 if flag_create_diagonal == 0
     if noise ~= 0
-        x_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(x_ext,1),1) * noise;
-        y_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(y_ext,1),1) * noise;
-        z_ext_disp = -spacing_ext + (spacing_ext*2)*rand(size(z_ext,1),1) * noise;
+        x_ext_disp = (2*rand(size(x_ext,1),1) - 1) * spacing_ext * noise;
+        y_ext_disp = (2*rand(size(y_ext,1),1) - 1) * spacing_ext * noise;
+        z_ext_disp = (2*rand(size(z_ext,1),1) - 1) * spacing_ext * noise;
 
-        x_int_disp = -spacing_int + (spacing_int*2)*rand(size(x_int,1),1) * noise;
-        y_int_disp = -spacing_int + (spacing_int*2)*rand(size(y_int,1),1) * noise;
-        z_int_disp = -spacing_int + (spacing_int*2)*rand(size(z_int,1),1) * noise;
+        x_int_disp = (2*rand(size(x_int,1),1) - 1) * spacing_int * noise;
+        y_int_disp = (2*rand(size(y_int,1),1) - 1) * spacing_int * noise;
+        z_int_disp = (2*rand(size(z_int,1),1) - 1) * spacing_int * noise;
     end
 
 
