@@ -1,20 +1,17 @@
-function [boundary_points_driven_path]...
+function [boundary_points_driven_path,shift_distance]...
     = fcn_geometry_boundaryPointsDrivenPath( ...
         VehiclePose, ...
-        boundaryLineNumber_start, ...
-        boundaryLineNumber_end, ...
-        fig_num, ...
-        ENU_3D_fig_num, ...
-        LLA_fig_num, ...
         varargin)
 % This function is written to find the boundary points of driven path
 %
 % FORMAT: 
-% [z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
-% = fcn_geometry_plotLidarDeviation(cell_start,cell_end,color_map...
-% ,(file_name)(fig1),(fig2),(fig3));
+%
+%       [z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
+%       = fcn_geometry_plotLidarDeviation(cell_start,cell_end,color_map...
+%       ,(file_name)(fig1),(fig2),(fig3));
 %
 % INPUTS:
+%
 %       cell_start: starting cell
 %       cell_end: ending cell
 %       color_map: color map to plot the points in
@@ -26,15 +23,18 @@ function [boundary_points_driven_path]...
 %       fig_3: Label for figure 3
 %
 % OUTPUTS:
-%   z, mean_z, deviation_from_mean
-%   angles, mean_angle,angle_difference
+%
+%       z, mean_z, deviation_from_mean
+%       angles, mean_angle,angle_difference
 %
 % DEPENDENCIES:
-%    The script must either have existing LiDAR_ENU_cell or import a file
+%
+%       The script must either have existing LiDAR_ENU_cell or import a file
 %
 % EXAMPLES:
-%   See the script:
-%   script_test_fcn_geometry_plotLidarDeviation
+%
+%       See the script:
+%       script_test_fcn_geometry_plotLidarDeviation
 %
 %
 % Revision History
@@ -45,37 +45,6 @@ function [boundary_points_driven_path]...
 % 
 
 
-%Example:[z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
-% = fcn_geometry_plotLidarDeviation(50,59,'jet','TestTrack_Entire_Loop',...
-% 111,222,333);
-
-%% Debug and Max speed
-% Check if flag_max_speed set. This occurs if the fig_num variable input
-% argument (varargin) is given a number of -1, which is not a valid figure
-% number.
-
-
-
-flag_max_speed = 0;
-if (nargin==6 && isequal(varargin{end},-1))
-    flag_do_debug = 0; % Flag to plot the results for debugging
-    flag_max_speed = 1;
-else
-    % Check to see if we are externally setting debug mode to be "on"
-    flag_do_debug = 0; % Flag to plot the results for debugging
-    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
-    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
-    if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
-    end
-end
-if flag_do_debug
-    st = dbstack; %#ok<*UNRCH>
-    fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
-else
-    debug_fig_num = []; %#ok<NASGU>
-end
 
 
 %% check input arguments
@@ -93,14 +62,14 @@ end
 
 if flag_max_speed == 0
     % Are there the right number of inputs?
-    narginchk(6,6);
+    narginchk(3,4);
 end
 
 %file name if needed
 if 4<= nargin
     temp = varargin{1};
     if ~isempty(temp)
-        file_name=temp;
+        file_name=temp;%#ok<NASGU>
     end
 end
 
