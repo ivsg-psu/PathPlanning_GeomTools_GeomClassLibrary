@@ -4,39 +4,46 @@
 
 fig_num = 1;
 % Find the max and min of X and Y
-max_x = max(true_boundary_points(:,1));
-min_x = min(true_boundary_points(:,1));
-max_y = max(true_boundary_points(:,2));
-min_y = min(true_boundary_points(:,2));
+max_x = max(gridCenters_non_drivable_grids(:,1));
+min_x = min(gridCenters_non_drivable_grids(:,1));
+max_y = max(gridCenters_non_drivable_grids(:,2));
+min_y = min(gridCenters_non_drivable_grids(:,2));
 
 
 % Find the length of x and y coordination, in this example, 
 % 0.625 is the distance between points. 
-x_range = (min_x:0.625:max_x)'; 
-y_range = (min_y:0.625:max_y)';
+x_range = (min_x:1.25:max_x)'; 
+y_range = (min_y:1.25:max_y)';
 
 % Find the indices of each point in term of X and Y
-[~, indice_X] = ismember(true_boundary_points(:,1),x_range);
-[~, indice_Y] = ismember(true_boundary_points(:,2),y_range);
-
-
-
+[~, indice_X] = ismember(gridCenters_non_drivable_grids(:,1),x_range);
+[~, indice_Y] = ismember(gridCenters_non_drivable_grids(:,2),y_range);
 z = zeros(length(x_range),length(y_range));
-
-% Convert subscript indices to linear indices
-linear_indices = sub2ind(size(z), indice_Y, indice_X);
-
-% Assign the value 1 to the specified positions
-z(linear_indices) = 1;
-
- 
+for ith = 1:length(indice_Y)
+    z(indice_Y(ith),indice_X(ith)) = 1;
+end
 border_only_test_grid = z;
-drive_path_rows_columns = gridCenters_driven_path;
+
+
+
+% Find the max and min of X and Y
+max_x = max(gridCenters_driven_path(:,1));
+min_x = min(gridCenters_driven_path(:,1));
+max_y = max(gridCenters_driven_path(:,2));
+min_y = min(gridCenters_driven_path(:,2));
+
+
+
+% Find the indices of each point in term of X and Y
+[~, indice_X] = ismember(gridCenters_driven_path(:,1),x_range);
+[~, indice_Y] = ismember(gridCenters_driven_path(:,2),y_range);
+drive_path_rows_columns = [indice_Y,indice_X];
+
 true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
 
 
 
-
+%%
 % Dr B code 
 function true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num)
 flag_do_debug = 1;
