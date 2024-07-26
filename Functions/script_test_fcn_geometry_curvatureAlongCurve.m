@@ -215,7 +215,7 @@ plot(shifted_points(is_island,1),shifted_points(is_island,2),'r.','MarkerSize',2
 fig_num = 67543;
 island_ranges = fcn_INTERNAL_curvatureGroupAssignment(shifted_points, is_island, fig_num);
 
-%% Use extractModelsUsingSNRs to convert each island into arcs
+%% Use extractModelsUsingSNRs to convert each island into C2 arcs
 SNR_threshold = 30;
 
 clear arc_islands
@@ -226,13 +226,24 @@ for ith_island = 1:length(island_ranges)
 
     % [arc_parameters, model_SNRs, sorted_model_fit_ID_at_each_index] = fcn_INTERNAL_extractModelsUsingSNRs(shifted_points, this_island_range, SNR_threshold);
 
+
+
+    % Steps:
+    % For each island, extractModelsFromCurvature function does the following
+    % STEP1:  find full curvatures and SNRs
+    % STEP2:  use the curvature SNRs to extract models at each island, recording model at each index
+    % STEP3:  order the models in each island to be in correct order
+    % STEP4:  ensure arcs have C2 continuity
+
+    this_island_points = shifted_points(this_island_range,:);
+
     % STEP1: Calculate the full curvatures and SNRs of this data
     debug_fig_num = 2346;
     data_width = []; % Default is to use all possible points
     [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
 
     % STEP2: Use the curvature SNRs to extract models
-    fig_num = 75655; % URHERE - Fix plotting so different models are different colors
+    fig_num = 75655;
     [best_fit_arcs, best_fit_SNRs, ~, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
 
     % STEP3: order the models to be in correct order so that 1st model is
@@ -241,10 +252,13 @@ for ith_island = 1:length(island_ranges)
     all_segments = [];
     [~, ~, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, ~] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
 
+    %% URHERE
     % STEP4: ensure arcs have C2 continuity
     fig_num = 75633;
-    arc_parameters = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, fig_num);
+    arc_parameters = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, shifted_points, fig_num);
 
+
+%%
     % Save results of the island calculation
     arc_islands(ith_island).this_island_range = this_island_range;
     arc_islands(ith_island).this_island_points = this_island_points;
@@ -253,7 +267,8 @@ for ith_island = 1:length(island_ranges)
     arc_islands(ith_island).model_SNRs = model_SNRs;
    
 end
-%% Save the results into one matrix
+%% Save the different island results into one matrix
+
 % Initialize model fits
 entire_model_fit_ID_at_each_index = nan*shifted_points(:,1);
 entire_arc_matrix_C2 = [];
@@ -293,7 +308,7 @@ for ith_island = 1:length(island_ranges)
 end
 
 
-%% Fill the unfilled areas with line segments
+%% Connect the islands with C2 line segments
 
 NumFitsGood = length(entire_arc_matrix_C2(:,1));
 revised_entire_model_fit_ID_at_each_index = entire_model_fit_ID_at_each_index;
@@ -545,7 +560,7 @@ end
 end % Ends fcn_INTERNAL_curvatureGroupAssignment
 
 %% fcn_INTERNAL_extractModelsUsingSNRs
-function [entire_arc_matrix_C2, entire_model_fit_ID_at_each_index, entire_model_SNRs] = fcn_INTERNAL_extractModelsUsingSNRs(shifted_points, island_ranges, SNR_threshold)
+function [arc_parameters, model_SNRs, sorted_model_fit_ID_at_each_index] = fcn_INTERNAL_extractModelsUsingSNRs(shifted_points, this_island_range, SNR_threshold)
 % Steps:
 % For each island, extractModelsFromCurvature function does the following
 % STEP1:  find full curvatures and SNRs
@@ -553,59 +568,28 @@ function [entire_arc_matrix_C2, entire_model_fit_ID_at_each_index, entire_model_
 % STEP3:  order the models in each island to be in correct order
 % STEP4:  ensure arcs have C2 continuity
 
-Npoints = length(shifted_points(:,1));
-entire_model_fit_ID_at_each_index = nan(Npoints,1);
-entire_arc_matrix_C2 = [];
-entire_model_SNRs = [];
-Nmodels = 0;
+this_island_points = shifted_points(this_island_range,:);
 
-for ith_island = 1:length(island_ranges)
-    this_island_range = island_ranges{ith_island};
-    this_island_points = shifted_points(this_island_range,:);
+% STEP1: Calculate the full curvatures and SNRs of this data
+debug_fig_num = 2346;
+data_width = []; % Default is to use all possible points
+[curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
 
-    % STEP1: Calculate the full curvatures and SNRs of this data
-    debug_fig_num = 2346;
-    data_width = []; % Default is to use all possible points
-    [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
+% STEP2: Use the curvature SNRs to extract models
+fig_num = 75655; 
+[best_fit_arcs, best_fit_SNRs, ~, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
 
-    % STEP2: Use the curvature SNRs to extract models
-    fig_num = 75655;
-    [best_fit_arcs, best_fit_SNRs, ~, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
+% STEP3: order the models to be in correct order so that 1st model is
+% the first one encountered, 2nd model is 2nd, etc.
+fig_num = 383834;
+all_segments = [];
+[~, ~, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, ~] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
 
-    % STEP3: order the models to be in correct order
-    fig_num = 383834;
-    all_segments = [];
-    [~, ~, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, ~] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
-
-    % STEP4: ensure arcs have C2 continuity
-    fig_num = 75633;
-    arc_matrix_C2 = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, fig_num);
+% STEP4: ensure arcs have C2 continuity
+fig_num = 75633;
+arc_parameters = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, this_island_points, fig_num);
 
 
-    % Update the model IDs
-    % Set any unfilled (zero) values to NaN
-    sorted_model_fit_ID_at_each_index(sorted_model_fit_ID_at_each_index==0) = nan;
-
-    % Offset all the model IDs that were just measured so they match the
-    % rows of the updated parameter list
-    offset_model_fit_ID_at_each_index = Nmodels + sorted_model_fit_ID_at_each_index;
-
-    % Copy these data into the correct range area.
-    entire_model_fit_ID_at_each_index(this_island_range) = offset_model_fit_ID_at_each_index;
-
-    % Update the parameter lists 
-    entire_arc_matrix_C2 = [entire_arc_matrix_C2; arc_matrix_C2]; %#ok<AGROW>
-
-    % Update the count of the number of models, for the next round of the
-    % loop
-    if ~isempty(entire_arc_matrix_C2)
-        Nmodels = length(entire_arc_matrix_C2(:,1));
-    end
-
-    % Update the SNRs
-    entire_model_SNRs = [entire_model_SNRs; model_SNRs]; %#ok<AGROW>
-
-end
 end % Ends fcn_INTERNAL_extractModelsUsingSNRs
 
 
@@ -695,11 +679,7 @@ while ~all(isnan(remaining_curvature_SNRs))
 
 
         % Plot the index range
-        try
-            plot(this_island_points(this_index_range,1),this_island_points(this_index_range,2),'m.','MarkerSize',10)
-        catch
-            disp('Stop here');
-        end
+        plot(this_island_points(this_index_range,1),this_island_points(this_index_range,2),'m.','MarkerSize',10)
 
         % Plot the max SNR point
         plot(this_island_points(best_SNR_index,1),this_island_points(best_SNR_index,2),'g.','MarkerSize',30)
@@ -812,8 +792,12 @@ if ~isempty(fig_num)
     ylabel('Y [m]');
 
     % Plot the results
-    for ith_arc = 1:length(best_fit_arcs(:,1))
-        fcn_geometry_plotGeometry('arc',best_fit_arcs(ith_arc,:));
+    Narcs = length(best_fit_arcs(:,1));
+    for ith_arc = 1:Narcs
+        color_vector = fcn_geometry_fillColorFromNumberOrName(ith_arc);
+        line_width = 2*Narcs - 2*ith_arc + 3;
+        format_string = sprintf(' ''-'',''Color'',[%.2f %.2f %.2f],''LineWidth'',%.0d ', color_vector(1,1), color_vector(1,2), color_vector(1,3), line_width);
+        fcn_geometry_plotGeometry('arc',best_fit_arcs(ith_arc,:),[],format_string);
     end
 
     % Plot the input points
@@ -908,7 +892,7 @@ end % Ends fcn_INTERNAL_curvatureModelSort
 
 
 %% fcn_INTERNAL_alignArcsBySNRC2
-function arc_matrix_C2 = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, best_fit_number_at_each_index, fig_num)
+function arc_matrix_C2 = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, best_fit_number_at_each_index, this_island_points, fig_num)
 % Given fitSequence_fitTypes that are all arcs, and the arc's
 % fitSequence_parameters with a SNR for each arc fit, goes through the arcs
 % in order of SNR from highest to lowest, making sure that each arc is C2
@@ -948,12 +932,15 @@ for ith_arc = 1:NumArcs
     fitSequence_fitTypes{ith_arc} = 'arc';
     fitSequence_parameters{ith_arc} = arc_matrix(ith_arc,:);
 end
+
+% Plot all the arcs as grey
 fcn_geometry_plotFitSequences(fitSequence_fitTypes, fitSequence_parameters,[],[0.2 0.2 0.2],(fig_num));
 
 % Proceed through the arcs from highest SNR to lowest
 for ith_arc_ranking = 1:NumArcs
     this_arc = sort_order(ith_arc_ranking);
-    fcn_geometry_plotGeometry('arc',arc_matrix(this_arc,:),[],[1 0 0],fig_num);
+    color_number = fcn_geometry_fillColorFromNumberOrName(ith_arc_ranking);
+    fcn_geometry_plotGeometry('arc',arc_matrix(this_arc,:),[],color_number,fig_num);
 
     if ith_arc_ranking>1
 
@@ -968,13 +955,20 @@ for ith_arc_ranking = 1:NumArcs
             adjacent_after_model = [];
         end
 
-        % Only worry about rankings that are lower than this one
+        % Which models are adjacent to this one?
         adjacent_models = [adjacent_before_model; adjacent_after_model];
+        
+        % What are the rankings of the adjacent models?
         rankings_to_check = inverse_sort_order(adjacent_models);
+
+        % Only worry about rankings that are lower than this one. Rankings
+        % that are lower are ones that are "fixed", such that this model
+        % must move around to accomodate these prior better-fitting models.
         rankings_to_check = rankings_to_check(rankings_to_check<ith_arc_ranking);
                 
-        % Take the minimum of all the adjacent rankings. If all adjacent
-        % rankings are Nan, this returns NaN
+        % Take the minimum of all the adjacent rankings... this is the
+        % highest-ranked adjacent model, and we want to start with that
+        % one. If all adjacent rankings are Nan, this returns NaN
         [priority_ranking, index_match] = min(rankings_to_check);
 
         % Get the lowest ranked (e.g. best) arc that is adjacent, and use
@@ -995,6 +989,16 @@ for ith_arc_ranking = 1:NumArcs
             % % Perform C1 continuity 
             % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
             %     % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+        else
+            % Optimize the feasiblity
+            % Align fits to each other to ensure C2 continuity
+            fig_num = 12121;
+            figure(fig_num);
+            clf;
+            flag_is_a_loop = 0;
+            continuity_level = 2;
+            [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
+                arc_matrix(adjacent_model_to_prioritize,:), arc_matrix(this_arc,:), (threshold), (continuity_level), (fig_num));
 
         end
 
