@@ -217,14 +217,86 @@ island_ranges = fcn_INTERNAL_curvatureGroupAssignment(shifted_points, is_island,
 
 %% Use extractModelsUsingSNRs to convert each island into arcs
 SNR_threshold = 30;
-[entire_arc_matrix_C2, entire_model_fit_ID_at_each_index, entire_model_SNRs] = fcn_INTERNAL_extractModelsUsingSNRs(shifted_points, island_ranges, SNR_threshold);
+
+clear arc_islands
+arc_islands(length(island_ranges)) = struct;
+for ith_island = 1:length(island_ranges)
+    this_island_range = island_ranges{ith_island};
+    this_island_points = shifted_points(this_island_range,:);
+
+    % [arc_parameters, model_SNRs, sorted_model_fit_ID_at_each_index] = fcn_INTERNAL_extractModelsUsingSNRs(shifted_points, this_island_range, SNR_threshold);
+
+    % STEP1: Calculate the full curvatures and SNRs of this data
+    debug_fig_num = 2346;
+    data_width = []; % Default is to use all possible points
+    [curvatures, arc_centers, index_ranges, point_curvature_minimum, curvature_SNRs] = fcn_geometry_curvatureAlongCurve(this_island_points, (data_width), (debug_fig_num));
+
+    % STEP2: Use the curvature SNRs to extract models
+    fig_num = 75655; % URHERE - Fix plotting so different models are different colors
+    [best_fit_arcs, best_fit_SNRs, ~, model_fit_ID_at_each_index] = fcn_INTERNAL_curvatureArcsFromSNR(this_island_points, curvature_SNRs, SNR_threshold, arc_centers, curvatures, point_curvature_minimum, index_ranges, fig_num);
+
+    % STEP3: order the models to be in correct order so that 1st model is
+    % the first one encountered, 2nd model is 2nd, etc.
+    fig_num = 383834;
+    all_segments = [];
+    [~, ~, model_SNRs, sorted_model_fit_ID_at_each_index, arc_matrix, ~] = fcn_INTERNAL_curvatureModelSort(best_fit_arcs, all_segments, best_fit_SNRs, model_fit_ID_at_each_index, fig_num);
+
+    % STEP4: ensure arcs have C2 continuity
+    fig_num = 75633;
+    arc_parameters = fcn_INTERNAL_alignArcsBySNRandC2(arc_matrix, model_SNRs, sorted_model_fit_ID_at_each_index, fig_num);
+
+    % Save results of the island calculation
+    arc_islands(ith_island).this_island_range = this_island_range;
+    arc_islands(ith_island).this_island_points = this_island_points;
+    arc_islands(ith_island).arc_parameters = arc_parameters;
+    arc_islands(ith_island).model_fit_ID_at_each_index = sorted_model_fit_ID_at_each_index;
+    arc_islands(ith_island).model_SNRs = model_SNRs;
+   
+end
+%% Save the results into one matrix
+% Initialize model fits
+entire_model_fit_ID_at_each_index = nan*shifted_points(:,1);
+entire_arc_matrix_C2 = [];
+entire_model_SNRs = [];
+Nmodels = 0;
+
+for ith_island = 1:length(island_ranges)
+    
+    % Update the models info
+    this_model_IDs = arc_islands(ith_island).model_fit_ID_at_each_index;
+    this_island_range = arc_islands(ith_island).this_island_range;
+    this_arc_parameters = arc_islands(ith_island).arc_parameters;
+    this_model_SNRs = arc_islands(ith_island).model_SNRs;
+
+    % Set any unfilled (zero) values to NaN
+    this_model_IDs(this_model_IDs==0) = nan;
+
+    % Offset all the model IDs that were just measured so they match the
+    % rows of the updated parameter list
+    offset_model_fit_ID_at_each_index = Nmodels + this_model_IDs;
+
+    % Copy these data into the correct range area.
+    entire_model_fit_ID_at_each_index(this_island_range) = offset_model_fit_ID_at_each_index;
+
+    % Update the parameter lists 
+    entire_arc_matrix_C2 = [entire_arc_matrix_C2; this_arc_parameters]; %#ok<AGROW>
+
+    % Update the count of the number of models, for the next round of the
+    % loop
+    if ~isempty(entire_arc_matrix_C2)
+        Nmodels = length(entire_arc_matrix_C2(:,1));
+    end
+
+    % Update the SNRs
+    entire_model_SNRs = [entire_model_SNRs; model_SNRs]; %#ok<AGROW>
+
+end
 
 
 %% Fill the unfilled areas with line segments
 
 NumFitsGood = length(entire_arc_matrix_C2(:,1));
 revised_entire_model_fit_ID_at_each_index = entire_model_fit_ID_at_each_index;
-
 indicies_unfilled = isnan(entire_model_fit_ID_at_each_index);
 
 % Initialize the segments
