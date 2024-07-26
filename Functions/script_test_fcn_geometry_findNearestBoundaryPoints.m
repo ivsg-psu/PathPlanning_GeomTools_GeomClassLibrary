@@ -20,6 +20,5 @@ assert(isequal(length(y_borders),4));
 
 %% Test 2  Real Data 
 % after running script_test_geometry_updatedSurfaceAnalysis
-
 [true_borders,x_borders,y_borders] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
     gridCenters_non_drivable_grids, gridCenters_driven_path, grid_size,fig_num);

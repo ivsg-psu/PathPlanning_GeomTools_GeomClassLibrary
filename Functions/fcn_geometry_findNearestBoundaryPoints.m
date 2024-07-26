@@ -109,15 +109,28 @@ min_y = min(gridCenters_non_drivable_grids(:,2));
 x_range = (min_x:(grid_size/2):max_x)'; 
 y_range = (min_y:(grid_size/2):max_y)';
 
+% Offset distance of a driven grid from a 
+offset_distance = grid_size/2;
+
+% Compute new points directly using matrix operations
+% Initialize matrices for new points
+top_points_driven_path = gridCenters_driven_path + [0, offset_distance];
+bottom_points_driven_path = gridCenters_driven_path - [0, offset_distance];
+left_points_driven_path = gridCenters_driven_path - [offset_distance, 0];
+right_points_driven_path = gridCenters_driven_path + [offset_distance, 0];
+new_gridCenters_driven_path = [gridCenters_driven_path;top_points_driven_path;
+    bottom_points_driven_path; right_points_driven_path;left_points_driven_path];
+
 
 % Find the indices of each point in term of X and Y range
-[~, indice_X] = ismember(gridCenters_driven_path(:,1),x_range);
-[~, indice_Y] = ismember(gridCenters_driven_path(:,2),y_range);
+[~, indice_X] = ismember(new_gridCenters_driven_path(:,1),x_range);
+[~, indice_Y] = ismember(new_gridCenters_driven_path(:,2),y_range);
 drive_path_rows_columns = [indice_Y,indice_X];
 
 true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
 x_borders = (true_borders(:,1));
 y_boarder = (true_borders(:,2));
+
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
