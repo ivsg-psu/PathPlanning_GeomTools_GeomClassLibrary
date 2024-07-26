@@ -1,50 +1,149 @@
-% This code is used to transfer the output from
-% script_test_geometry_updatedSurfacedAnalysis
-% to the input of script_temp_Aneesh_example
+function [true_borders,x_borders,y_boarder] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+    gridCenters_non_drivable_grids, gridCenters_driven_path, grid_size, fig_num)
+%% fcn_geometry_findNearestBoundaryPoints
+% Find the nearest boundary points of a road 
+% 
+% FORMAT:
+%
+%      [true_borders] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,
+%      gridCenters_non_drivable_grids, gridCenters_driven_path, (fig _num))
+%
+% INPUTS:     
+%       
+%      true_boundary_points: The boundary points between the non-drivable 
+%      path and the drivable path.
+%
+%      gridCenters_non_drivable_grids: Grid points that are non-drivable
+%      for vehicles.
+%
+%      gridCenters_driven_path: Grid points that are drivable for vehicles.
+%
+%      gird_size: size of the grid     
+%
+%      (OPTIONAL INPUT)
+% 
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
+%
+% OUTPUTS:
+%       
+%      true_borders: the nearest boundary points that are from the center of 
+%      driven path.
+%
+% DEPENDENCIES:
+%
+%      (none)
+%
+% EXAMPLES:
+%
+%       See the script:
+%       script_test_fcn_geometry_findNearestBoundaryPoints.m
+%       test suite.
+%
+% This function was written on 2024_07_25 by Jiabao Zhao
+% Questions or comments? jpz5469@psu.edu
 
-fig_num = 1;
-% Find the max and min of X and Y
+%% Debugging and Input checks
+
+% Check if flag_max_speed set. This occurs if the fig_num variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+
+
+%% check input arguments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____                   _
+%  |_   _|                 | |
+%    | |  _ __  _ __  _   _| |_ ___
+%    | | | '_ \| '_ \| | | | __/ __|
+%   _| |_| | | | |_) | |_| | |_\__ \
+%  |_____|_| |_| .__/ \__,_|\__|___/
+%              | |
+%              |_|
+% See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Solve for the Maxs and Mins
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   __  __       _       
+%  |  \/  |     (_)      
+%  | \  / | __ _ _ _ __  
+%  | |\/| |/ _` | | '_ \ 
+%  | |  | | (_| | | | | |
+%  |_|  |_|\__,_|_|_| |_|
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Find the max and min of X and Y coordination 
+max_x = max(true_boundary_points(:,1));
+min_x = min(true_boundary_points(:,1));
+max_y = max(true_boundary_points(:,2));
+min_y = min(true_boundary_points(:,2));
+
+
+% Find the range of x and y coordination and break them into grids
+x_range = (min_x:(grid_size/2):max_x)'; 
+y_range = (min_y:(grid_size/2):max_y)';
+
+% Find the indices of each point in term of X and Y range
+[~, indice_X] = ismember(true_boundary_points(:,1),x_range);
+[~, indice_Y] = ismember(true_boundary_points(:,2),y_range);
+z = zeros(length(x_range),length(y_range));
+
+% Return the indice of corresponding points with 1
+z(sub2ind(size(z), indice_Y, indice_X)) = 1;
+border_only_test_grid = z;
+
+
+
+% Find the max and min of X and Y coordination
 max_x = max(gridCenters_non_drivable_grids(:,1));
 min_x = min(gridCenters_non_drivable_grids(:,1));
 max_y = max(gridCenters_non_drivable_grids(:,2));
 min_y = min(gridCenters_non_drivable_grids(:,2));
 
-
-% Find the length of x and y coordination, in this example, 
-% 0.625 is the distance between points. 
-x_range = (min_x:1.25:max_x)'; 
-y_range = (min_y:1.25:max_y)';
-
-% Find the indices of each point in term of X and Y
-[~, indice_X] = ismember(gridCenters_non_drivable_grids(:,1),x_range);
-[~, indice_Y] = ismember(gridCenters_non_drivable_grids(:,2),y_range);
-z = zeros(length(x_range),length(y_range));
-for ith = 1:length(indice_Y)
-    z(indice_Y(ith),indice_X(ith)) = 1;
-end
-border_only_test_grid = z;
+% Find the range of x and y coordination and break them into grids
+x_range = (min_x:(grid_size/2):max_x)'; 
+y_range = (min_y:(grid_size/2):max_y)';
 
 
-
-% Find the max and min of X and Y
-max_x = max(gridCenters_driven_path(:,1));
-min_x = min(gridCenters_driven_path(:,1));
-max_y = max(gridCenters_driven_path(:,2));
-min_y = min(gridCenters_driven_path(:,2));
-
-
-
-% Find the indices of each point in term of X and Y
+% Find the indices of each point in term of X and Y range
 [~, indice_X] = ismember(gridCenters_driven_path(:,1),x_range);
 [~, indice_Y] = ismember(gridCenters_driven_path(:,2),y_range);
 drive_path_rows_columns = [indice_Y,indice_X];
 
 true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
+x_borders = (true_borders(:,1));
+y_boarder = (true_borders(:,2));
+%% Plot the results (for debugging)?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   _____       _                 
+%  |  __ \     | |                
+%  | |  | | ___| |__  _   _  __ _ 
+%  | |  | |/ _ \ '_ \| | | |/ _` |
+%  | |__| |  __/ |_) | |_| | (_| |
+%  |_____/ \___|_.__/ \__,_|\__, |
+%                            __/ |
+%                           |___/ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+end
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-
-%%
-% Dr B code 
+%% %% fcn_INTERNAL_findTrueBorders 
 function true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num)
 flag_do_debug = 1;
 
