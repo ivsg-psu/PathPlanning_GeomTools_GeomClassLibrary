@@ -1,5 +1,5 @@
 function [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-    gridCenters_non_drivable_grids, gridCenters_driven_path, grid_size, fig_num)
+    gridCenters_non_drivable_grids, gridCenters_driven_path, fig_num)
 %% fcn_geometry_findNearestBoundaryPoints
 % Find the nearest boundary points of a road 
 % 
@@ -76,6 +76,10 @@ function [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearest
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Find the grid size
+Low_to_high = sort(true_boundary_points(:,1));
+unique_low_to_high = unique(Low_to_high);
+grid_size = abs(unique_low_to_high(2)-unique_low_to_high(1));
 
 % Find the max and min of X and Y coordination 
 max_x = max(true_boundary_points(:,1));
@@ -85,8 +89,8 @@ min_y = min(true_boundary_points(:,2));
 
 
 % Find the range of x and y coordination and break them into grids
-x_range = (min_x:(grid_size/2):max_x)'; 
-y_range = (min_y:(grid_size/2):max_y)';
+x_range = (min_x:(grid_size):max_x)'; 
+y_range = (min_y:(grid_size):max_y)';
 
 % Find the indices of each point in term of X and Y range
 [~, indice_X] = ismember(true_boundary_points(:,1),x_range);
@@ -106,11 +110,11 @@ max_y = max(gridCenters_non_drivable_grids(:,2));
 min_y = min(gridCenters_non_drivable_grids(:,2));
 
 % Find the range of x and y coordination and break them into grids
-x_range = (min_x:(grid_size/2):max_x)'; 
-y_range = (min_y:(grid_size/2):max_y)';
+x_range = (min_x:(grid_size):max_x)'; 
+y_range = (min_y:(grid_size):max_y)';
 
 % Offset distance of a driven grid from a 
-offset_distance = grid_size/2;
+offset_distance = grid_size;
 
 % Compute new points directly using matrix operations
 % Initialize matrices for new points
