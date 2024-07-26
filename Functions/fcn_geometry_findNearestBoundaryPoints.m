@@ -1,4 +1,4 @@
-function [true_borders,x_borders,y_boarder] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+function [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
     gridCenters_non_drivable_grids, gridCenters_driven_path, grid_size, fig_num)
 %% fcn_geometry_findNearestBoundaryPoints
 % Find the nearest boundary points of a road 
@@ -127,9 +127,11 @@ new_gridCenters_driven_path = [gridCenters_driven_path;top_points_driven_path;
 [~, indice_Y] = ismember(new_gridCenters_driven_path(:,2),y_range);
 drive_path_rows_columns = [indice_Y,indice_X];
 
-true_borders = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
-x_borders = (true_borders(:,1));
-y_boarder = (true_borders(:,2));
+true_borders_indices = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
+true_borders_indices_unique = unique(true_borders_indices,'rows','stable');
+true_borders_x = x_range(true_borders_indices_unique(:,1));
+true_borders_y = y_range(true_borders_indices_unique(:,2));
+true_borders = [true_borders_x true_borders_y];
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
