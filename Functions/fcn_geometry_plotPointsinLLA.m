@@ -46,7 +46,7 @@ function LLA_data = fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triple
 % -- Updated function to include more inputs such as marker size/color
 
 flag_max_speed = 0;
-if (nargin==8 && isequal(varargin{end},-1))
+if (nargin==11 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_max_speed = 1;
 else

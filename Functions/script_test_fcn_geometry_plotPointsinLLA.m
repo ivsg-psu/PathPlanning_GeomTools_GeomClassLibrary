@@ -1,4 +1,4 @@
-%script_fcn_geometry_plotGridCenters
+%script_fcn_geometry_plotPointsinLLA
 %script for fcn_geometry_plotGridCenters
 %
 % Written by:
@@ -163,9 +163,9 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,fig_num);
-fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,fig_num);
-fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
 
 %% Example 5 - Max Speed
 ENU_data =[418.5194  230.3028 -344.2069;
