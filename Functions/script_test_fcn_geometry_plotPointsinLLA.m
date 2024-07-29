@@ -6,6 +6,8 @@
 % Revision: 
 % 7_17_2024 -- Aleksandr Goncharov
 % Added more cases 
+% 7_29_2024 -- Aleksandr Goncharov
+% Updated cases and made sure no legend case worked
 
 %% Basic Example
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,11 +41,15 @@ ENU_data2=ENU_data+1;
 ENU_data3=ENU_data-1;
 
 marker_size=30;
-RGB_triplet=[0.8 0.8 0.8];
-RGB_triplet2=[1 1 0];
-RGB_triplet3=[0 1 1];
-fig_num=1111;
+marker_type="*";
+RGB_triplet=[0.2 0.8 0.2];
+RGB_triplet2=[.8 .1 .1];
+RGB_triplet3=[0 .2 .2];
+fig_num=1134;
 legend_option=1;
+reference_longitude=[];
+reference_latitude=[];
+reference_altitude=[];
 
 legend_position=[.75 .8 0 0];
 
@@ -52,9 +58,9 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-LLA_data2 = fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
-LLA_data3 = fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
 
 %% Example 2 - All inputs using sample ENU_data, different colors, different figure number
 
@@ -72,13 +78,13 @@ ENU_data =[418.5194  230.3028 -344.2069;
 
 ENU_data2=ENU_data+1;
 ENU_data3=ENU_data-1;
-
 marker_size=30;
+marker_type=".";
 RGB_triplet=[0.2 0.8 0.2];
 RGB_triplet2=[.8 .1 .1];
 RGB_triplet3=[0 .2 .2];
 fig_num=1134;
-legend_option=1;
+legend_option=0;
 
 legend_position=[.75 .8 0 0];
 
@@ -87,9 +93,9 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
 
 %% Example 3 - All inputs using sample ENU_data, no legend
 
@@ -109,11 +115,12 @@ ENU_data2=ENU_data+1;
 ENU_data3=ENU_data-1;
 
 marker_size=30;
+marker_type="o";
 RGB_triplet=[0.2 0.8 0.2];
 RGB_triplet2=[.8 .1 .1];
 RGB_triplet3=[0 .2 .2];
 fig_num=1134;
-legend_option=0;
+legend_option=[];
 
 legend_position=[.75 .8 0 0];
 
@@ -122,9 +129,9 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
 
 %% Example 4 - All inputs using sample ENU_data, legend moved
 ENU_data =[418.5194  230.3028 -344.2069;
@@ -141,7 +148,7 @@ ENU_data =[418.5194  230.3028 -344.2069;
 
 ENU_data2=ENU_data+1;
 ENU_data3=ENU_data-1;
-
+marker_type=".";
 marker_size=30;
 RGB_triplet=[0.2 0.8 0.2];
 RGB_triplet2=[.8 .1 .1];
@@ -156,9 +163,9 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,fig_num);
 
 %% Example 5 - Max Speed
 ENU_data =[418.5194  230.3028 -344.2069;
@@ -175,7 +182,7 @@ ENU_data =[418.5194  230.3028 -344.2069;
 
 ENU_data2=ENU_data+1;
 ENU_data3=ENU_data-1;
-
+marker_type=".";
 marker_size=30;
 RGB_triplet=[0.2 0.8 0.2];
 RGB_triplet2=[.8 .1 .1];
@@ -190,7 +197,7 @@ legend_name2='Legend Test 2';
 legend_name3='Legend Test 3';
 
 %fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(legend_option),(legend_name),(fig_num))
-fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data2,marker_size,RGB_triplet2,legend_option,legend_name2,legend_position,fig_num);
-fcn_geometry_plotGridCenters(ENU_data3,marker_size,RGB_triplet3,legend_option,legend_name3,legend_position,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data2,marker_size,RGB_triplet2,marker_type,legend_option,legend_name2,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
+fcn_geometry_plotPointsinLLA(ENU_data3,marker_size,RGB_triplet3,marker_type,legend_option,legend_name3,legend_position,reference_longitude,reference_latitude,reference_altitude,fig_num);
 

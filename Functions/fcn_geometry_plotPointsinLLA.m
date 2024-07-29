@@ -1,19 +1,23 @@
-function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triplet,varargin)
+function LLA_data = fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,varargin)
 % This function takes in various boundary points and then generates a plot
 % that shows where the boundary,driveable/non-driveable area, and unmapped area
 % 
 % FORMAT:  
 % LLA_data =
-% fcn_geometry_plotGridCentersBoundaryPoints(ENU_data,marker_size,RGB_triplet,(fig_num))
+% fcn_geometry_plotPointsinLLA(ENU_data,marker_size,RGB_triplet,(fig_num))
 %
 % INPUTS:
 % ENU_data: Data points 
 % marker_size: size of the points that are going to be plotted
 % RGB_triplet: Color of the markers
 % (OPTIONAL INPUT)
+% marker_type: change the marker type, default is "."
 % legend_options: enable the plot to display a legend
 % legend_name: name of the legend
 % legend_position: position of the legend
+% reference_latitude
+% reference_longitude
+% reference_altitude
 % fig_num: figure number
 %
 % OUTPUTS:
@@ -23,7 +27,7 @@ function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triple
 % GPS CLASS
 %
 % EXAMPLES:
-% See script: script_test_fcn_geometry_plotGridCenters
+% See script: script_test_fcn_geometry_plotPointsinLLA
 %
 % Revision History
 % 2024_07_10 - Aneesh Batchu 
@@ -37,9 +41,12 @@ function LLA_data = fcn_geometry_plotGridCenters(ENU_data,marker_size,RGB_triple
 % -- Made minor changes in the legend position options
 % 2024_07_17 - Aleksandr Goncharov
 % -- Added max speed flag
+% 2024_07_29 - Aleksandr Goncharov
+% -- Changed name to "fcn_geometry_plotPointsinLLA"
+% -- Updated function to include more inputs such as marker size/color
 
 flag_max_speed = 0;
-if (nargin==7 && isequal(varargin{end},-1))
+if (nargin==8 && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_max_speed = 1;
 else
@@ -75,21 +82,30 @@ end
 
 if flag_max_speed==0
     % Are there the right number of inputs?
-    narginchk(3,7);
+    narginchk(3,11);
+end
+
+%does user want a different marker type
+marker_type=".";
+if 4<=nargin
+    temp=varargin{1};
+    if ~isempty(temp)
+        marker_type=temp;
+    end
 end
 
 %does user want a legend
 flag_create_legend=0;
-if 4<=nargin
-    temp=varargin{1};
+if 5<=nargin
+    temp=varargin{2};
     if temp==1
         flag_create_legend=1;
     end
 end
 
 %legend name
-if 5<=nargin
-    temp=varargin{2};
+if 6<=nargin
+    temp=varargin{3};
     if ~isempty(temp)
         legend_name=temp;
     end
@@ -97,19 +113,45 @@ end
 
 %legend position
 legend_position = [];
-if 6<=nargin
-    temp=varargin{3};
+if 7<=nargin
+    temp=varargin{4};
     if ~isempty(temp)
         legend_position=temp;
     end
 end
 
+%reference_latitude
+reference_latitude = 40.86368573;
+if 8<=nargin
+    temp=varargin{5};
+    if ~isempty(temp)
+        reference_latitude=temp;
+    end
+end
+
+%reference_longitude
+reference_longitude = -77.83592832;
+if 9<=nargin
+    temp=varargin{6};
+    if ~isempty(temp)
+        reference_longitude=temp;
+    end
+end
+
+%reference_altitude
+reference_altitude = 344.189;
+if 10<=nargin
+    temp=varargin{7};
+    if ~isempty(temp)
+        reference_altitude=temp;
+    end
+end
 
 
 % Does user want to specify fig_num?
 fig_num = []; % Default is to have no figure
 flag_do_plots = 0;
-if (0==flag_max_speed) && (7<= nargin)
+if (0==flag_max_speed) && (11<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
         fig_num = temp;
@@ -133,9 +175,6 @@ end
 % Trace_coordinates = [true_boundary_points,zeros(length(true_boundary_points),1)]; 
 
  % Define GPS object
-reference_latitude = 40.86368573;
-reference_longitude = -77.83592832;
-reference_altitude = 344.189;
 gps_object = GPS(reference_latitude,reference_longitude,reference_altitude); % Load the GPS class
 
 % Use the class to convert LLA to ENU
@@ -160,7 +199,7 @@ if flag_do_plots && flag_max_speed==0
 figure(fig_num);
 
 % Plot
-geoplot(LLA_data(:,1),LLA_data(:,2),'.','MarkerSize',marker_size,'Color',RGB_triplet,'DisplayName',legend_name);
+geoplot(LLA_data(:,1),LLA_data(:,2),marker_type,'MarkerSize',marker_size,'Color',RGB_triplet,'DisplayName',legend_name);
 hold on
 
 %Adding Legend
