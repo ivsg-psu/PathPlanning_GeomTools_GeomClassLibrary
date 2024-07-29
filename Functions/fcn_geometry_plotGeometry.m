@@ -293,7 +293,16 @@ else
                 XY_data = [nan nan; nan nan];
             end
         case {'spiral'}
-
+            % 'spiral' -
+            % 
+            % [
+            %     x0,  % The initial x value
+            %     y0,  % The initial y value
+            %     h0,  % The initial heading
+            %     s_Length,  % the s-coordinate length allowed
+            %     K0,  % The initial curvature
+            %     Kf   % The final curvature
+            %     ]
             if ~isempty(parameters) && ~any(isnan(parameters))
                 x0                = parameters(1,1);
                 y0                = parameters(1,2);

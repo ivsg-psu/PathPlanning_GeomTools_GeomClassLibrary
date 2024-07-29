@@ -90,6 +90,8 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % 2024_06_26 - S. Brennan
 % -- minor bug fix due to changing line definition, but not changing
 % plotting command.
+% 2024_07_28 - S. Brennan
+% -- minor bug fix in fcn_geometry_plotGeometry call
 
 %% Debugging and Input checks
 
@@ -409,7 +411,7 @@ if flag_do_plots
     end
 
     % Plot the spiral result
-    fcn_geometry_plotGeometry('spiral',spiral_join_parameters, sprintf(' ''LineWidth'',3'));
+    fcn_geometry_plotGeometry('spiral',spiral_join_parameters, [], sprintf(' ''LineWidth'',3'));
 
 
     % Make axis slightly larger?

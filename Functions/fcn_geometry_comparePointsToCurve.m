@@ -1,4 +1,4 @@
-function [flag_is_similar, signed_minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
+function [flag_is_similar, signed_minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error, ortho_distances] = ...
     fcn_geometry_comparePointsToCurve(reference_curve_type_string, reference_curve_parameters, test_points_XY, varargin)
 %% fcn_geometry_comparePointsToCurve
 % Finds how "close" a set of test points is to a reference curve.
@@ -66,6 +66,10 @@ function [flag_is_similar, signed_minimum_distance_to_each_point, indicies_of_ne
 %      signed_minimum_distance_to_each_point: an [Mx1] set of the distances from
 %      each test point to the closest reference point.
 %
+%      indicies_of_nearest_reference_points: an [Mx1] set of the indicies,
+%      one for each test point, of the indicies of the nearest reference
+%      point.
+%
 %      mean_error: the average error between the reference points and the
 %      test points.
 %
@@ -74,6 +78,9 @@ function [flag_is_similar, signed_minimum_distance_to_each_point, indicies_of_ne
 %
 %      std_dev_error: the standard deviation in error between the reference
 %      points and the test points
+%
+%      ortho_distances: an [Mx1] set of the orthogonal distances from
+%      the reference point to each test point.
 %
 %
 % DEPENDENCIES:
@@ -403,10 +410,13 @@ if flag_do_plots
             indicies_in_this_fit = find(fit_numbers_of_testData==ith_fit);
             color_vector = fcn_geometry_fillColorFromNumberOrName(ith_fit);
             plot(indicies_in_this_fit, signed_minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color', color_vector,'MarkerSize',20);
+            plot(indicies_in_this_fit, ortho_distances(indicies_in_this_fit,:),'.','Color', color_vector*0.5,'MarkerSize',10);
+           
         end
     else
         indicies_in_this_fit = find(fit_numbers_of_testData==1);
         plot(indicies_in_this_fit, signed_minimum_distance_to_each_point(indicies_in_this_fit,:),'.','Color',[0 0 0],'MarkerSize',20);
+        plot(indicies_in_this_fit, ortho_distances(indicies_in_this_fit,:),'o','Color',[0.2 0.2 0.2],'MarkerSize',10);
 
     end
       

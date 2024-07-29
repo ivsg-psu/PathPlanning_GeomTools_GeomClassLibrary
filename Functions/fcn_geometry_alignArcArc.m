@@ -96,6 +96,8 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
+% 2024_07_28 - Sean Brennan
+% -- changed default alignment for C2 arc to arc connectivity
 
 %% Debugging and Input checks
 
@@ -119,7 +121,7 @@ else
     end
 end
 
-% flag_do_debug = 1;
+flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -370,6 +372,8 @@ function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrient
 % with arc2, and the arc2 starts at the junction. It only does this check
 % if the arcs are oriented in opposite directions
 
+% Only need to check if the arcs rotate the opposite direction from each
+% other
 if arc1_parameters(1,7)~=arc2_parameters(1,7)
 
     % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -960,22 +964,40 @@ switch continuity_level
         st_arc2_parameters = st_secondary_parameters{2};
 
     case 2
-        % For C2 continuity of an arc to an arc, the spiral must change
-        % curvature. Calculation of the spiral is difficult and requires
-        % numerical iteration, and the inputs require the calculation
-        % of the offset of the spirals relative to each other - e.g. the
-        % "space" between the arcs. There are many cases where spirals cannot
-        % exist between arcs, and specifically if the space_between_circles is
-        % negative, the spiral cannot exist. To determine if a spiral is
-        % possible between arcs, we call the function to determine if the
-        % spiral is possible between the circles containing the arcs, and if
-        % not, how much space is needed to allow the spiral.
+        % For C2 continuity of arc1 to arc2, arc1 and arc2 are aligned by
+        % the angle between the circle centers.
+
+        if arc2_radius<arc1_radius
+            main_circle_center = arc1_center_xy;
+            smaller_circle_center = arc2_center_xy;
+        else
+            main_circle_center = arc2_center_xy;
+            smaller_circle_center = arc1_center_xy;
+        end
+        vector_from_main_to_smaller = smaller_circle_center - main_circle_center;
+        angle_of_C2_arcs = atan2(vector_from_main_to_smaller(2),vector_from_main_to_smaller(1));
+        
+        % Shift the angles so that the centers of each of the arcs are
+        % exactly vertical
+
+        % Modify the arc so that it ends at the C2 arc center
+        modified_arc1_parameters = arc1_parameters;  
+        modified_arc1_parameters(1,5) = angle_of_C2_arcs;
+        
+
+
+        % Peform test here to check to see that the "center" angle is not
+        % before the start of arc1 or after end of arc2
+        % URHERE
+
         secondary_parameters_type_strings{1} = 'arc';
-        secondary_parameters{1}              = arc2_parameters;
-        [st_primary_parameters, st_secondary_parameters, St_transform_XYtoSt, ~, flag_arc1_is_flipped] = ...
-            fcn_geometry_orientGeometryXY2St('arc', arc1_parameters, (secondary_parameters_type_strings), (secondary_parameters), (-1));
-        st_arc1_parameters = st_primary_parameters;
-        st_arc2_parameters = st_secondary_parameters{1};
+        secondary_parameters{1}              = arc1_parameters;
+        secondary_parameters_type_strings{2} = 'arc';
+        secondary_parameters{2}              = arc2_parameters;
+        [~, st_secondary_parameters, St_transform_XYtoSt, ~, flag_arc1_is_flipped] = ...
+            fcn_geometry_orientGeometryXY2St('arc', modified_arc1_parameters, (secondary_parameters_type_strings), (secondary_parameters), (-1));
+        st_arc1_parameters = st_secondary_parameters{1};
+        st_arc2_parameters = st_secondary_parameters{2};
 
     otherwise
         error('This continuity not possible yet')
@@ -1315,7 +1337,8 @@ switch continuity_level
             end % Ends plotting
 
             % Find the angle and position that the spiral ends at
-            analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+            % analytical_end_angle   = h0 + (Kf-K0)*spiralLength/2 + K0*spiralLength;
+            analytical_end_angle   = h0 + (Kf+K0)*spiralLength/2;
 
             % The checks should confirm that the
             % arc's start and end is after the start of arc1 (not within) and before the
