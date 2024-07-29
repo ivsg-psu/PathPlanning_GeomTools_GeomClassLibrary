@@ -1,5 +1,5 @@
 function [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-    gridCenters_non_drivable_grids, gridCenters_driven_path, fig_num)
+     gridCenters_driven_path, fig_num)
 %% fcn_geometry_findNearestBoundaryPoints
 % Find the nearest boundary points of a road 
 % 
@@ -89,29 +89,20 @@ min_y = min(true_boundary_points(:,2));
 
 
 % Find the range of x and y coordination and break them into grids
-x_range = (min_x:(grid_size):max_x)'; 
-y_range = (min_y:(grid_size):max_y)';
+x_range = (min_x:grid_size:max_x)'; 
+y_range = (min_y:grid_size:max_y)';
+x_rounded_true_boundary_points = round((true_boundary_points(:,1)), 4);
+rounded_x_range = round((x_range), 4);
+y_rounded_true_boundary_points = round((true_boundary_points(:,2)), 4);
+rounded_y_range = round((y_range), 4);
 
 % Find the indices of each point in term of X and Y range
-[~, indice_X] = ismember(true_boundary_points(:,1),x_range);
-[~, indice_Y] = ismember(true_boundary_points(:,2),y_range);
-z = zeros(length(x_range),length(y_range));
-
+[~,indice_X] = ismember(x_rounded_true_boundary_points,rounded_x_range);
+[~,indice_Y] = ismember(y_rounded_true_boundary_points,rounded_y_range);
+z = zeros(length(indice_Y),length(indice_X));
 % Return the indice of corresponding points with 1
 z(sub2ind(size(z), indice_Y, indice_X)) = 1;
 border_only_test_grid = z;
-
-
-
-% Find the max and min of X and Y coordination
-max_x = max(gridCenters_non_drivable_grids(:,1));
-min_x = min(gridCenters_non_drivable_grids(:,1));
-max_y = max(gridCenters_non_drivable_grids(:,2));
-min_y = min(gridCenters_non_drivable_grids(:,2));
-
-% Find the range of x and y coordination and break them into grids
-x_range = (min_x:(grid_size):max_x)'; 
-y_range = (min_y:(grid_size):max_y)';
 
 % Offset distance of a driven grid from a 
 offset_distance = grid_size;
@@ -125,18 +116,20 @@ right_points_driven_path = gridCenters_driven_path + [offset_distance, 0];
 new_gridCenters_driven_path = [gridCenters_driven_path;top_points_driven_path;
     bottom_points_driven_path; right_points_driven_path;left_points_driven_path];
 
+round_new_gridCenters_driven_path = round(new_gridCenters_driven_path, 4);
 
 % Find the indices of each point in term of X and Y range
-[~, indice_X] = ismember(new_gridCenters_driven_path(:,1),x_range);
-[~, indice_Y] = ismember(new_gridCenters_driven_path(:,2),y_range);
+[~, indice_X] = ismember(round_new_gridCenters_driven_path(:,1),rounded_x_range);
+[~, indice_Y] = ismember(round_new_gridCenters_driven_path(:,2),rounded_y_range);
 drive_path_rows_columns = [indice_Y,indice_X];
 
 true_borders_indices = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
-true_borders_indices_unique = unique(true_borders_indices,'rows','stable');
-true_borders_x = x_range(true_borders_indices_unique(:,1));
-true_borders_y = y_range(true_borders_indices_unique(:,2));
-true_borders = [true_borders_x true_borders_y];
 
+% find the true boundary points
+true_borders_indices_unique = unique(true_borders_indices,'rows','stable');
+true_borders_x = y_range(true_borders_indices_unique(:,1));
+true_borders_y = x_range(true_borders_indices_unique(:,2));
+true_borders = [true_borders_x true_borders_y];
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   _____       _                 
