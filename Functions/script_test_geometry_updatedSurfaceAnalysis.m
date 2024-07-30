@@ -53,7 +53,7 @@ input_points = LiDAR_allPoints(:,1:2);
 
 % grid size of each grid in 3 dimensions. For example, grid_size = 1.25:
 % [length, width, height] = [1.25 1.25 1.25]
-grid_size = 0.3; %0.8;%1;%1.25; %1.26
+grid_size = 1; %0.8;%1;%1.25; %1.26
 
 % Find minimum and maximum values of x,y,z of LiDAR data
 [Min_x,Max_x,Min_y,Max_y,Min_z,Max_z] = fcn_geometry_findMaxMinOfXYZ(input_points,-1);
@@ -511,7 +511,9 @@ point_density = floor(mean(total_points_in_each_grid_in_the_driven_path) - 1.5*(
 
 
 % Minimum number of points required 
-% point_density =
+point_density = floor(20*((grid_size^2)/(0.3^2))); 
+disp('Chosen point density')
+disp(point_density)
 % mean(total_points_in_each_grid_in_the_driven_path)/mean(total_points_in_each_grid_with_points_greater_than_zero);
 
 plot(point_density,0, 'k.', 'MarkerSize',20)
@@ -636,7 +638,7 @@ for ith_text = 1:length(current_mapped_grids(:,1))
 end
 
 
-%% STEP 7.25: Find the orthogonal distances 
+%% STEP 7.25: Find the orthogonal distances (NEW STATISTIC)
 
 % Figure number
 fig_num_gridLines_greater_than_zero_point_density = 50;
@@ -655,6 +657,7 @@ gridlines_grids_greater_than_zero = zeros(11*length(original_mapped_grids),2); %
 
 concatenate_gridPoints_scanLines_rings = [];
 orthogonal_dist_each_grid = []; 
+transverse_span_each_grid = [];
 
 % total_scan_lines_in_each_grid_with_more_than_zero_points = [];
 for ith_grid = 1:length(original_mapped_grids)
@@ -754,16 +757,43 @@ for ith_grid = 1:length(original_mapped_grids)
         % Calculate the transverse distance
         transverse_dist_grid_points_other_scanLines = sum(vector_from_base_point_first_scan_to_points_in_otherScans_rings.*repeated_orth_unit_change_in_vector,2);
 
+        % Positive transverse distances
+        positive_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines>=0);
+
+        % Negative transverse distances
+        negative_transverse_dist_grid_points_other_scanLines = transverse_dist_grid_points_other_scanLines(transverse_dist_grid_points_other_scanLines<0);
+
+        % maximum span distance
+        if ~isempty(positive_transverse_dist_grid_points_other_scanLines) && ~isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+            maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines) + max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+        elseif isempty(negative_transverse_dist_grid_points_other_scanLines)
+
+            maximum_span_distance = max(positive_transverse_dist_grid_points_other_scanLines);
+
+        elseif isempty(positive_transverse_dist_grid_points_other_scanLines)
+
+            maximum_span_distance = max(abs(negative_transverse_dist_grid_points_other_scanLines));
+
+        end
+        % Conatenate maximum transverse span
+        transverse_span_each_grid = [transverse_span_each_grid; maximum_span_distance]; %#ok<AGROW>
+
         % Mean of absolute values of transverse distances
         mean_dist = mean(abs(transverse_dist_grid_points_other_scanLines));
 
+        % Concatenate the orthogonal distances
         orthogonal_dist_each_grid = [orthogonal_dist_each_grid; mean_dist]; %#ok<AGROW>
-    else 
+    else
 
+        % Conacatenate orthogonal distance
         orthogonal_dist_each_grid = [orthogonal_dist_each_grid; nan]; %#ok<AGROW>
 
-    end
+        % Conatenate maximum transverse span
+        transverse_span_each_grid = [transverse_span_each_grid; nan]; %#ok<AGROW>
 
+    end
     % Concatenate the points in domain, scan lines and rings
     concatenate_gridPoints_scanLines_rings = [concatenate_gridPoints_scanLines_rings; gridPoints_scanLines_rings_to_add]; %#ok<AGROW>
 
@@ -841,16 +871,80 @@ for ith_text = 1:length(current_mapped_grids(:,1))
     text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
 end
 
+fig_num = 58309; 
+figure(fig_num); clf;
+hold on
+grid on
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Transverse span distances')
+
+% total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+for ith_grid = 1:length(original_mapped_grids)
+
+    % Get current color
+    % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
+    current_color = [0.2 0.2 0.2];
+
+    % Plot current AABB
+    current_AABB = grid_AABBs(original_mapped_grids(ith_grid),1:4);
+
+    % Nudge the current AABB inward
+    current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
+
+    % Calculate the gridlines
+    gridlines = [...
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,1) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,2) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,3); ...
+        current_AABB(1,2) current_AABB(1,3); ...
+        nan nan;
+        current_AABB(1,1) current_AABB(1,4); ...
+        current_AABB(1,2) current_AABB(1,4); ...
+        ];
+
+    % Plot the result
+    % plot the grid lines of the grids greater than zero
+    plot(gridlines(:,1),gridlines(:,2),'-','Color',current_color,'LineWidth',3);
+
+end
+
+% Write the grid number at the grid center for reference. 
+
+for ith_text = 1:length(current_mapped_grids(:,1))
+    current_text = sprintf('%.3f',transverse_span_each_grid(ith_text));
+    % current_text = sprintf('%.3f',orthogonal_dist_each_grid);
+
+    % Place the text on the grid center
+    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[0.5, 0, 0.5],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+end
+
+
 %% Updated mapped grids
 
-threshold_transverse_dist = 0.03;
+% Threshold of transverse span
+threshold_transverse_dist = 0.15;
 
+% Updated original mapped grids
 updated_original_mapped_grids = original_mapped_grids(orthogonal_dist_each_grid>threshold_transverse_dist); 
 
+% Updated original unmapped grids
 updated_original_unmapped_grids = sort([original_unmapped_grids; original_mapped_grids(orthogonal_dist_each_grid<=threshold_transverse_dist)]); 
 
+% Updated current mapped grids 
+updated_current_mapped_grids = current_mapped_grids(orthogonal_dist_each_grid>threshold_transverse_dist);
+
+% Updated current unmapped grids 
+updated_current_unmapped_grids = sort([current_unmapped_grids; current_mapped_grids(orthogonal_dist_each_grid<=threshold_transverse_dist)]);
+
+% Updated original mapped grid centers
 gridCenters_updated_original_mapped_grids = gridCenters(updated_original_mapped_grids,1:2); 
 
+% Updated original unmapped grid centers
 gridCenters_updated_original_unmapped_grids = gridCenters(updated_original_unmapped_grids,1:2); 
 
 % Plot the grids with low point density and required density 
@@ -906,22 +1000,22 @@ end
 %% STEP 7.5: Find driven path of the vehicle in mapped grids
 
 % "inpolygon" is used to find the grids within the boundary points 
-[in,on] = inpolygon(gridCenters_mapped_grids(:,1),gridCenters_mapped_grids(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
+[in,on] = inpolygon(gridCenters_updated_original_mapped_grids(:,1),gridCenters_updated_original_mapped_grids(:,2),boundary_points_driven_path(:,1),boundary_points_driven_path(:,2));
 
 % Original grid numbers of driven path
-original_grid_numbers_of_driven_path = original_mapped_grids(in); 
+original_grid_numbers_of_driven_path = updated_original_mapped_grids(in); 
 
 % Current grid numbers in driven path 
-current_grid_numbers_of_driven_path = current_mapped_grids(in); %find(in); 
+current_grid_numbers_of_driven_path = updated_current_mapped_grids(in); %find(in); 
 
 % Total points in each grid in the driven path
 total_points_in_each_grid_in_the_driven_path = total_N_points_in_each_grid(original_grid_numbers_of_driven_path); 
 
 % Total points in each grid with points greater than zero
-total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(current_mapped_grids); 
+total_points_in_each_grid_with_points_greater_than_zero = total_N_points_in_each_grid(updated_current_mapped_grids); 
 
 % Grid centers of the driven path
-gridCenters_driven_path = [gridCenters_mapped_grids(in,1),gridCenters_mapped_grids(in,2)];
+gridCenters_driven_path = [gridCenters_updated_original_mapped_grids(in,1),gridCenters_updated_original_mapped_grids(in,2)];
 
 
 fig_num_gridCenters_and_boundary_points_greater_than_zero = 51;
@@ -933,25 +1027,24 @@ xlabel('X[m]')
 ylabel('Y[m]')
 title('Grid centers and boundary points')
 
-plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
+plot(gridCenters_updated_original_mapped_grids(:,1), gridCenters_updated_original_mapped_grids(:,2), '.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
 plot(boundary_points_driven_path(:,1), boundary_points_driven_path(:,2), '.', 'MarkerSize',30, 'Color',[0 1 0]); 
 
 % plot the grids in the driven path
 plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',1.5) % points strictly inside
 
-for ith_text = 1:length(gridCenters_mapped_grids(:,1))
+for ith_text = 1:length(gridCenters_updated_original_mapped_grids(:,1))
     current_text = sprintf('%.0d',ith_text);
     % Place the text on the grid center
-    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 6);
+    text(gridCenters_updated_original_mapped_grids(ith_text,1), gridCenters_updated_original_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 6);
 end
-
 
 %% STEP 8: Statistic 3 - Standard deviation in Z
 
 input_points =  LiDAR_allPoints(:,1:3);
 
 % The indices of the mapped grids are extracted and concatenated 
-original_mapped_gridIndices_cell = gridIndices_cell_array(original_mapped_grids); 
+original_mapped_gridIndices_cell = gridIndices_cell_array(updated_original_mapped_grids); 
 
 % Total number of mapped grids
 total_mapped_grids = length(original_mapped_gridIndices_cell); 
@@ -984,16 +1077,16 @@ title('Grid centers mapped grids in ENU')
 % plot(gridCenters_drivable_grids(:,1), gridCenters_drivable_grids(:,2), '.','MarkerSize',50,'Color',[0 1 0]);
 % plot(gridCenters_non_drivable_grids(:,1), gridCenters_non_drivable_grids(:,2), '.','MarkerSize',50,'Color',[1 0 0]);
 
-plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
+plot(gridCenters_updated_original_mapped_grids(:,1), gridCenters_updated_original_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
 
 % plot the grids in the driven path
 plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',2) % points strictly inside
 
 
-for ith_text = 1:length(current_mapped_grids(:,1))
-    current_text = sprintf('%.0d',current_mapped_grids(ith_text));
+for ith_text = 1:length(updated_current_mapped_grids(:,1))
+    current_text = sprintf('%.0d',updated_current_mapped_grids(ith_text));
      % Place the text on the grid center
-    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
+    text(gridCenters_updated_original_mapped_grids(ith_text,1), gridCenters_updated_original_mapped_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
 end
 
 
@@ -1009,19 +1102,19 @@ ylabel('Y[m]')
 title('Standard deviation of Z of mapped grids')
 
 % Pre-allocation: To find the total number of points in each grid
-total_points_in_mapped_grids = zeros(length(original_mapped_grids),1);
+total_points_in_mapped_grids = zeros(length(updated_original_mapped_grids),1);
 
 % Pre-allocation: these are the coordinates of the corners of each grid
 % line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied
-gridlines_mapped_grids = zeros(11*length(original_mapped_grids),2); % length(gridlines) = 11
+gridlines_mapped_grids = zeros(11*length(updated_original_mapped_grids),2); % length(gridlines) = 11
 
-for ith_domain = 1:length(original_mapped_grids)
+for ith_domain = 1:length(updated_original_mapped_grids)
     % Get current color
     % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
     current_color = [0.5 0.5 0.5];
     % Plot current AABB
-    current_AABB = grid_AABBs(original_mapped_grids(ith_domain),1:4);
+    current_AABB = grid_AABBs(updated_original_mapped_grids(ith_domain),1:4);
 
     % Nudge the current AABB inward
     current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
@@ -1066,15 +1159,15 @@ plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',
 % [0.4660 0.6740 0.1880] - Green (Not so bright)
 standard_deviation_in_z_round = round(standard_deviation_in_z,3);
 % mapped_grid_numbers = 1:length(gridCenters_required_point_density(:,1));
-for ith_text = 1:length(gridCenters_mapped_grids(:,1))
+for ith_text = 1:length(gridCenters_updated_original_mapped_grids(:,1))
     current_text = sprintf('%.3f',standard_deviation_in_z_round(ith_text));
     % Place the text on the grid center
-    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
+    text(gridCenters_updated_original_mapped_grids(ith_text,1), gridCenters_updated_original_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
 end
 
 
 % Find driven path indices in current mapped grids
-driven_path_grid_indices_in_current_mapped_grids = ismember(current_mapped_grids,current_grid_numbers_of_driven_path);
+driven_path_grid_indices_in_current_mapped_grids = ismember(updated_current_mapped_grids,current_grid_numbers_of_driven_path);
 
 % Standard deviation in Z of driven path grids
 std_in_z_driven_path = standard_deviation_in_z(driven_path_grid_indices_in_current_mapped_grids);
@@ -1085,7 +1178,7 @@ std_in_z_other_mapped_grids = standard_deviation_in_z(~driven_path_grid_indices_
 
 % Plot grid lines and standard deviation
 fig_num = 82;
-figure(fig_num)
+figure(fig_num);clf;
 
 hold on
 grid on
@@ -1093,9 +1186,9 @@ xlabel('Mapped grid centers')
 ylabel('Standard deviation in Z')
 title('Mapped grid centers vs standard deviation in Z ')
 
-plot(current_mapped_grids, standard_deviation_in_z,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
+plot(updated_current_mapped_grids, standard_deviation_in_z,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
 plot(current_grid_numbers_of_driven_path, std_in_z_driven_path,'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',1.5)
-plot(current_mapped_grids(~driven_path_grid_indices_in_current_mapped_grids), std_in_z_other_mapped_grids,'.','MarkerSize',10,'Color',[1 0 0])
+plot(updated_current_mapped_grids(~driven_path_grid_indices_in_current_mapped_grids), std_in_z_other_mapped_grids,'.','MarkerSize',10,'Color',[1 0 0])
 
 
 % Find mean std in z of driven path
@@ -1128,24 +1221,23 @@ histogram(std_in_z_driven_path,5)
 
 % std_threshold = mean_std_in_z_driven_path + 6*std(std_in_z_driven_path); 
 % std_threshold = mean_std_in_z_driven_path + 3*std(std_in_z_driven_path); 
-std_threshold = 0.06; 
+std_threshold = 0.07; 
 % plot(std_threshold,max(std_in_z_driven_path), 'k.', 'MarkerSize',20)
 disp('mean of std_threshold of driven path')
 disp(mean_std_in_z_driven_path)
 disp('chosen std_threshold')
 disp(std_threshold)
-% std_threshold = 0.06; 
+% std_threshold = 0.05; 
 plot(std_threshold,0, 'k.', 'MarkerSize',18)
 current_text = sprintf('std threshold = %.4f',std_threshold);
 text(0.4, 80,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
-
 
 %% STEP 8: Statistic 4 - angle deviation
 
 input_points = LiDAR_allPoints(:,1:3); 
 
 % The indices of the mapped grids are extracted and concatenated 
-original_mapped_gridIndices_cell = gridIndices_cell_array(original_mapped_grids); 
+original_mapped_gridIndices_cell = gridIndices_cell_array(updated_original_mapped_grids); 
 
 % Total number of mapped grids
 total_mapped_grids = length(original_mapped_gridIndices_cell); 
@@ -1186,12 +1278,12 @@ title('Grid centers mapped grids in ENU')
 % plot(gridCenters_drivable_grids(:,1), gridCenters_drivable_grids(:,2), '.','MarkerSize',50,'Color',[0 1 0]);
 % plot(gridCenters_non_drivable_grids(:,1), gridCenters_non_drivable_grids(:,2), '.','MarkerSize',50,'Color',[1 0 0]);
 
-plot(gridCenters_mapped_grids(:,1), gridCenters_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
+plot(gridCenters_updated_original_mapped_grids(:,1), gridCenters_updated_original_mapped_grids(:,2), '.','MarkerSize',45,'Color',[0.2 0.2 0.2]);
 
-for ith_text = 1:length(current_mapped_grids(:,1))
-    current_text = sprintf('%.0d',current_mapped_grids(ith_text));
+for ith_text = 1:length(updated_current_mapped_grids(:,1))
+    current_text = sprintf('%.0d',updated_current_mapped_grids(ith_text));
      % Place the text on the grid center
-    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[1 1 0],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
+    text(gridCenters_updated_original_mapped_grids(ith_text,1), gridCenters_updated_original_mapped_grids(ith_text,2),current_text,'Color',[1 1 0],'HorizontalAlignment','center','FontSize', 8, 'FontWeight','bold');
 end
 
 % plot the grids in the driven path
@@ -1208,19 +1300,19 @@ ylabel('Y[m]')
 title('Angle deviation of mapped grids')
 
 % Pre-allocation: To find the total number of points in each grid
-total_points_in_mapped_grids = zeros(length(original_mapped_grids),1);
+total_points_in_mapped_grids = zeros(length(updated_original_mapped_grids),1);
 
 % Pre-allocation: these are the coordinates of the corners of each grid
 % line. Total no of lines required for each grid including NaNs is 11. Therefore, 11 is multiplied
-gridlines_mapped_grids = zeros(11*length(original_mapped_grids),2); % length(gridlines) = 11
+gridlines_mapped_grids = zeros(11*length(updated_original_mapped_grids),2); % length(gridlines) = 11
 
-for ith_domain = 1:length(original_mapped_grids)
+for ith_domain = 1:length(updated_original_mapped_grids)
     % Get current color
     % current_color = fcn_geometry_fillColorFromNumberOrName(ith_domain);
 
     current_color = [0.5 0.5 0.5];
     % Plot current AABB
-    current_AABB = grid_AABBs(original_mapped_grids(ith_domain),1:4);
+    current_AABB = grid_AABBs(updated_original_mapped_grids(ith_domain),1:4);
 
     % Nudge the current AABB inward
     current_AABB = current_AABB + grid_size/100*[1 -1 1 -1];
@@ -1241,7 +1333,7 @@ for ith_domain = 1:length(original_mapped_grids)
         ];
 
     % Get all points in this domain and plot them
-    rows_in_domain = gridIndices==original_mapped_grids(ith_domain);
+    rows_in_domain = gridIndices==updated_original_mapped_grids(ith_domain);
     points_in_domain = input_points(rows_in_domain,:);
 
     total_points_in_mapped_grids(ith_domain) = length(points_in_domain);
@@ -1265,14 +1357,14 @@ plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',
 % [0.4660 0.6740 0.1880] - Green (Not so bright)
 angle_btw_unit_normals_and_vertical_round = round((angle_btw_unit_normals_and_vertical*180/pi),3);
 % mapped_grid_numbers = 1:length(gridCenters_required_point_density(:,1));
-for ith_text = 1:length(gridCenters_mapped_grids(:,1))
+for ith_text = 1:length(gridCenters_updated_original_mapped_grids(:,1))
     current_text = sprintf('%.3f',angle_btw_unit_normals_and_vertical_round(ith_text));
     % Place the text on the grid center
-    text(gridCenters_mapped_grids(ith_text,1), gridCenters_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
+    text(gridCenters_updated_original_mapped_grids(ith_text,1), gridCenters_updated_original_mapped_grids(ith_text,2),current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 10, 'FontWeight','bold','FontSmoothing','on');
 end
 
 % Find driven path indices in current mapped grids
-driven_path_grid_indices_in_current_mapped_grids = ismember(current_mapped_grids,current_grid_numbers_of_driven_path);
+driven_path_grid_indices_in_current_mapped_grids = ismember(updated_current_mapped_grids,current_grid_numbers_of_driven_path);
 
 % Standard deviation in Z of driven path grids
 angle_btw_unit_normals_and_vertical_driven_path = angle_btw_unit_normals_and_vertical(driven_path_grid_indices_in_current_mapped_grids);
@@ -1291,9 +1383,9 @@ xlabel('Mapped grid centers')
 ylabel('Standard deviation in Z')
 title('Mapped grid centers vs standard deviation in Z ')
 
-plot(current_mapped_grids, angle_btw_unit_normals_and_vertical*180/pi,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
+plot(updated_current_mapped_grids, angle_btw_unit_normals_and_vertical*180/pi,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
 plot(current_grid_numbers_of_driven_path, angle_btw_unit_normals_and_vertical_driven_path*180/pi,'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',1.5)
-plot(current_mapped_grids(~driven_path_grid_indices_in_current_mapped_grids), angle_btw_unit_normals_and_vertical_other_mapped_grids*180/pi,'.','MarkerSize',10,'Color',[1 0 0])
+plot(updated_current_mapped_grids(~driven_path_grid_indices_in_current_mapped_grids), angle_btw_unit_normals_and_vertical_other_mapped_grids*180/pi,'.','MarkerSize',10,'Color',[1 0 0])
 
 
 % Find mean std in z of driven path
@@ -1322,10 +1414,13 @@ histogram(angle_btw_unit_normals_and_vertical_driven_path,5)
 
 % theta_threshold = mean_angle_btw_unit_normals_and_vertical_driven_path + 3.7*std(angle_btw_unit_normals_and_vertical_driven_path); 
 % theta_threshold = mean_angle_btw_unit_normals_and_vertical_driven_path + 3.3*std(angle_btw_unit_normals_and_vertical_driven_path); 
+% theta_threshold = mean_angle_btw_unit_normals_and_vertical_driven_path + 3*std(angle_btw_unit_normals_and_vertical_driven_path);
 
 % plot(theta_threshold,max(angle_btw_unit_normals_and_vertical), 'k.', 'MarkerSize',20)
-% theta_threshold = 0.1507; 
-theta_threshold = 0.3; 
+% theta_threshold = 0.1745; 
+theta_threshold = 0.1504; 
+% theta_threshold = 0.3; 
+
 disp('mean of angle_deviation_driven_path')
 disp(mean_angle_btw_unit_normals_and_vertical_driven_path*(180/pi))
 disp('theta threshold')
@@ -1334,7 +1429,6 @@ disp(theta_threshold*(180/pi))
 plot(theta_threshold,0, 'k.', 'MarkerSize',18)
 current_text = sprintf('theta threshold = %.1f',theta_threshold*(180/pi));
 text(0.5, 30,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
-
 
 %% STEP 9: 3rd Classification
 
@@ -1350,15 +1444,22 @@ figure(fig_num);clf
 % theta_threshold = [];
 % std_threshold = [];
 
+% % Classify mapped grids into drivable and drivable
+% [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
+%     original_drivable_grids, original_non_drivable_grids, current_drivable_grid_numbers_in_mapped_grids, current_non_drivable_grid_numbers_in_mapped_grids, ...
+%     gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
+%     fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
+
 % Classify mapped grids into drivable and drivable
 [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
     original_drivable_grids, original_non_drivable_grids, current_drivable_grid_numbers_in_mapped_grids, current_non_drivable_grid_numbers_in_mapped_grids, ...
     gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
-    fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
+    fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
-std_threshold_failed_gridCenters = gridCenters_mapped_grids(standard_deviation_in_z>std_threshold,:); 
 
-theta_threshold_failed_gridCenters = gridCenters_mapped_grids(angle_btw_unit_normals_and_vertical>theta_threshold,:); 
+std_threshold_failed_gridCenters = gridCenters_updated_original_mapped_grids(standard_deviation_in_z>std_threshold,:); 
+
+theta_threshold_failed_gridCenters = gridCenters_updated_original_mapped_grids(angle_btw_unit_normals_and_vertical>theta_threshold,:); 
 
 % plot(std_threshold_failed_gridCenters(:,1), std_threshold_failed_gridCenters(:,2), 'o','MarkerSize',20,'Color',[0 1 1], 'LineWidth',2) 
 
@@ -1391,7 +1492,6 @@ plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, z
 
 % geoplot(LLA_data_theta_threshold_failed_grids(:,1), LLA_data_theta_threshold_failed_grids(:,2), 'o','MarkerSize',15,'Color',[1 0 1], 'LineWidth',2) 
 
-
 %% STEP 10: Find the boundary points of drivable and non-drivable grids
 
 % Part1 - Find the boundary points of mapped and unmapped grids
@@ -1406,9 +1506,9 @@ plot_theta_threshold_failed_gridCenters = [theta_threshold_failed_gridCenters, z
 
 fig_num_mapped_unmapped = 767787; 
 
-XYZ_matrix_mapped_grids = [gridCenters_mapped_grids(:,1:2) ones(length(gridCenters_mapped_grids(:,1)),1)]; 
+XYZ_matrix_mapped_grids = [gridCenters_updated_original_mapped_grids(:,1:2) ones(length(gridCenters_updated_original_mapped_grids(:,1)),1)]; 
 
-XYZ_matrix_unmapped_grids = [gridCenters_unmapped_grids(:,1:2) zeros(length(gridCenters_unmapped_grids(:,1)),1)]; 
+XYZ_matrix_unmapped_grids = [gridCenters_updated_original_unmapped_grids(:,1:2) zeros(length(gridCenters_updated_original_unmapped_grids(:,1)),1)]; 
 
 XYZ_matrix_mapped_unmapped_gridcenters = [XYZ_matrix_mapped_grids; XYZ_matrix_unmapped_grids]; 
 
@@ -1596,7 +1696,6 @@ marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-
 %% Find the nearest boundary points in ENU - updated
 
 % grid_width = ceil(max(true_boundary_points(:,1)) - min(true_boundary_points(:,1))); 
@@ -1619,8 +1718,6 @@ legend_name = 'Computed boundary points';
 legend_position = [];
 
 [~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
-
 
 %% Find the nearest boundary points in ENU - DrB
 
