@@ -203,16 +203,15 @@ if flag_do_plots
     RGB_triplet = [0.8, 0.8, 0.8];
     legend_option = 1;
     legend_name = 'Grids with zero point density';
-    legend_position = [];
-    [~] = fcn_geometry_plotGridCenters(gridCenters_zero_point_density,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    [~] = fcn_geometry_plotPointsinLLA(gridCenters_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
     % plot grid centers
     marker_size = 30;
     RGB_triplet = [0.8, 0.8, 0.8];
     legend_option = 1;
     legend_name = 'Grids greater than zero point density';
-    legend_position = [];
-    [~] = fcn_geometry_plotGridCenters(gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+          
+    [~] = fcn_geometry_plotPointsinLLA(gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 end % Ends check if plotting
 
 if flag_do_debug

@@ -259,18 +259,17 @@ if flag_do_plots
     RGB_triplet = [0.8, 0.8, 0.8];
     legend_option = 1;
     legend_name = 'Unmapped grids';
-    legend_position = [];
+
     plot_gridCenters_unmapped_grids = [gridCenters_unmapped_grids, zeros(length(gridCenters_unmapped_grids(:,1)),1)];
-    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_unmapped_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_unmapped_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
     % plot mapped grid centers
     marker_size = 30;
     RGB_triplet = [0.2, 0.2, 0.2];
     legend_option = 1;
     legend_name = 'Mapped grids';
-    legend_position = [];
     plot_gridCenters_mapped_grids = [gridCenters_mapped_grids, zeros(length(gridCenters_mapped_grids(:,1)),1)];
-    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_mapped_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_mapped_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
 end % Ends check if plotting
 
@@ -290,3 +289,10 @@ end
 %
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
+
+
+% function original_mapped_grids = fcn_INTERNAL_findOrthoDistancesWithinGridsMoreThanOneScan(original_grids_with_more_than_one_scan_line)
+% 
+% 
+% 
+% end

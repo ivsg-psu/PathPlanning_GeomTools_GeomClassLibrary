@@ -307,22 +307,20 @@ concatenate_gridCenters_drivable_non_drivable_grids = [gridCenters_drivable_grid
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    marker_size = 30;
+    marker_size = 20;
     RGB_triplet = [0, 1, 0];
     legend_option = 1;
     legend_name = 'Drivable grids';
-    legend_position = [];
     plot_gridCenters_drivable_grids = [gridCenters_drivable_grids(:,1:2), zeros(length(gridCenters_drivable_grids(:,1)),1)];
-    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
     % plot grid centers
-    marker_size = 30;
+    marker_size = 20;
     RGB_triplet = [1, 0, 0];
     legend_option = 1;
     legend_name = 'Non-drivable grids';
-    legend_position = [];
     plot_gridCenters_non_drivable_grids = [gridCenters_non_drivable_grids(:,1:2), zeros(length(gridCenters_non_drivable_grids(:,1)),1)];
-    [~] = fcn_geometry_plotGridCenters(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 end % Ends check if plotting
 
 if flag_do_debug
