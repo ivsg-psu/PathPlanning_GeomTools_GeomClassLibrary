@@ -526,17 +526,25 @@ text(650, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontS
 
 total_scan_lines_in_each_grid_with_more_than_zero_points = [];
 for ith_grid = 1:length(grids_greater_than_zero_points)
-    % Get all points in this domain and plot them
+     %Get all points in this domain and plot them
     rows_in_domain = gridIndices==grids_greater_than_zero_points(ith_grid);
 
-    % Find number of LiDAR scan lines in each grid
+     %Find number of LiDAR scan lines in each grid
     scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
   
-    % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
+    % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORK     S WITHOUT A FOR LOOP
     total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid]; % SHOULD NOT BE IN FOR LOOP, NEED TO WRITE A CODE THAT WORKS WITHOUT A FOR LOOP
 end
 
+
 % total_scan_lines_in_each_grid
+%wrote by Jiabao Zhao
+
+%total_scan_lines_in_each_grid_with_more_than_zero_points = [];
+%rows_in_domain = ismember(gridIndices, grids_greater_than_zero_points);
+%scan_lines_ith_grid = length(unique(LIDAR_scanLines(rows_in_domain,1)));
+%total_scan_lines_in_each_grid_with_more_than_zero_points = [total_scan_lines_in_each_grid_with_more_than_zero_points; scan_lines_ith_grid];
+
 
 %% STEP 7: Classify the grids with more than zero points into mapped and unmapped grids
 
