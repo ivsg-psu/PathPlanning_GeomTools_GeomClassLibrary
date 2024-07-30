@@ -30,26 +30,26 @@ lane_half_width = (3.6576/2) * 0.40;
 % path from vehicle center 
 transverse_distance_of_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY, zeros(length(unit_ortho_vehicle_vectors_XY),1)];
 
-shift = 2.5; 
+shift = 5; 
 % Shift
 shift_distance = [unit_vehicle_change_in_pose_XY*shift, zeros(length(unit_vehicle_change_in_pose_XY),1)]; 
 
+% Left boundary points of the driven path
+left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points - shift_distance; 
+
+% right boundary points of the driven path
+right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points - shift_distance; 
+
 % % Left boundary points of the driven path
-% left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points - shift_distance; 
+% left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points; 
 % 
 % % Left boundary points of the driven path
-% right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points - shift_distance; 
-
-% Left boundary points of the driven path
-left_boundary_points = VehiclePose(:,1:3) + transverse_distance_of_boundary_points; 
-
-% Left boundary points of the driven path
-right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
+% right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
 
 
 
-boundaryLineNumber_start = 1400 - 8; 
-boundaryLineNumber_end = 1410 - 6; 
+boundaryLineNumber_start = scanLineNumber_start-1;%scanLineNumber_start - 8; 
+boundaryLineNumber_end = scanLineNumber_end+1;%scanLineNumber_end - 6; 
 
 % lengths_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY(scanLineNumber_start:scanLineNumber_end,:), zeros((scanLineNumber_end-scanLineNumber_start+1),1)];
 % 
@@ -70,7 +70,7 @@ plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose
 % is forward, bLue is Left
 quiver3(...
     VehiclePose(boundaryLineNumber_start,1),VehiclePose(boundaryLineNumber_start,2),VehiclePose(boundaryLineNumber_start,3), ...
-    unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,1),unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 1 0]);
+    unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,1),unit_vehicle_change_in_pose_XY(boundaryLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
 quiver3(...
     VehiclePose(boundaryLineNumber_start,1),VehiclePose(boundaryLineNumber_start,2),VehiclePose(boundaryLineNumber_start,3), ...
     unit_ortho_vehicle_vectors_XY(boundaryLineNumber_start,1),unit_ortho_vehicle_vectors_XY(boundaryLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
