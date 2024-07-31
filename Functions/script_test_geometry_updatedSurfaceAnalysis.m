@@ -739,7 +739,7 @@ for ith_grid = 1:length(original_mapped_grids)
     % 
     %     indices_gridPoints_scanLines_first_scan
 
-    if length(gridPoints_scanLines_first_scan(:,1)) > 1 && (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
+    if length(gridPoints_scanLines_first_scan(:,1)) > 1 & (gridPoints_scanLines_first_scan(index_of_rings,5) == gridPoints_scanLines_first_scan(index_of_rings+1,5))
         change_in_vector = gridPoints_scanLines_first_scan(2,2:3) - gridPoints_scanLines_first_scan(1,2:3);
         unit_change_in_vector = fcn_geometry_calcUnitVector(change_in_vector);
         orth_unit_change_in_vector = unit_change_in_vector*[0 1; -1 0];
@@ -1221,7 +1221,7 @@ histogram(std_in_z_driven_path,5)
 
 % std_threshold = mean_std_in_z_driven_path + 6*std(std_in_z_driven_path); 
 % std_threshold = mean_std_in_z_driven_path + 3*std(std_in_z_driven_path); 
-std_threshold = 0.07; 
+std_threshold = 0.1;%0.08; 
 % plot(std_threshold,max(std_in_z_driven_path), 'k.', 'MarkerSize',20)
 disp('mean of std_threshold of driven path')
 disp(mean_std_in_z_driven_path)
@@ -1417,8 +1417,8 @@ histogram(angle_btw_unit_normals_and_vertical_driven_path,5)
 % theta_threshold = mean_angle_btw_unit_normals_and_vertical_driven_path + 3*std(angle_btw_unit_normals_and_vertical_driven_path);
 
 % plot(theta_threshold,max(angle_btw_unit_normals_and_vertical), 'k.', 'MarkerSize',20)
-% theta_threshold = 0.1745; 
-theta_threshold = 0.1504; 
+theta_threshold = 0.1745; 
+% theta_threshold = 0.1504; 
 % theta_threshold = 0.3; 
 
 disp('mean of angle_deviation_driven_path')
@@ -1719,6 +1719,44 @@ legend_position = [];
 
 [~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+
+%% plot the true borders
+
+fig_num = 1224; 
+figure(fig_num); clf;
+
+% after running script_test_geometry_updatedSurfaceAnalysis
+[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
+     gridCenters_driven_path, fig_num);
+
+%%
+
+
+fig_num = 87909; 
+figure(fig_num); clf; 
+
+marker_size = 30;
+RGB_triplet = [0 1 1]; 
+legend_option = 0;
+legend_name = 'Nearest Boundary Points';
+legend_position = [];
+marker_type = []; 
+nearest_boundary_points = [true_borders(:,2), true_borders(:,1), zeros(length(true_borders),1)]; 
+
+[~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+marker_size = 10;
+RGB_triplet = [0 0 1]; 
+legend_option = 0;
+legend_name = 'Nearest Boundary Points';
+legend_position = [];
+marker_type = []; 
+nearest_boundary_points = [true_borders(:,2), true_borders(:,1), zeros(length(true_borders),1)]; 
+
+
+[~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+
 %% Find the nearest boundary points in ENU - DrB
 
 % Instructions
@@ -1755,14 +1793,123 @@ p2 = plot(gridCenters_non_drivable_grids(:,1), gridCenters_non_drivable_grids(:,
 % end
 
 % plot true boundary points
-plot(true_boundary_points(:,1), true_boundary_points(:,2), 'c.', 'MarkerSize',40, 'DisplayName','Boundary points');
-p3 = plot(true_boundary_points(:,1), true_boundary_points(:,2), 'b.', 'MarkerSize',30, 'DisplayName','Boundary points');
+plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'c.', 'MarkerSize',40, 'DisplayName','Boundary points');
+p3 = plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'b.', 'MarkerSize',30, 'DisplayName','Boundary points');
 
 % % plot the grids in the driven path
 p4 = plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 1 0], 'LineWidth',2, 'DisplayName','Driven path grids'); % points strictly inside
 % % plot the grids in the driven path
 plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',20,'Color',[0 0 0], 'LineWidth',0.5) % points strictly inside
 
+%% Right boundary points
+
+VehiclePose_current = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:2); 
+% Calculate the vehicle orientation
+vehicle_change_in_pose_XY = diff(VehiclePose_current(:,1:2));
+
+% Repeat the last value again, since diff removes one row. We want the same
+% number of vectors as the number of points, and diff removed one point.
+vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_XY(end,:)];
+
+% Convert these to unit vectors
+unit_vehicle_change_in_pose_XY = fcn_geometry_calcUnitVector(vehicle_change_in_pose_XY);
+
+shift = 5; 
+% Shift
+shift_distance = unit_vehicle_change_in_pose_XY*shift; 
+
+unit_vehicle_change_in_pose_XY_shifted = unit_vehicle_change_in_pose_XY - shift_distance;
+
+
+% Shift the vehicle pose
+VehiclePose_current_shifted = VehiclePose_current - shift_distance; 
+
+% Get the number of rows 
+rows_nearest_boundary_points = size(nearest_boundary_points, 1);
+rows_VehiclePose_current_shifted = size(VehiclePose_current_shifted, 1);
+
+% Calculate how many rows need to be added to VehiclePose_current_shifted
+rows_to_add = rows_nearest_boundary_points - rows_VehiclePose_current_shifted;
+
+% Create the additional rows by repeating the last row of VehiclePose_current_shifted
+additional_rows = repmat(VehiclePose_current_shifted(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
+
+% Concatenate the original VehiclePose_current_shifted and the additional rows
+updated_VehiclePose_current_shifted = [VehiclePose_current_shifted; additional_rows];
+
+% Calculate the vectors
+vector_from_vehicle_pose_to_boundary_points = nearest_boundary_points(:,1:2) - updated_VehiclePose_current_shifted; 
+
+% Find orthogonal vetors by rotating by 90 degrees in the CCW direction
+unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY_shifted*[0 1; -1 0];
+
+% Create the additional rows by repeating the last row of unit_ortho_vehicle_vectors_XY
+additional_rows_unit_ortho_vehicle_vectors_XY = repmat(unit_ortho_vehicle_vectors_XY(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
+
+% Concatenate the original unit_ortho_vehicle_vectors_XY and the additional_rows_unit_ortho_vehicle_vectors_XY
+updated_unit_ortho_vehicle_vectors_XY = [unit_ortho_vehicle_vectors_XY; additional_rows_unit_ortho_vehicle_vectors_XY]; 
+
+% Calculate the transverse distance
+transverse_dist_boundary_points = sum(vector_from_vehicle_pose_to_boundary_points.*updated_unit_ortho_vehicle_vectors_XY,2);
+
+% Transverse distances of the right boundaries
+transverse_dist_right_boundary_points = transverse_dist_boundary_points(transverse_dist_boundary_points>0,:);
+
+% Boundary points on the right
+boundary_points_right = nearest_boundary_points(transverse_dist_boundary_points>0,:);
+
+figure(31543);clf; 
+hold on
+axis on
+grid on 
+xlabel('X[m]')
+ylabel('Y[m]')
+title('Right Points')
+
+plot(VehiclePose_current_shifted(:,1), VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
+
+plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'c.', 'MarkerSize',40, 'DisplayName','Boundary points');
+plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'b.', 'MarkerSize',30, 'DisplayName','Boundary points');
+
+plot(boundary_points_right(:,1), boundary_points_right(:,2), 'ro', 'MarkerSize',30, 'DisplayName','Boundary points');
+
+quiver(...
+    VehiclePose_current(:,1),VehiclePose_current(:,2),...
+    unit_vehicle_change_in_pose_XY(:,1),unit_vehicle_change_in_pose_XY(:,2),'-','LineWidth',3,'Color',[0 1 0]);
+
+quiver(...
+    VehiclePose_current(:,1),VehiclePose_current(:,2),...
+    unit_ortho_vehicle_vectors_XY(:,1),unit_ortho_vehicle_vectors_XY(:,2),'-','LineWidth',3,'Color',[0 0 1]);
+
+% % Unit orthogonal vector
+% repeated_unit_ortho_vehicle_vectors_XYZ = unit_ortho_vehicle_vectors_XY(28,:).*(ones(length(nearest_boundary_points(:,1)),2)); 
+
+%% Plot right boundary points
+
+fig_num = 71959; 
+figure(fig_num); clf; 
+
+marker_size = 30;
+RGB_triplet = [0 1 1]; 
+legend_option = 0;
+legend_name = 'Right Boundary Points';
+legend_position = [];
+marker_type = []; 
+
+
+[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+marker_size = 12;
+RGB_triplet = [1 0 0]; 
+legend_option = 0;
+legend_name = 'Right Boundary Points';
+legend_position = [];
+marker_type = []; 
+
+
+[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
+%%
 % %% Remove boundary points on the left
 % 
 % % scanLineNumber_start = 1400; 
@@ -1827,12 +1974,12 @@ plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',
 % quiver(...
 %     VehiclePose_current(:,1),VehiclePose_current(:,2),...
 %     unit_ortho_vehicle_vectors_XY(:,1),unit_ortho_vehicle_vectors_XY(:,2),'-','LineWidth',3,'Color',[0 0 1]);
-% % 
-% % % quiver3(...
-% % %     VehiclePose(scanLineNumber_start,1),VehiclePose(scanLineNumber_start,2),VehiclePose(scanLineNumber_start,3), ...
-% % %     unit_ortho_vehicle_vectors_XY(scanLineNumber_start,1),unit_ortho_vehicle_vectors_XY(scanLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
-% % 
-% % 
+% 
+% % quiver3(...
+% %     VehiclePose(scanLineNumber_start,1),VehiclePose(scanLineNumber_start,2),VehiclePose(scanLineNumber_start,3), ...
+% %     unit_ortho_vehicle_vectors_XY(scanLineNumber_start,1),unit_ortho_vehicle_vectors_XY(scanLineNumber_start,2),0,0,'-','LineWidth',3,'Color',[0 0 1]);
+% 
+% 
 % % 
 % %% plot boundary points to the right
 % 
@@ -1858,36 +2005,36 @@ plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',
 % legend_position = [];
 % 
 % [~] = fcn_geometry_plotGridCenters(plot_nearest_boundary_points_right,marker_size,RGB_triplet,legend_option,legend_name,legend_position,fig_num);
-% 
-% 
+
+
 %%
 
-oriGIN = [0 0 0]; 
-unit_vertical = [0 0 1]; 
-input_points = LiDAR_allPoints;
-total_non_drivable_grids = length(original_non_drivable_grids);
-for ith_mapped_grid = 7
-    figure(ith_mapped_grid*10000); clf;
-
-    [~, standard_deviation_in_z(ith_mapped_grid,:), ~, unit_normal_vectors, base_point, ~] =...
-        fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),ith_mapped_grid*10000);
-    xlabel('X[m]')
-    ylabel('Y[m]')
-    zlabel('Z[m]')
-     title('Plane fit of a mapped grid')
-    % title(sprintf('Plane fit of  %dth mapped grid',ith_mapped_grid))
-    figure(ith_mapped_grid*11100)
-    hold on;
-    grid on;
-    xlabel('X[m]')
-    ylabel('Y[m]')
-    zlabel('Z[m]')
-    title(sprintf('angle btw %dth mapped grid (Non-drivable)',ith_mapped_grid))
-    % Plot the base point
-    view(3)
-    % plot3(base_point(1,1),base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
-    quiver3(oriGIN(1,1),oriGIN(1,2),oriGIN(1,3), unit_normal_vectors(1,1),unit_normal_vectors(1,2),unit_normal_vectors(1,3),0,'g','Linewidth',3);
-    quiver3(oriGIN(1,1),oriGIN(1,2),oriGIN(1,3), unit_vertical(1,1),unit_vertical(1,2),unit_vertical(1,3),0,'r','Linewidth',3);
-    % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
-%     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
-end
+% oriGIN = [0 0 0]; 
+% unit_vertical = [0 0 1]; 
+% input_points = LiDAR_allPoints;
+% total_non_drivable_grids = length(original_non_drivable_grids);
+% for ith_mapped_grid = 7
+%     figure(ith_mapped_grid*10000); clf;
+% 
+%     [~, standard_deviation_in_z(ith_mapped_grid,:), ~, unit_normal_vectors, base_point, ~] =...
+%         fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),ith_mapped_grid*10000);
+%     xlabel('X[m]')
+%     ylabel('Y[m]')
+%     zlabel('Z[m]')
+%      title('Plane fit of a mapped grid')
+%     % title(sprintf('Plane fit of  %dth mapped grid',ith_mapped_grid))
+%     figure(ith_mapped_grid*11100)
+%     hold on;
+%     grid on;
+%     xlabel('X[m]')
+%     ylabel('Y[m]')
+%     zlabel('Z[m]')
+%     title(sprintf('angle btw %dth mapped grid (Non-drivable)',ith_mapped_grid))
+%     % Plot the base point
+%     view(3)
+%     % plot3(base_point(1,1),base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
+%     quiver3(oriGIN(1,1),oriGIN(1,2),oriGIN(1,3), unit_normal_vectors(1,1),unit_normal_vectors(1,2),unit_normal_vectors(1,3),0,'g','Linewidth',3);
+%     quiver3(oriGIN(1,1),oriGIN(1,2),oriGIN(1,3), unit_vertical(1,1),unit_vertical(1,2),unit_vertical(1,3),0,'r','Linewidth',3);
+%     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
+% %     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
+% end
