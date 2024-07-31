@@ -1757,7 +1757,7 @@ nearest_boundary_points = [true_borders(:,2), true_borders(:,1), zeros(length(tr
 [~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
-%% Find the nearest boundary points in ENU - DrB
+%% Find the nearest boundary points in ENU 
 
 % Instructions
 % Run this script, after running the scripts in STEP 1 and STEP 2. 
@@ -1831,23 +1831,48 @@ rows_VehiclePose_current_shifted = size(VehiclePose_current_shifted, 1);
 % Calculate how many rows need to be added to VehiclePose_current_shifted
 rows_to_add = rows_nearest_boundary_points - rows_VehiclePose_current_shifted;
 
-% Create the additional rows by repeating the last row of VehiclePose_current_shifted
-additional_rows = repmat(VehiclePose_current_shifted(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
 
-% Concatenate the original VehiclePose_current_shifted and the additional rows
-updated_VehiclePose_current_shifted = [VehiclePose_current_shifted; additional_rows];
+if 0 <= rows_to_add
+
+    % Create the additional rows by repeating the last row of VehiclePose_current_shifted
+    additional_rows = repmat(VehiclePose_current_shifted(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
+
+    % Concatenate the original VehiclePose_current_shifted and the additional rows
+    updated_VehiclePose_current_shifted = [VehiclePose_current_shifted; additional_rows];
+    
+else
+    % Find the total number of rows required 
+    current_rows = length(VehiclePose_current_shifted(:,1)) + rows_to_add; 
+    
+    % Remove some rows from the original VehiclePose_current_shifted 
+    updated_VehiclePose_current_shifted = VehiclePose_current_shifted(1:current_rows,:); 
+
+end
 
 % Calculate the vectors
-vector_from_vehicle_pose_to_boundary_points = nearest_boundary_points(:,1:2) - updated_VehiclePose_current_shifted; 
+vector_from_vehicle_pose_to_boundary_points = nearest_boundary_points(:,1:2) - updated_VehiclePose_current_shifted;
 
 % Find orthogonal vetors by rotating by 90 degrees in the CCW direction
 unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY_shifted*[0 1; -1 0];
 
-% Create the additional rows by repeating the last row of unit_ortho_vehicle_vectors_XY
-additional_rows_unit_ortho_vehicle_vectors_XY = repmat(unit_ortho_vehicle_vectors_XY(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
 
-% Concatenate the original unit_ortho_vehicle_vectors_XY and the additional_rows_unit_ortho_vehicle_vectors_XY
-updated_unit_ortho_vehicle_vectors_XY = [unit_ortho_vehicle_vectors_XY; additional_rows_unit_ortho_vehicle_vectors_XY]; 
+if 0 <= rows_to_add
+
+    % Create the additional rows by repeating the last row of unit_ortho_vehicle_vectors_XY
+    additional_rows_unit_ortho_vehicle_vectors_XY = repmat(unit_ortho_vehicle_vectors_XY(rows_VehiclePose_current_shifted, :), rows_to_add, 1);
+
+    % Concatenate the original unit_ortho_vehicle_vectors_XY and the additional_rows_unit_ortho_vehicle_vectors_XY
+    updated_unit_ortho_vehicle_vectors_XY = [unit_ortho_vehicle_vectors_XY; additional_rows_unit_ortho_vehicle_vectors_XY];
+
+else
+
+    % Find the total number of rows required 
+    current_rows = length(VehiclePose_current_shifted(:,1)) + rows_to_add; 
+    
+    % Remove some rows from the original VehiclePose_current_shifted 
+    updated_unit_ortho_vehicle_vectors_XY = unit_ortho_vehicle_vectors_XY(1:current_rows,:); 
+
+end
 
 % Calculate the transverse distance
 transverse_dist_boundary_points = sum(vector_from_vehicle_pose_to_boundary_points.*updated_unit_ortho_vehicle_vectors_XY,2);
