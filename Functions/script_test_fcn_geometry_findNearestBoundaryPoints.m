@@ -4,6 +4,14 @@
 % 2024_7_25
 % Jiabao Zhao wrote the code
 
+%% Test 0 simple example 
+fig_num = 1; 
+true_boundary_points = [1 1;1 2;1 3;2 3;1 4;2 4;3 4];
+gridCenters_driven_path = [3 1;3 2;3 3];
+[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
+     gridCenters_driven_path, fig_num);
+assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
+assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 %% Test 1  Real Data 
 
@@ -11,8 +19,8 @@ fig_num = 1224;
 % after running script_test_geometry_updatedSurfaceAnalysis
 [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
      gridCenters_driven_path, fig_num);
-
-
+assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
+assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 %% Test2 Real Data
 
@@ -97,7 +105,8 @@ true_boundary_points = [-113.1080   56.7933
  -110.3080   62.7933];
 [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
      gridCenters_driven_path, fig_num);
-
+assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
+assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 %% Test 3, real data
 
@@ -251,6 +260,8 @@ gridCenters_driven_path = [
   ]; 
  [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
      gridCenters_driven_path, fig_num);
+assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
+assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
  %% Test 4 real data
 fig_num = 1;
@@ -467,10 +478,10 @@ gridCenters_driven_path = [ 424.0678  221.8227
   375.0678  243.8227
   376.0678  243.8227
   377.0678  243.8227];
-
-
  [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
      gridCenters_driven_path, fig_num);
+ assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
+assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 %% Test 5 real data
 
 fig_num = 1;
