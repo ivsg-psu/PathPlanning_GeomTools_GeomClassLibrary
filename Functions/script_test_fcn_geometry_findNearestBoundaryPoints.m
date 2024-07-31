@@ -101,6 +101,8 @@ true_boundary_points = [-113.1080   56.7933
 
 %% TEst 3: Data for Jiabao
 
+fig_num = 1;
+
 true_boundary_points = [
 393.6480  242.3227
   394.6480  241.3227
@@ -247,3 +249,5 @@ gridCenters_driven_path = [
   395.6480  238.8227
   396.6480  238.8227
   ]; 
+ [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+     gridCenters_driven_path, fig_num);

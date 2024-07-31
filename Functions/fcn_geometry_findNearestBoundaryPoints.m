@@ -82,10 +82,10 @@ unique_low_to_high = unique(Low_to_high);
 grid_size = abs(unique_low_to_high(2)-unique_low_to_high(1));
 
 % Find the max and min of X and Y coordination 
-max_x = max(true_boundary_points(:,1));
-min_x = min(true_boundary_points(:,1));
-max_y = max(true_boundary_points(:,2));
-min_y = min(true_boundary_points(:,2));
+max_x = max(max(true_boundary_points(:,1)),max(gridCenters_driven_path(:,1)));
+min_x = min(min(true_boundary_points(:,1)),min(gridCenters_driven_path(:,1)));
+max_y = max(max(true_boundary_points(:,2)),max(gridCenters_driven_path(:,2)));
+min_y = min(min(true_boundary_points(:,2)),min(gridCenters_driven_path(:,2)));
 
 
 % Find the range of x and y coordination and break them into grids
@@ -116,12 +116,16 @@ right_points_driven_path = gridCenters_driven_path + [offset_distance, 0];
 new_gridCenters_driven_path = [gridCenters_driven_path;top_points_driven_path;
     bottom_points_driven_path; right_points_driven_path;left_points_driven_path];
 
+
 round_new_gridCenters_driven_path = round(new_gridCenters_driven_path, 4);
 
 % Find the indices of each point in term of X and Y range
 [~, indice_X] = ismember(round_new_gridCenters_driven_path(:,1),rounded_x_range);
 [~, indice_Y] = ismember(round_new_gridCenters_driven_path(:,2),rounded_y_range);
+% remove all zeros
 drive_path_rows_columns = [indice_Y,indice_X];
+rows_to_keep = all(drive_path_rows_columns~=0,2);
+drive_path_rows_columns = drive_path_rows_columns(rows_to_keep, :);
 
 true_borders_indices = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
 
