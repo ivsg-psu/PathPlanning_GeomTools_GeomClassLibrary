@@ -120,12 +120,25 @@ new_gridCenters_driven_path = [gridCenters_driven_path;top_points_driven_path;
 round_new_gridCenters_driven_path = round(new_gridCenters_driven_path, 4);
 
 % Find the indices of each point in term of X and Y range
-[~, indice_X] = ismember(round_new_gridCenters_driven_path(:,1),rounded_x_range);
-[~, indice_Y] = ismember(round_new_gridCenters_driven_path(:,2),rounded_y_range);
+[~, indice_X1] = ismember(round_new_gridCenters_driven_path(:,1),rounded_x_range);
+[~, indice_Y1] = ismember(round_new_gridCenters_driven_path(:,2),rounded_y_range);
 % remove all zeros
-drive_path_rows_columns = [indice_Y,indice_X];
+drive_path_rows_columns = [indice_Y1,indice_X1];
 rows_to_keep = all(drive_path_rows_columns~=0,2);
 drive_path_rows_columns = drive_path_rows_columns(rows_to_keep, :);
+
+% Add a boundary point at the starting indices of the driving path if
+% needed
+
+if indice_X ~= indice_X1(1)
+    added_point = [indice_X1(1) length(y_range)];
+    indice_X = [indice_X ; added_point(1,1)];
+    indice_Y = [indice_Y ; added_point(1,2)];
+end
+z = zeros(max(max(length(indice_Y)),max(length(y_range))),max(max(length(indice_X)),max(length(x_range))));
+% Return the indice of corresponding points with 1
+z(sub2ind(size(z), indice_Y, indice_X)) = 1;
+border_only_test_grid = z;
 
 true_borders_indices = fcn_INTERNAL_findTrueBorders(border_only_test_grid,drive_path_rows_columns, fig_num);
 
@@ -206,7 +219,7 @@ true_borders = [];
 if flag_do_debug
     h_test_drive_path = plot(nan,nan,'o','Color',[1 0 0],'MarkerSize',20);
     h_test_expansion  = plot(nan,nan,'.','Color',[0 0 1],'MarkerSize',20);
-    % pause_duration = 0.01;
+     %pause_duration = 0.01;
 end
 
 for ith_drive_path_point = 1:length(drive_path_rows_columns)
@@ -242,7 +255,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for ith_row = current_row:(-1):1
         if flag_do_debug
             set(h_test_expansion,'Xdata',current_column,'Ydata',ith_row);
-            % pause(pause_duration);
+             %pause(pause_duration);
         end
         if 1==border_only_test_grid(ith_row,current_column)
             true_borders = [true_borders; ith_row current_column]; %#ok<AGROW>
@@ -258,7 +271,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for jth_column = current_column:Ncols
         if flag_do_debug
             set(h_test_expansion,'Xdata',jth_column,'Ydata',current_row);
-            % pause(pause_duration);
+           %  pause(pause_duration);
         end
         if 1==border_only_test_grid(current_row, jth_column)
             true_borders = [true_borders; current_row jth_column]; %#ok<AGROW>
@@ -274,7 +287,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for jth_column = current_column:(-1):1
         if flag_do_debug
             set(h_test_expansion,'Xdata',jth_column,'Ydata',current_row);
-            % pause(pause_duration);
+             %pause(pause_duration);
         end
         if 1==border_only_test_grid(current_row, jth_column)
             true_borders = [true_borders; current_row jth_column]; %#ok<AGROW>
