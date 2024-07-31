@@ -99,10 +99,7 @@ rounded_y_range = round((y_range), 4);
 % Find the indices of each point in term of X and Y range
 [~,indice_X] = ismember(x_rounded_true_boundary_points,rounded_x_range);
 [~,indice_Y] = ismember(y_rounded_true_boundary_points,rounded_y_range);
-z = zeros(max(max(length(indice_Y)),max(length(y_range))),max(max(length(indice_X)),max(length(x_range))));
 % Return the indice of corresponding points with 1
-z(sub2ind(size(z), indice_Y, indice_X)) = 1;
-border_only_test_grid = z;
 
 % Offset distance of a driven grid from a 
 offset_distance = grid_size;
