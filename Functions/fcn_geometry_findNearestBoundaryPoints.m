@@ -202,7 +202,7 @@ true_borders = [];
 if flag_do_debug
     h_test_drive_path = plot(nan,nan,'o','Color',[1 0 0],'MarkerSize',20);
     h_test_expansion  = plot(nan,nan,'.','Color',[0 0 1],'MarkerSize',20);
-    pause_duration = 0.01;
+    % pause_duration = 0.01;
 end
 
 for ith_drive_path_point = 1:length(drive_path_rows_columns)
@@ -215,14 +215,14 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     current_column = current_point_to_test(1,2);
     if flag_do_debug
         set(h_test_drive_path,'Xdata',current_column,'Ydata',current_row);
-        pause(pause_duration);
+        % pause(pause_duration);
     end
 
     % Loop up row-wise
     for ith_row = current_row:Nrows
         if flag_do_debug
             set(h_test_expansion,'Xdata',current_column,'Ydata',ith_row);
-            pause(pause_duration);
+            % pause(pause_duration);
         end
         if 1==border_only_test_grid(ith_row,current_column)
             true_borders = [true_borders; ith_row current_column]; %#ok<AGROW>
@@ -238,7 +238,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for ith_row = current_row:(-1):1
         if flag_do_debug
             set(h_test_expansion,'Xdata',current_column,'Ydata',ith_row);
-            pause(pause_duration);
+            % pause(pause_duration);
         end
         if 1==border_only_test_grid(ith_row,current_column)
             true_borders = [true_borders; ith_row current_column]; %#ok<AGROW>
@@ -254,7 +254,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for jth_column = current_column:Ncols
         if flag_do_debug
             set(h_test_expansion,'Xdata',jth_column,'Ydata',current_row);
-            pause(pause_duration);
+            % pause(pause_duration);
         end
         if 1==border_only_test_grid(current_row, jth_column)
             true_borders = [true_borders; current_row jth_column]; %#ok<AGROW>
@@ -270,7 +270,7 @@ for ith_drive_path_point = 1:length(drive_path_rows_columns)
     for jth_column = current_column:(-1):1
         if flag_do_debug
             set(h_test_expansion,'Xdata',jth_column,'Ydata',current_row);
-            pause(pause_duration);
+            % pause(pause_duration);
         end
         if 1==border_only_test_grid(current_row, jth_column)
             true_borders = [true_borders; current_row jth_column]; %#ok<AGROW>
