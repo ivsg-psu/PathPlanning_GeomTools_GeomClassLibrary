@@ -12,6 +12,7 @@
 close all;
 
 %% Simple example 1
+fig_num = 1;
 
 x = [1,2];
 y = [1,2];
@@ -32,7 +33,6 @@ x_limits = [min(x) max(x)];
 y_limits = [min(y) max(y)]; 
 
 % Calculate boundary points
-fig_num = 123;
 boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
@@ -120,7 +120,12 @@ assert(isequal(boundary_points(9,1),4.5));
 assert(isequal(boundary_points(10,1),1.5));
 assert(isequal(boundary_points(11,1),1.5));
 assert(isequal(boundary_points(12,1),1.5));
-%% Example for Aneesh
+
+%% Examples for Aneesh
+fig_num = 1;
+figure(fig_num);
+clf;
+
 
 % Create some data
 N_points = 10;
@@ -156,7 +161,12 @@ plot(x_range,y_line,'b-','LineWidth',3);
 
 % Assert check the length of column of the output  
 assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
+
 %% EXAMPLE 2
+fig_num = 2;
+figure(fig_num);
+clf;
+
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
@@ -194,6 +204,11 @@ plot(x_range,y_line,'b-','LineWidth',3);
 % Assert check the length of column of the output  
 assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 %% EXAMPLE 3
+fig_num = 3;
+figure(fig_num);
+clf;
+
+
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
@@ -222,17 +237,23 @@ end
 
 x_limits = [min(x_range) max(x_range)];  
 y_limits = [min(y_range) max(y_range)]; 
+
 % Calculate boundary points
-fig_num = 125;
 boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary circle
-angles = linspace(0,360,100)'*pi/180;
-plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+% angles = linspace(0,360,100)'*pi/180;
+% plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
 
 % Assert check the length of column of the output 
 assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
+
 %% EXAMPLE 4
+fig_num = 4;
+figure(fig_num);
+clf;
+
+
 % Create some data
 N_points = 20;
 x_range = linspace(-2,2,N_points);
@@ -261,13 +282,14 @@ end
 
 x_limits = [min(x_range) max(x_range)];  
 y_limits = [min(y_range) max(y_range)]; 
+
 % Calculate boundary points
-fig_num = 126;
 boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
-% Plot the boundary circle
-angles = linspace(0,360,100)'*pi/180;
-plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+% % Plot the boundary circle
+% angles = linspace(0,360,100)'*pi/180;
+% plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+
 % Assert check the length of column of the output 
 assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));

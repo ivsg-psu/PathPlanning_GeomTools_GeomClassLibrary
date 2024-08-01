@@ -1,9 +1,12 @@
 function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,varargin)
 %% fcn_geometry_findMaxMinOfXYZ
 %
-% Finds the boundary points of drivable and non-drivable grids in 2D by
-% taking grid centers(X,Y), Z (1 - drivable, 0 - non-drivable), grid_size
-% as the inputs.
+% Finds the boundary points of a matrix Z wherein the boundary points are
+% the locations halfway between an occupied element of Z (value of 1) and
+% an un-occupied element (value of 0). The function returns the halfway
+% points along each row or column. The method is to look at where the
+% derivative of Z changes first in rows, then in columns, and defining the
+% point just 1/2 grid distance beyond this point as the boundary.
 %
 % FORMAT:
 %
@@ -11,17 +14,19 @@ function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,varar
 %
 % INPUTS:
 %
-% X: X-coordinates of mapped grid centers
+% X: X-coordinates of mapped grid centers in an NxM matrix
 %
-% Y: Y-coordinates of mapped grid centers
+% Y: Y-coordinates of mapped grid centers in an NxM matrix
 %
-% Z: 1 or 0 (drivable and non-drivable grids) 
+% Z: 1 or 0 (drivable and non-drivable grids) in an NxM matrix
+%
+% grid size: the size of the grid, in meters
 %
 % (OPTIONAL INPUTS)
 %
-% x_limits: x_limits of the plot
+% x_limits: x_limits of the plot (used only for plotting)
 %
-% y_limits: y_limits of the plot
+% y_limits: y_limits of the plot (used only for plotting)
 %
 % fig_num: a figure number to plot results. If set to -1, skips any
 % input checking or debugging, no figures will be generated, and sets
@@ -56,9 +61,11 @@ function boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,varar
 % -- added grid size as one of the inputs
 % -- made x_range and y_range to x_limits and y_limits
 % -- fixed some comments
-% 2024_06_25 - Aneesh Batchu
+% 2024_06_25 - Aneesh Batchu7
 % -- wrote a conditional statement to keep "Z_greater_than" array to be a
 % column matrix.
+% 2024_07_31 - Sean Brennan
+% -- fixed some missing comments in the header
 
 %% Debugging and Input checks
 
@@ -289,7 +296,7 @@ end
 N_points = numel(X); % Total number of elements
 Z_greater_than_padded = [0; Z_greater_than; N_points+1];
 
-%% FInd changes
+%% Find changes
 changes_in_sequence = diff(Z_greater_than_padded);
 indicies_falling_edge = changes_in_sequence>1.5; %  Anything greater than 1 is a change. Have to add 1 because we padded indicies above
 indicies_rising_edge = find(changes_in_sequence>1.5)+1; % Anything greater than 1 is a change. Have to add 1 because we padded indicies above

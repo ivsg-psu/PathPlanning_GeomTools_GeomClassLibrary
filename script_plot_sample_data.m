@@ -71,8 +71,8 @@ rings_to_analyze = [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15];
 % rings_to_analyze = [7 9 12]; 
 
 % Fill raw LiDAR data
-scanLineNumber_start = 1400;
-scanLineNumber_end   = 1500;
+scanLineNumber_start = 1;
+scanLineNumber_end   = 500;
 
 % Initialize concatenation arrays
 concatenate_scanLine_rings = [];

@@ -450,7 +450,23 @@ function sprialLength = fcn_INTERNAL_findLengthFromOffset(K0, Kf, center_to_cent
 function_to_optimize = @(x)fcn_INTERNAL_calcSpiralOffsetError(x, K0, Kf, center_to_center_distance);
 % options = optimset('Display','iter','PlotFcns',@optimplotfval);
 % sprialLength = fminsearch(function_to_optimize,1,options);
+
 X0 = 1;
+% % If the 2nd circle is a line, or if the arcs are in opposie direction
+% if abs(Kf)<1E-8 || (sign(K0)*sign(Kf)<0)
+%     X0 = 1;
+% else
+%     radius1 = 1/K0;
+%     radius2 = 1/Kf;
+%     circle1_parameters = [0 radius1 radius1];
+%     circle2_parameters = [0 radius2+center_to_center_distance radius2];
+% 
+%     [estimated_spiralLength, ~, ~, ~] = ...
+%         fcn_geometry_estimateSpiralLength(circle1_parameters, circle2_parameters, -1);
+%     if ~isnan(estimated_spiralLength)
+%         X0 = estimated_spiralLength;
+%     end
+% end
 X_solution = fminsearch(function_to_optimize,X0);
 % X_solution = fmincon(function_to_optimize,X0,-1,0);
 sprialLength = X_solution(1,1);

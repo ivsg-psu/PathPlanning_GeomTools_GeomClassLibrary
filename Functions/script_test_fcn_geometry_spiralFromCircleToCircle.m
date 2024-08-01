@@ -254,122 +254,6 @@ assert(isequal(size(spiral_join_parameters),[1 6]));
 assert(isequal(round(spiral_join_parameters,4),[ 27.4677    2.3405    0.1700    2.6105    0.0062    0.0027]));
 assert(space_between_circles>0);
 
-%% Systematic testing
-
-% Loop through offsets
-Noffsets = 20;
-Ncircles = 30;
-offsets_to_try = flipud(logspace(log(0.00001),log(0.5),Noffsets)');
-
-fraction_of_radial_space_for_r2 = logspace(log(0.00001),log(0.8),Ncircles)';
-fraction_of_radial_space_for_r2 = flipud(fraction_of_radial_space_for_r2);
-
-% Initialize arrays that save results
-slopes = nan*offsets_to_try;
-intercepts = nan*offsets_to_try;
-clear fit_points_x fit_points_y
-fit_points_y{Noffsets} = [];
-fit_points_x{Noffsets} = [];
-
-
-for ith_offset = 1:length(offsets_to_try)
-    fprintf(1,'Testing offset: %.0d of %.0d\n',ith_offset,Noffsets)
-    offset = offsets_to_try(ith_offset,1);
-
-    % The amount of space within the radius of the unit-radius circle must contain
-    % the offset gap and the remainder maximum size of the radius.
-    circle2_radii = (ones(Ncircles,1)-offset).*(1-fraction_of_radial_space_for_r2);
-
-    lengths = nan*circle2_radii;
-    diffs1 = nan*circle2_radii;
-    diffs2 = nan*circle2_radii;
-
-    fig_num = 111111;
-    figure(fig_num); clf;
-
-    for jth_radius = 1:Ncircles
-        fprintf(1,'\tTesting radius: %.0d of %.0d\n',jth_radius,Ncircles);
-        circle2_radius = circle2_radii(jth_radius,1);
-
-        circle1_parameters = [0 1  1];
-        circle2_parameters = [0 circle2_radius+offset  circle2_radius];
-
-        % Plot the circles
-        figure(383838);
-        clf; hold on;
-        axis equal
-        grid on;
-        fcn_geometry_plotGeometry('circle',circle1_parameters,0.01);
-        fcn_geometry_plotGeometry('circle',circle2_parameters,0.01);
-        title(sprintf('Testing radius: %.0d of %.0d',jth_radius,Ncircles));
-        pause(0.02);
-
-        if 1 == 1
-            spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
-
-            h0           = spiral_join_parameters(1,3);
-            spiralLength = spiral_join_parameters(1,4);
-            x0           = spiral_join_parameters(1,3);
-            y0           = spiral_join_parameters(1,4);
-            K0           = spiral_join_parameters(1,5);
-            Kf           = spiral_join_parameters(1,6);
-            analytical_end_angle   = h0 + (Kf+K0)/2*spiralLength;
-
-            % Ignore any solutions that wrap around more than 180. We never see
-            % these on roads
-            if spiralLength>=pi
-                break
-            end
-
-            diff1 = h0;
-            diff2 = analytical_end_angle;
-            lengths(jth_radius,1) = spiralLength;
-            diffs1(jth_radius,1) = diff1;
-            diffs2(jth_radius,1) = diff2;
-        end
-    end
-
-    % Remove NaN values
-    good_indicies = ~isnan(lengths);
-    circle2_radii = circle2_radii(good_indicies,:);
-    diffs1 = diffs1(good_indicies,:);
-    diffs2 = diffs2(good_indicies,:);
-    lengths = lengths(good_indicies,:);
-
-    figure(22020);
-    clf;
-    loglog(1-circle2_radii, abs(diffs1*180/pi),'r.-');
-    hold on;
-    loglog(1-circle2_radii, abs(diffs2*180/pi),'b.-');
-
-    figure(22021);
-    clf;
-    loglog(1-circle2_radii, lengths,'.-');
-
-    % Check the linear regression
-    x_data = log(1-circle2_radii);
-    y_data = log(lengths);
-
-    fit_points_x{ith_offset} = x_data;
-    fit_points_y{ith_offset} = y_data;
-
-
-    % Fit equation of form
-    % y = x*m+b --> Y = [X 1]*[m b]
-    X_vec = [x_data ones(length(x_data(:,1)),1)];
-    fit_params = (X_vec'*X_vec)\(X_vec'*y_data);
-    slopes(ith_offset,1) = fit_params(1,1);
-    intercepts(ith_offset,1) = fit_params(2,1);
-
-    y_pred = [x_data ones(length(x_data(:,1)),1)]*fit_params;
-
-    figure(37373);
-    clf;
-    hold on;
-    plot(x_data,y_data,'k.','MarkerSize',10);
-    plot(x_data,y_pred,'b-');
-end
-
 
 
 %% Circle to line tests
@@ -436,3 +320,16 @@ assert(isequal(size(spiral_join_parameters),[1 6]));
 % Check results
 assert(all(isnan(spiral_join_parameters)));
 assert(space_between_circles<0);
+
+
+%% Functions follow
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   ______                _   _
+%  |  ____|              | | (_)
+%  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___
+%  |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+%  | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+%  |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+%
+% See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
