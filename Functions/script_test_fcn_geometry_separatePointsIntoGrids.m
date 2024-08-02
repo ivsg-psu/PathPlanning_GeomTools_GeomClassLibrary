@@ -30,12 +30,15 @@ clf;
 inputPoints = [1; 3; 4; 5];
 gridSize = 2;
 gridBoundaries = [0 4]; 
-[gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
+[gridIndices,grid_AABBs,gridCenters,nGrids] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
 
 
 assert(isequal(length(gridIndices(:,1)),length(inputPoints(:,1))));
 assert(isequal(length(grid_AABBs(:,1)),2));
 assert(isequal(length(gridCenters(:,1)),2));
+assert(isequal(length(nGrids(:,1)),1));
+
+assert(isequal(nGrids,2));
 
 
 %% BASIC example 1: many X values
@@ -61,12 +64,15 @@ clf;
 inputPoints = [1 1; 3 3; 3 1; 3 5; 1 5; 1 3; -1 -1];
 gridSize = 2;
 gridBoundaries = [0 4 0 6]; 
-[gridIndices,grid_AABBs,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
+[gridIndices,grid_AABBs,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num));
 
 
 assert(isequal(length(gridIndices(:,1)),length(inputPoints(:,1))));
 assert(isequal(length(grid_AABBs(:,1)),6));
 assert(isequal(length(gridCenters(:,1)),6));
+
+assert(isequal(nGrids,[2; 3]));
+
 
 %% BASIC example 1: XY with lots of data
 fig_num = 200;

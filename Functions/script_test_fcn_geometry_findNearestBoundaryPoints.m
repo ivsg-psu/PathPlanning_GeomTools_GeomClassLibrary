@@ -1,56 +1,45 @@
 % script_test_fcn_geometry_findNearestBoundaryPoints
 % Exercises the function: fcn_geometry_findNearestBoundaryPoints
+
 % Revision history:
-% 2024_7_25
-% Jiabao Zhao wrote the code
+% 2024_07_25 - Jiabao Zhao 
+% -- wrote the code
+% 2024_07_31 - S. Brennan
+% -- rewrote entire code
 
-%% Test 0 simple example 
+
+%% Test 1 simple example with straight path
 fig_num = 1; 
-true_boundary_points = [1 1;1 2;1 3;2 3;1 4;2 4;3 4];
-gridCenters_driven_path = [3 1;3 2;3 3];
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
-     gridCenters_driven_path, fig_num);
-assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
-assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
+gridSize = 1; 
+gridBoundaries = [0 8 0 4];
+boundaryPointsXY = [1.5 1.5; 1.5 2.5; 1.5 3.5; 2.5 1.5; 3.5 1.5; 3.5 2.5; 3.5 3.5; 2.5 3.5];
+drivenPathXY = [1 0.5; 6 0.5];
 
-% %% Test 0 - 
-% 
-% % Create some data
-% N_points = 10;
-% x_range = linspace(-2,2,N_points);
-% y_range = linspace(-2,5,15);
-% 
-% [X,Y] = meshgrid(x_range,y_range);
-% 
-% % Create Z data that is same size
-% Z = zeros(size(X));
-% 
-% 
-% % Make all Z data which has XY data above line y = x + 2 equal to 1
-% Y_line = X + 2;
-% flag_larger_than = Y>Y_line;
-% Z(flag_larger_than) = 1;
-% 
-% if 1==0
-%     % Plot the data in 3D
-%     figure(1234);
-%     clf;
-%     surf(X,Y,Z)
-% end
-% 
-% % Calculate boundary points
-% fig_num = 1;
-% boundary_points = fcn_INTERNAL_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num);
-% plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
-% 
-% % Plot the boundary line
-% y_line = x_range+2;
-% plot(x_range,y_line,'b-','LineWidth',3);
-% 
+[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+assert(isequal(nearestBorderIndicies,[10 11 12]'));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+%% Test 2 simple example with curving path
+fig_num = 2; 
+gridSize = 1; 
+gridBoundaries = [0 8 0 4];
+boundaryPointsXY = [1.5 1.5; 1.5 2.5; 1.5 3.5; 2.5 1.5; 3.5 1.5; 3.5 2.5; 3.5 3.5; 2.5 3.5];
+drivenPathXY = [1 0.5; 4 0.5; 6 2.2];
+
+[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+assert(isequal(nearestBorderIndicies,[10 11 12 20]'));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
 
-%% Examples for Aneesh
-fig_num = 1;
+
+%% Test 3 - a larger array
+fig_num = 3;
 figure(fig_num);
 clf;
 
@@ -59,7 +48,7 @@ clf;
 N_points = 10;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,15);
-grid_size = x_range(2) - x_range(1); 
+gridSize = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -80,14 +69,18 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 
 % Calculate boundary points
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
+gridSize = 0.25; 
+gridBoundaries = [0 5 -2 2];
+drivenPathXY = [0 1; 2 3];
 
-% Assert check the length of column of the output  
-assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 
-driven_path = [0 1; 1 2];
+[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
 
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundary_points,driven_path, grid_size, fig_num);
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
 
 
 
@@ -100,7 +93,7 @@ clf;
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,N_points);
-grid_size = x_range(2) - x_range(1); 
+gridSize = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -123,7 +116,7 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 % Calculate boundary points
 fig_num = 124;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary line
@@ -143,7 +136,7 @@ clf;
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,5,N_points);
-grid_size = x_range(2) - x_range(1); 
+gridSize = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -169,7 +162,7 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 
 % Calculate boundary points
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % Plot the boundary circle
 % angles = linspace(0,360,100)'*pi/180;
@@ -188,7 +181,7 @@ clf;
 N_points = 20;
 x_range = linspace(-2,2,N_points);
 y_range = linspace(-2,2,N_points);
-grid_size = x_range(2) - x_range(1); 
+gridSize = x_range(2) - x_range(1); 
 
 [X,Y] = meshgrid(x_range,y_range);
 
@@ -214,7 +207,7 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 
 % Calculate boundary points
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_limits,fig_num);
+boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);
 plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
 
 % % Plot the boundary circle
@@ -230,15 +223,15 @@ assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
 
 fig_num = 1224; 
 % after running script_test_geometry_updatedSurfaceAnalysis
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
-     gridCenters_driven_path, fig_num);
+[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY,...
+     drivenPathXY, fig_num);
 assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
 assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 %% Test2 Real Data
 
 fig_num = 1;
-gridCenters_driven_path = [-112.3080   55.5933
+drivenPathXY = [-112.3080   55.5933
  -112.3080   56.3933
  -111.5080   56.3933
  -112.3080   57.1933
@@ -289,7 +282,7 @@ gridCenters_non_drivable_grids = [-109.1080   53.9933         0
  -110.7080   62.7933         0
  -109.9080   63.5933         0
 ];
-true_boundary_points = [-113.1080   56.7933
+boundaryPointsXY = [-113.1080   56.7933
  -112.3080   58.3933
  -111.5080   59.9933
  -110.7080   61.5933
@@ -316,8 +309,8 @@ true_boundary_points = [-113.1080   56.7933
  -111.1080   61.1933
  -110.3080   61.9933
  -110.3080   62.7933];
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-     gridCenters_driven_path, fig_num);
+[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, fig_num);
 assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
 assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
@@ -325,7 +318,7 @@ assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 fig_num = 1;
 
-true_boundary_points = [
+boundaryPointsXY = [
 393.6480  242.3227
   394.6480  241.3227
   395.6480  240.3227
@@ -416,7 +409,7 @@ true_boundary_points = [
 ]; 
 
 
-gridCenters_driven_path = [
+drivenPathXY = [
 
   424.6480  221.8227
   423.6480  222.8227
@@ -471,14 +464,14 @@ gridCenters_driven_path = [
   395.6480  238.8227
   396.6480  238.8227
   ]; 
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-     gridCenters_driven_path, fig_num);
+ [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, fig_num);
 assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
 assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
  %% Test 4 real data
 fig_num = 1;
-true_boundary_points = [361.0678  246.3227
+boundaryPointsXY = [361.0678  246.3227
   362.0678  247.3227
   363.0678  246.3227
   364.0678  246.3227
@@ -593,7 +586,7 @@ true_boundary_points = [361.0678  246.3227
   365.5678  247.8227];
 
 
-gridCenters_driven_path = [ 424.0678  221.8227
+drivenPathXY = [ 424.0678  221.8227
   423.0678  222.8227
   424.0678  222.8227
   425.0678  222.8227
@@ -691,14 +684,14 @@ gridCenters_driven_path = [ 424.0678  221.8227
   375.0678  243.8227
   376.0678  243.8227
   377.0678  243.8227];
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-     gridCenters_driven_path, fig_num);
+ [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, fig_num);
  assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
 assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 %% Test 5 real data
 
 fig_num = 1;
-true_boundary_points = [384.9287   56.3596
+boundaryPointsXY = [384.9287   56.3596
   358.9287   19.3596
   359.9287   20.3596
   360.9287   21.3596
@@ -781,7 +774,7 @@ true_boundary_points = [384.9287   56.3596
   385.4287   56.8596];
 
 
-gridCenters_driven_path = [357.9287   19.8596
+drivenPathXY = [357.9287   19.8596
   357.9287   20.8596
   358.9287   20.8596
   358.9287   21.8596
@@ -864,8 +857,8 @@ gridCenters_driven_path = [357.9287   19.8596
   399.9287   52.8596
   400.9287   52.8596
   399.9287   53.8596];
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
-     gridCenters_driven_path, fig_num);
+ [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+     drivenPathXY, fig_num);
 
 
 %% Functions follow

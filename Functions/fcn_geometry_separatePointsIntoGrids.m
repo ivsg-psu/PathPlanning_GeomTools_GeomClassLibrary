@@ -1,28 +1,43 @@
-function [gridIndicies, grid_AABBs, gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries,varargin)
-% Introduction:
-% This function aims to seprate given points in X/XY/XYZ format into a
-% user defined grid size and grid boundaries and output a cell array
-% containing indices of points in the domain,the domain in AABB format and
-% the grid centers
-% Example: a set of XYZ points, grid space of two meters, the function will
-% seprate all the points in [0,2m], [2m,4m], etc. If the points are in 2D
-% there should be an option in the function to create the grid in x-axis or
-% in y-axis
+function [gridIndicies, grid_AABBs, gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries,varargin)
+%% fcn_geometry_separatePointsIntoGrids
+% separates given points in X/XY/XYZ format into a user-defined grid. User
+% must enter the gridSize, e.g. the dimension of the edge of the grid, and
+% grid boundaries in terms of maximum and minimum X, Y, and/or Z values.
+% The outputs include a cell array containing indices associating each
+% point to a specific grid domain, the domain of each grid in AABB format,
+% and the grid centers. Note: the indicies follow the ind2sub format
+% wherein the numbering increases along rows, then columns, then height.
 %
 % FORMAT:
 %
-%       [gridIndices,gridDomains,gridCenters] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num))
+%       [gridIndices, gridDomains, gridCenters, Ngrids] = fcn_geometry_separatePointsIntoGrids(inputPoints, gridSize, gridBoundaries, (fig_num))
 %
 % INPUTS:
 %
-%      (OPTIONAL INPUTS)
+%      inputPoints: an array of Nx1, Nx2, or Nx3 points where N is the
+%      number of points, and 1, 2, 3 are the X, XY, or XYZ dimensions.
 %
-%     none
+%      gridSize: the width of the grid in X, XY, or XYZ. The width
+%      specifies the decimation interval of the grid. Note: the grid rounds
+%      to integer increments of the grid size. For example, if
+%      gridBoundaries in X start at 1 and end at 3, then a gridsize of 2
+%      starts the grid at 0 and goes to 2 and then 4, not 1 to 3.
+%
+%      gridBoundaries: a 1x2, 1x4, or 1x6 vector containing the low and
+%      high values of the grid in the format [xlow xhigh ylow yhigh zlow
+%      zhigh]
+%
+%      (OPTIONAL INPUTS): 
+%
+%      fig_num: a figure number to plot results. If set to -1, skips any
+%      input checking or debugging, no figures will be generated, and sets
+%      up code to maximize speed.
 %
 % OUTPUTS:
 %
-%     gridIndicies : a matrix of size [N x 1] constaining the domain number
-%     of the point. If a point is not in any domain, it is NaN.
+%     gridIndicies : a matrix of size [N x 1] where N is the number of
+%     points. Each entry contains the domain number of the point. If a
+%     point is not in any domain, the entry is NaN.
 %
 %     grid_AABBs : matrix in the format of AABB (i.e axis aligned bounding
 %     box format) that gives the domains corresponding to the indices of
@@ -33,9 +48,9 @@ function [gridIndicies, grid_AABBs, gridCenters] = fcn_geometry_separatePointsIn
 %     for each row, with one row per domain.
 %
 %     gridCenters : matrix in 2D or 3D that gives the respective
-%     gridDomain centers
+%     gridDomain centers for each index
 %
-%     lefover_points: points outside grid boundaries
+%     nGrids: the number of grids along each dimension
 %
 %
 % DEPENDENCIES:
@@ -68,6 +83,10 @@ function [gridIndicies, grid_AABBs, gridCenters] = fcn_geometry_separatePointsIn
 % -- fixed name on script and function
 % 2024_04_14 - S. Brennan
 % -- added fcn_geometry_fillColorFromNumberOrName
+% 2024_07_31 - S. Brennan
+% -- fixed comments and missing header information
+% -- fixed bug where grid centers had 2x dimension
+% -- added Ngrids as output
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -213,11 +232,13 @@ for ith_dimension = 1:N_dims
 
     % Save the results
     grid_AABBs(:,ith_dimension*2-1) = vector_repeated_by_columns;
-    grid_AABBs(:,ith_dimension*2)   = vector_repeated_by_columns+gridSize;
-    gridCenters(:,ith_dimension)     = vector_repeated_by_columns + gridSize/2;
+    grid_AABBs(:,ith_dimension*2)   = vector_repeated_by_columns + gridSize;
+    gridCenters(:,ith_dimension)    = vector_repeated_by_columns + gridSize/2;
 
 end
 
+% Remove extra dimensions on gridCenters
+gridCenters = gridCenters(:,1:N_dims);
 
 % calculating indices:
 gridIndicies = nan(length(inputPoints(:,1)),1);
@@ -225,6 +246,7 @@ good_point_rows = find(prod((inputPoints>=min_max_form(:,1)').*(inputPoints<=min
 
 min_point = min_max_form(:,1)';
 gridSubscripts = floor((inputPoints(good_point_rows,:)-min_point)./gridSize) + 1;
+
 
 if N_dims==1
     gridIndicies(good_point_rows) = gridSubscripts(:,1);
