@@ -1,4 +1,4 @@
-function [nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+function [isNearest, nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
     drivenPathXY, gridSize, gridBoundaries, varargin)
 % Find the nearest boundary points of a road
 %
@@ -10,9 +10,10 @@ function [nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoun
 % INPUTS:
 %
 %      boundaryPointsXY: The boundary points between the non-drivable
-%      path and the drivable path.
+%      path and the drivable path, as an Nx2 matrix.
 %
-%      drivenPathXY: Grid points that are drivable for vehicles.
+%      drivenPathXY: Grid points that are drivable for vehicles as an Mx2
+%      matrix.
 %
 %      gridSize: the width of the grid in X, XY, or XYZ. The width
 %      specifies the decimation interval of the grid. Note: the grid rounds
@@ -32,10 +33,15 @@ function [nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoun
 %
 % OUTPUTS:
 %
-%      nearestBorderIndicies: indicies of the nearest borders relative to
-%      the grid created by the user-entered gridSize and gridBoundaries
+%      isNearest: an Nx1 array of flags listing whether each
+%      boundaryPointsXY point is on the "nearest" boundary
 %
-%      nearestBorderXY: the XY locations of the nearest borders
+%      nearestBorderIndicies: indicies of the nearest borders relative to
+%      the grid created by the user-entered gridSize and gridBoundaries.
+%      The indicies are specified in the grid indicies listing.
+%
+%      nearestBorderXY: the XY locations of the nearest borders, where they
+%      land on the grid.
 %
 % DEPENDENCIES:
 %
@@ -173,7 +179,7 @@ unique_gridIndicesDrivenPath = unique(gridIndicesDrivenPath);
 [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
 % Plot everything for debugging
-if flag_do_debug
+if 1==1
     figure(debug_fig_num);
     clf;
     hold on;
@@ -190,24 +196,28 @@ if flag_do_debug
     plot(drivenPathXY(:,1),drivenPathXY(:,2),'b.-', 'MarkerSize',10,'LineWidth',3);
 
     % Plot the driven path converted to nearest indicies
-    plot(gridCenters(unique_gridIndicesDrivenPath,1),gridCenters(unique_gridIndicesDrivenPath,2),'o','Color',[0 0 1], 'MarkerSize',20)
+    plot(gridCenters(unique_gridIndicesDrivenPath,1),gridCenters(unique_gridIndicesDrivenPath,2),'.','Color',[0 0 0.9], 'MarkerSize',20)
+
+    % Plot the driven path converted to nearest indicies
+    plot(gridCenters(gridIndicesBoundaryPoints,1),gridCenters(gridIndicesBoundaryPoints,2),'.','Color',[0.7 0 0], 'MarkerSize',20)
+
 
 end
 
 % Remove NaNs from gridIndices if there any
-gridIndicesBoundaryPoints = gridIndicesBoundaryPoints(~isnan(gridIndicesBoundaryPoints));
+goodGridIndicesBoundaryPoints = gridIndicesBoundaryPoints(~isnan(gridIndicesBoundaryPoints));
 
 % make a zeros matrix that is large enough to fit all the data
 z = zeros(nGrids(1),nGrids(2));
 
 % Set the boundary points to 1
-z(gridIndicesBoundaryPoints) = 1;
+z(goodGridIndicesBoundaryPoints) = 1;
 
 
 %% Find the nearest borders
 [drive_path_rows, drive_path_columns] = ind2sub(nGrids', unique_gridIndicesDrivenPath);
 drive_path_rows_columns = [drive_path_rows, drive_path_columns];
-nearestBorders = fcn_INTERNAL_findNearestBorders(z, drive_path_rows_columns, fig_num);
+nearestBorders = fcn_INTERNAL_findNearestBorders(z, drive_path_rows_columns, []);
 
 % Remove repeats
 uniqueNearestBorders = unique(nearestBorders,'rows','legacy');
@@ -217,6 +227,8 @@ nearestBorderIndicies = sub2ind(nGrids',uniqueNearestBorders(:,1),uniqueNearestB
 
 % Find XY coordinates
 nearestBorderXY = gridCenters(nearestBorderIndicies,:);
+
+isNearest = ismember(gridIndicesBoundaryPoints,nearestBorderIndicies);
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,11 +242,12 @@ nearestBorderXY = gridCenters(nearestBorderIndicies,:);
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
-    flag_rescale_axis = 0;
-    if isempty(get(temp_h,'Children'))
-        flag_rescale_axis = 1;
-    end
+    figure(fig_num);
+    % temp_h = figure(fig_num);
+    % flag_rescale_axis = 0;
+    % if isempty(get(temp_h,'Children'))
+    %     flag_rescale_axis = 1;
+    % end
 
     % Set up the figure
     clf;
@@ -254,19 +267,22 @@ if flag_do_plots
     % Plot the driven path converted to nearest indicies
     plot(gridCenters(unique_gridIndicesDrivenPath,1),gridCenters(unique_gridIndicesDrivenPath,2),'o','Color',[0 0 1], 'MarkerSize',10)
 
+    % Plot the driven path converted to nearest indicies
+    plot(gridCenters(gridIndicesBoundaryPoints,1),gridCenters(gridIndicesBoundaryPoints,2),'.','Color',[0.7 0 0], 'MarkerSize',20)
+    
     % Plot the results
-    plot(nearestBorderXY(:,1),nearestBorderXY(:,2),'o','Color',[0 1 1], 'MarkerSize',20)
-    plot(nearestBorderXY(:,1),nearestBorderXY(:,2),'.','Color',[0 1 1], 'MarkerSize',10)
+    plot(nearestBorderXY(:,1),nearestBorderXY(:,2),'.','Color',[1 0 1], 'MarkerSize',20)
+    plot(boundaryPointsXY(isNearest,1),boundaryPointsXY(isNearest,2),'o','Color',[0 1 1], 'MarkerSize',20,'LineWidth',5)
 
-    % Make axis slightly larger?
-    if flag_rescale_axis
-        temp = axis;
-        %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
-        axis_range_x = temp(2)-temp(1);
-        axis_range_y = temp(4)-temp(3);
-        percent_larger = 0.3;
-        axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-    end
+    % % Make axis slightly larger?
+    % if flag_rescale_axis
+    %     temp = axis;
+    %     %     temp = [min(points(:,1)) max(points(:,1)) min(points(:,2)) max(points(:,2))];
+    %     axis_range_x = temp(2)-temp(1);
+    %     axis_range_y = temp(4)-temp(3);
+    %     percent_larger = 0.3;
+    %     axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
+    % end
 end
 if flag_do_debug
     fprintf(1,'ENDING function: %s, in file: %s\n\n',st(1).name,st(1).file);
@@ -287,7 +303,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 %% fcn_INTERNAL_findTrueBorders
 function nearest_borders = fcn_INTERNAL_findNearestBorders(border_only_test_grid,drive_path_rows_columns, fig_num)
-flag_do_debug = 1;
+flag_do_debug = 0;
 Nrows = length(border_only_test_grid(:,1));
 Ncols = length(border_only_test_grid(1,:));
 if flag_do_debug && ~isempty(fig_num)

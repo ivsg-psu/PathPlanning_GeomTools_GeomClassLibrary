@@ -15,12 +15,18 @@ gridBoundaries = [0 8 0 4];
 boundaryPointsXY = [1.5 1.5; 1.5 2.5; 1.5 3.5; 2.5 1.5; 3.5 1.5; 3.5 2.5; 3.5 3.5; 2.5 3.5];
 drivenPathXY = [1 0.5; 6 0.5];
 
-[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+[isNearest, nearestBorderIndicies, nearestBorderXY]  = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
      drivenPathXY, gridSize, gridBoundaries, fig_num);
 
-assert(isequal(nearestBorderIndicies,[10 11 12]'));
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
 assert(isequal(length(nearestBorderXY(1,:)),2));
 assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+% Check values
+assert(isequal(find(isNearest),[1 4 5]')); % These are the boundary point "rows" that are closest
+assert(isequal(nearestBorderIndicies,[10 11 12]')); % These are the indicies in the grid array
+
 
 %% Test 2 simple example with curving path
 fig_num = 2; 
@@ -29,12 +35,17 @@ gridBoundaries = [0 8 0 4];
 boundaryPointsXY = [1.5 1.5; 1.5 2.5; 1.5 3.5; 2.5 1.5; 3.5 1.5; 3.5 2.5; 3.5 3.5; 2.5 3.5];
 drivenPathXY = [1 0.5; 4 0.5; 6 2.2];
 
-[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+[isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
      drivenPathXY, gridSize, gridBoundaries, fig_num);
 
-assert(isequal(nearestBorderIndicies,[10 11 12 20]'));
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
 assert(isequal(length(nearestBorderXY(1,:)),2));
 assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+% Check values
+assert(isequal(find(isNearest),[1 4 5 6]')); % These are the boundary point "rows" that are closest
+assert(isequal(nearestBorderIndicies,[10 11 12 20]')); % These are the indicies in the grid array
 
 
 
@@ -70,24 +81,51 @@ y_limits = [min(y_range) max(y_range)];
 
 % Calculate boundary points
 boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
+
 gridSize = 0.25; 
-gridBoundaries = [0 5 -2 2];
-drivenPathXY = [0 1; 2 3];
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 4; 0 4.5];
 
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
-[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
      drivenPathXY, gridSize, gridBoundaries, fig_num);
 
-assert(isequal(length(nearestBorderXY(1,:)),2));
-assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+    % Check sizes
+    assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+    assert(isequal(length(nearestBorderXY(1,:)),2));
+    assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+    % Check values
+    assert(isequal(find(isNearest),[ 3     4     5     9    10    12    13]')); % These are the boundary point "rows" that are closest
+    assert(isequal(nearestBorderIndicies,[180   181   214   215   248   383   416]')); % These are the indicies in the grid array
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+    % Check sizes
+    assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+    assert(isequal(length(nearestBorderXY(1,:)),2));
+    assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+    % Check values
+    assert(isequal(find(isNearest),[ 3     4     5     9    10    12    13]')); % These are the boundary point "rows" that are closest
+    assert(isequal(nearestBorderIndicies,[180   181   214   215   248   383   416]')); % These are the indicies in the grid array
+
+end
 
 
 
 
-%% EXAMPLE 2
-fig_num = 2;
-figure(fig_num);
-clf;
+%% Test 4 - a driven path that is outside the range
+fig_num = 4;
+
 
 % Create some data
 N_points = 20;
@@ -114,17 +152,38 @@ end
 
 x_limits = [min(x_range) max(x_range)];  
 y_limits = [min(y_range) max(y_range)]; 
+
 % Calculate boundary points
-fig_num = 124;
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);
-plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
 
-% Plot the boundary line
-y_line = x_range+2;
-plot(x_range,y_line,'b-','LineWidth',3);
+gridSize = 0.25; 
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 4; 0 4.5];
 
-% Assert check the length of column of the output  
-assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+% Check values
+% assert(isequal(find(isNearest),[ 5     7     8     9    12    13    14    15    16    17    18]')); % These are the boundary point "rows" that are closest
+% assert(isequal(nearestBorderIndicies,[53    87   120   121   154   187   188   221   222   255   256]')); % These are the indicies in the grid array
+
 
 %% EXAMPLE 3
 fig_num = 3;
