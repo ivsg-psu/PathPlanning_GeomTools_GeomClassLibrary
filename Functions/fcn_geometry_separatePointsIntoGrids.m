@@ -25,7 +25,13 @@ function [gridIndicies, grid_AABBs, gridCenters, nGrids] = fcn_geometry_separate
 %
 %      gridBoundaries: a 1x2, 1x4, or 1x6 vector containing the low and
 %      high values of the grid in the format [xlow xhigh ylow yhigh zlow
-%      zhigh]
+%      zhigh]. 
+%   
+%           NOTE: if the gridBoundaries do not fall on an integer multiple
+%           of the gridSize, the gridBoundaries are rounded to the nearest
+%           integer grid. For example, if a gridSize is 2 and the input
+%           gridBoundaries for X are [0.1 3.4], the actual gridBoundaries
+%           used will be [0 4].
 %
 %      (OPTIONAL INPUTS): 
 %
@@ -51,7 +57,6 @@ function [gridIndicies, grid_AABBs, gridCenters, nGrids] = fcn_geometry_separate
 %     gridDomain centers for each index
 %
 %     nGrids: the number of grids along each dimension
-%
 %
 % DEPENDENCIES:
 %
@@ -87,6 +92,8 @@ function [gridIndicies, grid_AABBs, gridCenters, nGrids] = fcn_geometry_separate
 % -- fixed comments and missing header information
 % -- fixed bug where grid centers had 2x dimension
 % -- added Ngrids as output
+% -- fixed bug where points on the edges are misclassified
+% -- significantly improved comments and clarity
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -189,12 +196,18 @@ end
 % How many dimensions do we have?
 N_dims = round(length(gridBoundaries(1,:))/2);
 
+% Make sure gridBoundaries are rounded to integer grid intervals
+roundedGridBoundaries = fcn_INTERNAL_convertToRoundedForm(gridBoundaries, gridSize);
 
-% Calculate the grid boundaries from the gridBoundaries input
-min_max_form = reshape(gridBoundaries,2,N_dims)';
+% Calculate the grid boundaries from the gridBoundaries input into a
+% "min_max" form, where the min/max of X is on the first row, Y is on 2nd
+% row, z is on 3rd row.
+min_max_form = reshape(roundedGridBoundaries,2,N_dims)';
 
-% Calculate the number of grids in each dimension
-nGrids = ceil((min_max_form(:,2) - min_max_form(:,1))/gridSize);
+% Calculate the number of grids in each dimension. The rounding function is
+% used to lock this to integers since numerical precision may cause numbers
+% such as 2.00001 rather than 2.
+nGrids = round((min_max_form(:,2) - min_max_form(:,1))/gridSize);
 
 % total number of domains i.e total number of grids
 totalDomains = prod(nGrids,1);
@@ -240,12 +253,50 @@ end
 % Remove extra dimensions on gridCenters
 gridCenters = gridCenters(:,1:N_dims);
 
-% calculating indices:
+% Initialize the output indices
 gridIndicies = nan(length(inputPoints(:,1)),1);
-good_point_rows = find(prod((inputPoints>=min_max_form(:,1)').*(inputPoints<=min_max_form(:,2)'),2));
+
+%% Fix the input points
+% First, look for input points that are EXACTLY on the start boundary of a
+% grid. These will not be classified correctly unless they are nudged just
+% slightly into the grid (note: this is due to the inequality within
+% fcn_INTERNAL_convertToRoundedForm. If the inequality is "fixed" to
+% correct the start issue, it causes problems with points at the end of the
+% boundary). We nudge the points "upward" by a large factor times the
+% numerical precision of MATLAB, roughly 1E-12.
+nudgedInputPoints = inputPoints;
+for ith_dimension = 1:N_dims
+    nudgeIndicies = find(inputPoints(:,ith_dimension)==min_max_form(ith_dimension,1));
+    nudgedInputPoints(nudgeIndicies,ith_dimension) = nudgedInputPoints(nudgeIndicies,ith_dimension)+1000*eps;
+end
+
+% Round the points to the MIDDLE of each grid interval. To force the points
+% to the middles, we shift them down by half a grid, round to the nearest
+% grid, and then add the half-shift back onto the result.
+roundedInputPoints = fcn_INTERNAL_convertToRoundedForm(nudgedInputPoints-gridSize/2, gridSize)+gridSize/2;
+
+%% Find which grids are associated with each point
+% Calculate, along each dimension, if points are within the range. The
+% flags below are vectors that will have dimension MxN where N is the
+% number of points, M is the number of dimensions.
+flags_points_are_greater_or_equal_to_minimum = roundedInputPoints>=min_max_form(:,1)';
+flags_points_are_less_or_equal_to_maximum    = roundedInputPoints<=min_max_form(:,2)';
+
+% Multiply all the columns together to get a Nx1 column of flags, 1 if
+% within range, 0 if not.
+flags_points_within_range =prod([flags_points_are_greater_or_equal_to_minimum flags_points_are_less_or_equal_to_maximum],2);
+
+% Keep only the points within range
+good_point_rows = find(flags_points_within_range);
 
 min_point = min_max_form(:,1)';
-gridSubscripts = floor((inputPoints(good_point_rows,:)-min_point)./gridSize) + 1;
+
+% Convert the points into grid interval subscripts, e.g. [row column] format. This
+% is done by subtracting off the lowest point on the grid. Note: the grid
+% subscripts will have 1 less value than the total number of grid points. For
+% example, if a grid is on points [0 2 4], there are 3 total grid points but only
+% 2 grid intervals: one from 0 to 2, and another from 2 to 4.
+gridSubscripts = floor((roundedInputPoints(good_point_rows,:)-min_point)./gridSize)+1;
 
 
 if N_dims==1
@@ -287,6 +338,12 @@ if flag_do_plots
 
         % Plot all the points
         plot(inputPoints(:,1),inputPoints(:,1)*0,'.','MarkerSize',20,'Color',[0 0 0]);
+
+        % For debugging
+        if 1==0
+            % Plot the grid-rounded points in dark blue?
+            plot(roundedInputPoints(:,1),roundedInputPoints(:,1)*0,'o','MarkerSize',10,'Color',[0 0 0.8]);
+        end
 
         % Plot the input points by domain with different colors for each
         % domain
@@ -461,28 +518,20 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
+%% fcn_INTERNAL_convertToRoundedForm
+function gridRounded = fcn_INTERNAL_convertToRoundedForm(unrounded, gridSize)
+% Converts numbers into rounded format so that the outputs are locked
+% onto the grids. 
 
-%% old code
-%     % Initialize cell array to store grid data
-%     gridData = cell(numGridsX, numGridsY);
-%
-%     % Iterate over each grid
-%     for i = 1:numGridsX
-%         for j = 1:numGridsY
-%             % Define the boundaries of the current grid
-%             gridXMin = xMin + (i - 1) * gridSize;
-%             gridXMax = xMin + i * gridSize;
-%             gridYMin = yMin + (j - 1) * gridSize;
-%             gridYMax = yMin + j * gridSize;
-%
-%             % Find indices of points within the current grid
-%             pointsInGrid = find(inputPoints(:, 1) >= gridXMin & inputPoints(:, 1) < gridXMax & ...
-%                                 inputPoints(:, 2) >= gridYMin & inputPoints(:, 2) < gridYMax);
-%
-%             % Store grid data in the cell array
-%             gridData{i, j}.indices = pointsInGrid;
-%             gridData{i, j}.boundaries = [gridXMin, gridXMax, gridYMin, gridYMax];
-%             gridData{i, j}.center = [mean([gridXMin, gridXMax]), mean([gridYMin, gridYMax])];
-%         end
-%     end
-% end
+% The method is to find the remainder of the numbers after subtracting the
+% nearest next-lowest grid. If the remainder is greater than half the grid
+% size, then the gridSize is added onto the result.
+
+% The mod command gives the remainder after the
+% division, so we subtract off the remainder to force the values to the
+% lower value.
+
+gridRemainder = mod(unrounded,gridSize); % Find remainder
+unrounded_rounded_down = unrounded - gridRemainder; % Round down
+gridRounded = unrounded_rounded_down + (gridRemainder>(gridSize*0.5))*gridSize; 
+end % ends fcn_INTERNAL_convertToRoundedForm

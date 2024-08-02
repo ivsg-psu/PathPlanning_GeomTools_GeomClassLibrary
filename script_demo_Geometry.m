@@ -91,6 +91,11 @@
 % -- added printing commands to show details of geometric fit, useful for
 % debugging geometric fitting steps. See fcn_geometry_printGeometry and
 % fcn_geometry_printFitSequences 
+% 2025_07_30 - S. Brennan
+% -- added spiral approximation function
+% -- added function to find nearest boundary points
+% -- fixed subtle bugs within fcn_geometry_separatePointsIntoGrids where
+% boundary points were not correctly identified in edge cases
 
 %% To-do items
 % 2024_04_15 - S. Brennan
