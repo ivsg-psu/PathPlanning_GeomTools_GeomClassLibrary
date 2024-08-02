@@ -13,7 +13,7 @@
 % functionalized. This produces the following variables:
 % VehiclePose
 % LiDAR_Scan_ENU_Entire_Loop
-script_load_sample_LIDAR_data;
+ script_load_sample_LIDAR_data;
 
 % Make sure the vehicle pose is EXACTLY the same length as the LIDAR data
 assert(length(LiDAR_Scan_ENU_Entire_Loop)==length(VehiclePose(:,1)));
@@ -68,11 +68,20 @@ ylabel('North position [m]');
 % OUTPUTS: LiDAR_allPoints_of_ring
 
 rings_to_analyze = [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]; 
-% rings_to_analyze = [7 9 12]; 
-
+% rings_to_analyze = [7 9 13]; 
+% rings_to_analyze = 7;
+% rings_to_analyze = [7 8 9 10 11 12 13]; 
+% rings_to_analyze = 7;
 % Fill raw LiDAR data
-scanLineNumber_start = 1;
-scanLineNumber_end   = 500;
+% Sample dataset 1
+scanLineNumber_start = 1400;
+scanLineNumber_end   = 1450;
+% Sample dataset 2
+% scanLineNumber_start = 960;
+% scanLineNumber_end   = 1060;
+% % Sample dataset 3
+% scanLineNumber_start = 2150;
+% scanLineNumber_end   = 2170;
 
 % Initialize concatenation arrays
 concatenate_scanLine_rings = [];
@@ -200,7 +209,7 @@ else
     end
 end
 
-set(gca,'CameraViewAngle',6)
+% set(gca,'CameraViewAngle',6)
 
 %% Plot the LIDAR in XZ ENU
 ENU_XZ_fig_num = 4;
