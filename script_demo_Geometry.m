@@ -96,7 +96,7 @@
 % -- added function to find nearest boundary points
 % -- fixed subtle bugs within fcn_geometry_separatePointsIntoGrids where
 % boundary points were not correctly identified in edge cases
-% 2024_07_02 - Aneesh Batchu
+% 2024_08_02 - Aneesh Batchu
 % -- added a script to find the nearest boundaries of drivable and
 % non-drivable surfaces. 
 
