@@ -1,5 +1,6 @@
 function [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
     original_drivable_grids, original_non_drivable_grids, current_drivable_grid_numbers_in_mapped_grids, current_non_drivable_grid_numbers_in_mapped_grids, ...
+    current_failed_grid_numbers_in_mapped_grids, current_uncertain_grid_numbers_in_mapped_grids, gridCenters_failed_grids, gridCenters_uncertain_grids, ...
     gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
     fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, varargin)
 %% fcn_geometry_classifyGridsAsDrivable
@@ -268,11 +269,59 @@ else
     % mapped grids within all the thresholds 
     mapped_grids_within_all_thresholds = mapped_grids_within_vertical_and_std_thresholds;
 
+    % Grids that failed to satisfy both the conditions (STEP 1 and STEP 2)
+    mapped_grids_failed_vertical_and_std_thresholds = (mapped_grids_within_vertical_threshold == 0) & (mapped_grids_within_std_threshold == 0);
+
+    % Grids that failed to satisfy STEP 1 but not STEP 2
+    mapped_grids_failed_std_threshold = find((mapped_grids_within_vertical_threshold == 0) & (mapped_grids_within_std_threshold == 1));
+
+     % Grids that failed to satisfy STEP 2 but not STEP 1
+    mapped_grids_failed_vertical_threshold = find((mapped_grids_within_vertical_threshold == 1) & (mapped_grids_within_std_threshold == 0));
+
+    % Uncertain mapped grids
+    uncertain_grid_indices = [mapped_grids_failed_std_threshold;mapped_grids_failed_vertical_threshold]; 
+
+    % Sort the uncertain grid indices
+    sorted_uncertain_grid_indices = sort(uncertain_grid_indices); 
+
+    % Get the unique grid indices
+    uncertain_grid_indices = unique(sorted_uncertain_grid_indices);
+
+    % % Find the drivable grids (original)
+    % original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds);
+
+    % Failed grids
+    original_failed_grids = original_mapped_grids(mapped_grids_failed_vertical_and_std_thresholds);
+
+    % Uncertain grids
+    original_uncertain_grids = original_mapped_grids(uncertain_grid_indices);
+
+    % % Find the non-drivable grids (original)
+    % original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
+
+    % Final failed grid numbers of the mapped grids
+    current_failed_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_failed_grids));
+
+    % Final failed grid numbers of the mapped grids
+    current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_uncertain_grids));
+
+    % Grid centers of failed grids
+    gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)];
+
+    % Grid centers of failed grids
+    gridCenters_uncertain_grids = [gridCenters(original_uncertain_grids,1), gridCenters(original_uncertain_grids,2)];
+
 end
 
 % Find the drivable grids (original)
 original_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds); 
-
+% 
+% % Failed grids
+% original_failed_grids = original_mapped_grids(mapped_grids_failed_vertical_and_std_thresholds); 
+% 
+% % Uncertain grids
+% original_uncertain_grids = original_mapped_grids(uncertain_grid_indices); 
+% 
 % Find the non-drivable grids (original)
 original_non_drivable_grids = original_mapped_grids(mapped_grids_within_all_thresholds == 0);
 
@@ -282,6 +331,12 @@ current_drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_gr
 % Final non drivable grid numbers of the mapped grids
 current_non_drivable_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_non_drivable_grids));
 
+% % Final failed grid numbers of the mapped grids
+% current_failed_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_failed_grids));
+% 
+% % Final failed grid numbers of the mapped grids
+% current_uncertain_grid_numbers_in_mapped_grids = find(ismember(original_mapped_grids, original_uncertain_grids));
+
 % Grid centers of drivable grids 
 gridCenters_drivable_grids = [gridCenters(original_drivable_grids,1), gridCenters(original_drivable_grids,2), ones(length(original_drivable_grids),1)]; 
 
@@ -290,6 +345,13 @@ gridCenters_non_drivable_grids = [gridCenters(original_non_drivable_grids,1), gr
 
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
 concatenate_gridCenters_drivable_non_drivable_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
+% 
+% % Grid centers of failed grids 
+% gridCenters_failed_grids = [gridCenters(original_failed_grids,1), gridCenters(original_failed_grids,2)]; 
+% 
+% % Grid centers of failed grids 
+% gridCenters_uncertain_grids = [gridCenters(original_uncertain_grids,1), gridCenters(original_uncertain_grids,2)]; 
+
 
 % Concatenate the grid centers of drivable and non-drivable grids (2D)
 % gridCenters_mapped_grids = [gridCenters_drivable_grids; gridCenters_non_drivable_grids];
@@ -318,7 +380,7 @@ if flag_do_plots
     marker_size = 20;
     RGB_triplet = [1, 0, 0];
     legend_option = 1;
-    legend_name = 'Non-drivable grids';
+    legend_name = 'NOT drivable grids';
     plot_gridCenters_non_drivable_grids = [gridCenters_non_drivable_grids(:,1:2), zeros(length(gridCenters_non_drivable_grids(:,1)),1)];
     [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_non_drivable_grids,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 end % Ends check if plotting

@@ -169,7 +169,7 @@ parameters = P;
 
 z_fit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
 z_error = z_planeFit - z_fit;
-standard_deviation_in_z = std(z_error, 0, 1);
+standard_deviation_in_z = std(z_error, 0, 1, 'omitmissing');
 
 %% Calculate A, B, and C for unit vector
 C1 = parameters(1);
@@ -210,13 +210,14 @@ if flag_do_plot
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end      
-
+    
+ 
     % In subplot 1, plot the fit in 3D
     subplot(1,3,1);
     hold on;
     grid on;
     % axis equal;
-
+    title('Plane fitting XYZ') 
     % Plot the points
     plot3(points(:,1),points(:,2),points(:,3),'k.','MarkerSize',20);
     plot3(points(:,1),points(:,2),z_fit,'.','MarkerSize',20);
@@ -262,7 +263,7 @@ if flag_do_plot
     hold on;
     grid on;
     axis equal;
-
+    title('Plane fitting X vs Z') 
     % Plot the points
     plot(points(:,1),points(:,3),'k.','MarkerSize',20);
     plot(points(:,1),z_fit,'.','MarkerSize',20);
@@ -298,7 +299,7 @@ if flag_do_plot
     hold on;
     grid on;
     axis equal;
-
+    title('Plane fitting Y vs Z') 
    % Plot the points
     plot(points(:,2),points(:,3),'k.','MarkerSize',20);
     plot(points(:,2),z_fit,'.','MarkerSize',20);
