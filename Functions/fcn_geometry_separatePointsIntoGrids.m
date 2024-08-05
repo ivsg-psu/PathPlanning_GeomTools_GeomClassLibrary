@@ -94,6 +94,9 @@ function [gridIndicies, grid_AABBs, gridCenters, nGrids] = fcn_geometry_separate
 % -- added Ngrids as output
 % -- fixed bug where points on the edges are misclassified
 % -- significantly improved comments and clarity
+% 2024_08_05 - S. Brennan
+% -- fixed bug where gridBoundaries are not rounded correctly down for low
+% values, or up for high values.
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -196,13 +199,23 @@ end
 % How many dimensions do we have?
 N_dims = round(length(gridBoundaries(1,:))/2);
 
-% Make sure gridBoundaries are rounded to integer grid intervals
-roundedGridBoundaries = fcn_INTERNAL_convertToRoundedForm(gridBoundaries, gridSize);
-
 % Calculate the grid boundaries from the gridBoundaries input into a
 % "min_max" form, where the min/max of X is on the first row, Y is on 2nd
 % row, z is on 3rd row.
-min_max_form = reshape(roundedGridBoundaries,2,N_dims)';
+min_max_form_raw = reshape(gridBoundaries,2,N_dims)';
+
+% Make sure gridBoundaries are rounded to integer grid intervals. 
+% Round the lower to the BOTTOM of each grid interval, and top values to
+% TOP of each grid interval. To force the points to the middles, we shift
+% them down/up by half a grid, round to the nearest grid. NOTE: adding or
+% subtracting eps*1000 so that, if the user enters grids EXACTLY on
+% boundary, we do not accidentally remove the boundaries due to round-off
+% precision in MATLAB
+
+roundedGridBoundariesLow  = fcn_INTERNAL_convertToRoundedForm(min_max_form_raw(:,1)-gridSize/2+eps*1000, gridSize);
+roundedGridBoundariesHigh = fcn_INTERNAL_convertToRoundedForm(min_max_form_raw(:,2)+gridSize/2-eps*1000, gridSize);
+min_max_form = [roundedGridBoundariesLow roundedGridBoundariesHigh];
+
 
 % Calculate the number of grids in each dimension. The rounding function is
 % used to lock this to integers since numerical precision may cause numbers

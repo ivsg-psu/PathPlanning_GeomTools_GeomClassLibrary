@@ -38,10 +38,12 @@ function [isNearest, nearestBorderIndicies, nearestBorderXY] = fcn_geometry_find
 %
 %      nearestBorderIndicies: indicies of the nearest borders relative to
 %      the grid created by the user-entered gridSize and gridBoundaries.
-%      The indicies are specified in the grid indicies listing.
+%      The indicies are specified in the grid indicies listing. Returns an
+%      empty matrix if there are no nearest border indicies.
 %
 %      nearestBorderXY: the XY locations of the nearest borders, where they
-%      land on the grid.
+%      land on the grid. Returns an empty matrix if there are no nearest
+%      border indicies.
 %
 % DEPENDENCIES:
 %
@@ -84,7 +86,7 @@ else
     end
 end
 
-flag_do_debug = 1;
+% flag_do_debug = 1;
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
@@ -146,6 +148,8 @@ end
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Npoints = length(boundaryPointsXY(:,1));
+
 %% Calculate driven path in terms of grids
 % First, convert the driven path into many points such that any grids
 % between the user-entered points will also be "hit". We do this by
@@ -172,14 +176,18 @@ end
 % endpoint. So add this endpoint
 fully_sampled_driven_path = [fully_sampled_driven_path; drivenPathXY(end,:)];
 
+% Find the grid indicies for the driven path. Some are repeated typically,
+% and so we keep just the unique ones, as well as keep only the ones that
+% are not empty (nan).
 gridIndicesDrivenPath = fcn_geometry_separatePointsIntoGrids(fully_sampled_driven_path, gridSize, gridBoundaries, (-1));
 unique_gridIndicesDrivenPath = unique(gridIndicesDrivenPath);
+uniqueNonempty_gridIndicesDrivenPath = unique_gridIndicesDrivenPath(~isnan(unique_gridIndicesDrivenPath));
 
 %% Find the indices of boundary points
 [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
 % Plot everything for debugging
-if 1==1
+if flag_do_debug
     figure(debug_fig_num);
     clf;
     hold on;
@@ -196,7 +204,7 @@ if 1==1
     plot(drivenPathXY(:,1),drivenPathXY(:,2),'b.-', 'MarkerSize',10,'LineWidth',3);
 
     % Plot the driven path converted to nearest indicies
-    plot(gridCenters(unique_gridIndicesDrivenPath,1),gridCenters(unique_gridIndicesDrivenPath,2),'.','Color',[0 0 0.9], 'MarkerSize',20)
+    plot(gridCenters(uniqueNonempty_gridIndicesDrivenPath,1),gridCenters(uniqueNonempty_gridIndicesDrivenPath,2),'.','Color',[0 0 0.9], 'MarkerSize',20)
 
     % Plot the driven path converted to nearest indicies
     plot(gridCenters(gridIndicesBoundaryPoints,1),gridCenters(gridIndicesBoundaryPoints,2),'.','Color',[0.7 0 0], 'MarkerSize',20)
@@ -215,7 +223,7 @@ z(goodGridIndicesBoundaryPoints) = 1;
 
 
 %% Find the nearest borders
-[drive_path_rows, drive_path_columns] = ind2sub(nGrids', unique_gridIndicesDrivenPath);
+[drive_path_rows, drive_path_columns] = ind2sub(nGrids', uniqueNonempty_gridIndicesDrivenPath);
 drive_path_rows_columns = [drive_path_rows, drive_path_columns];
 nearestBorders = fcn_INTERNAL_findNearestBorders(z, drive_path_rows_columns, []);
 
@@ -223,12 +231,19 @@ nearestBorders = fcn_INTERNAL_findNearestBorders(z, drive_path_rows_columns, [])
 uniqueNearestBorders = unique(nearestBorders,'rows','legacy');
 
 % Convert to indicies
-nearestBorderIndicies = sub2ind(nGrids',uniqueNearestBorders(:,1),uniqueNearestBorders(:,2));
+if ~isempty(uniqueNearestBorders)
+    nearestBorderIndicies = sub2ind(nGrids',uniqueNearestBorders(:,1),uniqueNearestBorders(:,2));
 
-% Find XY coordinates
-nearestBorderXY = gridCenters(nearestBorderIndicies,:);
+    % Find XY coordinates
+    nearestBorderXY = gridCenters(nearestBorderIndicies,:);
 
-isNearest = ismember(gridIndicesBoundaryPoints,nearestBorderIndicies);
+    isNearest = ismember(gridIndicesBoundaryPoints,nearestBorderIndicies);
+else
+    isNearest = zeros(Npoints,1);
+    nearestBorderIndicies = [];
+    nearestBorderXY = [];
+end
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,24 +270,46 @@ if flag_do_plots
     grid on;
     axis(gridBoundaries);
 
-    % Plot the grid locations as empty grey points
-    plot(gridCenters(:,1),gridCenters(:,2),'.','Color',[0.8 0.8 0.8], 'MarkerSize',20)
+    legend_texts = {};
 
+    % Plot the grid locations as empty grey points
+    plot(gridCenters(:,1),gridCenters(:,2),'.','Color',[0.8 0.8 0.8], 'MarkerSize',20);    
+    legend_texts{end+1} = 'Gridcenters';
+
+    %%%
+    % Plot the inputs
     % Plot the input boundary points
     plot(boundaryPointsXY(:,1),boundaryPointsXY(:,2),'r.', 'MarkerSize',30);
+    legend_texts{end+1} = 'BoundaryPointsXY';
 
     % Plot the raw driven path
     plot(drivenPathXY(:,1),drivenPathXY(:,2),'b.-', 'MarkerSize',20,'LineWidth',3);
+    legend_texts{end+1} = 'DrivenPathXY';
+
+    %%%%%
+    % Plot the converted inputs
+    % Plot the driven path converted to nearest indicies
+    if ~isempty(uniqueNonempty_gridIndicesDrivenPath)
+        plot(gridCenters(uniqueNonempty_gridIndicesDrivenPath,1),gridCenters(uniqueNonempty_gridIndicesDrivenPath,2),'o','Color',[0 0 1], 'MarkerSize',10);
+        legend_texts{end+1} = 'DrivenPathOnGrid';
+    end
 
     % Plot the driven path converted to nearest indicies
-    plot(gridCenters(unique_gridIndicesDrivenPath,1),gridCenters(unique_gridIndicesDrivenPath,2),'o','Color',[0 0 1], 'MarkerSize',10)
+    if ~isempty(gridIndicesBoundaryPoints)
+        plot(gridCenters(gridIndicesBoundaryPoints,1),gridCenters(gridIndicesBoundaryPoints,2),'.','Color',[0.7 0 0], 'MarkerSize',20);
+        legend_texts{end+1} = 'BoundaryPointsOnGrid';
+    end
 
-    % Plot the driven path converted to nearest indicies
-    plot(gridCenters(gridIndicesBoundaryPoints,1),gridCenters(gridIndicesBoundaryPoints,2),'.','Color',[0.7 0 0], 'MarkerSize',20)
-    
+    %%%%%
     % Plot the results
-    plot(nearestBorderXY(:,1),nearestBorderXY(:,2),'.','Color',[1 0 1], 'MarkerSize',20)
-    plot(boundaryPointsXY(isNearest,1),boundaryPointsXY(isNearest,2),'o','Color',[0 1 1], 'MarkerSize',20,'LineWidth',5)
+    if ~isempty(nearestBorderXY)
+        plot(nearestBorderXY(:,1),nearestBorderXY(:,2),'.','Color',[1 0 1], 'MarkerSize',20);
+        plot(boundaryPointsXY(isNearest,1),boundaryPointsXY(isNearest,2),'o','Color',[0 1 1], 'MarkerSize',20,'LineWidth',5);
+        legend_texts{end+1} = 'NearestBorderOnGrid';
+        legend_texts{end+1} = 'NearestBorderonBoundary';
+    end
+
+    legend(legend_texts);
 
     % % Make axis slightly larger?
     % if flag_rescale_axis

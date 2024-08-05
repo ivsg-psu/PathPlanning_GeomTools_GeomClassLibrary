@@ -25,7 +25,7 @@ assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
 % Check values
 assert(isequal(find(isNearest),[1 4 5]')); % These are the boundary point "rows" that are closest
-assert(isequal(nearestBorderIndicies,[10 11 12]')); % These are the indicies in the grid array
+assert(isequal(nearestBorderIndicies,[10    11    12]')); % These are the indicies in the grid array
 
 
 %% Test 2 simple example with curving path
@@ -45,12 +45,12 @@ assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
 % Check values
 assert(isequal(find(isNearest),[1 4 5 6]')); % These are the boundary point "rows" that are closest
-assert(isequal(nearestBorderIndicies,[10 11 12 20]')); % These are the indicies in the grid array
+assert(isequal(nearestBorderIndicies,[10    11    12    20]')); % These are the indicies in the grid array
 
 
 
-%% Test 3 - a larger array
-fig_num = 3;
+%% Test 3.1 - a larger array locked to grid
+fig_num = 31;
 figure(fig_num);
 clf;
 
@@ -88,7 +88,82 @@ drivenPathXY = [-1 4; 0 4.5];
 
 % Convert boundary points into on-grid points? (optional)
 if 1==1
-    [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+    % Check sizes
+    assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+    assert(isequal(length(nearestBorderXY(1,:)),2));
+    assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+    % Check values
+    assert(isequal(find(isNearest),[ 3     4     5     9    10    12    13]')); % These are the boundary point "rows" that are closest
+    assert(isequal(nearestBorderIndicies,[180   181   214   215   248   383   416]')); % These are the indicies in the grid array
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+    % Check sizes
+    assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+    assert(isequal(length(nearestBorderXY(1,:)),2));
+    assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+    % Check values
+    assert(isequal(find(isNearest),[ 3     4     5     9    10    12    13]')); % These are the boundary point "rows" that are closest
+    assert(isequal(nearestBorderIndicies,[180   181   214   215   248   383   416]')); % These are the indicies in the grid array
+
+end
+
+
+%% Test 3.2 - a larger array NOT locked to grid 
+% This shows how, if the points are not locked onto the grid prior to the
+% function call, that weird results can occur
+
+fig_num = 32;
+figure(fig_num);
+clf;
+
+
+% Create some data
+N_points = 10;
+x_range = linspace(-2,2,N_points);
+y_range = linspace(-2,5,15);
+gridSize = x_range(2) - x_range(1); 
+
+[X,Y] = meshgrid(x_range,y_range);
+
+% Create Z data that is same size
+Z = zeros(size(X));
+% Make all Z data which has XY data above line y = x + 2 equal to 1
+Y_line = X + 2;
+flag_larger_than = Y>Y_line;
+Z(flag_larger_than) = 1;
+if 1==0
+    % Plot the data in 3D
+    figure(1234);
+    clf;
+    surf(X,Y,Z)
+end
+
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
+
+% Calculate boundary points
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
+
+gridSize = 0.25; 
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 4; 0 4.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
     % Plot the driven path converted to nearest indicies
     boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
@@ -122,8 +197,7 @@ end
 
 
 
-
-%% Test 4 - a driven path that is outside the range
+%% Test 4.1 - a driven path that is partially outside the range
 fig_num = 4;
 
 
@@ -158,11 +232,11 @@ boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_lim
 
 gridSize = 0.25; 
 gridBoundaries = [-2 2 -2 5];
-drivenPathXY = [-1 4; 0 4.5];
+drivenPathXY = [-1 4; 0 6.5];
 
 % Convert boundary points into on-grid points? (optional)
 if 1==1
-    [gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
     % Plot the driven path converted to nearest indicies
     boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
@@ -184,9 +258,69 @@ assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 % assert(isequal(find(isNearest),[ 5     7     8     9    12    13    14    15    16    17    18]')); % These are the boundary point "rows" that are closest
 % assert(isequal(nearestBorderIndicies,[53    87   120   121   154   187   188   221   222   255   256]')); % These are the indicies in the grid array
 
+%% Test 4.1 - a driven path that is entirely outside the range
+fig_num = 4;
 
-%% EXAMPLE 3
-fig_num = 3;
+
+% Create some data
+N_points = 20;
+x_range = linspace(-2,2,N_points);
+y_range = linspace(-2,5,N_points);
+gridSize = x_range(2) - x_range(1); 
+
+[X,Y] = meshgrid(x_range,y_range);
+
+% Create Z data that is same size
+Z = zeros(size(X));
+
+% Make all Z data which has XY data below line y = x + 2 equal to 1
+Y_line = X + 2;
+flag_larger_than = Y<Y_line;
+Z(flag_larger_than) = 1;
+
+if 1==0
+    % Plot the data in 3D
+    figure(1234);
+    clf;
+    surf(X,Y,Z)
+end
+
+x_limits = [min(x_range) max(x_range)];  
+y_limits = [min(y_range) max(y_range)]; 
+
+% Calculate boundary points
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
+
+gridSize = 0.25; 
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 7; 0 6.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isempty(nearestBorderXY));
+assert(isempty(nearestBorderIndicies));
+
+
+% Check values
+assert(all(isNearest==0))
+
+%% EXAMPLE 5 - a circular domain
+fig_num = 5;
 figure(fig_num);
 clf;
 
@@ -221,17 +355,40 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 
 % Calculate boundary points
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
 
-% Plot the boundary circle
-% angles = linspace(0,360,100)'*pi/180;
-% plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+gridSize = 0.25; 
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 4; 0 4.5];
 
-% Assert check the length of column of the output 
-assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
 
-%% EXAMPLE 4
-fig_num = 4;
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+% Check values
+% assert(isequal(find(isNearest),[ 5     7     8     9    12    13    14    15    16    17    18]')); % These are the boundary point "rows" that are closest
+% assert(isequal(nearestBorderIndicies,[53    87   120   121   154   187   188   221   222   255   256]')); % These are the indicies in the grid array
+
+
+
+%% EXAMPLE 6 - driven path entirely outside of domain of boundary points
+fig_num = 6;
 figure(fig_num);
 clf;
 
@@ -266,30 +423,43 @@ x_limits = [min(x_range) max(x_range)];
 y_limits = [min(y_range) max(y_range)]; 
 
 % Calculate boundary points
-boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,fig_num);
-plot(boundary_points(:,1),boundary_points(:,2),'b.','Markersize',20);
+boundaryPointsXY = fcn_geometry_findBoundaryPoints(X,Y,Z,gridSize,x_limits,y_limits,-1);
 
-% % Plot the boundary circle
-% angles = linspace(0,360,100)'*pi/180;
-% plot(radius*cos(angles),radius*sin(angles),'b-','LineWidth',3);
+gridSize = 0.25; 
+gridBoundaries = [-2 2 -2 5];
+drivenPathXY = [-1 4; 0 4.5];
 
-% Assert check the length of column of the output 
-assert(isequal(length(boundary_points(:,1)),length(boundary_points(:,2))));
+% Convert boundary points into on-grid points? (optional)
+if 1==1
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isempty(nearestBorderXY)); 
+assert(isempty(nearestBorderIndicies));
+
+% Check values
+% assert(isequal(find(isNearest),[ 5     7     8     9    12    13    14    15    16    17    18]')); % These are the boundary point "rows" that are closest
+% assert(isequal(nearestBorderIndicies,[53    87   120   121   154   187   188   221   222   255   256]')); % These are the indicies in the grid array
 
 
-
-%% Test 1  Real Data 
-
-fig_num = 1224; 
-% after running script_test_geometry_updatedSurfaceAnalysis
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY,...
-     drivenPathXY, fig_num);
-assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
-assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
 
 %% Test2 Real Data
+fig_num = 1002;
+figure(fig_num);
+clf;
 
-fig_num = 1;
 drivenPathXY = [-112.3080   55.5933
  -112.3080   56.3933
  -111.5080   56.3933
@@ -312,35 +482,6 @@ drivenPathXY = [-112.3080   55.5933
 ];
 
 
-gridCenters_non_drivable_grids = [-109.1080   53.9933         0
- -109.1080   54.7933         0
- -114.7080   55.5933         0
- -109.1080   55.5933         0
- -108.3080   55.5933         0
- -113.9080   56.3933         0
- -108.3080   56.3933         0
- -113.9080   57.1933         0
- -113.1080   57.1933         0
- -108.3080   57.1933         0
- -107.5080   57.1933         0
- -113.1080   57.9933         0
- -107.5080   57.9933         0
- -113.1080   58.7933         0
- -112.3080   58.7933         0
- -107.5080   58.7933         0
- -106.7080   58.7933         0
- -112.3080   59.5933         0
- -106.7080   59.5933         0
- -112.3080   60.3933         0
- -111.5080   60.3933         0
- -105.9080   60.3933         0
- -111.5080   61.1933         0
- -105.9080   61.1933         0
- -111.5080   61.9933         0
- -110.7080   61.9933         0
- -110.7080   62.7933         0
- -109.9080   63.5933         0
-];
 boundaryPointsXY = [-113.1080   56.7933
  -112.3080   58.3933
  -111.5080   59.9933
@@ -368,14 +509,42 @@ boundaryPointsXY = [-113.1080   56.7933
  -111.1080   61.1933
  -110.3080   61.9933
  -110.3080   62.7933];
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
-     drivenPathXY, fig_num);
-assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
-assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
+
+
+gridSize = 0.5; 
+
+allPoints = [drivenPathXY; boundaryPointsXY];
+gridBoundaries = [min(allPoints(:,1)) max(allPoints(:,1)) min(allPoints(:,2)) max(allPoints(:,2))];
+
+% gridBoundaries = [-2 2 -2 5];
+% drivenPathXY = [-1 4; 0 4.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==0
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
 %% Test 3, real data
 
-fig_num = 1;
+fig_num = 1003;
+figure(fig_num);
+clf;
+
 
 boundaryPointsXY = [
 393.6480  242.3227
@@ -523,13 +692,40 @@ drivenPathXY = [
   395.6480  238.8227
   396.6480  238.8227
   ]; 
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
-     drivenPathXY, fig_num);
-assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
-assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
+
+gridSize = 0.5; 
+
+allPoints = [drivenPathXY; boundaryPointsXY];
+gridBoundaries = [min(allPoints(:,1)) max(allPoints(:,1)) min(allPoints(:,2)) max(allPoints(:,2))];
+
+% gridBoundaries = [-2 2 -2 5];
+% drivenPathXY = [-1 4; 0 4.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==0
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
 
  %% Test 4 real data
-fig_num = 1;
+fig_num = 1004;
+figure(fig_num);
+clf;
+
 boundaryPointsXY = [361.0678  246.3227
   362.0678  247.3227
   363.0678  246.3227
@@ -743,13 +939,41 @@ drivenPathXY = [ 424.0678  221.8227
   375.0678  243.8227
   376.0678  243.8227
   377.0678  243.8227];
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
-     drivenPathXY, fig_num);
- assert(isequal(length(true_borders(:,1)),length(true_borders_y)));
-assert(isequal(length(true_borders(:,2)),length(true_borders_x)));
+
+gridSize = 0.5; 
+
+allPoints = [drivenPathXY; boundaryPointsXY];
+gridBoundaries = [min(allPoints(:,1)) max(allPoints(:,1)) min(allPoints(:,2)) max(allPoints(:,2))];
+
+% gridBoundaries = [-2 2 -2 5];
+% drivenPathXY = [-1 4; 0 4.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==0
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
 %% Test 5 real data
 
-fig_num = 1;
+fig_num = 1005;
+figure(fig_num);
+clf;
+
 boundaryPointsXY = [384.9287   56.3596
   358.9287   19.3596
   359.9287   20.3596
@@ -916,9 +1140,264 @@ drivenPathXY = [357.9287   19.8596
   399.9287   52.8596
   400.9287   52.8596
   399.9287   53.8596];
- [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
-     drivenPathXY, fig_num);
 
+
+gridSize = 0.5; 
+
+allPoints = [drivenPathXY; boundaryPointsXY];
+gridBoundaries = [min(allPoints(:,1)) max(allPoints(:,1)) min(allPoints(:,2)) max(allPoints(:,2))];
+
+% gridBoundaries = [-2 2 -2 5];
+% drivenPathXY = [-1 4; 0 4.5];
+
+% Convert boundary points into on-grid points? (optional)
+if 1==0
+    [gridIndicesBoundaryPoints,~,gridCenters, ~] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+    % Plot the driven path converted to nearest indicies
+    boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+else
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXY, ...
+        drivenPathXY, gridSize, gridBoundaries, fig_num);
+end
+
+% Check sizes
+assert(isequal(length(isNearest(:,1)),length(boundaryPointsXY(:,1))));
+assert(isequal(length(nearestBorderXY(1,:)),2));
+assert(isequal(length(nearestBorderXY(:,2)),length(nearestBorderIndicies)));
+
+%% Speed test
+boundaryPointsXY = [384.9287   56.3596
+  358.9287   19.3596
+  359.9287   20.3596
+  360.9287   21.3596
+  361.9287   21.3596
+  362.9287   22.3596
+  363.9287   23.3596
+  364.9287   23.3596
+  365.9287   24.3596
+  366.9287   25.3596
+  367.9287   26.3596
+  368.9287   26.3596
+  369.9287   28.3596
+  370.9287   29.3596
+  371.9287   29.3596
+  372.9287   30.3596
+  373.9287   30.3596
+  374.9287   31.3596
+  375.9287   32.3596
+  376.9287   32.3596
+  377.9287   33.3596
+  378.9287   34.3596
+  379.9287   34.3596
+  380.9287   35.3596
+  381.9287   36.3596
+  382.9287   36.3596
+  383.9287   39.3596
+  384.9287   39.3596
+  385.9287   39.3596
+  386.9287   39.3596
+  387.9287   40.3596
+  388.9287   41.3596
+  389.9287   42.3596
+  390.9287   43.3596
+  391.9287   43.3596
+  392.9287   44.3596
+  393.9287   46.3596
+  394.9287   46.3596
+  395.9287   48.3596
+  396.9287   48.3596
+  397.9287   49.3596
+  398.9287   50.3596
+  399.9287   50.3596
+  400.9287   51.3596
+  401.9287   52.3596
+  402.9287   52.3596
+  358.4287   18.8596
+  359.4287   19.8596
+  360.4287   20.8596
+  362.4287   21.8596
+  363.4287   22.8596
+  365.4287   23.8596
+  366.4287   24.8596
+  367.4287   25.8596
+  369.4287   26.8596
+  369.4287   27.8596
+  370.4287   28.8596
+  372.4287   29.8596
+  374.4287   30.8596
+  375.4287   31.8596
+  377.4287   32.8596
+  378.4287   33.8596
+  380.4287   34.8596
+  381.4287   35.8596
+  383.4287   36.8596
+  383.4287   37.8596
+  383.4287   38.8596
+  387.4287   39.8596
+  388.4287   40.8596
+  389.4287   41.8596
+  390.4287   42.8596
+  392.4287   43.8596
+  393.4287   44.8596
+  393.4287   45.8596
+  395.4287   46.8596
+  395.4287   47.8596
+  397.4287   48.8596
+  398.4287   49.8596
+  400.4287   50.8596
+  401.4287   51.8596
+  385.4287   56.8596];
+
+
+drivenPathXY = [357.9287   19.8596
+  357.9287   20.8596
+  358.9287   20.8596
+  358.9287   21.8596
+  359.9287   21.8596
+  360.9287   21.8596
+  359.9287   22.8596
+  360.9287   22.8596
+  361.9287   22.8596
+  361.9287   23.8596
+  362.9287   23.8596
+  362.9287   24.8596
+  363.9287   24.8596
+  364.9287   24.8596
+  364.9287   25.8596
+  365.9287   25.8596
+  365.9287   26.8596
+  366.9287   26.8596
+  366.9287   27.8596
+  367.9287   27.8596
+  368.9287   27.8596
+  367.9287   28.8596
+  368.9287   28.8596
+  369.9287   28.8596
+  369.9287   29.8596
+  370.9287   29.8596
+  370.9287   30.8596
+  371.9287   30.8596
+  372.9287   30.8596
+  371.9287   31.8596
+  372.9287   31.8596
+  373.9287   31.8596
+  373.9287   32.8596
+  374.9287   32.8596
+  374.9287   33.8596
+  375.9287   33.8596
+  375.9287   34.8596
+  376.9287   34.8596
+  377.9287   34.8596
+  377.9287   35.8596
+  378.9287   35.8596
+  378.9287   36.8596
+  379.9287   36.8596
+  380.9287   36.8596
+  379.9287   37.8596
+  380.9287   37.8596
+  381.9287   37.8596
+  381.9287   38.8596
+  382.9287   38.8596
+  382.9287   39.8596
+  383.9287   39.8596
+  383.9287   40.8596
+  384.9287   40.8596
+  384.9287   41.8596
+  385.9287   41.8596
+  386.9287   41.8596
+  386.9287   42.8596
+  387.9287   42.8596
+  387.9287   43.8596
+  388.9287   43.8596
+  388.9287   44.8596
+  389.9287   44.8596
+  389.9287   45.8596
+  390.9287   45.8596
+  391.9287   45.8596
+  390.9287   46.8596
+  391.9287   46.8596
+  392.9287   46.8596
+  392.9287   47.8596
+  393.9287   47.8596
+  393.9287   48.8596
+  394.9287   48.8596
+  394.9287   49.8596
+  395.9287   49.8596
+  396.9287   49.8596
+  396.9287   50.8596
+  397.9287   50.8596
+  397.9287   51.8596
+  398.9287   51.8596
+  398.9287   52.8596
+  399.9287   52.8596
+  400.9287   52.8596
+  399.9287   53.8596];
+
+
+gridSize = 0.5; 
+
+allPoints = [drivenPathXY; boundaryPointsXY];
+gridBoundaries = [min(allPoints(:,1)) max(allPoints(:,1)) min(allPoints(:,2)) max(allPoints(:,2))];
+
+[gridIndicesBoundaryPoints,~,gridCenters, nGrids] = fcn_geometry_separatePointsIntoGrids(boundaryPointsXY, gridSize, gridBoundaries, (-1));
+
+% Plot the driven path converted to nearest indicies
+boundaryPointsXYOnGrid = gridCenters(gridIndicesBoundaryPoints,:);
+
+
+% Perform the calculation in slow mode
+fig_num = 999;
+figure(fig_num);
+clf;
+
+REPS = 5; minTimeSlow = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+    telapsed = toc(tstart);
+    minTimeSlow = min(telapsed,minTimeSlow);
+end
+averageTimeSlow = toc/REPS;
+
+% Perform the operation in fast mode
+fig_num = -1;
+minTimeFast = Inf;
+tic;
+for i=1:REPS
+    tstart = tic;
+    [isNearest, nearestBorderIndicies, nearestBorderXY]  =  fcn_geometry_findNearestBoundaryPoints(boundaryPointsXYOnGrid, ...
+     drivenPathXY, gridSize, gridBoundaries, fig_num);
+
+
+    telapsed = toc(tstart);
+    minTimeFast = min(telapsed,minTimeFast);
+end
+averageTimeFast = toc/REPS;
+
+fprintf(1,'\n\nComparison of fcn_geometry_fillCircleTestPoints without speed setting (slow) and with speed setting (fast):\n');
+fprintf(1,'N repetitions: %.0d\n',REPS);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+%% Fail conditions
+if 1==0
+    % FAIL 1: points not long enough
+    points = [2 3];
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
+end
 
 %% Functions follow
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -932,126 +1411,7 @@ drivenPathXY = [357.9287   19.8596
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-function [boundary_points_falling, boundary_points_rising] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z, y_interval)
 
-flag_do_debug = 0;
-
-Z_greater_than = find(Z>0.5);
-
-% Pad the first and last points
-N_points = numel(X); % Total number of elements
-Z_greater_than_padded = [0; Z_greater_than; N_points+1];
-
-%% FInd changes
-changes_in_sequence = diff(Z_greater_than_padded);
-indicies_falling_edge = find(changes_in_sequence>1.5); %  Anything greater than 1 is a change. Have to add 1 because we padded indicies above
-indicies_rising_edge = find(changes_in_sequence>1.5)+1; % Anything greater than 1 is a change. Have to add 1 because we padded indicies above
-
-indicies_with_rising_x_edge  = Z_greater_than_padded(indicies_rising_edge);
-indicies_with_falling_x_edge = Z_greater_than_padded(indicies_falling_edge);
-
-% Clean up any indicies outside of range
-indicies_with_rising_x_edge(indicies_with_rising_x_edge<1) = [];
-indicies_with_rising_x_edge(indicies_with_rising_x_edge>N_points) = [];
-indicies_with_falling_x_edge(indicies_with_falling_x_edge<1) = [];
-indicies_with_falling_x_edge(indicies_with_falling_x_edge>N_points) = [];
-
-% Clean up any indicies on borders
-border_dimension = length(X(:,1));
-border_indices_rising = find(mod(indicies_with_rising_x_edge,border_dimension)==1);
-indicies_with_rising_x_edge(border_indices_rising) = [];
-border_indices_falling = find(mod(indicies_with_falling_x_edge,border_dimension)==0);
-indicies_with_falling_x_edge(border_indices_falling) = [];
-
-
-
-
-boundary_points_rising  = [X(indicies_with_rising_x_edge),Y(indicies_with_rising_x_edge)-y_interval/2];
-boundary_points_falling = [X(indicies_with_falling_x_edge),Y(indicies_with_falling_x_edge)+y_interval/2];
-
-% Plot the data in 2D?
-if 1==flag_do_debug
-    figure(1111);
-    clf;
-    hold on;
-
-    % Plot the inputs
-    plot(X(1:N_points),Y(1:N_points),'.','Color',[0.5 0.5 0.5],'Markersize',20);
-    plot(X(Z_greater_than),Y(Z_greater_than),'k.','Markersize',50);
-
-    % Number the results (for clarity)
-    for ith_label = 1:length(Z_greater_than)
-        label_number = Z_greater_than(ith_label);
-        current_text = sprintf('%.0d',label_number);
-        text(X(label_number),Y(label_number),current_text,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-    end
-    xlabel('X [m]');
-    ylabel('Y [m]');
-
-    % Start by forcing tight axes
-    xlim([min(X,[],'all') max(X,[],'all')]);
-    ylim([min(Y,[],'all') max(Y,[],'all')]);
-
-    % Make axis slightly bigger than range
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-
-    plot(boundary_points_falling(:,1),boundary_points_falling(:,2),'r.','Markersize',30);
-    plot(boundary_points_rising(:,1),boundary_points_rising(:,2),'g.','Markersize',30);
-end
-
-end
-
-%% fcn_INTERNAL_findBoundaryPoints
-function boundary_points = fcn_INTERNAL_findBoundaryPoints(X,Y,Z,x_range,y_range, fig_num)
-% Find the X_interval
-x_interval = x_range(2)-x_range(1);
-y_interval = y_range(2)-y_range(1);
-
-[boundary_points_falling_y, boundary_points_rising_y] = fcn_INTERNAL_findBoundaryPointsX(X, Y, Z,  y_interval);
-[boundary_points_falling_x_transpose, boundary_points_rising_x_transpose] = fcn_INTERNAL_findBoundaryPointsX(Y', X', Z', x_interval);
-boundary_points_falling_x = fliplr(boundary_points_falling_x_transpose);
-boundary_points_rising_x = fliplr(boundary_points_rising_x_transpose);
-
-boundary_points = [boundary_points_falling_y; boundary_points_rising_y; boundary_points_falling_x; boundary_points_rising_x];
-
-if 1 == 1
-    % Plot the data in 2D
-    figure(fig_num);
-    clf;
-    hold on;
-    axis equal;
-
-    % Plot the results
-    flag_larger_than = Z>0.5;
-    plot(X(flag_larger_than),Y(flag_larger_than),'k.','Markersize',50);
-
-    xlabel('X [m]');
-    ylabel('Y [m]');
-
-    xlim([min(x_range) max(x_range)]);
-    ylim([min(y_range) max(y_range)]);
-
-    % Make axis slightly bigger than range
-    temp = axis;
-    axis_range_x = temp(2)-temp(1);
-    axis_range_y = temp(4)-temp(3);
-    percent_larger = 0.3;
-    axis([temp(1)-percent_larger*axis_range_x, temp(2)+percent_larger*axis_range_x,  temp(3)-percent_larger*axis_range_y, temp(4)+percent_larger*axis_range_y]);
-
-
-    % Plot the results
-    plot(boundary_points_falling_y(:,1),boundary_points_falling_y(:,2),'r.','Markersize',40);
-    plot(boundary_points_rising_y(:,1),boundary_points_rising_y(:,2),'g.','Markersize',40);
-    plot(boundary_points_falling_x(:,1),boundary_points_falling_x(:,2),'c.','Markersize',40);
-    plot(boundary_points_rising_x(:,1),boundary_points_rising_x(:,2),'m.','Markersize',40);
-end
-
-
-end % Ends fcn_INTERNAL_findBoundaryPoints
 
 
 
