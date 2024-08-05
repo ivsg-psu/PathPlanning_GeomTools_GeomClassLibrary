@@ -1450,12 +1450,29 @@ figure(fig_num);clf
 %     gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
 %     fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
-% Classify mapped grids into drivable and drivable
-[standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
-    original_drivable_grids, original_non_drivable_grids, current_drivable_grid_numbers_in_mapped_grids, current_non_drivable_grid_numbers_in_mapped_grids, ...
-    gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
-    fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
+% OLD: fixed by SNB on 2024_08_05 to correctly fill right variables
+% % Classify mapped grids into drivable and drivable
+% [standard_deviation_in_z, angle_btw_unit_normals_and_vertical, ...
+%     original_drivable_grids, original_non_drivable_grids, current_drivable_grid_numbers_in_mapped_grids, current_non_drivable_grid_numbers_in_mapped_grids, ...
+%     gridCenters_drivable_grids,gridCenters_non_drivable_grids, concatenate_gridCenters_drivable_non_drivable_grids] = ...
+%     fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
+
+
+[standard_deviation_in_z, ...
+    angle_btw_unit_normals_and_vertical, ...
+    original_drivable_grids, ...
+    original_non_drivable_grids, ...
+    current_drivable_grid_numbers_in_mapped_grids, ...
+    current_non_drivable_grid_numbers_in_mapped_grids, ...
+    ~, .... % current_failed_grid_numbers_in_mapped_grids, ...
+    ~, ...  % current_uncertain_grid_numbers_in_mapped_grids, ...
+    ~, ...  % gridCenters_failed_grids, ...
+    ~, ...  % gridCenters_uncertain_grids, ...
+    gridCenters_drivable_grids, ...
+    gridCenters_non_drivable_grids, ...
+    concatenate_gridCenters_drivable_non_drivable_grids] = ...
+    fcn_geometry_classifyGridsAsDrivable(gridIndices_cell_array, updated_original_mapped_grids, input_points, std_threshold, theta_threshold, gridCenters, fig_num);
 
 std_threshold_failed_gridCenters = gridCenters_updated_original_mapped_grids(standard_deviation_in_z>std_threshold,:); 
 
@@ -1576,7 +1593,7 @@ boundary_points_mapped_unmapped = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_siz
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Boundary points of drivable and non-drivable %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Part 2 - Find boundary points of drivable and non-drivable grids
+%% Part 2 - Find boundary points of drivable and non-drivable grids
 
 fig_num_drivable_non_drivable = 98898;
 
@@ -1647,7 +1664,7 @@ boundary_points = fcn_geometry_findBoundaryPoints(X,Y,Z,grid_size,x_limits,y_lim
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Finding true boundary points %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Part 3 - Find true boundary points by eliminating the boundary points of
+%% Part 3 - Find true boundary points by eliminating the boundary points of
 % mapped and unmapped from drivable and non-drivable boubndary points. 
 
 fig_num_bd_pts_ENU = 1000; 
@@ -1726,8 +1743,12 @@ fig_num = 1224;
 figure(fig_num); clf;
 
 % after running script_test_geometry_updatedSurfaceAnalysis
-[true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
-     gridCenters_driven_path, fig_num);
+% [true_borders,true_borders_x,true_borders_y] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points,...
+%      gridCenters_driven_path, fig_num);
+
+[~, ~, true_borders]  = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+     gridCenters_driven_path, grid_size, grid_boundaries, fig_num);
+
 
 %%
 
@@ -1741,7 +1762,7 @@ legend_option = 0;
 legend_name = 'Nearest Boundary Points';
 legend_position = [];
 marker_type = []; 
-nearest_boundary_points = [true_borders(:,2), true_borders(:,1), zeros(length(true_borders),1)]; 
+nearest_boundary_points = [ true_borders(:,1), true_borders(:,2), zeros(length(true_borders),1)]; 
 
 [~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
@@ -1751,7 +1772,7 @@ legend_option = 0;
 legend_name = 'Nearest Boundary Points';
 legend_position = [];
 marker_type = []; 
-nearest_boundary_points = [true_borders(:,2), true_borders(:,1), zeros(length(true_borders),1)]; 
+nearest_boundary_points = [true_borders(:,1), true_borders(:,2),  zeros(length(true_borders),1)]; 
 
 
 [~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);

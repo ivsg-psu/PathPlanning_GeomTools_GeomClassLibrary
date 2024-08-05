@@ -46,11 +46,11 @@ right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_poi
 % % Left boundary points of the driven path
 % right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
 
-% scanLineNumber_start = 1400;
-% scanLineNumber_end = 1450;
+scanLineNumber_start = 1400;
+scanLineNumber_end = 1450;
 
-boundaryLineNumber_start = station_1-1;%scanLineNumber_start - 8; 
-boundaryLineNumber_end = station_2+1;%scanLineNumber_end - 6; 
+boundaryLineNumber_start = scanLineNumber_start-1;  %scanLineNumber_start - 8; 
+boundaryLineNumber_end = scanLineNumber_end+1;      %scanLineNumber_end - 6; 
 
 % lengths_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY(scanLineNumber_start:scanLineNumber_end,:), zeros((scanLineNumber_end-scanLineNumber_start+1),1)];
 % 
