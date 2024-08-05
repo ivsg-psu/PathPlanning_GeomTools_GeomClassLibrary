@@ -4,9 +4,8 @@
 %
 % 2024_07_18 - Aneesh Batchu
 % -- wrote the code originally
-
-% To-DO: 
-% Need to use "shift" (a varible name) to shift the boundary points
+% 2024_07_20 - Aneesh Batchu
+% --  used "shift" (a varible name) to shift the boundary points
 
 %% Calculate the vehicle orientation
 
@@ -25,6 +24,7 @@ unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
 % Define lane width limits. Take 40 percent of the lane width. Numbers
 % obtained by converting 12 ft (standard lane) to meters
 lane_half_width = (3.6576/2) * 0.40;  
+% lane_half_width = 2*3.6576;  
 
 % Transverse distance of the left and right boundary points of the driven
 % path from vehicle center 
@@ -46,10 +46,11 @@ right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_poi
 % % Left boundary points of the driven path
 % right_boundary_points = VehiclePose(:,1:3) - transverse_distance_of_boundary_points; 
 
+% scanLineNumber_start = 1400;
+% scanLineNumber_end = 1450;
 
-
-boundaryLineNumber_start = scanLineNumber_start-1;%scanLineNumber_start - 8; 
-boundaryLineNumber_end = scanLineNumber_end+1;%scanLineNumber_end - 6; 
+boundaryLineNumber_start = station_1-1;%scanLineNumber_start - 8; 
+boundaryLineNumber_end = station_2+1;%scanLineNumber_end - 6; 
 
 % lengths_boundary_points = [lane_half_width*unit_ortho_vehicle_vectors_XY(scanLineNumber_start:scanLineNumber_end,:), zeros((scanLineNumber_end-scanLineNumber_start+1),1)];
 % 
@@ -78,12 +79,10 @@ quiver3(...
 plot3(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 1 0],'MarkerSize',30,'LineWidth',3);
 plot3(right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 1],'MarkerSize',30,'LineWidth',3);
 
-
 xlabel('East position [m]');
 ylabel('North position [m]');
 zlabel('Up position [m]');
 view(3)
-
 
 %%
 
@@ -99,11 +98,11 @@ boundary_points_driven_path = [right_boundary_points(boundaryLineNumber_start:bo
 
 boundary_points_driven_path_LLA = gps_object.ENU2WGSLLA(boundary_points_driven_path);
 
-LLA_fig_num = 2;
+LLA_fig_num = 13342;
 figure(LLA_fig_num);
 % Plot the LIDAR data underneath the vehicle in LLA
 figure(LLA_fig_num);
-geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'b.','MarkerSize',30);
+geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'g.','MarkerSize',30);
 
 
 % %%  INPOLYGON

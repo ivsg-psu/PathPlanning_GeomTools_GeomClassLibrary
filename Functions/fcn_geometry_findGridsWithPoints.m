@@ -176,13 +176,13 @@ total_N_points_in_each_grid = fcn_geometry_findRepeatedIndices(gridIndices,lengt
 grids_with_zero_points = find((total_N_points_in_each_grid(:,1) == 0)); 
 
 % Grid Centers of the grids with zero point density 
-gridCenters_zero_point_density = gridCenters(grids_with_zero_points,1:3); 
+gridCenters_zero_point_density = gridCenters(grids_with_zero_points,1:2); 
 
 % Find grids with more than zero points
 grids_greater_than_zero_points = find((total_N_points_in_each_grid(:,1) > 0)); 
 
 % Grid Centers of the grids with zero point density (Unmapped grid centers)
-gridCenters_greater_than_zero_point_density = gridCenters(grids_greater_than_zero_points,1:3);
+gridCenters_greater_than_zero_point_density = gridCenters(grids_greater_than_zero_points,1:2);
 
 % Find the point density based on the Histogram analysis
 % [point_density,actual_driving_surface_grids_hist,total_grids_hist] = fcn_geometry_findPointDensity(total_points_in_each_grid_in_actual_driving_surface,total_points_in_each_grid,fig_num)
@@ -203,15 +203,16 @@ if flag_do_plots
     RGB_triplet = [0.8, 0.8, 0.8];
     legend_option = 1;
     legend_name = 'Grids with zero point density';
-    [~] = fcn_geometry_plotPointsinLLA(gridCenters_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
+    plot_gridCenters_zero_point_density = [gridCenters_zero_point_density, zeros(length(gridCenters_zero_point_density(:,1)),1)]; 
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 
     % plot grid centers
-    marker_size = 30;
+    marker_size = 25;
     RGB_triplet = [0.8, 0.8, 0.8];
     legend_option = 1;
     legend_name = 'Grids greater than zero point density';
-          
-    [~] = fcn_geometry_plotPointsinLLA(gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
+    plot_gridCenters_greater_than_zero_point_density = [gridCenters_greater_than_zero_point_density, zeros(length(gridCenters_greater_than_zero_point_density(:,1)),1)]; 
+    [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_greater_than_zero_point_density,marker_size,RGB_triplet,[],legend_option,legend_name,[],[],[],[],fig_num);
 end % Ends check if plotting
 
 if flag_do_debug

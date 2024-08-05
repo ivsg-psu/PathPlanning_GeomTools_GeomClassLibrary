@@ -1,3 +1,39 @@
+%% script_test_fcn_geometry_boundaryAnalysis
+%
+% This is the main script that performs boundary analysis
+%
+% The current script follows to the latest schema. Each step (section)
+% corresponds to a different block in the flowchart (schema). The parallel
+% steps—tasks that are not dependent on each other and can be run
+% independently—are numbered identically.
+
+% Revision History
+% 2024_08_04 - Aneesh Batchu
+% -- wrote the code originally 
+
+
+%% STEP 1: Load and study the data (Yet to be functionalized)
+
+% This is done in "script_load_sample_LIDAR_data" to load vehicle pose and
+% LIDAR data
+% Run script_test_geometry_PointsAtRangeOfLiDARFromStation
+
+% These scripts are in the main directory of Geom Class
+% Just "run" the scripts. You don't need to run section by section
+
+
+
+%% STEP 2: Run script_plot_sample_data.m to capture enough data
+
+% Then, run script_test_geometry_findPointsInDomain. 
+
+% concatenate_LiDAR_XYZ_points
+% concatenate_scanLine_rings
+
+%% STEP 2: Find the boundary points of the driven path
+
+% Run script_test_geometry_boundaryPointsDrivenPath to find the boundary
+% points
 
 %% STEP 3: Seperate the data into grids
 
@@ -5,7 +41,7 @@
 fig_num = 40; 
 figure(fig_num);clf
 
-LiDAR_allPoints = [concatenate_LiDAR_XYZ_points, concatenate_scanLine_rings];
+LiDAR_allPoints = [concatenate_LiDAR_XYZ_points(in_domain,:), concatenate_scanLine_rings(in_domain,:)];
 
 % remove NANs
 LiDAR_allPoints = LiDAR_allPoints(~isnan(LiDAR_allPoints(:,1)),:);
@@ -854,7 +890,7 @@ plot(gridCenters_driven_path(:,1),gridCenters_driven_path(:,2),'o','MarkerSize',
 
 
 for ith_text = 1:length(current_qualified_grids(:,1))
-    current_text = sprintf('%.0d',current_qualified_grids(ith_text));
+    current_text = sprintf('%.0d',(ith_text));
      % Place the text on the grid center
     text(gridCenters_qualified_grids(ith_text,1), gridCenters_qualified_grids(ith_text,2),current_text,'Color',[1 1 1],'HorizontalAlignment','center','FontSize', 6, 'FontWeight','bold');
 end
@@ -952,9 +988,9 @@ figure(fig_num);clf;
 
 hold on
 grid on
-xlabel('Mapped grid centers')
+xlabel('Qualified grid centers')
 ylabel('Standard deviation in Z')
-title('Mapped grid centers vs standard deviation in Z ')
+title('Qualified grid centers vs standard deviation in Z ')
 
 plot(current_qualified_grids, standard_deviation_in_z,'.','MarkerSize',30,'Color',[0.2 0.2 0.2])
 plot(current_grid_numbers_of_driven_path, std_in_z_driven_path,'o','MarkerSize',10,'Color',[0 1 0], 'LineWidth',1.5)
@@ -1536,13 +1572,13 @@ plot_gridCenters_uncertain_grids = [gridCenters_uncertain_grids(:,1:2), zeros(le
 [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_uncertain_grids,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
-marker_size = 10;
-RGB_triplet = [0 0 1]; 
-legend_option = 0;
-legend_name = 'Computed boundary points';
-legend_position = [];
-marker_type = [];
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+% marker_size = 10;
+% RGB_triplet = [0 0 1]; 
+% legend_option = 0;
+% legend_name = 'Computed boundary points';
+% legend_position = [];
+% marker_type = [];
+% [~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 % plot driven path
@@ -1772,15 +1808,15 @@ marker_type = [];
 plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
 [~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
-% plot computed boundary points
-marker_size = 10;
-RGB_triplet = [0 0 1]; 
-legend_option = 0;
-legend_name = 'Computed boundary points';
-legend_position = [];
-marker_type = [];
-[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
-
+% % plot computed boundary points
+% marker_size = 10;
+% RGB_triplet = [0 0 1]; 
+% legend_option = 0;
+% legend_name = 'Computed boundary points';
+% legend_position = [];
+% marker_type = [];
+% [~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+% 
 
 % plot driven path
 marker_size = 25;
@@ -1802,13 +1838,26 @@ marker_type = [];
 plot_gridCenters_driven_path = [gridCenters_driven_path, zeros(length(gridCenters_driven_path),1)];
 [~] = fcn_geometry_plotPointsinLLA(plot_gridCenters_driven_path,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
+%% plot the boundary points
+figure(7639);clf;
+
+% plot computed boundary points
+marker_size = 25;
+RGB_triplet = [0 1 1]; 
+legend_option = 1;
+legend_name = 'Computed boundary points';
+legend_position = [];
+marker_type = [];
+plot_true_boundary_points = [true_boundary_points, zeros(length(true_boundary_points),1)];
+[~] = fcn_geometry_plotPointsinLLA(plot_true_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+
 
 %% STEP 12: Find the nearest boundary points
 
 fig_num = 7676;
 
 % Find the nearest boundaries
-[nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
+[~, nearestBorderIndicies, nearestBorderXY] = fcn_geometry_findNearestBoundaryPoints(true_boundary_points, ...
     gridCenters_driven_path, grid_size, grid_boundaries, fig_num);
 
 % Figure number
@@ -1827,12 +1876,12 @@ nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(len
 [~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 marker_size = 10;
-RGB_triplet = [0 0 1]; 
+RGB_triplet = [1 1 1]; 
 legend_option = 0;
 legend_name = 'Nearest Boundary Points';
 legend_position = [];
 marker_type = []; 
-nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(length(true_borders(:,1)),1)]; 
+nearest_boundary_points = [nearestBorderXY(:,1), nearestBorderXY(:,2), zeros(length(nearestBorderXY(:,1)),1)]; 
 
 [~] = fcn_geometry_plotPointsinLLA(nearest_boundary_points,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
@@ -1907,32 +1956,43 @@ vehicle_change_in_pose_XY = [vehicle_change_in_pose_XY; vehicle_change_in_pose_X
 % Convert these to unit vectors
 unit_vehicle_change_in_pose_XY = fcn_geometry_calcUnitVector(vehicle_change_in_pose_XY);
 
-% Shift the unit vector 
-unit_vehicle_change_in_pose_XY_shifted = unit_vehicle_change_in_pose_XY; %- shift_distance;
-
-% Shift the vehicle pose
-updated_VehiclePose_current_shifted = updated_VehiclePose_current; %- shift_distance; 
-
-% % Sort boundary points and updated vehicle pose along x coordinate
-% [sorted_x_coord_boundary_points, sorted_indices_boundary_points] = sort(nearest_boundary_points(:,1));  
-
-% Calculate the vectors
-vector_from_vehicle_pose_to_boundary_points = nearest_boundary_points(:,1:2) - flipud(updated_VehiclePose_current_shifted);
 
 % Find orthogonal vetors by rotating by 90 degrees in the CCW direction
-unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY_shifted*[0 1; -1 0];
+unit_ortho_vehicle_vectors_XY = unit_vehicle_change_in_pose_XY*[0 1; -1 0];
 
-% Calculate the transverse distance
-transverse_dist_boundary_points = sum(vector_from_vehicle_pose_to_boundary_points.*unit_ortho_vehicle_vectors_XY,2);
+% Transverse shift 
+transverse_shift = 6*3.6576; 
 
-% Transverse distances of the right boundaries
-transverse_dist_right_boundary_points = transverse_dist_boundary_points(transverse_dist_boundary_points>0,:);
+% right transverse shifted points
+right_transverse_points = updated_VehiclePose_current - transverse_shift*unit_ortho_vehicle_vectors_XY; 
 
-% Boundary points on the right
-boundary_points_right = nearest_boundary_points(transverse_dist_boundary_points<0,:);
+% Find right nearest boundary points
+right_boundary_points_nearest = [updated_VehiclePose_current;
+    flipud(right_transverse_points);
+    updated_VehiclePose_current(1,:)]; 
 
-% Boundary points on the left
-boundary_points_left = nearest_boundary_points(transverse_dist_boundary_points>0,:);
+% Use inpolygon to find the indices of the right nearest boundary points
+[boundary_points_right_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),right_boundary_points_nearest(:,1),right_boundary_points_nearest(:,2));
+
+% nearest boundary points on the right
+boundary_points_right = nearest_boundary_points(boundary_points_right_indices,1:2); 
+
+
+% transverse shifted points
+left_transverse_points = updated_VehiclePose_current + transverse_shift*unit_ortho_vehicle_vectors_XY; 
+
+
+% Find left nearest boundary points
+left_boundary_points_nearest = [updated_VehiclePose_current;
+    flipud(left_transverse_points);
+    updated_VehiclePose_current(1,:)]; 
+
+% Use inpolygon to find the indices of the left nearest boundary points
+[boundary_points_left_indices,~] = inpolygon(nearest_boundary_points(:,1),nearest_boundary_points(:,2),left_boundary_points_nearest(:,1),left_boundary_points_nearest(:,2));
+
+% nearest boundary points on the left
+boundary_points_left = nearest_boundary_points(boundary_points_left_indices,1:2); 
+
 
 fig_num = 7876; 
 figure(fig_num);clf; 
@@ -1944,7 +2004,7 @@ ylabel('Y[m]')
 title('Right Points')
 
 % plot(VehiclePose_current_shifted(:,1), VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
-plot(updated_VehiclePose_current_shifted(:,1), updated_VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
+plot(updated_VehiclePose_current(:,1), updated_VehiclePose_current(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
 
 % plot(VehiclePose_current_shifted(:,1), VehiclePose_current_shifted(:,2),'.','Color',[0 0 0],'MarkerSize',30) 
 plot(VehiclePose_current(:,1), VehiclePose_current(:,2),'.','Color',[0.5 0.5 0.5],'MarkerSize',10) 
@@ -1952,28 +2012,41 @@ plot(VehiclePose_current(:,1), VehiclePose_current(:,2),'.','Color',[0.5 0.5 0.5
 plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'c.', 'MarkerSize',40, 'DisplayName','Boundary points');
 plot(nearest_boundary_points(:,1), nearest_boundary_points(:,2), 'b.', 'MarkerSize',30, 'DisplayName','Boundary points');
 
-plot(boundary_points_right(:,1), boundary_points_right(:,2), 'ro', 'MarkerSize',30, 'DisplayName','Boundary points');
-plot(boundary_points_left(:,1), boundary_points_left(:,2), 'bo', 'MarkerSize',30, 'DisplayName','Boundary points');
+% plot(boundary_points_right(:,1), boundary_points_right(:,2), 'ro', 'MarkerSize',30, 'DisplayName','Boundary points');
+% plot(boundary_points_left(:,1), boundary_points_left(:,2), 'bo', 'MarkerSize',30, 'DisplayName','Boundary points');
 
 % quiver(...
 %     updated_VehiclePose_current(:,1),updated_VehiclePose_current(:,2),...
 %     unit_vehicle_change_in_pose_XY(1:2,1),unit_vehicle_change_in_pose_XY(:,2),'-','LineWidth',3,'Color',[0 1 0]);
 
-quiver(...
-    updated_VehiclePose_current_shifted(:,1),updated_VehiclePose_current_shifted(:,2),...
-    vector_from_vehicle_pose_to_boundary_points(:,1),vector_from_vehicle_pose_to_boundary_points(:,2),'-','LineWidth',3,'Color',[0 1 0]);
+% quiver(...
+%     updated_VehiclePose_current(:,1),updated_VehiclePose_current(:,2),...
+%     vector_from_vehicle_pose_to_boundary_points(:,1),vector_from_vehicle_pose_to_boundary_points(:,2),'-','LineWidth',3,'Color',[0 1 0]);
 
 
 quiver(...
     updated_VehiclePose_current(:,1),updated_VehiclePose_current(:,2),...
     unit_ortho_vehicle_vectors_XY(:,1),unit_ortho_vehicle_vectors_XY(:,2),'-','LineWidth',3,'Color',[0 0 1]);
 
+% plot the left shifted points
+plot(right_transverse_points(:,1), right_transverse_points(:,2), 'k.', 'MarkerSize',30, 'DisplayName','Boundary points');
+
+% Plot the left nearest points
+plot(boundary_points_right(:,1), boundary_points_right(:,2), 'ro', 'MarkerSize',30, 'DisplayName','Boundary points');
+
+
+% plot the left shifted points
+plot(left_transverse_points(:,1), left_transverse_points(:,2), 'k.', 'MarkerSize',30, 'DisplayName','Boundary points');
+
+% Plot the left nearest points
+plot(boundary_points_left(:,1), boundary_points_left(:,2), 'bo', 'MarkerSize',30, 'DisplayName','Boundary points');
+
 % % Boundary points on the right
 % boundary_points_right_abs = nearest_boundary_points(abs(transverse_dist_boundary_points)<5,:);
 % plot(boundary_points_right_abs(:,1), boundary_points_right_abs(:,2), 'go', 'MarkerSize',20, 'DisplayName','Boundary points');
 
 
-% Plot right boundary points
+%% Plot right boundary points
 
 fig_num = 1224; 
 figure(fig_num); 
@@ -1985,8 +2058,8 @@ legend_name = 'Right Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+plot_boundary_points_right = [boundary_points_right, zeros(length(boundary_points_right),1)];
+[~] = fcn_geometry_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 marker_size = 12;
 RGB_triplet = [1 0 0]; 
@@ -1995,8 +2068,8 @@ legend_name = 'Right Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+plot_boundary_points_right = [boundary_points_right, zeros(length(boundary_points_right),1)];
+[~] = fcn_geometry_plotPointsinLLA(plot_boundary_points_right,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 % Plot right boundary points
 
@@ -2010,18 +2083,18 @@ legend_name = 'Left Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+plot_boundary_points_left = [boundary_points_left, zeros(length(boundary_points_left),1)];
+[~] = fcn_geometry_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 marker_size = 12;
-RGB_triplet = [1 0 0]; 
+RGB_triplet = [0 0 1]; 
 legend_option = 0;
 legend_name = 'Left Boundary Points';
 legend_position = [];
 marker_type = []; 
 
-
-[~] = fcn_geometry_plotPointsinLLA(boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
+plot_boundary_points_left = [boundary_points_left, zeros(length(boundary_points_left),1)];
+[~] = fcn_geometry_plotPointsinLLA(plot_boundary_points_left,marker_size,RGB_triplet,marker_type,legend_option,legend_name,legend_position,[],[],[],fig_num);
 
 
 
@@ -2235,3 +2308,19 @@ marker_type = [];
 % % 
 % % 
 % % 
+
+%%
+
+% fig_num = 34355;
+% k = figure(fig_num); clf
+% 
+% for ith_mapped_grid = 39%;1:total_mapped_grids
+%     % points = input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:);
+%     % points = points(~isnan(points(:,1)),:);
+%     [~, standard_deviation_in_z(ith_mapped_grid,:), ~, ~, ~, ~] =...
+%     fcn_geometry_fitPlaneLinearRegression(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},:),fig_num);
+%     % mean_z_of_mapped_grids(ith_mapped_grid,:) = mean(input_points(original_mapped_gridIndices_cell{ith_mapped_grid},3));
+%     % z_diff_mapped_grids = abs(diff(mean_z_of_mapped_grids)); 
+% end
+% 
+%    sgtitle('Plane fitting of a failed angle deviation grid')
