@@ -311,7 +311,7 @@ if 0==flag_this_is_a_bad_fit
 
 
     else
-        if any(cross_product_vectors(:,3)>0) && any(cross_product_vectors(:,3)<0)
+        if any(cross_product_vectors(:,3)>0) && any(cross_product_vectors(:,3)<0) && (0==flag_max_speed)
             warning('on','backtrace');
             warning('The angles are not ordered - two different directions are detected for the arc. Unexpected results may occur as this function assumes only ordered points are used.');
         end
