@@ -5,36 +5,29 @@ function [boundary_points_driven_path,shift_distance]...
 % This function is written to find the boundary points of driven path
 %
 % FORMAT: 
-%
-%       [z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
-%       = fcn_geometry_plotLidarDeviation(cell_start,cell_end,color_map...
-%       ,(file_name)(fig1),(fig2),(fig3));
+%      [boundary_points_driven_path,shift_distance]...
+%      = fcn_geometry_boundaryPointsDrivenPath(
+%         VehiclePose,
+%         (fig_1), (fig_2), (fig_3)
 %
 % INPUTS:
 %
-%       cell_start: starting cell
-%       cell_end: ending cell
-%       color_map: color map to plot the points in
+%       VehiclePose
+%
 %       (OPTIONAL INPUTS)
 %
-%       file_name: if an external file is needed for LiDAR_ENU_cell
 %       fig_1: Label for figure 1
 %       fig_2: Label for figure 2
 %       fig_3: Label for figure 3
 %
 % OUTPUTS:
-%
-%       z, mean_z, deviation_from_mean
-%       angles, mean_angle,angle_difference
+%       boundary_points_driven_path,shift_distance
 %
 % DEPENDENCIES:
 %
-%       The script must either have existing LiDAR_ENU_cell or import a file
 %
 % EXAMPLES:
 %
-%       See the script:
-%       script_test_fcn_geometry_plotLidarDeviation
 %
 %
 % Revision History
@@ -60,53 +53,38 @@ function [boundary_points_driven_path,shift_distance]...
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_max_speed == 0
-    % Are there the right number of inputs?
-    narginchk(3,4);
-end
-
-%file name if needed
-if 4<= nargin
-    temp = varargin{1};
-    if ~isempty(temp)
-        file_name=temp;%#ok<NASGU>
-    end
-end
+% Are there the right number of inputs?
+narginchk(1,4);
 
 %labeling figures
 
-flag_do_plots = 0;
 fig_1=[];
 fig_2=[];
 fig_3=[];
 
 %figure 1
-if flag_max_speed==0
-if 5<= nargin
-    temp = varargin{2};
+if length(varargin) >= 1
+    temp = varargin{1};
     if ~isempty(temp)
         fig_1=temp;
-        flag_do_plots=1;
     end
 end
 
 %figure 2
-if 6<= nargin
-    temp = varargin{3};
+if length(varargin) >= 2
+    temp = varargin{2};
     if ~isempty(temp)
         fig_2=temp;
-        flag_do_plots=1;
     end
 end
 %figure 3
-if 7 == nargin
-    temp = varargin{end};
+if length(varargin) >= 3
+    temp = varargin{3};
     if ~isempty(temp)
         fig_3=temp;
-        flag_do_plots=1;
     end
 end
-end
+
 %% Write main code for plotting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _
@@ -171,8 +149,20 @@ hold on;
 grid on;
 axis equal
 
-plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 0],'MarkerSize',30,'LineWidth',3);
-plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2),VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[1 1 0],'MarkerSize',10,'LineWidth',3);
+plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1), ...
+      VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2), ...
+      VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3), ...
+      '.', ...
+      'Color',[0 0 0], ...
+      'MarkerSize',30, ...
+      'LineWidth',3);
+plot3(VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,1), ...
+      VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,2), ...
+      VehiclePose(boundaryLineNumber_start:boundaryLineNumber_end,3), ...
+      '.', ...
+      'Color',[1 1 0], ...
+      'MarkerSize',10, ...
+      'LineWidth',3);
 
 % Show the orthogonal arrows showing vehicle motion directions. Green
 % is forward, bLue is Left
@@ -250,8 +240,8 @@ geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_do_plots
-    if ~isempty(fig_1)
+
+if ~isempty(fig_1)
     figure(fig_1)
     % Create the scatter plot
     scatter3(x, y, z, 20, deviation_from_mean, 'filled');
@@ -261,9 +251,9 @@ if flag_do_plots
     title('Deviation of z-value from the mean');
     xlabel('x');
     ylabel('y');
-    end
+end
     
-    if ~isempty(fig_2)
+if ~isempty(fig_2)
     figure(fig_2)
     % Create the scatter plot
     scatter3(x, y, z, 20, angle_difference, 'filled');
@@ -273,16 +263,15 @@ if flag_do_plots
     title('Angle difference from the mean angle');
     xlabel('x');
     ylabel('y');
-    end
+end
     
-    if ~isempty(fig_3)
+if ~isempty(fig_3)
     figure(fig_3)
     colors = z;
     scatter3(x,y,z,20,colors);
     colormap(color_map); % You can use 'viridis' if you have it, or other colormaps
     colorbar; % Add a color bar to show the color mapping
     view(2)
-    end
-    
 end
+    
 end
