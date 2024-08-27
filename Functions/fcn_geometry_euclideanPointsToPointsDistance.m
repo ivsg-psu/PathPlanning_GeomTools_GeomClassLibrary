@@ -4,8 +4,8 @@ function [dist] = ...
     points2,...
     varargin)
 % fcn_geometry_euclideanPointsToPointsDistance calculates the 
-% distance(s) between a vector of points, POINTS1, and another vector of
-% points, POINTS2.
+% distance(s) between a [Nxd] vector of points, POINTS1, and another [Nxd] vector of
+% points, POINTS2, where d is the dimension.
 %
 % FORMAT:
 %

@@ -99,6 +99,8 @@
 % 2024_08_02 - Aneesh Batchu
 % -- added a script to find the nearest boundaries of drivable and
 % non-drivable surfaces. 
+% 2024_08_27 - S. Brennan
+% -- added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -115,6 +117,9 @@
 % above)
 % 2025_05_15 - S. Brennan
 % -- add spiral and polynomial types to the alignment options
+% 2025_08_27 - S. Brennan
+% -- fix documentation and examples for PointToPoints, both in the script,
+% in this main function, and in README
 
 
 %% Prep the workspace
@@ -199,19 +204,44 @@ setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Calculating Euclidean Distance between the points
-% Demonstrates fcn_geometry_euclideanPointsToPointsDistance
+%% fcn_geometry_euclideanPointsToPointsDistance 
+% calculates the distance(s) between a [Nxd] vector of points, POINTS1, and another [Nxd] vector of
+% points, POINTS2, where d is the dimension.
+%
+% FORMAT:
+%
+% [DIST] = fcn_geometry_euclideanPointsToPointsDistance(POINTS1,POINTS2,(fig_num))
 
-fig_num = 22;
+fig_num = 101;
 
 pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
 pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
 dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+
+assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));       
+
+%% fcn_geometry_euclideanPointToPointsDistance 
+% fcn_geometry_euclideanPointToPointsDistance calculates the 
+% distance(s) between a single [1xd] point, POINT1, and another [Nxd] vector of
+% points, POINTS2, where d is the dimension. Distance is returned as [Nx1]
+% vector.
+%
+% FORMAT:
+%
+% [DIST] = fcn_geometry_euclideanPointToPointsDistance(POINT1, POINTS2, (fig_num))
+
+fig_num = 101;
+
+pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
+pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+
 assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));                                                       
+
 
 %% fcn_geometry_calcUnitVector - calculates unit vectors in N-D
 % Test 1: a basic test
-fig_num = 1;
+fig_num = 102;
 input_vectors = [3 3]; 
 
 unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
@@ -324,6 +354,51 @@ gridBoundaries = [2 10 2 8];
 assert(isequal(length(gridIndices(:,1)),length(inputPoints(:,1))));
 assert(isequal(length(grid_AABBs(:,1)),12));
 assert(isequal(length(gridCenters(:,1)),12));
+
+%% fcn_geometry_anglesNearAngle  finds angles near a given angle
+%
+% Given a list of angles and an achor angle, finds the indicies of angles
+% in the list that are within +/- angleRange of the anchorAngle and returns
+% this as a [Mx1] vector where M is the number of indicies, sorted in the
+% same order as anglesToSearch, that are within the angleRange. If no
+% angles are within the range, returns an empty vector.
+%
+% The method to use is to convert all the anglesToSearch into unit vectors,
+% and  also convert the anchorAngle to a unit vector. The dot product of
+% these is then performed, and compared to cosine of the angleRange to find
+% which vectors are "close". The reason for this method is to avoid
+% wrap-around issues wherein angles such as 1 degree and 359 degrees are
+% "close", or modulo issues wherein -179 degrees and 179 degrees are also
+% close. The dot product method avoids both issues.
+%
+% FORMAT:
+%
+%       nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num))
+fig_num = 5;
+figure(fig_num);
+clf;
+
+
+% Fill some data
+anchorAngle = 0;
+anglesToSearch = linspace(0,360,37)'*pi/180;
+angleRange = 15*pi/180;
+
+% Test the function
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
+title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing simple example');
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
+
+% Does the data have right size?
+assert(~isempty(nearbyIndicies));
+assert(1==length(nearbyIndicies(1,:)));
+assert(length(nearbyIndicies(:,1))== 4)
+
+assert(isequal(nearbyIndicies,[1 2 36 37]'));
+
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,22 +528,6 @@ cross_products_end   = [-1];
 assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
 assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 
-%% Test case for fcn_geometry_findIntersectionOfSegments
-
-fprintf(1,'Simple intersection result: \n');
-wall_start = [0 10];
-wall_end   = [10 10];
-sensor_vector_start = [2 1];
-sensor_vector_end   = [5 15];
-fig_num = 2343;
-flag_search_type = 0;
-[distance,location] = ...
-    fcn_geometry_findIntersectionOfSegments(...
-    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
-    flag_search_type,fig_num);
-
-assert(isequal(round(distance,4),9.2043));
-assert(isequal(round(location,4),[3.9286,10.0000]));
 
 
 %% Calculating a circle's center and radius from 3 points on the circle
@@ -621,6 +680,24 @@ path = [0 0; 1 1; 0 2; 2 4; 4 2; 6 2; 2 7];
     path, fig_num);
 
 unit_vectors = fcn_geometry_calcOrthogonalVector(input_vectors, fig_num); 
+
+%% Test case for fcn_geometry_findIntersectionOfSegments
+
+fprintf(1,'Simple intersection result: \n');
+wall_start = [0 10];
+wall_end   = [10 10];
+sensor_vector_start = [2 1];
+sensor_vector_end   = [5 15];
+fig_num = 2343;
+flag_search_type = 0;
+[distance,location] = ...
+    fcn_geometry_findIntersectionOfSegments(...
+    wall_start, wall_end,sensor_vector_start,sensor_vector_end,...
+    flag_search_type,fig_num);
+
+assert(isequal(round(distance,4),9.2043));
+assert(isequal(round(location,4),[3.9286,10.0000]));
+
 
 %% Test case for fcn_geometry_polarLineFrom2PolarCoords
 

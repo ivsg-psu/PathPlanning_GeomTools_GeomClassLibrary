@@ -218,7 +218,7 @@ else
         unit_orthog_from_start_to_end_point = unit_vector_from_start_to_end_point*[0 1; -1 0];
 
         transverse_point_offsets = sum((points_to_fit(min_index:max_index,:) - start_point).*unit_orthog_from_start_to_end_point,2);
-        if max(abs(transverse_point_offsets))<0.0001*vector_length
+        if (0==flag_max_speed) && max(abs(transverse_point_offsets))<0.0001*vector_length
             warning('on','backtrace');
             warning('An arc fit is attempted on points that are nearly linear!');
         end
