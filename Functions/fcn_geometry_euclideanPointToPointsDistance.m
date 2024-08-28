@@ -40,7 +40,7 @@ function [dist] = ...
 %
 %         pt1 = [1 1 5];
 %         pt2 = [0 -3 -6; 34 1 17; 18 7 0];
-%         dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2);
+%         dist = fcn_geometry_euclideanPointToPointsDistance(pt1,pt2);
 %
 % See the script: script_test_fcn_geometry_euclideanPointToPointsDistance
 % for a full test suite.

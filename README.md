@@ -49,10 +49,13 @@ Search for this, and you will find!
           <li><a href="#fcn_geometry_euclideanpointtopointsdistance">fcn_geometry_euclideanPointToPointsDistance</li>
           <li><a href="#fcn_geometry_calcunitvector">fcn_geometry_calcUnitVector</li>
           <li><a href="#fcn_geometry_calcorthogonalvector">fcn_geometry_calcOrthogonalVector</li>
+          <li><a href="#fcn_geometry_separatepointsintogrids">fcn_geometry_separatePointsIntoGrids</li>
+          <li><a href="#fcn_geometry_anglesnearangle">fcn_geometry_anglesNearAngle - finds angles near a given angle</li>          
+          <li><a href="#fcn_geometry_pointsnearpoint">fcn_geometry_pointsNearPoint - finds points near a given point</li>          
         </ul>
-        <li><a href="#supporting-functions">Supporting Functions</li>
+        <li><a href="#circle-related-calculations">Circle Related Calculations</li>
         <ul>
-          <li><a href="#fcn_plotcv2x_findnearbyindicies">fcn_plotCV2X_findNearbyIndicies - for each point, lists nearby indicies</li>
+          <li><a href="#fcn_geometry_findanglebetweenangles">fcn_geometry_findAngleBetweenAngles - determines whether an angle lies in between two different angles</li>
         </ul>
       </ul>
         <ul>
@@ -92,7 +95,6 @@ Search for this, and you will find!
           <li><a href="#fcn_geometry_findagreementsofpointstolinevector">fcn_geometry_findAgreementsOfPointsToLineVector</li>
           <li><a href="#fcn_geometry_findagreementsofpointstocircle">fcn_geometry_findAgreementsOfPointsToCircle</li>
           <li><a href="#fcn_geometry_findagreementsofpointstoarc">fcn_geometry_findAgreementsOfPointsToArc</li>
-          <li><a href="#fcn_geometry_findanglebetweenangles">fcn_geometry_findAngleBetweenAngles</li>
           <li><a href="#fcn_geometry_findarcagreementindicies">fcn_geometry_findArcAgreementIndicies</li>
           <li><a href="#fcn_geometry_fitcircleregressionfromhoughfit">fcn_geometry_fitCircleRegressionFromHoughFit</li>
           <li><a href="#fcn_geometry_fitarcregressionfromhoughfit">fcn_geometry_fitArcRegressionFromHoughFit</li>
@@ -158,7 +160,6 @@ Search for this, and you will find!
           <li><a href="#fcn_geometry_plotsphere">fcn_geometry_plotSphere</li>
           <li><a href="#fcn_geometry_polyfitcubicpolyfromhoughfit">fcn_geometry_polyFitCubicPolyFromHoughFit</li>
           <li><a href="#fcn_geometry_selfcrossproduct">fcn_geometry_selfCrossProduct</li>
-          <li><a href="#fcn_geometry_separatepointsintogrids">fcn_geometry_separatePointsIntoGrids</li>
           <li><a href="#fcn_geometry_sortregressiondomains">fcn_geometry_sortRegressionDomains</li>
           <li><a href="#fcn_geometry_spiralfromcircletocircle">fcn_geometry_spiralFromCircleToCircle</li>
           <li><a href="#fcn_geometry_surfaceanalysis">fcn_geometry_surfaceAnalysis</li>
@@ -301,17 +302,22 @@ for a full test suite.
 
 #### **fcn_geometry_euclideanPointToPointsDistance**
 
-This function finds distance(s) from one point to another point(s)
+calculates the distance(s) between a single [1xd] point, POINT1, and another [Nxd] vector of points, POINTS2, where d is the dimension. Distance is returned as [Nx1]
+vector.
 
 **FORMAT:**
 
 ```MATLAB
-[dist] = fcn_geometry_euclideanPointToPointsDistance(pt1,pt2, (fig_num))
+[DIST] = fcn_geometry_euclideanPointToPointsDistance(POINT1, POINTS2, (fig_num))
 ```
 
 **INPUTS:**
 
-pt1,pt2: [NxM set of points]
+POINT1: an 1x2 or 1x3 single xy or xyz point
+in the form: [x1 y1 z1]
+
+POINTS2: an Nx2 or Nx3 series of xy or xyz points 
+in the form: [x1 y1 z1; x2 y2 z2; ... ; xn yn zn]
 
 (OPTIONAL INPUTS)
 
@@ -321,22 +327,36 @@ up code to maximize speed.
 
 **OUTPUTS:**
 
-dist: distances between the point(s)
+DIST: an N x  1 vector of distances [d1; d2; ... ; dn], where N is
+the number of points in POINTS2, and DIST is the distance from each
+of these points to POINT1
 
 **Dependencies:**
 
-fcn_geometry_checkInputsToFunctions
+fcn_DebugTools_checkInputsToFunctions
 
 **Examples:**
 
 ```MATLAB
-%% BASIC example - multiple points in 3D
-fig_num = 33;
+fig_num = 102;
+figure(fig_num);
+clf;
 
-pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
-pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
-dist=fcn_geometry_euclideanPointToPointsDistance(pt1,pt2,fig_num);
-assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
+pt1 = [1 1];
+pt2 = [1 3; 4 1] ;
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, fig_num);
+title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing 2D points');
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
+
+% Does the data have right size?
+assert(1==length(dist(1,:)));
+assert(length(dist(:,1))== length(pt2(:,1)))
+
+% Does the data contain the correct values?
+assert(isequal(round(dist,4), [2 3]'));
 ```
 
 <pre align="center">
@@ -472,7 +492,321 @@ for a full test suite
 
 ***
 
-URHERE
+#### **fcn_geometry_separatePointsIntoGrids**
+
+deprecated - moved to findEdge class. Needs to be moved back here
+
+***
+
+#### **fcn_geometry_anglesNearAngle**
+finds angles near a given angle
+
+Given a list of angles and an achor angle, finds the indicies of angles
+in the list that are within +/- angleRange of the anchorAngle and returns
+this as a [Mx1] vector where M is the number of indicies, sorted in the
+same order as anglesToSearch, that are within the angleRange. If no
+angles are within the range, returns an empty vector.
+
+The method to use is to convert all the anglesToSearch into unit vectors,
+and  also convert the anchorAngle to a unit vector. The dot product of
+these is then performed, and compared to cosine of the angleRange to find
+which vectors are "close". The reason for this method is to avoid
+wrap-around issues wherein angles such as 1 degree and 359 degrees are
+"close", or modulo issues wherein -179 degrees and 179 degrees are also
+close. The dot product method avoids both issues.
+
+**FORMAT:**
+
+```MATLAB
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num))
+```
+
+**INPUTS:**
+
+anchorAngle: the angle, in radians, to search around
+
+anglesToSearch: a [Nx1] vector of angles to check, in radians
+
+angleRange: the range of angles around the anchorAngle to search, as
++/- range. For example, if an anchor angle is 2 radians and the
+angleRange is 0.1 radians, then all angle indicies will be returned
+that are between 1.9 and 2.1 radians.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+**OUTPUTS:**
+
+nearbyIndicies: the indicies that have angles "nearby" the
+anchorAngle
+
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+```MATLAB
+fig_num = 1;
+figure(fig_num);
+clf;
+
+% Fill some data
+anchorAngle = 0;
+anglesToSearch = linspace(0,360,37)'*pi/180;
+angleRange = 15*pi/180;
+
+% Test the function
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
+title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing simple example');
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
+
+% Does the data have right size?
+assert(~isempty(nearbyIndicies));
+assert(1==length(nearbyIndicies(1,:)));
+assert(length(nearbyIndicies(:,1))== 4)
+
+% Does the data contain the correct values?
+assert(isequal(nearbyIndicies,[1 2 36 37]'));
+```
+
+<pre align="center">
+  <img src=".\Images\anglesNearAngle.jpg" alt="fcn_geometry_anglesNearAngle picture" width="500" height="400">
+  <figcaption>Example of fcn_geometry_anglesNearAngle</figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_anglesNearAngle
+for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_pointsNearPoint**
+finds points near a given point
+
+Given a 2D or 3D list of pointsToSearch and an anchorPoint, finds the
+indicies of pointsToSearch that are within searchRadius of distance to
+the anchorPoint. The output is a [Mx1] vector where M is the number of
+indicies, sorted in the same order as pointsToSearch, that are within the
+searchRadius of anchorPoint. If no points are within the range, it
+returns an empty vector.
+
+The method to use is to calculate the distance from the anchorPoint to
+all other points. Note: this is a very slow process.
+
+**FORMAT:**
+
+```MATLAB
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num))
+```
+
+**INPUTS:**
+
+anchorPoint: the point as a [1x2] or [1x3] vector of [X Y (Z)] to
+search around
+
+pointsToSearch: a [Nx2] or [Nx3] vector of points to check
+
+searchRadius: a [1x1] scalar of [searchRadius] where searchRadius is
+the query distance that determines search criteria for "nearby", in
+meters
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results. If set to -1, skips any
+input checking or debugging, no figures will be generated, and sets
+up code to maximize speed.
+
+**OUTPUTS:**
+
+nearbyIndicies: the indicies of the pointsToSearch that are "nearby"
+the anchorPoint
+
+**Dependencies:**
+
+(none)
+
+**Examples:**
+
+```MATLAB
+fig_num = 1;
+figure(fig_num);
+clf;
+
+% Fill some data
+anchorPoint = [0 0];
+pointsToSearch = [linspace(0,5,6)' zeros(6,1)];
+searchRadius = 2;
+
+% Test the function
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing simple example');
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
+
+% Does the data have right size?
+assert(~isempty(nearbyIndicies));
+assert(1==length(nearbyIndicies(1,:)));
+assert(length(nearbyIndicies(:,1))== 3)
+
+% Does the data contain the correct values?
+assert(isequal(nearbyIndicies,[1 2 3]'));
+```
+
+<pre align="center">
+  <img src=".\Images\pointsNearPoint.jpg" alt="fcn_geometry_pointsNearPoint picture" width="500" height="400">
+  <figcaption>Example of fcn_geometry_pointsNearPoint</figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_pointsNearPoint
+for a full test suite
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+### Circle Related Calculations
+
+
+#### **fcn_geometry_findAngleBetweenAngles**
+
+This function checks whether angles lie between two
+different angles
+
+**FORMAT:**
+
+```MATLAB
+[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num))
+```
+
+**INPUTS:**
+
+start_angle_in_radians: the start angle in radians
+
+end_angle_in_radians: the end angle in radians
+
+direction: the direction connecting the start and end angles to
+check. Enter 1 for clockwise, anything else for counter-clockwise.
+
+angles_to_test: a vector of [N x 1] angles in radians to check
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results.
+
+**OUTPUTS:**
+
+isAngleBetween: an [Nx1] vector containing the 1 if the respective test angle
+is between the start and end angles, 0 if not
+
+**Dependencies:**
+
+fcn_DebugTools_checkInputsToFunctions
+fcn_geometry_circleCenterFrom3Points
+fcn_geometry_arcDirectionFrom3Points
+fcn_geometry_findAngleUsing2PointsOnCircle
+
+**Examples:**
+
+See the script: script_test_fcn_geometry_findAngleBetweenAngles
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+#### **fcn_geometry_findAngleUsing3PointsOnCircle**
+
+This function calculates the angle from the start_points location to the end_points, in the direction of the vector given by is_clockwise.
+
+**FORMAT:**
+
+```MATLAB
+[angles,better_angles,better_angle_range,inpoints_are_closer_to_apex] = fcn_geometry_findAngleUsing3PointsOnCircle(apex_points,centers,start_points_on_circle,end_points_on_circle,radii,incoming_source_points,outgoing_destination_points,varargin)
+```
+
+**INPUTS:**
+
+apex_points: an [N x 2] vector of X,Y data for each apex point
+
+centers: an [N x 2] vector in [x y] of the points of circle centers
+
+start_points_on_circle: an [N x 2] vector in [x y] of the points
+where sectors start
+
+end_points_on_circle: an [N x 2] vector in [x y] of the points
+where sectors end
+
+radii: a [N x 1] vector of the radii of the circles (to avoid
+calculation time)
+
+incoming_source_points: an [N x 2] vector in [x y] of the points
+where the incoming line is originating from
+
+outgoing_destination_points: an [N x 2] vector in [x y] of the points
+where the outgoing line segment is going to.
+
+(OPTIONAL INPUTS)
+
+fig_num: a figure number to plot results.
+
+**OUTPUTS:**
+
+angles
+
+**Dependencies:**
+
+fcn_geometry_checkInputsToFunctions
+fcn_geometry_findTangentPointFromPointToCircle
+fcn_geometry_findTangentPointsFromPointToCircle
+
+**Examples:**
+
+```MATLAB
+apex_points = [1 0];
+centers = [0 0];
+radii = [1]; %#ok<*NBRAK>
+start_angles = [45]*pi/180;
+start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)];
+end_angles = [-45]*pi/180;
+end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
+incoming_source_points = [0 2^0.5];
+outgoing_destination_points = [0 -2^0.5];
+
+[angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
+    apex_points,...
+    centers,...
+    start_points_on_circle,...
+    end_points_on_circle,...
+    radii,...
+    incoming_source_points,...
+    outgoing_destination_points,fig_num) %#ok<*ASGLU,*NOPTS>
+
+assert(isequal(round(angles,4), 1.5708));
+assert(isequal(round(better_angles,4), 3.1416));
+```
+
+<pre align="center">
+  <img src=".\Images\findAngleUsing3PointsOnCircle.jpg" alt="fcn_geometry_findAngleUsing3PointsOnCircle picture" width="500" height="400">
+  <figcaption></figcaption>
+</pre>
+
+For more examples, see the script: script_test_fcn_geometry_findAngleUsing3PointsOnCircle
+for a full test suite.
+
+<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
+
+***
+
+### URHERE
 
 #### **fcn_geometry_plotCircle**
 
@@ -1009,89 +1343,6 @@ fcn_summarize(angles,...
 </pre>
 
 For more examples, see the script: script_test_fcn_geometry_findAngleUsing2PointsOnCircle
-for a full test suite.
-
-<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
-
-***
-
-#### **fcn_geometry_findAngleUsing3PointsOnCircle**
-
-This function calculates the angle from the start_points location to the end_points, in the direction of the vector given by is_clockwise.
-
-**FORMAT:**
-
-```MATLAB
-[angles,better_angles,better_angle_range,inpoints_are_closer_to_apex] = fcn_geometry_findAngleUsing3PointsOnCircle(apex_points,centers,start_points_on_circle,end_points_on_circle,radii,incoming_source_points,outgoing_destination_points,varargin)
-```
-
-**INPUTS:**
-
-apex_points: an [N x 2] vector of X,Y data for each apex point
-
-centers: an [N x 2] vector in [x y] of the points of circle centers
-
-start_points_on_circle: an [N x 2] vector in [x y] of the points
-where sectors start
-
-end_points_on_circle: an [N x 2] vector in [x y] of the points
-where sectors end
-
-radii: a [N x 1] vector of the radii of the circles (to avoid
-calculation time)
-
-incoming_source_points: an [N x 2] vector in [x y] of the points
-where the incoming line is originating from
-
-outgoing_destination_points: an [N x 2] vector in [x y] of the points
-where the outgoing line segment is going to.
-
-(OPTIONAL INPUTS)
-
-fig_num: a figure number to plot results.
-
-**OUTPUTS:**
-
-angles
-
-**Dependencies:**
-
-fcn_geometry_checkInputsToFunctions
-fcn_geometry_findTangentPointFromPointToCircle
-fcn_geometry_findTangentPointsFromPointToCircle
-
-**Examples:**
-
-```MATLAB
-apex_points = [1 0];
-centers = [0 0];
-radii = [1]; %#ok<*NBRAK>
-start_angles = [45]*pi/180;
-start_points_on_circle = [radii.*cos(start_angles) radii.*sin(start_angles)];
-end_angles = [-45]*pi/180;
-end_points_on_circle = [radii.*cos(end_angles) radii.*sin(end_angles)];
-incoming_source_points = [0 2^0.5];
-outgoing_destination_points = [0 -2^0.5];
-
-[angles, better_angles] = fcn_geometry_findAngleUsing3PointsOnCircle(...
-    apex_points,...
-    centers,...
-    start_points_on_circle,...
-    end_points_on_circle,...
-    radii,...
-    incoming_source_points,...
-    outgoing_destination_points,fig_num) %#ok<*ASGLU,*NOPTS>
-
-assert(isequal(round(angles,4), 1.5708));
-assert(isequal(round(better_angles,4), 3.1416));
-```
-
-<pre align="center">
-  <img src=".\Images\findAngleUsing3PointsOnCircle.jpg" alt="fcn_geometry_findAngleUsing3PointsOnCircle picture" width="500" height="400">
-  <figcaption></figcaption>
-</pre>
-
-For more examples, see the script: script_test_fcn_geometry_findAngleUsing3PointsOnCircle
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
@@ -3003,53 +3254,6 @@ fcn_geometry_findArcAgreementIndicies
 **Examples:**
 
 See the script: script_test_fcn_geometry_findAgreementsOfPointsToArc
-for a full test suite.
-
-<a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>
-
-***
-
-#### **fcn_geometry_findAngleBetweenAngles**
-
-This function checks whether angles lie between two
-different angles
-
-**FORMAT:**
-
-```MATLAB
-[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num))
-```
-
-**INPUTS:**
-
-start_angle_in_radians: the start angle in radians
-
-end_angle_in_radians: the end angle in radians
-
-direction: the direction connecting the start and end angles to
-check. Enter 1 for clockwise, anything else for counter-clockwise.
-
-angles_to_test: a vector of [N x 1] angles in radians to check
-
-(OPTIONAL INPUTS)
-
-fig_num: a figure number to plot results.
-
-**OUTPUTS:**
-
-isAngleBetween: an [Nx1] vector containing the 1 if the respective test angle
-is between the start and end angles, 0 if not
-
-**Dependencies:**
-
-fcn_DebugTools_checkInputsToFunctions
-fcn_geometry_circleCenterFrom3Points
-fcn_geometry_arcDirectionFrom3Points
-fcn_geometry_findAngleUsing2PointsOnCircle
-
-**Examples:**
-
-See the script: script_test_fcn_geometry_findAngleBetweenAngles
 for a full test suite.
 
 <a href="#pathplanning_geomtools_geomclasslibrary">Back to top</a>

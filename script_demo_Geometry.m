@@ -101,14 +101,13 @@
 % non-drivable surfaces. 
 % 2024_08_27 - S. Brennan
 % -- added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
+% -- added a bit more structure to the README.md to start to match it to
+% this demo
 
 %% To-do items
 % 2024_04_15 - S. Brennan
 % -- need to check the fcn_geometry_fitSequentialArcs closely. There are
 % larger errors at the end points and not sure why.
-% 2024_04_11 - Aneesh Batchu
-% -- Some functions are missing on the ReadME.md file. It is not up to
-% date.
 % 2024_04_11 - S. Brennan
 % -- Need to fix domain bug in circle regression where the issimplified
 % test fails. This is because, in the circle regression, the domain box is
@@ -118,8 +117,12 @@
 % 2025_05_15 - S. Brennan
 % -- add spiral and polynomial types to the alignment options
 % 2025_08_27 - S. Brennan
-% -- fix documentation and examples for PointToPoints, both in the script,
-% in this main function, and in README
+% -- fix test scripts in
+% script_test_fcn_geometry_euclideanPointsToPointsDistance to be more
+% comprehensive. See: PointToPoints
+% -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
+% geometry
+% -- finish README starting at the Circle Functions area and onward
 
 
 %% Prep the workspace
@@ -230,21 +233,35 @@ assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
 %
 % [DIST] = fcn_geometry_euclideanPointToPointsDistance(POINT1, POINTS2, (fig_num))
 
-fig_num = 101;
+fig_num = 102;
+figure(fig_num);
+clf;
 
-pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
-pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+pt1 = [1 1];
+pt2 = [1 3; 4 1] ;
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, fig_num);
+title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing 2D points');
 
-assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));                                                       
+% Was a figure created?
+assert(all(ishandle(fig_num)));
 
+% Does the data have right size?
+assert(1==length(dist(1,:)));
+assert(length(dist(:,1))== length(pt2(:,1)))
+
+% Does the data contain the correct values?
+assert(isequal(round(dist,4), [2 3]'));
 
 %% fcn_geometry_calcUnitVector - calculates unit vectors in N-D
 % Test 1: a basic test
-fig_num = 102;
+fig_num = 103;
 input_vectors = [3 3]; 
 
 unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -399,6 +416,51 @@ assert(length(nearbyIndicies(:,1))== 4)
 
 assert(isequal(nearbyIndicies,[1 2 36 37]'));
 
+%% fcn_geometry_pointsNearPoint  
+% finds points near a given point
+%
+% Given a list of angles and an achor angle, finds the indicies of angles
+% in the list that are within +/- angleRange of the anchorAngle and returns
+% this as a [Mx1] vector where M is the number of indicies, sorted in the
+% same order as anglesToSearch, that are within the angleRange. If no
+% angles are within the range, returns an empty vector.
+%
+% The method to use is to convert all the anglesToSearch into unit vectors,
+% and  also convert the anchorAngle to a unit vector. The dot product of
+% these is then performed, and compared to cosine of the angleRange to find
+% which vectors are "close". The reason for this method is to avoid
+% wrap-around issues wherein angles such as 1 degree and 359 degrees are
+% "close", or modulo issues wherein -179 degrees and 179 degrees are also
+% close. The dot product method avoids both issues.
+%
+% FORMAT:
+%
+%       nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num))
+
+fig_num = 6;
+figure(fig_num);
+clf;
+
+% Fill some data
+anchorPoint = [0 0];
+pointsToSearch = [linspace(0,5,6)' zeros(6,1)];
+searchRadius = 2;
+
+% Test the function
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+subtitle('Showing simple example');
+
+% Was a figure created?
+assert(all(ishandle(fig_num)));
+
+% Does the data have right size?
+assert(~isempty(nearbyIndicies));
+assert(1==length(nearbyIndicies(1,:)));
+assert(length(nearbyIndicies(:,1))== 3)
+
+% Does the data contain the correct values?
+assert(isequal(nearbyIndicies,[1 2 3]'));
 
 %% Circle-related calculations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -412,7 +474,8 @@ assert(isequal(nearbyIndicies,[1 2 36 37]'));
  % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Determining whether an angle lies in b/w two different angles
+%% fcn_geometry_findAngleBetweenAngles
+% Determines whether an angle lies in between two different angles
 
 fig_num = 202;
 
@@ -427,7 +490,11 @@ direction = 1;
 correct_results = (angles_to_test_in_radians-start_angle_in_radians)<=end_angle_in_radians;
 assert(isequal(isAngleBetween,correct_results));
 
-%% Test case for fcn_geometry_findAngleUsing3PointsOnCircle
+%% fcn_geometry_findAngleUsing3PointsOnCircle
+% This function calculates
+% the angle from the start_points location to the end_points, in the
+% direction that corresponds most closely to incoming_source_points and
+% outgoing_destination_points
 
 fig_num = 211;
 apex_points = [1 0];

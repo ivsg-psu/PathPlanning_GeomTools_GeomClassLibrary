@@ -39,6 +39,8 @@ function unit_vectors = fcn_geometry_calcUnitVector(input_vectors, varargin)
 % -- Fixed typo in comments on script call
 % 2024_01_23 - S. Brennan
 % -- added support for 3 dimensional vectors
+% 2024_08_26 - S. Brennan
+% -- fixed plotting for 3 dimensional vectors
 
 %% Debugging and Input checks
 
@@ -145,14 +147,30 @@ if flag_do_plots
     grid on;
     axis equal
 
-    % Plot the input vectors alongside the unit vectors
+    pointDimension = length(input_vectors(1,:));
     N_vectors = length(input_vectors(:,1));
-    for ith_vector = 1:N_vectors
-        h_plot = quiver(0,0,input_vectors(ith_vector,1),input_vectors(ith_vector,2),0,'-','LineWidth',3);
-        plot_color = get(h_plot,'Color');
-        quiver(0,0,unit_vectors(ith_vector,1),unit_vectors(ith_vector,2),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
-        
+    if 2==pointDimension
+        % Plot the input vectors alongside the unit vectors
+        for ith_vector = 1:N_vectors
+            h_plot = quiver(0,0,input_vectors(ith_vector,1),input_vectors(ith_vector,2),0,'-','LineWidth',3);
+            plot_color = get(h_plot,'Color');
+            quiver(0,0,unit_vectors(ith_vector,1),unit_vectors(ith_vector,2),0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
+
+        end
+    elseif 3==pointDimension
+        % Plot the input vectors alongside the unit vectors
+        for ith_vector = 1:N_vectors
+            h_plot = quiver3(0,0,0, input_vectors(ith_vector,1), input_vectors(ith_vector,2), input_vectors(ith_vector,3), 0,'-','LineWidth',3);
+            plot_color = get(h_plot,'Color');
+            quiver3(0,0,0, unit_vectors(ith_vector,1), unit_vectors(ith_vector,2), unit_vectors(ith_vector,3), 0,'-','LineWidth',1,'Color',(plot_color+[1 1 1])/2,'MaxHeadSize',1);
+
+        end
+    else
+        warning('on','backtrace');
+        warning('Unknown dimension encountered when plotting.')
+        error('Unknown dimension encountered when plotting.')
     end
+    view(pointDimension);
 
     % Make axis slightly larger?
     if flag_rescale_axis

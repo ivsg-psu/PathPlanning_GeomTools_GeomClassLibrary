@@ -16,7 +16,8 @@ function [...
 
 % fcn_geometry_findAngleUsing3PointsOnCircle -  This function calculates
 % the angle from the start_points location to the end_points, in the
-% direction of the vector given by is_clockwise.
+% direction that corresponds most closely to incoming_source_points and
+% outgoing_destination_points
 %
 % FORMAT:
 %
