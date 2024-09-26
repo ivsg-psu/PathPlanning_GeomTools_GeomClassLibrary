@@ -123,7 +123,8 @@
 % -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
 % geometry
 % -- finish README starting at the Circle Functions area and onward
-
+% 2025_09_26 - S. Brennan
+% -- Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
 
 %% Prep the workspace
 close all
@@ -1660,12 +1661,21 @@ clear flag*
 clear path
 
 % Clear out any path directories under Utilities
-path_dirs = regexp(path,'[;]','split');
+if ispc
+    path_dirs = regexp(path,'[;]','split');
+elseif ismac
+    path_dirs = regexp(path,'[:]','split');
+elseif isunix
+    path_dirs = regexp(path,'[;]','split');
+else
+    error('Unknown operating system. Unable to continue.');
+end
+
 utilities_dir = fullfile(pwd,filesep,'Utilities');
 for ith_dir = 1:length(path_dirs)
     utility_flag = strfind(path_dirs{ith_dir},utilities_dir);
     if ~isempty(utility_flag)
-        rmpath(path_dirs{ith_dir});
+        rmpath(path_dirs{ith_dir})
     end
 end
 
