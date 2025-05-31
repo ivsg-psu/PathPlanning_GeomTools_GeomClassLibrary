@@ -103,6 +103,8 @@
 % -- added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
 % -- added a bit more structure to the README.md to start to match it to
 % this demo
+% 2025_09_26 - S. Brennan
+% -- Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -114,17 +116,16 @@
 % overlapping itself. This should not be allowed.
 % -- create method to remove overlapping domains within Hough fitting (see bug
 % above)
-% 2025_05_15 - S. Brennan
+% 2024_05_15 - S. Brennan
 % -- add spiral and polynomial types to the alignment options
-% 2025_08_27 - S. Brennan
+% 2024_08_27 - S. Brennan
 % -- fix test scripts in
 % script_test_fcn_geometry_euclideanPointsToPointsDistance to be more
 % comprehensive. See: PointToPoints
 % -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
 % geometry
 % -- finish README starting at the Circle Functions area and onward
-% 2025_09_26 - S. Brennan
-% -- Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
+
 
 %% Prep the workspace
 close all

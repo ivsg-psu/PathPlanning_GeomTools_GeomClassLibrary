@@ -21,148 +21,50 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%% Demonstration case 1: basic plane
+%% Demonstration case 1: many points in XY plane
 fig_num = 0001;
 figure(fig_num);
 clf;
 
-points = [0 0 0; 0 1 0; 1 0 0];
+points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
 
-[unit_normal_vector, base_point, flags_in_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+
+view(70, 20);
 
 % Check variable types
 assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(flags_in_agreement));
-
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),round(true_parameters,4)));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),round(true_z,4)));
-assert(isequal(round(unit_vector,4),round(true_parameters(1,1:3),4)));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(~all(flags_in_directional_agreement==1));
+assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
 assert(isequal(get(gcf,'Number'),fig_num));
-
-%% Demonstration case 2: basic plane with noise
-fig_num = 0002;
-figure(fig_num);
-clf;
-
-
-Npoints = 100;
-
-unNormal_true_parameters = [.1 .2 1 3];
-vectorLength = sum(unNormal_true_parameters(1,1:3).^2,2).^0.5;
-true_parameters = unNormal_true_parameters./vectorLength;
-
-Constant = true_parameters(4);
-% X = [0; 1; 0];
-% Y = [0; 1; 1];
-% Z = (Constant*ones(3,1)  - X*true_parameters(1,1) - Y*true_parameters(1,2))./true_parameters(1,3);
-% points = [X Y Z];
-
-
-points = randn(Npoints,3);
-X = points(:,1);
-Y = points(:,2);
-true_z = (Constant*ones(Npoints,1)  - X*true_parameters(1,1) - Y*true_parameters(1,2))./true_parameters(1,3); % Solve for z vertices data
-
-true_sigma = 0.001;
-Z = true_z + true_sigma*randn(Npoints,1);
-
-[fitted_parameters, standard_deviation_in_z] = fcn_geometry_findPlaneNormal([X Y Z],fig_num);
-
-assert(isequal(round(true_parameters,1),round(fitted_parameters,1)));
-assert(isequal(round(true_sigma,1),round(standard_deviation_in_z,1)));
-
-% Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
-
-%%
-% From: https://www.mathworks.com/matlabcentral/fileexchange/43305-plane-fit
-fig_num = 0003;
-figure(fig_num);
-clf;
-
-% Generate points that lie approximately in the Z=0 plane
-N = 10;
-[X,Y] = meshgrid(linspace(0,1,N));
-XYZ_1 = [X(:) Y(:) 0.05*randn(N^2,1)];
-plot3(XYZ_1(:,1),XYZ_1(:,2),XYZ_1(:,3),'r.');
-hold on
-
-%compute the normal to the plane and a point that belongs to the plane
-% [n_1_old,~,p_1_old] = affine_fit(XYZ_1);
-[~, ~, ~, n_1, p_1, ~, ~, V_1] = fcn_geometry_findPlaneNormal(XYZ_1);
-n_1 = n_1'; % Original code uses transpose form
-
-
-%generate points that lie approximately in the Z=X plane
-%the normal vector is
-n_2_exact = [-sqrt(2)/2 0 sqrt(2)/2];
-N = 12;
-[X,Y] = meshgrid(linspace(0,1,N));
-XYZ_2 = [X(:) Y(:) X(:)] + bsxfun(@times,0.05*randn(N^2,1),n_2_exact);
-plot3(XYZ_2(:,1),XYZ_2(:,2),XYZ_2(:,3),'b.');
-
-
-%compute the normal to the plane and a point that belongs to the plane
-% [n_2_old,V_2_old,p_2_old] = affine_fit(XYZ_2);
-[~, ~, ~, n_2, p_2, ~, ~, V_2] = fcn_geometry_findPlaneNormal(XYZ_2);
-n_2 = n_2'; % Original code uses transpose form
-
-%plot the two points p_1 and p_2
-plot3(p_1(1),p_1(2),p_1(3),'ro','markersize',15,'markerfacecolor','red');
-plot3(p_2(1),p_2(2),p_2(3),'bo','markersize',15,'markerfacecolor','blue');
-
-%plot the normal vector
-quiver3(p_1(1),p_1(2),p_1(3),n_1(1)/3,n_1(2)/3,n_1(3)/3,'r','linewidth',2)
-quiver3(p_2(1),p_2(2),p_2(3),n_2(1)/3,n_2(2)/3,n_2(3)/3,'b','linewidth',2)
-
-%plot the two adjusted planes
-[X,Y] = meshgrid(linspace(0,1,3));
-
-%first plane
-surf(X,Y, - (n_1(1)/n_1(3)*X+n_1(2)/n_1(3)*Y-dot(n_1,p_1)/n_1(3)),'facecolor','red','facealpha',0.5);
-
-%second plane
-%NB: if the plane is vertical the above method cannot be used, one should
-%use the secont output of affine_fit which contains a base of the plane.
-%this is illustrated below
-%S1 and S2 are the coordinates of the plane points in the basis made of the
-%columns ov V_2
-[S1,S2] = meshgrid([-1 0 1]);
-%generate the pont coordinates
-X = p_2(1)+[S1(:) S2(:)]*V_2(1,:)';
-Y = p_2(2)+[S1(:) S2(:)]*V_2(2,:)';
-Z = p_2(3)+[S1(:) S2(:)]*V_2(3,:)';
-%plot the plane
-surf(reshape(X,3,3),reshape(Y,3,3),reshape(Z,3,3),'facecolor','blue','facealpha',0.5);
-
-xlabel('x');
-ylabel('y');
-zlabel('z');
-axis equal
-%compute the angle between the planes in [0 90] degrees
-angle = acosd(dot(n_1,n_2));
-if angle>90
-    angle = 180-angle;
-end
-disp(angle);
-
-
-
 
 %% Basic testing examples in 3D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -177,192 +79,112 @@ disp(angle);
 %                                                      |___/                              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Testing%20%20Examples%20%20-%203D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Basic test case 1: basic plane with 3 points, XY plane
+%% Basic test case 1: basic plane with 3 points in XY plane
 fig_num = 1001;
 figure(fig_num);
 clf;
 
-points = [0 0 0; 1 0 0; 0 1 0];
+points = [0 0 0; 1 0 0; 1 1 0]*3;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),[0 0 1 0]));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),zeros(Npoints,1)));
-assert(isequal(round(unit_vector,4),[0 0 1]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(all(flags_in_directional_agreement==1));
+assert(all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
 assert(isequal(get(gcf,'Number'),fig_num));
 
-%% Basic test case 2: basic plane with 4 points, XY plane
+%% Basic test case 2: basic plane with 4 points in XY plane
 fig_num = 1002;
 figure(fig_num);
 clf;
 
-points = [0 0 0; 1 0 0; 0 1 0; 2 2 0];
+points = [0 0 0; 0 1 0; 1 0 0; 0 0 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),[0 0 1 0]));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),zeros(Npoints,1)));
-assert(isequal(round(unit_vector,4),[0 0 1]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(all(flags_in_directional_agreement==1));
+assert(all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
 assert(isequal(get(gcf,'Number'),fig_num));
 
-%% Basic test case 3: basic plane with 3 points, XZ plane
+
+%% Basic test case 3: basic plane with many points in XY plane
 fig_num = 1003;
 figure(fig_num);
 clf;
 
-points = [0 0 0; 1 0 0; 0 0 1];
+points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+
+view(70, 20);
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),[0 1 0 0]));
-assert(isnan(round(standard_deviation_in_z,4)));
-assert(all(isnan((round(z_fit,4)))));
-assert(isequal(round(unit_vector,4),[0 1 0]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
-
-% Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
-
-
-%% Basic test case 4: basic plane with 3 points, YZ plane
-fig_num = 1004;
-figure(fig_num);
-clf;
-
-points = [0 0 0; 0 1 0; 0 0 1];
-
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
-
-% Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
-assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
-
-% Check variable lengths
-Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
-
-% Check variable values
-assert(isequal(round(parameters,4),[1 0 0 0]));
-assert(isnan(round(standard_deviation_in_z,4)));
-assert(all(isnan((round(z_fit,4)))));
-assert(isequal(round(unit_vector,4),[1 0 0]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
-
-% Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
-
-
-%% Basic test case 5: basic plane with 3 points, X=Y plane with offset
-fig_num = 1005;
-figure(fig_num);
-clf;
-
-% z = (-Ax + -By + D)/Constant
-
-unNormal_true_parameters = [.1 .2 1 4];
-vectorLength = sum(unNormal_true_parameters(1,1:3).^2,2).^0.5;
-true_parameters = unNormal_true_parameters./vectorLength;
-
-Constant = true_parameters(4);
-X = [0; 1; 0];
-Y = [0; 1; 1];
-Z = (Constant*ones(3,1)  - X*true_parameters(1,1) - Y*true_parameters(1,2))./true_parameters(1,3);
-
-points = [X Y Z];
-
-% Make sure equation adds up to constant: sum(points.*true_parameters(1,1:3),2)
-
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
-
-% Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
-assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
-
-% Check variable lengths
-Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
-
-% Check variable values
-assert(isequal(round(parameters,4),round(true_parameters,4)));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),round(Z,4)));
-assert(isequal(round(unit_vector,4),round(true_parameters(1,1:3),4)));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(~all(flags_in_directional_agreement==1));
+assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
 assert(isequal(get(gcf,'Number'),fig_num));
@@ -386,32 +208,42 @@ fig_num = 9901;
 figure(fig_num);
 close(fig_num);
 
-points = [0 0 0; 1 0 0; 0 1 0];
+points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,[]);
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,([]));
+
+view(70, 20);
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),[0 0 1 0]));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),zeros(Npoints,1)));
-assert(isequal(round(unit_vector,4),[0 0 1]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(~all(flags_in_directional_agreement==1));
+assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
@@ -422,32 +254,42 @@ fig_num = 9902;
 figure(fig_num);
 close(fig_num);
 
-points = [0 0 0; 1 0 0; 0 1 0];
+points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,-1);
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(-1));
+
+view(70, 20);
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
 
 % Check variable lengths
 Npoints = length(points(:,1));
-assert(isequal(size(parameters),[1 4]));
-assert(isequal(size(standard_deviation_in_z),[1 1]));
-assert(isequal(size(z_fit),[Npoints 1]));
-assert(isequal(size(unit_vector),[1 3]));
-assert(isequal(size(standard_deviation_in_plane_orthogonals),[1 1]));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
 
 % Check variable values
-assert(isequal(round(parameters,4),[0 0 1 0]));
-assert(isequal(round(standard_deviation_in_z,4),0));
-assert(isequal(round(z_fit,4),zeros(Npoints,1)));
-assert(isequal(round(unit_vector,4),[0 0 1]));
-assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(~all(flags_in_directional_agreement==1));
+assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
@@ -459,7 +301,19 @@ figure(fig_num);
 close(fig_num);
 rng(1823);
 
-points = [0 0 0; 1 0 0; 0 1 0];
+points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
+
 
 % Perform the calculation in slow mode
 fig_num = [];
@@ -467,12 +321,12 @@ REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
+    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,fig_num);
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
-averageTimeSlow = toc/REPS;
+slow_method = toc;
 
 % Perform the operation in fast mode
 fig_num = -1;
@@ -480,20 +334,36 @@ minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
+    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
-averageTimeFast = toc/REPS;
+fast_method = toc;
 
 fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_findPlaneNormal:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
-fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
+fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',slow_method/REPS);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
-fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',averageTimeFast);
+fprintf(1,'Fast mode average speed per call (seconds): %.5f\n',fast_method/REPS);
 fprintf(1,'Fast mode fastest speed over all calls (seconds): %.5f\n',minTimeFast);
-fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTimeSlow/averageTimeFast);
+fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',slow_method/fast_method);
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
+
+% Plot results as bar chart
+figure(373737);
+clf;
+X = categorical({'Normal mode','Fast mode'});
+X = reordercats(X,{'Normal mode','Fast mode'}); % Forces bars to appear in this exact order, not alphabetized
+Y = [slow_method fast_method ]*1000/REPS;
+bar(X,Y)
+ylabel('Execution time (Milliseconds)')
+
+
+% Make sure plot did NOT open up
+figHandles = get(groot, 'Children');
+assert(~any(figHandles==fig_num));
+
+
 %% Fail conditions
 if 1==0
     %% FAIL 1: points not long enough
