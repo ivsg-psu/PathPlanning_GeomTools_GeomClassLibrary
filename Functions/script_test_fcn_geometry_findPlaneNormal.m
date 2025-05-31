@@ -189,6 +189,52 @@ assert(~all(flags_in_magnitude_agreement==1));
 % Make sure plot opened up
 assert(isequal(get(gcf,'Number'),fig_num));
 
+%% Basic test case 4: basic Vertial plane with many points in XZ plane
+fig_num = 1004;
+figure(fig_num);
+clf;
+
+old_points = [
+    0 0 0;
+    1 0 0; 
+    2 3 0; 
+    4 5 0; 
+    2 7 1; 
+    0 8 1; 
+    -1 7.5 1; 
+    -2 6 0; 
+    -4 5 0; 
+    -2 3 0; 
+    -1 -1 0]*2;
+points = [old_points(:,1) old_points(:,3) old_points(:,2)];
+
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+
+view(70, 20);
+
+% Check variable types
+assert(isnumeric(unit_normal_vector));
+assert(isnumeric(base_point));
+assert(islogical(flags_in_directional_agreement));
+assert(islogical(flags_in_magnitude_agreement));
+
+% Check variable lengths
+Npoints = length(points(:,1));
+assert(isequal(size(unit_normal_vector),[1 3]));
+assert(isequal(size(base_point),[1 3]));
+assert(isequal(size(flags_in_directional_agreement),[Npoints 1]));
+assert(isequal(size(flags_in_magnitude_agreement),[Npoints 1]));
+
+% Check variable values
+vectorLength = sum(unit_normal_vector.^2,2).^0.5;
+assert(isequal(round(vectorLength,4),1));
+assert(isequal(round(base_point,4),round(mean(points,1),4)));
+assert(~all(flags_in_directional_agreement==1));
+assert(~all(flags_in_magnitude_agreement==1));
+
+% Make sure plot opened up
+assert(isequal(get(gcf,'Number'),fig_num));
+
 %% Fast Mode Tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
