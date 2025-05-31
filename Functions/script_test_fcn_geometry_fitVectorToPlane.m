@@ -47,21 +47,21 @@ true_root = true_ABC*plane_distance_from_origin;
 
 % Print results
 fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
-fprintf(1,'True values: \n');
+fprintf(1,'\nTrue values:');
 table_data = [true_ABC true_root];
 header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
 formatter_strings = [{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?
 N_chars = [12, 12, 12, 12, 12, 12]; % Specify spaces for each column
 fcn_DebugTools_debugPrintTableToNCharacters(table_data, header_strings, formatter_strings, N_chars);
 
-fprintf(1,'Fitted values: \n');
+fprintf(1,'\nFitted values:');
 table_data = [unit_vector vector_root];
 header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
 formatter_strings = [{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?
 N_chars = [12, 12, 12, 12, 12, 12]; % Specify spaces for each column
 fcn_DebugTools_debugPrintTableToNCharacters(table_data, header_strings, formatter_strings, N_chars);
 
-fprintf(1,'Error in fit: \n');
+fprintf(1,'\nError in fit:');
 table_data = [abs(unit_vector-true_ABC) abs(vector_root-true_root)];
 header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
 formatter_strings = [{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'},{'%.6f'}]; % How should each column be printed?

@@ -1,13 +1,9 @@
-% script_test_fcn_geometry_fitPlaneLinearRegression
-% Exercises the function: fcn_geometry_fitPlaneLinearRegression
+% script_test_fcn_geometry_findPlaneNormal
+% Exercises the function: fcn_geometry_findPlaneNormal
 % Revision history:
-% 2021_05_24
+% 2025_05_30
 % -- wrote the code
-% -- revised from fcn_geometry_fitSlopeInterceptNPoints
-% 2025_05_29
-% -- added more comments and testing for figure opening
-% -- added fast mode testing
-%
+
 close all;
 
 
@@ -30,33 +26,15 @@ fig_num = 0001;
 figure(fig_num);
 clf;
 
-rng(1823);
+points = [0 0 0; 0 1 0; 1 0 0];
 
-unNormal_true_parameters = [ 0.1 0.2 1 3];
-vectorLength = sum(unNormal_true_parameters(1,1:3).^2,2).^0.5;
-true_parameters = unNormal_true_parameters./vectorLength;
-
-N_points = 300;
-points = randn(N_points,3);
-x = points(:,1);
-y = points(:,2);
-% true_z = [x y ones(size(x))]*true_parameters; % Solve for z vertices data
-Constant = true_parameters(end);
-normalToPlane = true_parameters(1:end-1)';
-true_z = (Constant*ones(N_points,1)  - points(:,1:end-1)*normalToPlane(1:end-1,1))./normalToPlane(end,1);
-
-
-z = true_z;
-
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression([x y z],fig_num);
+[unit_normal_vector, base_point, flags_in_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
 
 % Check variable types
-assert(isnumeric(parameters));
-assert(isnumeric(standard_deviation_in_z));
-assert(isnumeric(z_fit));
-assert(isnumeric(unit_vector));
+assert(isnumeric(unit_normal_vector));
 assert(isnumeric(base_point));
-assert(isnumeric(standard_deviation_in_plane_orthogonals));
+assert(isnumeric(flags_in_agreement));
+
 
 % Check variable lengths
 Npoints = length(points(:,1));
@@ -103,7 +81,7 @@ true_z = (Constant*ones(Npoints,1)  - X*true_parameters(1,1) - Y*true_parameters
 true_sigma = 0.001;
 Z = true_z + true_sigma*randn(Npoints,1);
 
-[fitted_parameters, standard_deviation_in_z] = fcn_geometry_fitPlaneLinearRegression([X Y Z],fig_num);
+[fitted_parameters, standard_deviation_in_z] = fcn_geometry_findPlaneNormal([X Y Z],fig_num);
 
 assert(isequal(round(true_parameters,1),round(fitted_parameters,1)));
 assert(isequal(round(true_sigma,1),round(standard_deviation_in_z,1)));
@@ -126,7 +104,7 @@ hold on
 
 %compute the normal to the plane and a point that belongs to the plane
 % [n_1_old,~,p_1_old] = affine_fit(XYZ_1);
-[~, ~, ~, n_1, p_1, ~, ~, V_1] = fcn_geometry_fitPlaneLinearRegression(XYZ_1);
+[~, ~, ~, n_1, p_1, ~, ~, V_1] = fcn_geometry_findPlaneNormal(XYZ_1);
 n_1 = n_1'; % Original code uses transpose form
 
 
@@ -141,7 +119,7 @@ plot3(XYZ_2(:,1),XYZ_2(:,2),XYZ_2(:,3),'b.');
 
 %compute the normal to the plane and a point that belongs to the plane
 % [n_2_old,V_2_old,p_2_old] = affine_fit(XYZ_2);
-[~, ~, ~, n_2, p_2, ~, ~, V_2] = fcn_geometry_fitPlaneLinearRegression(XYZ_2);
+[~, ~, ~, n_2, p_2, ~, ~, V_2] = fcn_geometry_findPlaneNormal(XYZ_2);
 n_2 = n_2'; % Original code uses transpose form
 
 %plot the two points p_1 and p_2
@@ -206,7 +184,7 @@ clf;
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -241,7 +219,7 @@ clf;
 
 points = [0 0 0; 1 0 0; 0 1 0; 2 2 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -276,7 +254,7 @@ clf;
 
 points = [0 0 0; 1 0 0; 0 0 1];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -312,7 +290,7 @@ clf;
 
 points = [0 0 0; 0 1 0; 0 0 1];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -361,7 +339,7 @@ points = [X Y Z];
 
 % Make sure equation adds up to constant: sum(points.*true_parameters(1,1:3),2)
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -410,7 +388,7 @@ close(fig_num);
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,[]);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,[]);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -446,7 +424,7 @@ close(fig_num);
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,-1);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,-1);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -489,7 +467,7 @@ REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -502,13 +480,13 @@ minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_findPlaneNormal(points,fig_num);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
 averageTimeFast = toc/REPS;
 
-fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_fitPlaneLinearRegression:\n');
+fprintf(1,'\n\nComparison of fast and slow modes of fcn_geometry_findPlaneNormal:\n');
 fprintf(1,'N repetitions: %.0d\n',REPS);
 fprintf(1,'Slow mode average speed per call (seconds): %.5f\n',averageTimeSlow);
 fprintf(1,'Slow mode fastest speed over all calls (seconds): %.5f\n',minTimeSlow);
@@ -520,6 +498,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [root_point, unit_vector] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [root_point, unit_vector] = fcn_geometry_findPlaneNormal(points,fig_num);
     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 end

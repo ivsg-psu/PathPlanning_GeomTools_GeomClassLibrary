@@ -158,6 +158,7 @@ unit_vector_XZY_corrected = [unit_vector_XZY(1) unit_vector_XZY(3) unit_vector_X
 unit_vector_YZX_corrected = [unit_vector_YZX(3) unit_vector_YZX(1) unit_vector_YZX(2)];
 
 base_point_XYZ_corrected = base_point_XYZ;
+warning('base point calculated in fcn_geometry_fitVectorToPlane may be in error, as plane fit regression function has been updated.')
 base_point_XZY_corrected = [base_point_XZY(1) base_point_XZY(3) base_point_XZY(2)] ;
 base_point_YZX_corrected = [base_point_YZX(3) base_point_YZX(1) base_point_YZX(2)];
 

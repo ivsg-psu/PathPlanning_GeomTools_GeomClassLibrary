@@ -1,18 +1,19 @@
-function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals, plane_distances] = ...
+function [parameters, standard_deviation_in_z, z_fit, unit_normal_vector, base_point, standard_deviation_in_plane_orthogonals, plane_distances, orthoBasisForPlane] = ...
     fcn_geometry_fitPlaneLinearRegression(points,varargin)
 % fcn_geometry_fitPlaneLinearRegression
-% Finds the coefficients, C1, C2, and C3 in the equation:
+% Finds the coefficients, a, b, c... in the equation
 %
-% z = C1*x + C2y + C3
+%   ax + by + cz = Constant
 %
 % FORMAT: 
 %
-% [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = ...
+% [parameters, standard_deviation_in_z, z_fit, unit_normal_vector, base_point, standard_deviation_in_plane_orthogonals, orthoBasisForPlane] = ...
 %    fcn_geometry_fitPlaneLinearRegression(points,(fig_num))
 %
 % INPUTS:
 %
-%      points: a Nx3 vector where N is the number of points, length N>=3. 
+%      points: a Nx3 vector where N is the number of points, length N>=2.
+%      Note that the plane fitting works in any dimension of 2 or higher
 %
 %      (OPTIONAL INPUTS)
 % 
@@ -22,25 +23,29 @@ function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, s
 %
 % OUTPUTS:
 %
-%      params: the [1 x 3] matrix of the parameters [C1 C2 C3]
+%      params: the [1 x 4] matrix of the parameters [a b c Constant]
 %
 %      standard_deviation_in_z: the standard deviation in the z-error of
 %      the 
 %  
-%     z_fit: the model-fit z values
+%      z_fit: the model-fit z values
 %
-%     unit_vector: the unit vector in the direction of <A, B, C> for the
-%     equation: 
+%      unit_normal_vector: the unit vector in the direction of <A, B, C> for the
+%      equation: 
 %
 %             A*(x-x0) + B(y-y0) + C(z-z0) = 0
 % 
-%     base_point: the location closest to the origin of the plane
+%      base_point: the location closest to the origin of the plane
 %
-%     standard_deviation_in_plane_orthogonals: the standard deviation in
-%     the point fitting error in the direction of the unit_vector
+%      standard_deviation_in_plane_orthogonals: the standard deviation in
+%      the point fitting error in the direction of the unit_normal_vector
 %
-%     plane_distances: the distances of each of the N points to the plane,
-%     measured orthogonally from the plane. Returned as an [N x 1 ] vector.
+%      plane_distances: the distances of each of the N points to the plane,
+%      measured orthogonally from the plane. Returned as an [N x 1 ] vector.
+%
+%      orthoBasisForPlane: the orthonormal basis for the plane, e.g. the
+%      "remainder" vectors that are within the plane created by excluding
+%      the unit_normal_vector.
 %
 % DEPENDENCIES:
 %
@@ -58,6 +63,8 @@ function [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, s
 % Revision history:
 % 2024_01_19 - S. Brennan
 % -- wrote the code
+% 2024_05_30 - S. Brennan
+% -- rewrote the algorithm to allow vertical plane fits
 
 %% Debugging and Input checks
 
@@ -103,9 +110,9 @@ if 0==flag_max_speed
         % Are there the right number of inputs?
         narginchk(1,2);
 
-        % Check the points input to be length greater than or equal to 2
-        fcn_DebugTools_checkInputsToFunctions(...
-            points, '3column_of_numbers',[3 4]);
+        % % Check the points input to be length greater than or equal to 2
+        % fcn_DebugTools_checkInputsToFunctions(...
+        %     points, '3column_of_numbers',[3 4]);
 
     end
 end
@@ -137,58 +144,31 @@ end
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% The code below uses the least-y-squared solution of:
-% z = Ax + By + C
-%
-% z = [x y 1]*[A B C]'
-%
-% Let X = [x y 1], P = [A B C]'
-%
-% then
-%   z = X*P
-% 
-% which, solved for P:
-%
-% inv(X'*X)*(X'z) = P
+% What dimension is this?
+dimension_of_points = length(points(1,:));
 
-x_planeFit = points(:,1);
-y_planeFit = points(:,2);
-N_points = length(x_planeFit(:,1));
+[normalToPlane, orthoBasisForPlane, base_point] = fcn_INTERNAL_affineFit(points);
 
-X = [x_planeFit, y_planeFit, ones(length(points(:,1)),1)];
-z_planeFit = points(:,3);
+magnitude_normal = sum(normalToPlane'.^2,2).^0.5;
+unit_normal_vector = normalToPlane'./magnitude_normal;
+Constant = sum(normalToPlane'.*base_point,2);
+parameters = [normalToPlane' Constant];
 
-if abs(det((X'*X)))>0.00001
-    P = (X'*X)\(X'*z_planeFit);
-else
-    P = nan(3,1);
-end
+z_planeFit = points(:,end);
+N_points = length(points(:,1));
 
-parameters = P;
-
-z_fit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
+z_fit = (Constant*ones(N_points,1)  - points(:,1:end-1)*normalToPlane(1:end-1,1))./normalToPlane(end,1);
 z_error = z_planeFit - z_fit;
 standard_deviation_in_z = std(z_error, 0, 1, 'omitmissing');
 
-%% Calculate A, B, and C for unit vector
-C1 = parameters(1);
-C2 = parameters(2);
 
-vector_projection = [-C1 -C2 1];
 
-if ~any(isnan(vector_projection))
-    unit_vector = fcn_geometry_calcUnitVector(vector_projection);
-else
-    unit_vector = [nan nan nan];
-end
 
 %% Calculate the base point
 % This is done by projecting all the input points via the unit vector
-plane_distances = sum(ones(N_points,1)*unit_vector.*points,2);
-mean_plane_distance = mean(plane_distances);
+plane_distances = sum(ones(N_points,1)*unit_normal_vector.*points,2);
 standard_deviation_in_plane_orthogonals = std(plane_distances);
-base_point = mean_plane_distance*unit_vector;
+
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -218,6 +198,7 @@ if flag_do_plot
     grid on;
     % axis equal;
     title('Plane fitting XYZ') 
+
     % Plot the points
     plot3(points(:,1),points(:,2),points(:,3),'k.','MarkerSize',20);
     plot3(points(:,1),points(:,2),z_fit,'.','MarkerSize',20);
@@ -234,9 +215,26 @@ if flag_do_plot
     else
         temp_axis = axis;
     end
-
+    xlabel('X');
+    ylabel('Y');
+    zlabel('Z');
+    ax = gca;
+    ax.Clipping = "off";
 
     % Plot the plane
+    reshaped_axis = reshape(temp_axis',2,[]);
+    maxDifference = sum(diff(reshaped_axis).^2,2).^0.5;
+    nudge = maxDifference*0.006;
+    minX = reshaped_axis(1,1);
+    maxX = reshaped_axis(2,1);
+    minY = reshaped_axis(1,2);
+    maxY = reshaped_axis(2,2);
+
+    patchPoints_XY = [minX minY; maxX minY; maxX maxY; minX maxY];
+    patchPoints_Z  = (Constant*ones(4,1)  - patchPoints_XY*normalToPlane(1:end-1,1))./normalToPlane(end,1);
+    patchPoints = [patchPoints_XY patchPoints_Z];
+    h_patch = patch(patchPoints(:,1), patchPoints(:,2), patchPoints(:,3), [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
+
     % x = [1 -1 -1 1]; % Generate data for x vertices
     x_planeFit = [temp_axis(2) temp_axis(1) temp_axis(1) temp_axis(2)]';
 
@@ -244,19 +242,34 @@ if flag_do_plot
     y_planeFit = [temp_axis(4) temp_axis(4) temp_axis(3) temp_axis(3)]';
 
     N_points = length(x_planeFit(:,1));
-    z_planeFit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
+    z_planeFit = (Constant*ones(N_points,1)  - [x_planeFit y_planeFit]*normalToPlane(1:end-1,1))./normalToPlane(end,1); % Solve for z vertices data
 
-    h_patch = patch(x_planeFit, y_planeFit, z_planeFit, [0 0 1],'FaceAlpha',0.1); %#ok<NASGU>
 
     % Plot the base point
-    plot3(base_point(1,1),base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
+    plot3(base_point(1,1),base_point(1,2),base_point(1,3),'g.','MarkerSize',50);
 
     % Plot the unit vector
-    quiver3(x_planeFit(1,1),y_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,2),unit_vector(1,3),0,'g','Linewidth',3);
+    quiver3(base_point(1,1),base_point(1,2),base_point(1,3), unit_normal_vector(1,1),unit_normal_vector(1,2),unit_normal_vector(1,3),0,'g','Linewidth',3);
 
     % Plot the vertical vector
     quiver3(x_planeFit(1,1),y_planeFit(1,1),z_planeFit(1,1), 0,0,1,0,'k','Linewidth',3);
 
+    % Label the vertices with their numbers?
+    if 1 == 1
+        for ith_vertex = 1:length(points(:,1))
+            if dimension_of_points==3
+                text(points(ith_vertex,1)+nudge,points(ith_vertex,2),points(ith_vertex,3),...
+                    sprintf('%.0d',ith_vertex),'Color',[0 0 0]);
+
+            else
+                text(points(ith_vertex,1)+nudge,points(ith_vertex,2),...
+                    sprintf('%.0d',ith_vertex),'Color',[0 0 0]);
+            end
+
+        end
+    end
+
+    axis equal
 
     %% In subplot 2, plot the fit in 2D as X versus Z
     subplot(1,3,2);
@@ -277,22 +290,26 @@ if flag_do_plot
         axis_range_y = temp_axis(4)-temp_axis(3);
         percent_larger = 0.3;
         axis([temp_axis(1)-percent_larger*axis_range_x, temp_axis(2)+percent_larger*axis_range_x,  temp_axis(3)-percent_larger*axis_range_y, temp_axis(4)+percent_larger*axis_range_y]);
-    else
-        temp_axis = axis;
     end
+    xlabel('X');
+    ylabel('Y');
+    zlabel('Z');
 
+    
 
-       % Plot the "plane"
+    % Plot the "plane"
     plot(x_planeFit,z_planeFit,'-','Color',[0 0 1]);
 
     % Plot the base point
-    plot(base_point(1,1),base_point(1,3),'r.','MarkerSize',50);
+    plot(base_point(1,1),base_point(1,3),'g.','MarkerSize',50);
 
     % Plot the unit vector
-    quiver(x_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,3),0,'g','Linewidth',3);
+    quiver(base_point(1,1),base_point(1,3), unit_normal_vector(1,1),unit_normal_vector(1,3),0,'g','Linewidth',3);
 
     % Plot the vertical vector
-    quiver(x_planeFit(1,1),z_planeFit(1,1), 0,1,0,'k','Linewidth',3);
+    quiver(x_planeFit(1,1),z_planeFit(1,1), 0,1,0,'k','Linewidth',3,'DisplayName','Vertical vector');
+
+    axis equal
 
     %% In subplot 3, plot the fit in 2D as y versus z
     subplot(1,3,3);
@@ -313,22 +330,25 @@ if flag_do_plot
         axis_range_y = temp_axis(4)-temp_axis(3);
         percent_larger = 0.3;
         axis([temp_axis(1)-percent_larger*axis_range_x, temp_axis(2)+percent_larger*axis_range_x,  temp_axis(3)-percent_larger*axis_range_y, temp_axis(4)+percent_larger*axis_range_y]);
-    else
-        temp_axis = axis;
     end
+    xlabel('X');
+    ylabel('Y');
+    zlabel('Z');
 
 
        % Plot the "plane"
     plot(y_planeFit,z_planeFit,'-','Color',[0 0 1]);
 
     % Plot the base point
-    plot(base_point(1,2),base_point(1,3),'r.','MarkerSize',50);
+    plot(base_point(1,2),base_point(1,3),'g.','MarkerSize',50);
 
     % Plot the unit vector
-    quiver(y_planeFit(1,1),z_planeFit(1,1), unit_vector(1,1),unit_vector(1,3),0,'g','Linewidth',3);
+    quiver(base_point(1,2),base_point(1,3), unit_normal_vector(1,2),unit_normal_vector(1,3),0,'g','Linewidth',3);
 
     % Plot the vertical vector
     quiver(y_planeFit(1,1),z_planeFit(1,1), 0,1,0,'k','Linewidth',3);
+
+    axis equal
     
 end % Ends check if plotting
 
@@ -371,3 +391,90 @@ end % Ends main function
 % A = -1*mean_diff_points(1,2);
 % B =    mean_diff_points(1,1);
 % C = mean(x1.*y2 - y1.*x2);
+
+%% OLD METHOD (WORKS, but not for vertical planes)
+% 
+% % The code below uses the least-y-squared solution of:
+% % z = Ax + By + C
+% %
+% % z = [x y 1]*[A B C]'
+% %
+% % Let X = [x y 1], P = [A B C]'
+% %
+% % then
+% %   z = X*P
+% % 
+% % which, solved for P:
+% %
+% % inv(X'*X)*(X'z) = P
+% 
+% x_planeFit = points(:,1);
+% y_planeFit = points(:,2);
+% N_points = length(x_planeFit(:,1));
+% 
+% X = [x_planeFit, y_planeFit, ones(length(points(:,1)),1)];
+% z_planeFit = points(:,3);
+% 
+% if abs(det((X'*X)))>0.00001
+%     P = (X'*X)\(X'*z_planeFit);
+% else
+%     P = nan(3,1);
+% end
+% 
+% parameters = P;
+% 
+% z_fit = [x_planeFit y_planeFit ones(N_points,1)]*parameters; % Solve for z vertices data
+% z_error = z_planeFit - z_fit;
+% standard_deviation_in_z = std(z_error, 0, 1, 'omitmissing');
+% 
+% %% Calculate A, B, and C for unit vector
+% C1 = parameters(1);
+% C2 = parameters(2);
+% 
+% vector_projection = [-C1 -C2 1];
+% 
+% if ~any(isnan(vector_projection))
+%     unit_normal_vector = fcn_geometry_calcUnitVector(vector_projection);
+% else
+%     unit_normal_vector = [nan nan nan];
+% end
+% 
+% %% Calculate the base point
+% % This is done by projecting all the input points via the unit vector
+% plane_distances = sum(ones(N_points,1)*unit_normal_vector.*points,2);
+% mean_plane_distance = mean(plane_distances);
+% standard_deviation_in_plane_orthogonals = std(plane_distances);
+% base_point = mean_plane_distance*unit_normal_vector;
+
+%% fcn_INTERNAL_affineFit
+% See: https://www.mathworks.com/matlabcentral/fileexchange/43305-plane-fit
+function [n,V,p] = fcn_INTERNAL_affineFit(X)
+%Computes the plane that fits best (lest square of the normal distance
+%to the plane) a set of sample points.
+%INPUTS:
+%
+% X: a N by 3 matrix where each line is a sample point
+%
+%OUTPUTS:
+%
+% n : a unit (column) vector normal to the plane
+% V : a 3 by 2 matrix. The columns of V form an orthonormal basis of the
+% plane
+% p : a point belonging to the plane
+%
+% NB: this code actually works in any dimension (2,3,4,...)
+% Author: Adrien Leygue
+% Date: August 30 2013
+
+%the mean of the samples belongs to the plane
+p = mean(X,1);
+
+%The samples are reduced:
+R = bsxfun(@minus,X,p);
+%Computation of the principal directions if the samples cloud
+[V,~] = eig(R'*R);
+%Extract the output from the eigenvectors
+n = V(:,1);
+V = V(:,2:end);
+
+end % fcn_INTERNAL_affineFit
