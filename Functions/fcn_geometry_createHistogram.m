@@ -130,8 +130,11 @@ end
 
 % Minimum number of points required 
 point_density = floor(20*((grid_size^2)/(0.3^2))); 
-disp('Chosen point density')
-disp(point_density)
+
+if 1==flag_do_debug
+    fprintf(1, 'Chosen point density: %.0f',point_density);
+end
+
 % mean(total_points_in_each_grid_in_the_driven_path)/mean(total_points_in_each_grid_with_points_greater_than_zero);
 
 %% Plot the results (for debugging)?
@@ -172,15 +175,16 @@ if flag_do_plots
     counts2 = actual_driven_path_grids_hist.Values;
 
     binEdges = total_grids_greater_than_zero_hist.BinEdges;
-    disp('Chosen point density')
-    disp(point_density)
+    if 1==flag_do_debug
+        fprintf(1, 'Chosen point density: %.0f',point_density);
+    end
+
     % mean(total_points_in_each_grid_in_the_driven_path)/mean(total_points_in_each_grid_with_points_greater_than_zero);
 
     plot(point_density,0, 'k.', 'MarkerSize',20)
     current_text = sprintf('point density = %.2d',point_density);
-    disp('Chosen point density')
-    disp(point_density)
     text(650, 200,current_text,'Color',[0 0 0],'HorizontalAlignment','center','FontSize', 12, 'FontWeight','bold');
+    
     % Make axis slightly larger?
     if flag_rescale_axis
         temp = axis;

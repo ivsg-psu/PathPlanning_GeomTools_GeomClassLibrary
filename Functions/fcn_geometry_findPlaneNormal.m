@@ -12,7 +12,7 @@ function [first_unit_normal_vector, base_point, flags_in_directional_agreement, 
 %
 % FORMAT: 
 %
-% [unit_normal_vector, base_point, flags_in_agreement] = ...
+% [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = ...
 %    fcn_geometry_findPlaneNormal(points,(fig_num))
 %
 % INPUTS:

@@ -103,8 +103,13 @@
 % -- added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
 % -- added a bit more structure to the README.md to start to match it to
 % this demo
-% 2025_09_26 - S. Brennan
+% 2024_09_26 - S. Brennan
 % -- Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
+% 2025_05_30 - S. Brennan
+% -- Updated plane fitting as it wasn't working for vertical data
+% 2025_06_12 - S. Brennan
+% -- Added function to test if a point is within a 3D patch segment
+% -- See: script_test_fcn_geometry_checkIfPointOn3DPatch
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -125,7 +130,26 @@
 % -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
 % geometry
 % -- finish README starting at the Circle Functions area and onward
-
+% 2025_06_14
+% -- need to fix the following test scripts as they are failing
+%    * script_test_fcn_geometry_HoughSegmentation
+%    * script_test_fcn_geometry_alignArcArc
+%    * script_test_fcn_geometry_alignArcArcC2Optimized
+%    * script_test_fcn_geometry_estimateSpiralLength (needs to be made faster)
+%    (ANEESH) * script_test_fcn_geometry_createHistogram 
+%          ---- not commented to explain what it does
+%          ---- test cases don't work (real data)
+%    * script_test_fcn_geometry_alignArcsInSequence
+%    * fcn_geometry_domainBoxByType is throwing a ton of errors in script_test_fcn_geometry_alignGeometriesInSequence
+%    * script_..._alignLineArc is throwing warnings
+%    * (ANEESH) script_test_fcn_geometry_boundaryAnalysis - seems like this
+%    is in wrong library now
+%    * script_test_fcn_geometry_compareCurves
+%    * script_test_fcn_geometry_concentricCubesPointDensity
+%    * script_test_fcn_geometry_concatenatePoints
+%    * script_test_fcn_geometry_findDrivenPath
+%    * script_test_fcn_geometry_fitSequentialArcs
+%    * script_test_fcn_geometry_fitVectorToPlane (deprecated)
 
 %% Prep the workspace
 close all
@@ -208,6 +232,8 @@ setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
 % |____/ \__,_|___/_|\___| |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+disp('Welcome to the Geometry library main demo script.')
 
 %% fcn_geometry_euclideanPointsToPointsDistance 
 % calculates the distance(s) between a [Nxd] vector of points, POINTS1, and another [Nxd] vector of

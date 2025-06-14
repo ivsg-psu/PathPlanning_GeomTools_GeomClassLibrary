@@ -227,6 +227,7 @@ switch type_of_domain
     otherwise
         error('Unknown domain type given: %s',type_of_domain)
 end
+
 domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
 
 

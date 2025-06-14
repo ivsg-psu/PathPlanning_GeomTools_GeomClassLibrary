@@ -55,7 +55,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         small_XY_data = XY_data(small_XY_data_indicies,:);
 
 
-        %% Fit the data - one can choose many options
+        %%%%
+        % Fit the data - one can choose many options
         % Option 0 is to fit forward sequentially, 
         % Option 1 is to fit backward sequentially,
         % Option 2 is to fit using Hough (only works for small data),
@@ -103,7 +104,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
 
     end
 
-    %% Perform alignment of forward arcs
+    %%%%%
+    % Perform alignment of forward arcs
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     %           _ _
@@ -117,7 +119,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
     % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Align%20%20Arcs
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %% Connect the fits so that the lines perfectly align with the arcs
+    %%%
+    % Connect the fits so that the lines perfectly align with the arcs
     fig_num = 100*ith_fit;
     figure(fig_num);
     clf;
@@ -129,7 +132,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
     [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance, flag_fit_failed] =  ...
         fcn_geometry_alignArcsInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
 
-    %% Check fitting quality
+    %%%%
+    % Check fitting quality
     % Summarize the fit
     fprintf(1,'\n');
     fprintf(1,'SUMMARY for fit number: %.0f\n',Nfittings);
@@ -166,7 +170,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         std_dev_error = inf;
     end
 
-    %% Save results
+    %%%%
+    % Save results
     Nfittings = Nfittings+1;
 
     fit_results{Nfittings}.flag_fit_type                    = flag_fit_type; %#ok<SAGROW>

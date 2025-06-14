@@ -2,8 +2,10 @@
 % Exercises the function: fcn_geometry_HoughRegression
 
 % Revision history:
-% 2023_12_15
-% -- wrote the code
+% 2023_12_15 - S. Brennan
+% -- wrote the code. Did not finish test cases
+% 2024_06_14 - S. Brennan
+% -- fixed more test cases, still not finished
 
 close all;
 
@@ -57,7 +59,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -123,7 +125,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -193,7 +195,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -263,7 +265,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Regression circle',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 3]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     % assert(issimplified(regression_domain.best_fit_domain_box));
     % assert(issimplified(regression_domain.best_fit_1_sigma_box));
     % assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -344,7 +346,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Cubic polynomial poly fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 4]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
 end
 
 % Check the last domain (unfitted points)
@@ -407,7 +409,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Regression arc',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 7]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -492,7 +494,7 @@ for ith_domain = 1:length(regression_domains)-1
     % assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    % assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    % fcn_INTERNAL_checkDomainType(regression_domain);
     % assert(issimplified(regression_domain.best_fit_domain_box));
     % assert(issimplified(regression_domain.best_fit_1_sigma_box));
     % assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -592,7 +594,7 @@ for ith_domain = 1:length(regression_domains)-1
     % assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    % assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    % fcn_INTERNAL_checkDomainType(regression_domain);
     % assert(issimplified(regression_domain.best_fit_domain_box));
     % assert(issimplified(regression_domain.best_fit_1_sigma_box));
     % assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -689,7 +691,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 6]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
     assert(issimplified(regression_domain.best_fit_domain_box));
     assert(issimplified(regression_domain.best_fit_1_sigma_box));
     assert(issimplified(regression_domain.best_fit_2_sigma_box));
@@ -808,7 +810,7 @@ for ith_domain = 1:length(regression_domains)-1
     assert(strcmp('Cubic polynomial poly fit',regression_domain.best_fit_type));
     assert(length(regression_domain.points_in_domain(:,1))>1);
     assert(length(regression_domain.points_in_domain(1,:))==2);
-    assert(isequal(size(regression_domain.best_fit_parameters),[1 4]));
+    fcn_INTERNAL_checkDomainType(regression_domain);
 end
 
 % Check the last domain (unfitted points)
@@ -931,3 +933,22 @@ end
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
+%% fcn_INTERNAL_checkDomainType
+function fcn_INTERNAL_checkDomainType(regressionDomain)
+switch regressionDomain.best_fit_type
+    case {'empty','unfitted'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 1]));
+    case {'point'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 2]));
+    case {'Hough line', 'Vector regression line fit','Hough circle', 'Regression circle'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 3]));
+    case {'segment', 'Hough segment', 'Vector regression segment fit'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 4]));
+    case {'spiral'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 6]));
+    case {'arc', 'Hough arc', 'Regression arc'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 7]));
+    case {'Hough cubic polynomial', 'Polyfit cubic polynomial'}
+        assert(isequal(size(regressionDomain.best_fit_parameters),[1 8]));
+end
+end % Ends fcn_INTERNAL_checkDomainType

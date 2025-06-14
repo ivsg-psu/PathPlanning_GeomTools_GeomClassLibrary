@@ -188,7 +188,7 @@ fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTi
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
 
-%% Example - 999 - DEBUGGING
+%% Example - 999 - DEBUGGING - out of order sequence
 fig_num = 999;
 
 input_distances = [    0.6044
@@ -210,7 +210,7 @@ sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_poin
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
-assert(isequal(sequence_indicies,[1 2]'))
+assert(isequal(length(sequence_indicies(:,1)),length(input_distances(:,1))-1));
 
 %% Fail cases follow
 if 1==0

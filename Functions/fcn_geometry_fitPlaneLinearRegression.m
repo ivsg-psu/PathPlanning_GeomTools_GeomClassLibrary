@@ -65,6 +65,10 @@ function [parameters, standard_deviation_in_z, z_fit, unit_normal_vector, base_p
 % -- wrote the code
 % 2024_05_30 - S. Brennan
 % -- rewrote the algorithm to allow vertical plane fits
+% 2025_06_12 - S. Brennan
+% -- fixed bug where offset base point was omitted in vertical error
+% calculation
+% -- fixed bug in plotting flag
 
 %% Debugging and Input checks
 
@@ -120,7 +124,7 @@ end
 % Does user want to show the plots?
 flag_do_plot = 0;
 if (0==flag_max_speed) && (2 == nargin) 
-    temp_axis = varargin{1};
+    temp_axis = varargin{end};
     if ~isempty(temp_axis)
         fig_num = temp_axis;
         figure(fig_num);
@@ -166,7 +170,7 @@ standard_deviation_in_z = std(z_error, 0, 1, 'omitmissing');
 
 %% Calculate the base point
 % This is done by projecting all the input points via the unit vector
-plane_distances = sum(ones(N_points,1)*unit_normal_vector.*points,2);
+plane_distances = sum(ones(N_points,1)*unit_normal_vector.*(points - ones(N_points,1)*base_point),2);
 standard_deviation_in_plane_orthogonals = std(plane_distances);
 
 
