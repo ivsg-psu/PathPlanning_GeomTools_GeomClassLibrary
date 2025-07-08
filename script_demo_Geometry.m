@@ -110,6 +110,8 @@
 % 2025_06_12 - S. Brennan
 % -- Added function to test if a point is within a 3D patch segment
 % -- See: script_test_fcn_geometry_checkIfPointOn3DPatch
+% 2025_07_02 - S. Brennan
+% -- Updated Path library dependency
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -170,9 +172,9 @@ library_folders{ith_library} = {'Functions','Data'};
 library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_DebugTools/archive/refs/tags/DebugTools_v2023_04_22.zip';
 
 ith_library = ith_library+1;
-library_name{ith_library}    = 'PathClass_v2024_03_14';
-library_folders{ith_library} = {'Functions'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2024_03_14.zip';
+library_name{ith_library}    = 'PathClass_v2025_07_02';
+library_folders{ith_library} = {'Functions','Data'};
+library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2025_07_02.zip';
 
 ith_library = ith_library+1;
 library_name{ith_library}    = 'GPSClass_v2023_06_29';

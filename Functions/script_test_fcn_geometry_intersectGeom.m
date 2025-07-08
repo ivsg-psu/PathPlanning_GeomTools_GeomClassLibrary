@@ -240,6 +240,8 @@ assert(all(isinf(intersection_points)));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All circle-to-circle figures start with the number 12
 
+close all
+
 %% Basic Test: Circle to Arc Intersection Case - no intersections (no-overlapping circles)
 fig_num = 12001;
 figure(fig_num); clf;
@@ -513,6 +515,8 @@ assert(isequal(round(intersection_points,4), [inf, inf]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All circle-to-circle figures start with the number 13
 
+close all
+
 %% Basic Test: Line to Circle Intersection - No intersection
 fig_num = 13001;
 figure(fig_num); clf;
@@ -636,6 +640,8 @@ assert(isequal(intersection_points(2,:),[-3 3]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Circle%20to%20Line
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All circle-to-circle figures start with the number 14
+
+close all
 
 %% Basic Test: Circle to Segment Intersection - No intersection
 fig_num = 14001;
@@ -903,7 +909,9 @@ assert(isequal(round(intersection_points,4),[-3 3]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Arc%20to%20Circle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All arc-to-line figures start with the number 21
-                                                          
+
+close all
+
 %% Basic Test: Circle to Arc Intersection Case - no intersections (no-overlapping circles)
 fig_num = 21001;
 figure(fig_num); clf;
@@ -1178,6 +1186,8 @@ assert(isequal(round(intersection_points,4), [inf, inf]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Arc%20to%20Arc%0AIntersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All arc-to-line figures start with the number 22
+
+close all
 
 %% Basic Test: Arc to Arc Intersection - no intersections
 fig_num = 22001;
@@ -1672,6 +1682,8 @@ assert(isequal(isnan(intersection_points), [1 1]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All arc-to-arc figures start with the number 23
 
+close all
+
 %% Overlap 1: Arc to Arc Intersection - arc1 parameters are exactly same as arc2
 
 fig_num = 220001;
@@ -1869,6 +1881,8 @@ assert(isequal(isnan(intersection_points), [1 1]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Arc%20to%20Arc%0AIntersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All arc-to-line figures start with the number 23
+
+close all
 
 %% Basic Test: Arc to Line Intersection - no intersection
 fig_num = 23001;
@@ -2145,6 +2159,8 @@ assert(isequal(round(intersection_points,4), [-2.9490, 2.4490]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Arc%20to%20Segment
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All arc-to-arc figures start with the number 24
+
+close all
 
 %% Basic Test: Arc to Segment Intersection - zero intersections (outside)
 fig_num = 24001;
@@ -2604,6 +2620,8 @@ assert(isequal(round(intersection_points,4), [0 0]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All line-circle figures start with the number 31
 
+close all
+
 %% Basic Test: Line to Circle Intersection - No intersection
 fig_num = 31001;
 figure(fig_num); clf;
@@ -2721,6 +2739,8 @@ assert(isequal(intersection_points(2,:),[-3 3]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Line%20to%20Arc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All line-arc figures start with the number 32
+
+close all
 
 %% Basic Test: Line to Arc Intersection - no intersection
 fig_num = 32001;
@@ -3006,6 +3026,8 @@ assert(isequal(round(intersection_points,4), [-2.9490, 2.4490]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Line%20to%20Line%0A%0A
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All line-line figures start with the number 33
+
+close all
 
 %% Basic Test: line to line Intersection - No intersection
 
@@ -3340,6 +3362,8 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All line-segment figures start with the number 34
 
+close all
+
 %% Basic Test: Line to Segment Intersection - No intersection
 
 fig_num = 34101;
@@ -3574,6 +3598,8 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All segment-circle figures start with the number 41
 
+close all
+
 %% Basic Test: Line segment to circle Intersection
 fig_num = 41001;
 figure(fig_num); clf;
@@ -3800,6 +3826,8 @@ assert(isequal(round(intersection_points(1,:),4), [-1.6583, 0.5000]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All segment-arc figures start with the number 42
 
+close all
+
 %% Basic Test: Line segment to arc Intersection - No intersection
 fig_num = 42001;
 figure(fig_num); clf;
@@ -4014,6 +4042,8 @@ assert(isequal(round(intersection_points,4), [-1.6583    0.5000]));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All segment-arc figures start with the number 43
 
+close all
+
 %% Basic Test: Segment to line Intersection - No intersection
 
 fig_num = 43001;
@@ -4056,6 +4086,7 @@ assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Segment to line Intersection - overlapping so infinite points, returns first one
+% Segment goes from [0 0] to [0 7], line goes from [9 0] downward
 fig_num = 43002;
 figure(fig_num); clf;
 
@@ -4233,6 +4264,9 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 % See: http://patorjk.com/software/taag/#p=display&v=0&f=Big&t=Segment%20to%20Segment%0A%0A%0A
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All segment-arc figures start with the number 44
+
+close all
+
 %% Basic Test: Segment to segment Intersection - No intersection
 
 fig_num = 44001;

@@ -775,7 +775,7 @@ line_start_xy             = line_base_point_xy + line_unit_tangent_vector*line_s
 line_end_xy               = line_base_point_xy + line_unit_tangent_vector*line_s_end;
 
 
-% For segment to segment interesection
+% For segment to line intersection
 flag_search_type = 1;
 
 [~,intersection_points] = fcn_Path_findProjectionHitOntoPath([segment_start_xy; segment_end_xy],line_start_xy,line_end_xy,flag_search_type,[]);

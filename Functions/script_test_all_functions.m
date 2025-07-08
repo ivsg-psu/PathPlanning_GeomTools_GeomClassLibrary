@@ -14,9 +14,9 @@ all_scripts = dir(cat(2,'.',filesep,'Functions',filesep,'script_test_fcn_*.m'));
 N_files = length(all_scripts);
 testing_times = nan(N_files,1);
 
-diary 'script_test_fcn_VSkel_all_stdout.txt';
+diary 'script_test_fcn_geometry_all_stdout.txt';
 
-for i_script = 89:N_files
+for i_script = 2:N_files
     file_name_extended = all_scripts(i_script).name;
     file_name = erase(file_name_extended,'.m');
     if ~strcmp(mfilename,file_name)
