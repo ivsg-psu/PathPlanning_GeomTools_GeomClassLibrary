@@ -390,11 +390,14 @@ switch fit_type_to_search
     case 'circle'
 
         flag_force_circle_fit = 1;
-        expected_radii_range = [2 8];
         flag_find_only_best_agreement = [];
         flag_use_permutations = [];
-        warning('on','backtrace');
-        warning('expected radii range for circle fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
+        expected_radii_range = [];
+        if 1==0
+            expected_radii_range = [2 8];
+            warning('on','backtrace');
+            warning('expected radii range for circle fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
+        end
 
         % Check circle fitting - minimum model order is 3 points
         Hough_domains  = ...
@@ -408,11 +411,14 @@ switch fit_type_to_search
         if ~isempty(station_tolerance)
 
             flag_force_circle_fit = 0;
-            expected_radii_range = [2 8];
             flag_find_only_best_agreement = [];
             flag_use_permutations = [];
-            warning('on','backtrace');
-            warning('expected radii range for arc fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
+            expected_radii_range = [];
+            if 1==0
+                expected_radii_range = [2 8];
+                warning('on','backtrace');
+                warning('expected radii range for arc fitting is hard-set and so erroneous results may occur. Need to fix this in HoughSegmentation.')
+            end
 
             % Check circle fitting - minimum model order is 3 points
             Hough_domains  = ...

@@ -112,6 +112,12 @@
 % -- See: script_test_fcn_geometry_checkIfPointOn3DPatch
 % 2025_07_02 - S. Brennan
 % -- Updated Path library dependency
+% 2025_10_18 - S. Brennan
+% -- Added fcn_geometry_findPolytopeOrientations
+% -- Updated DebugTools_v2025_09_26b
+% -- Updated PathClass_v2025_08_03
+% -- Tried to fix broken functions during testing. Too many. See to-do
+%    % items
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -132,26 +138,42 @@
 % -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
 % geometry
 % -- finish README starting at the Circle Functions area and onward
-% 2025_06_14
+% 2025_06_14, updated 2025_10_20
 % -- need to fix the following test scripts as they are failing
-%    * script_test_fcn_geometry_HoughSegmentation
-%    * script_test_fcn_geometry_alignArcArc
-%    * script_test_fcn_geometry_alignArcArcC2Optimized
+%    (see script_test_all_functions)
+% badScriptNames = {
+%     'script_test_fcn_geometry_HoughRegression';          % 3   <--Aneesh
+%    % - See case 22224, which is failing inside Aneesh's cubic poly
+%    %   % fitting
+%     'script_test_fcn_geometry_alignArcArc';              % 5   <--Sean
+%     'script_test_fcn_geometry_alignArcArcC2Optimized';   % 6   <--Sean
+%     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <--Sean
+%     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <--Sean
+%     'script_test_fcn_geometry_alignLineArc';             % 11  <--Sean
+%     'script_test_fcn_geometry_boundaryAnalysis';         % 17  <--Aneesh
+%     'script_test_fcn_geometry_compareCurves';            % 23  <--Sean
+%     'script_test_fcn_geometry_concatenatePoints';        % 26  <--Aneesh
+%     'script_test_fcn_geometry_concentricCubesPointDensity'; % 27  <--Aneesh
+%     'script_test_fcn_geometry_findDrivenPath';           % 55  <--Aneesh
+%     'script_test_fcn_geometry_fitSequentialArcs';        % 81  <--Sean
+%     'script_test_fcn_geometry_intersectGeom';            % 91  <--Sean
+%     'script_test_fcn_geometry_isC1FeasibleArcToArc';     % 93  <--Sean
+%     'script_test_fcn_geometry_isC2FeasibleArcToArc';     % 94  <--Sean
+%     'script_test_fcn_geometry_isFeasibleAlignGeomPair';  % 97  <--Sean
+%     'script_test_fcn_geometry_isFeasibleAlignGeomSeries';% 98  <--Sean
+%     'script_test_fcn_geometry_isFeasibleGeomSequence';   % 99  <--Sean
+%     'script_test_fcn_geometry_plotGeometry';             % 108 <--Sean
+%     'script_test_fcn_geometry_stdInZ';                   % 119 <--Aneesh
+%     'script_test_fcn_geometry_surfaceAnalysis';          % 120 <--Aneesh
+%     'script_test_fcn_geometry_vehiclePosition';          % 120 <--Aneesh
+%     };
 %    * script_test_fcn_geometry_estimateSpiralLength (needs to be made faster)
 %    (ANEESH) * script_test_fcn_geometry_createHistogram 
 %          ---- not commented to explain what it does
 %          ---- test cases don't work (real data)
-%    * script_test_fcn_geometry_alignArcsInSequence
-%    * fcn_geometry_domainBoxByType is throwing a ton of errors in script_test_fcn_geometry_alignGeometriesInSequence
-%    * script_..._alignLineArc is throwing warnings
-%    * (ANEESH) script_test_fcn_geometry_boundaryAnalysis - seems like this
-%    is in wrong library now
-%    * script_test_fcn_geometry_compareCurves
-%    * script_test_fcn_geometry_concentricCubesPointDensity
-%    * script_test_fcn_geometry_concatenatePoints
-%    * script_test_fcn_geometry_findDrivenPath
-%    * script_test_fcn_geometry_fitSequentialArcs
-%    * script_test_fcn_geometry_fitVectorToPlane (deprecated)
+% 2025_10_18 - S. Brennan
+% -- Need to format all function headers to "standard" form. See
+%    % fcn_geometry_findPolytopeOrientations
 
 %% Prep the workspace
 close all
@@ -167,14 +189,14 @@ clc
 clear library_name library_folders library_url
 
 ith_library = 1;
-library_name{ith_library}    = 'DebugTools_v2023_04_22';
+library_name{ith_library}    = 'DebugTools_v2025_09_26b';
 library_folders{ith_library} = {'Functions','Data'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_DebugTools/archive/refs/tags/DebugTools_v2023_04_22.zip';
+library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_DebugTools/archive/refs/tags/DebugTools_v2025_09_26b.zip';
 
 ith_library = ith_library+1;
-library_name{ith_library}    = 'PathClass_v2025_07_02';
+library_name{ith_library}    = 'PathClass_v2025_08_03';
 library_folders{ith_library} = {'Functions','Data'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2025_07_02.zip';
+library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2025_08_03.zip';
 
 ith_library = ith_library+1;
 library_name{ith_library}    = 'GPSClass_v2023_06_29';

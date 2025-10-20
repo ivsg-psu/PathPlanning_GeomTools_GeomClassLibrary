@@ -145,7 +145,13 @@ end
 regression_domain.points_in_domain = points_in_domain;
 
 % Find fitted curve - use the function "polyfit"
-cubicPoly_fittedParameters = polyfit(points_in_domain(:,1), points_in_domain(:,2), 3);
+if length(points_in_domain(:,1))<4
+    warning('on','backtrace');
+    warning('Unable to fit points - throwing an error');
+    error('Requested a degree 3 fit on less than 4 points');
+else
+    cubicPoly_fittedParameters = polyfit(points_in_domain(:,1), points_in_domain(:,2), 3);
+end
 
 % Regression domain fitted parameters
 fittedParameters = [best_fit_parameters(1,1:4) fliplr(cubicPoly_fittedParameters)];  

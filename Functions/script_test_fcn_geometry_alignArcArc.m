@@ -75,13 +75,13 @@ sgtitle('Checking that arc1 is joined to arc2: C1 continuous');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0         0         0    0.2000]));
 
 %% Basic test 1.2 - checking plot inputs of arcs, arc1 is incorrectly oriented
 fig_num = 12;
@@ -138,13 +138,13 @@ sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 in bad orien
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[        0         0         0    0.2000]));
 
 %% Basic test 1.3 - checking plot inputs of arcs, arc2 is incorrectly oriented
 fig_num = 13;
@@ -201,13 +201,13 @@ sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 2 in bad orien
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[        0         0         0    0.2000]));
 
 
 %% Basic test 1.4 - checking plot inputs of arcs, arc1 and arc2 is incorrectly oriented
@@ -265,13 +265,13 @@ sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 and arc2 in 
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    3.0000   -3.1416   -1.5708         0    1.0000]));
 assert(isequal(round(revised_arc2_parameters,4),[0.2000    3.0000    3.0000   -1.5708         0         0    1.0000]));
 assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
-assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
+assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[        0         0         0    0.2000]));
 
 
 %% check conversions into St coordinates
@@ -288,6 +288,9 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The following section checks whether the ST conversion sub-codes are
 % working
+
+close all;
+
 
 %% Basic test 2.1 - checking the + to + cross product combination
 fig_num = 21;
@@ -353,7 +356,7 @@ sgtitle('Checking ST conversion: cross-products are + to + ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0    3.0000    1.0000   -2.0944   -0.7980         0    1.0000]));
@@ -426,7 +429,7 @@ sgtitle('Checking ST conversion: cross-products are + to - ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944   -0.7273         0    1.0000]));
@@ -498,7 +501,7 @@ sgtitle('Checking ST conversion: cross-products are + to - ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    3.0000    1.0000   -2.0944   -0.3489         0    1.0000]));
@@ -578,7 +581,7 @@ sgtitle('Checking ST conversion: cross-products are - to + ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0    3.0000    1.0000   -2.0944    2.8217         0         0]));
@@ -659,7 +662,7 @@ sgtitle('Checking ST conversion: cross-products are - to + ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
@@ -740,7 +743,7 @@ sgtitle('Checking ST conversion: cross-products are - to + ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
@@ -821,7 +824,7 @@ sgtitle('Checking ST conversion: cross-products are - to + ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944    2.4433         0         0]));
@@ -895,7 +898,7 @@ sgtitle('Checking ST conversion: cross-products are - to - ');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944    1.6115         0         0]));
@@ -926,6 +929,7 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.9992   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 3
 
+close all;
 
 %% Basic test 3.11 - checking the + to + cross product combination, large to small, feasible, no intersection
 fig_num = 311;
@@ -992,7 +996,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1066,7 +1070,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -1140,7 +1144,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1215,7 +1219,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -1.0472    0.0501         0    1.0000]));
@@ -1290,7 +1294,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -1.0472    0.0501         0    1.0000]));
@@ -1364,7 +1368,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1436,7 +1440,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -1509,7 +1513,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1583,7 +1587,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1656,7 +1660,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -1729,7 +1733,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1804,7 +1808,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1876,7 +1880,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -1949,7 +1953,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -1978,6 +1982,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Checking%20C1%0AIntersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 4
+
+close all;
 
 %% Basic test 4.11 - checking the + to + cross product combination, large to small, feasible
 fig_num = 411;
@@ -2044,7 +2050,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.3817         0    1.0000]));
@@ -2116,7 +2122,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -2190,7 +2196,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -1.1671         0    1.0000]));
@@ -2265,7 +2271,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    0.6000    1.0000   -2.0944   -0.5499         0    1.0000]));
@@ -2337,7 +2343,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -2410,7 +2416,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -2484,7 +2490,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[-0.0000    3.0000    1.0000   -2.0944   -0.7419         0    1.0000]));
@@ -2557,7 +2563,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -2630,7 +2636,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -2705,7 +2711,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0    0.6000    1.0000   -2.0944   -0.7330         0    1.0000]));
@@ -2777,7 +2783,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -2850,7 +2856,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5236         0    1.0000]));
@@ -2880,6 +2886,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.5000  
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Checking%20C2%0AIntersections
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 5
+
+close all;
 
 %% Basic test 5.11 - checking the + to + cross product combination, large to small, feasible
 fig_num = 511;
@@ -2945,7 +2953,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0    3.0000    1.0000   -2.0944   -1.0311         0    1.0000]));
@@ -3018,7 +3026,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -3091,7 +3099,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.6185         0    1.0000]));
@@ -3166,7 +3174,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.5165         0    1.0000]));
@@ -3238,7 +3246,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -3311,7 +3319,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.6185         0    1.0000]));
@@ -3385,7 +3393,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.8289         0    1.0000]));
@@ -3458,7 +3466,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -3531,7 +3539,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[0.0000    3.0000    1.0000   -2.0944   -0.5710         0    1.0000]));
@@ -3606,7 +3614,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -1.1859         0    1.0000]));
@@ -3678,7 +3686,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(all(isnan(revised_arc1_parameters)));
@@ -3751,7 +3759,7 @@ sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shi
 assert(isequal(size(revised_arc1_parameters),[1 7]));
 assert(isequal(size(revised_arc2_parameters),[1 7]));
 assert(ischar(revised_intermediate_geometry_join_type));
-assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 6]));
+assert(isequal(size(revised_intermediate_geometry_join_parameters),[1 4]));
 
 % Check values
 assert(isequal(round(revised_arc1_parameters,4),[ 0.0000    0.6000    1.0000   -2.0944   -0.5907         0    1.0000]));

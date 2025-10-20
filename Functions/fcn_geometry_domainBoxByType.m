@@ -228,8 +228,13 @@ switch type_of_domain
         error('Unknown domain type given: %s',type_of_domain)
 end
 
-domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
-
+if length(domain_box(:,1))<3 || any(isnan(domain_box),'all')
+    % Return empty polyshape
+    domainShape = polyshape;
+else
+    dbstop if warning
+    domainShape = polyshape(domain_box(:,1),domain_box(:,2),'Simplify',false,'KeepCollinearPoints',true);
+end
 
 %% Plot results?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

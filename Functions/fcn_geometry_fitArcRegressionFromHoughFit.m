@@ -206,7 +206,7 @@ circleRadius = regression_fit_circle_center_and_radius(1,3);
 % Find the station and transverse tolerance to use
 
 if ~isempty(best_fit_domain_box_projection_distance)
-    if length(best_fit_domain_box_projection_distance)==1
+    if isscalar(best_fit_domain_box_projection_distance)
         station_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
         transverse_tolerance = best_fit_domain_box_projection_distance;
     else
@@ -235,11 +235,25 @@ else
         fcn_geometry_findArcAgreementIndicies(associated_points_in_domain, circleCenter, circleRadius, index_source_point, station_tolerance, -1);
 
     % Make sure the angles are 0 to 2*pi
+    start_angle_in_radians_before = start_angle_in_radians;
+    end_angle_in_radians_before = end_angle_in_radians;
+
     start_angle_in_radians = mod(start_angle_in_radians,2*pi);
     end_angle_in_radians   = mod(end_angle_in_radians,2*pi);
 
+    if start_angle_in_radians==end_angle_in_radians
+        disp('start_angle_in_radians_before')
+        disp(start_angle_in_radians_before)
+
+        disp('end_angle_in_radians_before')
+        disp(end_angle_in_radians_before)
+
+        error('start and end are same?');
+    end
+
     % Check the direction. If direction is not aligned with the input regression direction, flip it
     degree_step = min(1,(end_angle_in_radians-start_angle_in_radians)*1/10*180/pi);
+
     % is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(source_points(1,:), source_points(2,:), source_points(3,:));
     flag_arc_is_counterclockwise = fcn_geometry_arcDirectionFromCircleCenter(associated_points_in_domain, circleCenter, -1);
 
