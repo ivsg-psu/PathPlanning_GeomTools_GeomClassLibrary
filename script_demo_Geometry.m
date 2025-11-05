@@ -118,7 +118,11 @@
 % -- Updated PathClass_v2025_08_03
 % -- Tried to fix broken functions during testing. Too many. See to-do
 %    % items
-
+% 2025_11_05 - Aneesh Batchu
+%  -- Fixed "fcn_geometry_fitHoughCubicPolynomial"
+% -- Added a conditional statement in Step 2 under
+% flag_find_only_best_agreement case. If the best agreement count is less
+% than 4 points, the cubic polynomial is not fitted.
 %% To-do items
 % 2024_04_15 - S. Brennan
 % -- need to check the fcn_geometry_fitSequentialArcs closely. There are

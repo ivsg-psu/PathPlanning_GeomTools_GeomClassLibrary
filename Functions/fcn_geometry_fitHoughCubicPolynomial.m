@@ -95,6 +95,10 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, tolerance, varar
 % mentioned in the instructions of that function. 
 % 2024_06_18 - Aneesh Batchu
 % -- Changed the inputs of "fcn_geometry_findAgreementsOfPointsToCubicPoly"
+% 2025_11_04 - Aneesh Batchu
+% -- Added a conditional statement in Step 2 under
+% flag_find_only_best_agreement case. If the best agreement count is less
+% than 4 points, the cubic polynomial is not fitted.  
 
 %% Debugging and Input checks
 
@@ -297,18 +301,21 @@ if 1 == flag_find_only_best_agreement
     N_fits = 0;
     remaining_agreements = agreements;
 
-    [~, best_agreement_index] = max(remaining_agreements);
-    % Find the best fit parameters
-    only_best_fit_fittedCoefficients  = fitted_parameters(best_agreement_index,:);
-    
-    % Find the indicies in transverse agreement with this best fit
-    [only_best_agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_fittedCoefficients, tolerance, (-1));
+    [best_agreement_count, best_agreement_index] = max(remaining_agreements);
 
-    % Accumulate results from best fits to prep for domain formation
-    N_fits = N_fits+1;
-    best_fit_cubic_poly_coefficients{N_fits}  = only_best_fit_fittedCoefficients;
-    best_fit_agreement_indicies{N_fits}     = only_best_agreement_indices;
-    best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:);
+    % Find the best fit parameters
+    if best_agreement_count > 3
+        only_best_fit_fittedCoefficients  = fitted_parameters(best_agreement_index,:);
+
+        % Find the indicies in transverse agreement with this best fit
+        [only_best_agreement_indices,~] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, only_best_fit_fittedCoefficients, tolerance, (-1));
+
+        % Accumulate results from best fits to prep for domain formation
+        N_fits = N_fits+1;
+        best_fit_cubic_poly_coefficients{N_fits}  = only_best_fit_fittedCoefficients;
+        best_fit_agreement_indicies{N_fits}     = only_best_agreement_indices;
+        best_fit_source_indicies{N_fits}        = combos_paired(best_agreement_index,:);
+    end
 
 else
     N_fits = 0;

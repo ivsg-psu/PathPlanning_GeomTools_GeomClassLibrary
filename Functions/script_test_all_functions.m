@@ -11,6 +11,7 @@ clearvars;
 close all; 
 clc;
 all_scripts = dir(cat(2,'.',filesep,'Functions',filesep,'script_test_fcn_*.m'));
+
 N_files = length(all_scripts);
 testing_times = nan(N_files,1);
 
@@ -43,7 +44,7 @@ badScriptNames = {
     'script_test_fcn_geometry_surfaceAnalysis';          % 120 <--Aneesh
     'script_test_fcn_geometry_vehiclePosition';          % 120 <--Aneesh
     };
-badScripts = (100:N_files);
+badScripts = (1:N_files);
 
 for scriptIndex = 1:length(badScripts)
     i_script = badScripts(scriptIndex);

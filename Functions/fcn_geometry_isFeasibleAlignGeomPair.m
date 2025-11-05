@@ -648,6 +648,7 @@ switch continuity_level
 
         % This part is not yet done
         closest_feasible_arc2_parameters = nan;
+        warning('on','backtrace'); 
         warning('This section is not completely finished.');
     case 2
         % For C2 continuity of an arc to an arc, the spiral must change
