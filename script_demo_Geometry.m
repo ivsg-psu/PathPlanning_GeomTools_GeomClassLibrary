@@ -127,6 +127,9 @@
 % -- Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
 %   % In test cases, Basic example 3: find arc data and Advanced example:
 %   % find line segments and circles and arcs in same data set
+% -- Removed this script from "Fucntions" directory
+%   %'script_test_fcn_geometry_boundaryAnalysis'. This function does not
+%   % belong in this repo. 
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -156,7 +159,6 @@
 %     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <--Sean
 %     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <--Sean
 %     'script_test_fcn_geometry_alignLineArc';             % 11  <--Sean
-%     'script_test_fcn_geometry_boundaryAnalysis';         % 17  <--Aneesh
 %     'script_test_fcn_geometry_compareCurves';            % 23  <--Sean
 %     'script_test_fcn_geometry_concatenatePoints';        % 26  <--Aneesh
 %     'script_test_fcn_geometry_concentricCubesPointDensity'; % 27  <--Aneesh
