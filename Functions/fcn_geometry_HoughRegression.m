@@ -4,7 +4,7 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % fitting on each domain.
 %
 % Format: 
-% domains = fcn_geometry_HoughRegression(Hough_domains, (transverse_tolerance), (fig_num))
+% domains = fcn_geometry_HoughRegression(Hough_domains, (best_fit_domain_box_projection_distance), (fig_num))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -12,11 +12,19 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 %
 %      (OPTIONAL INPUTS)
 % 
+%      best_fit_domain_box_projection_distance: [transverse_tolerance, station_tolerance]
+% 
 %      transverse_tolerance: the distance from the curve fit, in the
 %      transverse direction, to project in both the positive and negative
 %      directions to produce the best_fit_domain_box. If left empty,
 %      defaults to 2 standard deviations to thus give a box that is +/- 2
 %      sigma.
+% 
+%      station_tolerance: the projection distance between the points in a
+%      curve fit, along the direction of the fit, that indicate whether a
+%      point "belongs" to the fit (if distance is less than or equal to the
+%      tolerance), or is "outside" the fit (if distance is greater than the
+%      tolerance).
 %
 %      fig_num: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
@@ -50,6 +58,11 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % -- wrote the code
 % 2024_05_17 - Aneesh Batchu
 % -- Added a case for 'Hough cubic polynomial'
+% 2026_01_07 - Aneesh Batchu
+% -- Renamed transverse_tolerance to
+% best_fit_domain_box_projection_distance. Now, this
+% "best_fit_domain_box_projection_distance" can take both
+% transverse_tolerance and station_tolerance
 
 %% Debugging and Input checks
 
@@ -117,11 +130,11 @@ if 0==flag_max_speed
 end
 
 % Does user want to specify best_fit_domain_box_projection_distance?
-transverse_tolerance = [];
+best_fit_domain_box_projection_distance = [];
 if (2<=nargin)
     temp = varargin{1};
     if ~isempty(temp)
-        transverse_tolerance = temp;
+        best_fit_domain_box_projection_distance = temp;
     end
 end
 
@@ -158,7 +171,7 @@ if N_Hough_domains > 0
     % Perform regression fit on best-fit Hough values
     regression_domains = cell(N_Hough_domains+1,1);
     for ith_domain = 1:N_Hough_domains
-        regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domains{ith_domain}, transverse_tolerance);
+        regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domains{ith_domain}, best_fit_domain_box_projection_distance);
         regression_domains{ith_domain} = regression_domain;
     end
 end
@@ -268,7 +281,7 @@ end % Ends main function
 % See: https://patorjk.com/software/taag/#p=display&f=Big&t=Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
-function regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domain, transverse_tolerance)
+function regression_domain = fcn_INTERNAL_regressionFitByType(Hough_domain, best_fit_domain_box_projection_distance)
 
 best_fit_type = Hough_domain.best_fit_type;
 
@@ -276,16 +289,16 @@ best_fit_type = Hough_domain.best_fit_type;
 switch best_fit_type
     case {'Hough line','Hough segment'}
         % Check line fitting
-        regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
+        regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, best_fit_domain_box_projection_distance(1,1), -1);
 
     case {'Hough circle','Hough arc'}
         % Check circle fitting
         regression_domain = ...
-            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, transverse_tolerance, -1);
+            fcn_geometry_fitArcRegressionFromHoughFit(Hough_domain, best_fit_domain_box_projection_distance, -1);
     case {'Hough cubic polynomial'}
         % Check cubic polynomial fitting
-        % regression_domain = fcn_INTERNAL_fitCubicPolynomial(Hough_domain, transverse_tolerance);
-        regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_domain, transverse_tolerance, -1);
+        % regression_domain = fcn_INTERNAL_fitCubicPolynomial(Hough_domain, best_fit_domain_box_projection_distance);
+        regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_domain, best_fit_domain_box_projection_distance(1,1), -1);
 
     otherwise
         error('Unknown fit type detected - unable to continue!: %s', best_fit_type);

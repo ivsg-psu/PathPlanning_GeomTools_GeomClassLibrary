@@ -6,6 +6,9 @@
 % -- wrote the code. Did not finish test cases
 % 2024_06_14 - S. Brennan
 % -- fixed more test cases, still not finished
+% 2026_01_07 - Aneesh Batchu
+% -- Fixed test cases: Basic example 3: find arc data
+% Advanced example: find line segments and circles and arcs in same data set
 
 close all;
 
@@ -292,7 +295,7 @@ assert(isnan(regression_domain.best_fit_domain_box));
 
 % % ANEESH ADDED THIS - THROWS ERROR
 % warning('on','backtrace');
-% warning('Aneesh, you need to fix this section')
+% warning('Aneesh, you need to fix this section') -- Fixed
 rng(123)
 
 fig_num = 22224;
@@ -370,77 +373,79 @@ assert(isnan(regression_domain.best_fit_parameters))
 
 %% Basic example 3: find arc data
 
-warning('on','backtrace');
-warning('This call produces error in fcn_geometry_findArcAgreementIndicies, line 235 in fcn_geometry_fitArcRegressionFromHoughFit, where start/end angle is the same. This should never happen.');
-warning('Aneesh or Sean, you need to fix this section')
+% warning('on','backtrace');
+% warning('This call produces error in fcn_geometry_findArcAgreementIndicies, line 235 in fcn_geometry_fitArcRegressionFromHoughFit, where start/end angle is the same. This should never happen.');
+% warning('Aneesh or Sean, you need to fix this section') -- Fixed
+% (2026_01_07 - Aneesh Batchu)
 
-% fig_num = 50;
-% transverse_tolerance = 0.03; % Units are meters
-% station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
-% threshold_max_points = 20;
-% 
-% % Seed test data for arcs
-% arc_seed_points = [2 3; 4 5; 6 3];
-% [~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-% 
-% M = 10; % Points per meter
-% sigma = 0.02;
-% rng(3423)
-% 
-% probability_of_corruption = 0.1;
-% magnitude_of_corruption = 3;
-% 
-% % Fill test data for 1 arc
-% onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
-% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (-1));
-% 
-% input_points = corrupted_onearc_test_points;
-% Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
-% 
-% % Check the regression fit
-% regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
-% 
-% % To plot all the domains at once on ONE plot, use the following command
-% % fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
-% 
-% % Check the output type and size
-% for ith_domain = 1:length(regression_domains)-1
-%     regression_domain = regression_domains{ith_domain};
-%     assert(isstruct(regression_domain));
-%     assert(isfield(regression_domain,'best_fit_type'));
-%     assert(isfield(regression_domain,'points_in_domain'));
-%     assert(isfield(regression_domain,'best_fit_parameters'));
-%     assert(isfield(regression_domain,'best_fit_domain_box'));
-%     assert(isfield(regression_domain,'best_fit_1_sigma_box'));
-%     assert(isfield(regression_domain,'best_fit_2_sigma_box'));
-%     assert(isfield(regression_domain,'best_fit_3_sigma_box'));
-%     assert(ischar(regression_domain.best_fit_type));
-%     assert(strcmp('Regression arc',regression_domain.best_fit_type));
-%     assert(length(regression_domain.points_in_domain(:,1))>1);
-%     assert(length(regression_domain.points_in_domain(1,:))==2);
-%     fcn_INTERNAL_checkDomainType(regression_domain);
-%     assert(issimplified(regression_domain.best_fit_domain_box));
-%     assert(issimplified(regression_domain.best_fit_1_sigma_box));
-%     assert(issimplified(regression_domain.best_fit_2_sigma_box));
-%     assert(issimplified(regression_domain.best_fit_3_sigma_box));
-% end
-% 
-% % Check the last domain (unfitted points)
-% regression_domain = regression_domains{end};
-% assert(isstruct(regression_domain));
-% assert(isfield(regression_domain,'best_fit_type'));
-% assert(isfield(regression_domain,'points_in_domain'));
-% assert(isfield(regression_domain,'best_fit_parameters'));
-% assert(isfield(regression_domain,'best_fit_domain_box'));
-% assert(isfield(regression_domain,'best_fit_source_indicies'));
-% assert(ischar(regression_domain.best_fit_type));
-% assert(strcmp('unfitted',regression_domain.best_fit_type));
-% assert(length(regression_domain.points_in_domain(:,1))>1);
-% assert(length(regression_domain.points_in_domain(1,:))==2);
-% assert(isnan(regression_domain.best_fit_parameters));
-% assert(isnan(regression_domain.best_fit_source_indicies));
-% assert(isnan(regression_domain.best_fit_domain_box));
+fig_num = 50;
+transverse_tolerance = 0.03; % Units are meters
+station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 20;
+
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[~, ~] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num); 
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+input_points = corrupted_onearc_test_points;
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (-1));
+
+best_fit_domain_box_projection_distance = [transverse_tolerance, station_tolerance]; 
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, fig_num);
+
+% To plot all the domains at once on ONE plot, use the following command
+% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
+% Check the output type and size
+for ith_domain = 1:length(regression_domains)-1
+    regression_domain = regression_domains{ith_domain};
+    assert(isstruct(regression_domain));
+    assert(isfield(regression_domain,'best_fit_type'));
+    assert(isfield(regression_domain,'points_in_domain'));
+    assert(isfield(regression_domain,'best_fit_parameters'));
+    assert(isfield(regression_domain,'best_fit_domain_box'));
+    assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+    assert(ischar(regression_domain.best_fit_type));
+    assert(strcmp('Regression arc',regression_domain.best_fit_type));
+    assert(length(regression_domain.points_in_domain(:,1))>1);
+    assert(length(regression_domain.points_in_domain(1,:))==2);
+    fcn_INTERNAL_checkDomainType(regression_domain);
+    assert(issimplified(regression_domain.best_fit_domain_box));
+    assert(issimplified(regression_domain.best_fit_1_sigma_box));
+    assert(issimplified(regression_domain.best_fit_2_sigma_box));
+    assert(issimplified(regression_domain.best_fit_3_sigma_box));
+end
+
+% Check the last domain (unfitted points)
+regression_domain = regression_domains{end};
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_source_indicies'));
+assert(ischar(regression_domain.best_fit_type));
+assert(strcmp('unfitted',regression_domain.best_fit_type));
+assert(length(regression_domain.points_in_domain(:,1))>1);
+assert(length(regression_domain.points_in_domain(1,:))==2);
+assert(isnan(regression_domain.best_fit_parameters));
+assert(isnan(regression_domain.best_fit_source_indicies));
+assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Advanced example: find line segments and circles in same data set
 
@@ -531,106 +536,108 @@ assert(isnan(regression_domain.best_fit_domain_box));
 fig_num = 70; 
 figure(fig_num); clf;
 
-warning('on','backtrace');
-warning('This call produces error in fcn_geometry_findArcAgreementIndicies, line 235 in fcn_geometry_fitArcRegressionFromHoughFit, where start/end angle is the same. This should never happen.');
-warning('Aneesh or Sean, you need to fix this section')
+% warning('on','backtrace');
+% warning('This call produces error in fcn_geometry_findArcAgreementIndicies, line 235 in fcn_geometry_fitArcRegressionFromHoughFit, where start/end angle is the same. This should never happen.');
+% warning('Aneesh or Sean, you need to fix this section')
+% Fixed this (2026_01_07 - Aneesh Batchu)
 
-% 
-% % Single segment
-% seed_points = [5 0; 15 10];
-% M = 5; % 10 points per meter
-% sigma = 0.;
-% rng(3423)
-% 
-% probability_of_corruption = 0.1;
-% magnitude_of_corruption = 3;
-% 
-% 
-% single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
-% corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption),-1);
-% 
-% % Create circle data
-% circle_center = [3 5];
-% circle_radius = 2;
-% M = 5; % 5 points per meter
-% sigma = 0.02;
-% rng(3423)
-% 
-% probability_of_corruption = 0.1;
-% magnitude_of_corruption = 3;
-% 
-% 
-% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
-% corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption),-1);
-% 
-% % Seed test data for arcs
-% arc_seed_points = [2 3; 4 5; 6 3];
-% [arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
-% 
-% M = 10; % Points per meter
-% sigma = 0.02;
-% rng(3423)
-% 
-% probability_of_corruption = 0.1;
-% magnitude_of_corruption = 3;
-% 
-% % Fill test data for 1 arc
-% onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
-% corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (-1));
-% 
-% 
-% transverse_tolerance = 0.05; % Units are meters
-% station_tolerance = 1.5; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
-% threshold_max_points = 20;
-% input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points; corrupted_onearc_test_points+[0 8]];
-% Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
-% 
-% % Check the regression fit
-% regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
-% 
-% % To plot all the domains at once on ONE plot, use the following command
-% % fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
-% 
-% % Check the output type and size
-% for ith_domain = 1:length(regression_domains)-1
-%     regression_domain = regression_domains{ith_domain};
-%     assert(isstruct(regression_domain));
-%     assert(isfield(regression_domain,'best_fit_type'));
-%     assert(isfield(regression_domain,'points_in_domain'));
-%     assert(isfield(regression_domain,'best_fit_parameters'));
-%     assert(isfield(regression_domain,'best_fit_domain_box'));
-%     assert(isfield(regression_domain,'best_fit_1_sigma_box'));
-%     assert(isfield(regression_domain,'best_fit_2_sigma_box'));
-%     assert(isfield(regression_domain,'best_fit_3_sigma_box'));
-%     assert(ischar(regression_domain.best_fit_type));
-%     % assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
-%     assert(length(regression_domain.points_in_domain(:,1))>1);
-%     assert(length(regression_domain.points_in_domain(1,:))==2);
-%     % fcn_INTERNAL_checkDomainType(regression_domain);
-%     % assert(issimplified(regression_domain.best_fit_domain_box));
-%     % assert(issimplified(regression_domain.best_fit_1_sigma_box));
-%     % assert(issimplified(regression_domain.best_fit_2_sigma_box));
-%     % assert(issimplified(regression_domain.best_fit_3_sigma_box));
-% end
-% 
-% % Check the last domain (unfitted points)
-% regression_domain = regression_domains{end};
-% assert(isstruct(regression_domain));
-% assert(isfield(regression_domain,'best_fit_type'));
-% assert(isfield(regression_domain,'points_in_domain'));
-% assert(isfield(regression_domain,'best_fit_parameters'));
-% assert(isfield(regression_domain,'best_fit_domain_box'));
-% assert(isfield(regression_domain,'best_fit_source_indicies'));
-% assert(ischar(regression_domain.best_fit_type));
-% assert(strcmp('unfitted',regression_domain.best_fit_type));
-% assert(length(regression_domain.points_in_domain(:,1))>1);
-% assert(length(regression_domain.points_in_domain(1,:))==2);
-% assert(isnan(regression_domain.best_fit_parameters));
-% assert(isnan(regression_domain.best_fit_source_indicies));
-% assert(isnan(regression_domain.best_fit_domain_box));
+
+% Single segment
+seed_points = [5 0; 15 10];
+M = 5; % 10 points per meter
+sigma = 0.;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+single_segment_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma,-1);
+corrupted_single_segment_test_points = fcn_geometry_corruptPointsWithOutliers(single_segment_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+% Create circle data
+circle_center = [3 5];
+circle_radius = 2;
+M = 5; % 5 points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption),-1);
+
+% Seed test data for arcs
+arc_seed_points = [2 3; 4 5; 6 3];
+[arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
+
+M = 10; % Points per meter
+sigma = 0.02;
+rng(3423)
+
+probability_of_corruption = 0.1;
+magnitude_of_corruption = 3;
+
+% Fill test data for 1 arc
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
+    (probability_of_corruption), (magnitude_of_corruption), (-1));
+
+
+transverse_tolerance = 0.05; % Units are meters
+station_tolerance = 1.5; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
+threshold_max_points = 20;
+input_points = [corrupted_circle_test_points; corrupted_single_segment_test_points; corrupted_onearc_test_points+[0 8]];
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
+
+best_fit_domain_box_projection_distance = [transverse_tolerance, station_tolerance];
+% Check the regression fit
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, fig_num);
+
+% To plot all the domains at once on ONE plot, use the following command
+% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+
+% Check the output type and size
+for ith_domain = 1:length(regression_domains)-1
+    regression_domain = regression_domains{ith_domain};
+    assert(isstruct(regression_domain));
+    assert(isfield(regression_domain,'best_fit_type'));
+    assert(isfield(regression_domain,'points_in_domain'));
+    assert(isfield(regression_domain,'best_fit_parameters'));
+    assert(isfield(regression_domain,'best_fit_domain_box'));
+    assert(isfield(regression_domain,'best_fit_1_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_2_sigma_box'));
+    assert(isfield(regression_domain,'best_fit_3_sigma_box'));
+    assert(ischar(regression_domain.best_fit_type));
+    % assert(strcmp('Vector regression segment fit',regression_domain.best_fit_type));
+    assert(length(regression_domain.points_in_domain(:,1))>1);
+    assert(length(regression_domain.points_in_domain(1,:))==2);
+    % fcn_INTERNAL_checkDomainType(regression_domain);
+    % assert(issimplified(regression_domain.best_fit_domain_box));
+    % assert(issimplified(regression_domain.best_fit_1_sigma_box));
+    % assert(issimplified(regression_domain.best_fit_2_sigma_box));
+    % assert(issimplified(regression_domain.best_fit_3_sigma_box));
+end
+
+% Check the last domain (unfitted points)
+regression_domain = regression_domains{end};
+assert(isstruct(regression_domain));
+assert(isfield(regression_domain,'best_fit_type'));
+assert(isfield(regression_domain,'points_in_domain'));
+assert(isfield(regression_domain,'best_fit_parameters'));
+assert(isfield(regression_domain,'best_fit_domain_box'));
+assert(isfield(regression_domain,'best_fit_source_indicies'));
+assert(ischar(regression_domain.best_fit_type));
+assert(strcmp('unfitted',regression_domain.best_fit_type));
+assert(length(regression_domain.points_in_domain(:,1))>1);
+assert(length(regression_domain.points_in_domain(1,:))==2);
+assert(isnan(regression_domain.best_fit_parameters));
+assert(isnan(regression_domain.best_fit_source_indicies));
+assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Advanced example 3: find line segments within a chevron
 M = 10; % points per meter

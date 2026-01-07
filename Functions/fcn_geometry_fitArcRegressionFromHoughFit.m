@@ -71,6 +71,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % 2024_07_06 - Sean Brennan
 % -- fixed bug due to angles not being bounded by modulo 2*pi
 
+
 %% Debugging and Input checks
 
 % Check if flag_max_speed set. This occurs if the fig_num variable input
@@ -207,11 +208,11 @@ circleRadius = regression_fit_circle_center_and_radius(1,3);
 
 if ~isempty(best_fit_domain_box_projection_distance)
     if isscalar(best_fit_domain_box_projection_distance)
-        station_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
-        transverse_tolerance = best_fit_domain_box_projection_distance;
+        transverse_tolerance = best_fit_domain_box_projection_distance; % Use the user-specified tolerance
+        station_tolerance = best_fit_domain_box_projection_distance;
     else
-        station_tolerance = best_fit_domain_box_projection_distance(1,1);
-        transverse_tolerance = best_fit_domain_box_projection_distance(1,2); 
+        transverse_tolerance = best_fit_domain_box_projection_distance(1,1);
+        station_tolerance = best_fit_domain_box_projection_distance(1,2); 
     end
 
 else

@@ -123,6 +123,11 @@
 % -- Added a conditional statement in Step 2 under
 % flag_find_only_best_agreement case. If the best agreement count is less
 % than 4 points, the cubic polynomial is not fitted.
+% 2026_01_07 - Aneesh Batchu
+% -- Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
+%   % In test cases, Basic example 3: find arc data and Advanced example:
+%   % find line segments and circles and arcs in same data set
+
 %% To-do items
 % 2024_04_15 - S. Brennan
 % -- need to check the fcn_geometry_fitSequentialArcs closely. There are
@@ -146,9 +151,6 @@
 % -- need to fix the following test scripts as they are failing
 %    (see script_test_all_functions)
 % badScriptNames = {
-%     'script_test_fcn_geometry_HoughRegression';          % 3   <--Aneesh
-%    % - See case 22224, which is failing inside Aneesh's cubic poly
-%    %   % fitting
 %     'script_test_fcn_geometry_alignArcArc';              % 5   <--Sean
 %     'script_test_fcn_geometry_alignArcArcC2Optimized';   % 6   <--Sean
 %     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <--Sean
