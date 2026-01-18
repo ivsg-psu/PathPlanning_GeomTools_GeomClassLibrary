@@ -130,6 +130,15 @@
 % -- Removed this script from "Fucntions" directory
 %   %'script_test_fcn_geometry_boundaryAnalysis'. This function does not
 %   % belong in this repo. 
+% 2026_01_18 - Aneesh Batchu
+% -- Removed the scripts that don't belong in this repo. 
+%   % * script_test_fcn_geometry_concatenatePoints
+%   % * script_test_fcn_geometry_concentricCubesPointDensity
+%   % * script_test_fcn_geometry_findDrivenPath
+%   % * script_test_fcn_geometry_stdInZ
+%   % * script_test_fcn_geometry_surfaceAnalysis
+%   % * script_test_fcn_geometry_vehiclePosition
+%   % * script_test_fcn_geometry_createHistogram
 
 %% To-do items
 % 2024_04_15 - S. Brennan
@@ -160,9 +169,6 @@
 %     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <--Sean
 %     'script_test_fcn_geometry_alignLineArc';             % 11  <--Sean
 %     'script_test_fcn_geometry_compareCurves';            % 23  <--Sean
-%     'script_test_fcn_geometry_concatenatePoints';        % 26  <--Aneesh
-%     'script_test_fcn_geometry_concentricCubesPointDensity'; % 27  <--Aneesh
-%     'script_test_fcn_geometry_findDrivenPath';           % 55  <--Aneesh
 %     'script_test_fcn_geometry_fitSequentialArcs';        % 81  <--Sean
 %     'script_test_fcn_geometry_intersectGeom';            % 91  <--Sean
 %     'script_test_fcn_geometry_isC1FeasibleArcToArc';     % 93  <--Sean
@@ -171,14 +177,8 @@
 %     'script_test_fcn_geometry_isFeasibleAlignGeomSeries';% 98  <--Sean
 %     'script_test_fcn_geometry_isFeasibleGeomSequence';   % 99  <--Sean
 %     'script_test_fcn_geometry_plotGeometry';             % 108 <--Sean
-%     'script_test_fcn_geometry_stdInZ';                   % 119 <--Aneesh
-%     'script_test_fcn_geometry_surfaceAnalysis';          % 120 <--Aneesh
-%     'script_test_fcn_geometry_vehiclePosition';          % 120 <--Aneesh
 %     };
 %    * script_test_fcn_geometry_estimateSpiralLength (needs to be made faster)
-%    (ANEESH) * script_test_fcn_geometry_createHistogram 
-%          ---- not commented to explain what it does
-%          ---- test cases don't work (real data)
 % 2025_10_18 - S. Brennan
 % -- Need to format all function headers to "standard" form. See
 %    % fcn_geometry_findPolytopeOrientations

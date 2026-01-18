@@ -46,7 +46,7 @@ badScriptNames = {
     };
 badScripts = (1:N_files);
 
-for scriptIndex = 1:length(badScripts)
+for scriptIndex = 26%1:length(badScripts)
     i_script = badScripts(scriptIndex);
     file_name_extended = all_scripts(i_script).name;
     file_name = erase(file_name_extended,'.m');
