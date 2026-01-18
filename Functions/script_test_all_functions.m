@@ -27,11 +27,7 @@ badScriptNames = {
     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <--Sean
     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <--Sean
     'script_test_fcn_geometry_alignLineArc';             % 11  <--Sean
-    'script_test_fcn_geometry_boundaryAnalysis';         % 17  <--Aneesh
     'script_test_fcn_geometry_compareCurves';            % 23  <--Sean
-    'script_test_fcn_geometry_concatenatePoints';        % 26  <--Aneesh
-    'script_test_fcn_geometry_concentricCubesPointDensity'; % 27  <--Aneesh
-    'script_test_fcn_geometry_findDrivenPath';           % 55  <--Aneesh
     'script_test_fcn_geometry_fitSequentialArcs';        % 81  <--Sean
     'script_test_fcn_geometry_intersectGeom';            % 91  <--Sean
     'script_test_fcn_geometry_isC1FeasibleArcToArc';     % 93  <--Sean
@@ -40,13 +36,10 @@ badScriptNames = {
     'script_test_fcn_geometry_isFeasibleAlignGeomSeries';% 98  <--Sean
     'script_test_fcn_geometry_isFeasibleGeomSequence';   % 99  <--Sean
     'script_test_fcn_geometry_plotGeometry';             % 108 <--Sean
-    'script_test_fcn_geometry_stdInZ';                   % 119 <--Aneesh
-    'script_test_fcn_geometry_surfaceAnalysis';          % 120 <--Aneesh
-    'script_test_fcn_geometry_vehiclePosition';          % 120 <--Aneesh
     };
 badScripts = (1:N_files);
 
-for scriptIndex = 26%1:length(badScripts)
+for scriptIndex = 1:length(badScripts)
     i_script = badScripts(scriptIndex);
     file_name_extended = all_scripts(i_script).name;
     file_name = erase(file_name_extended,'.m');
