@@ -3,15 +3,15 @@
 
 % Revision history:
 % 2024_03_30 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 
 %% BASIC test - perfect fit, perfectly oriented
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 hold on;
 
 % Fill in the necessary parameters
@@ -50,7 +50,7 @@ s  = (0:0.01:1)'*L0;
 Kf = 1; % Radius of 1
 
 % Call the function
-[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(fig_num));
+[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(figNum));
 
 % Find the center of the circle tangent at the end of the spiral
 % Find the unit vector (need to do this analytically!)
@@ -68,8 +68,8 @@ plot(XY_circle(:,1),XY_circle(:,2),'r-');
 
 %% SCALING Test - show that get exactly the same result if using nondimensional equivalent
 
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 hold on;
 
 % ANY CIRCLE ANALYSIS
@@ -92,7 +92,7 @@ L0_dimensionless = L0*Kf;
 s_dimensionless  = s*Kf; 
 
 % Call the function
-[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0_dimensionless,h0,x0,y0,K0,Kf,(fig_num));
+[x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,L0_dimensionless,h0,x0,y0,K0,Kf,(figNum));
 
 
 
@@ -114,8 +114,8 @@ s_dimensionless  = s*Kf;
 
 
 %% BASIC test - perfect fit, perfectly oriented, not at origin
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 
 arc_radius = 2;
@@ -147,7 +147,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -166,8 +166,8 @@ assert(isequal(round(angles(end)-angles(1),4),round(arcLength,4)));
 assert(max(radial_fitting_error)<0.001);
 
 %% BASIC test - perfect fit, perfectly oriented, negative
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 arc_radius = 2;
 arc_center = -[2 0];
@@ -198,7 +198,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -214,8 +214,8 @@ assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
 assert(max(radial_fitting_error)<0.001);
 
 %% BASIC test - perfect fit, perfectly oriented, negative and noisy
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 rng(4747);
 
 arc_radius = 2;
@@ -247,7 +247,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -264,8 +264,8 @@ assert(center_error<(0.001+6*sigma));
 assert(max(radial_fitting_error)<(0.001+6*sigma));
 
 %% BASIC test - perfect fit, perfectly oriented, negative and noisy with outliers
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 %rng(4747);
 
 arc_radius = 2;
@@ -297,7 +297,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -314,8 +314,8 @@ assert(length(radial_fitting_error(1,:))==1);
 % assert(max(radial_fitting_error)<(0.001+6*sigma));
 
 %% BASIC test - perfect fit, misaligned
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 arc_radius = 2;
 arc_center = [2 0];
@@ -352,7 +352,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -368,8 +368,8 @@ assert(isequal(round(arc_true_circleCenter,4),round(fitted_arcCenter,4)));
 assert(max(radial_fitting_error)<0.001);
 
 %% BASIC test - perfect fit, perfectly oriented, negative and noisy 
-fig_num = 7;
-figure(fig_num); clf;
+figNum = 7;
+figure(figNum); clf;
 %rng(4747);
 
 arc_radius = 2;
@@ -407,7 +407,7 @@ corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_tes
 % Find the arc fit
 
 inputPoints = corrupted_onearc_test_points;
-[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (fig_num));
+[fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, initial_rotation, initial_offset, (figNum));
 
 % Check sizes
 assert(length(fitted_radius(:,1))==1);
@@ -418,8 +418,8 @@ assert(length(radial_fitting_error(:,1))==length(inputPoints(:,1)));
 assert(length(radial_fitting_error(1,:))==1);
 
 %% BASIC test - LINE fit
-% fig_num = 8;
-% figure(fig_num); clf;
+% figNum = 8;
+% figure(figNum); clf;
 % 
 % % arc_radius = 2;
 % % arc_center = [2 0];
@@ -456,7 +456,7 @@ assert(length(radial_fitting_error(1,:))==1);
 % % Find the arc fit
 % 
 % inputPoints = test_points;
-% [fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (fig_num));
+% [fitted_radius, fitted_arcCenter, arcLength, radial_fitting_error] = fcn_geometry_fitArcConstrainedStart(inputPoints, [], [], (figNum));
 % axis([-5 5 -1 6]);
 % 
 % % Check sizes
@@ -483,9 +483,9 @@ assert(length(radial_fitting_error(1,:))==1);
 % circle_radius = 2;
 % M = 3; % 5 points per meter
 % sigma = 0.02;
-% fig_num = -1;
+% figNum = -1;
 % 
-% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 % circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
 % 
 % % Add outliers?
@@ -494,7 +494,7 @@ assert(length(radial_fitting_error(1,:))==1);
 % magnitude_of_corruption = 1;
 % 
 % corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+%     (probability_of_corruption), (magnitude_of_corruption), (figNum));
 % 
 % inputPoints = corrupted_circle_test_points;
 % transverse_tolerance = 0.1;
@@ -508,17 +508,17 @@ assert(length(radial_fitting_error(1,:))==1);
 % 
 % domains_corrupted_circle_test_points  = ...
 % fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 % 
 % % Perform the calculation in slow mode
-% fig_num = [];
+% figNum = [];
 % REPS = 100; minTimeSlow = Inf;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 % 
 %    regression_domain  =  ...
-%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, figNum); 
 % 
 % 
 %     telapsed = toc(tstart);
@@ -527,14 +527,14 @@ assert(length(radial_fitting_error(1,:))==1);
 % averageTimeSlow = toc/REPS;
 % 
 % % Perform the operation in fast mode
-% fig_num = -1;
+% figNum = -1;
 % minTimeFast = Inf;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 % 
 %     regression_domain  =  ...
-%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, figNum); 
 % 
 %     telapsed = toc(tstart);
 %     minTimeFast = min(telapsed,minTimeFast);
@@ -555,7 +555,7 @@ assert(length(radial_fitting_error(1,:))==1);
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

@@ -4,72 +4,72 @@
 
 % Revision history:
 % 2023_12_19 - sbrennan@psu.edu
-% -- original write of the code
+% - original write of the code
 close all;
 
 %% BASIC example 1 - positive
-fig_num = 1;
-figure(fig_num);clf;
+figNum = 1;
+figure(figNum);clf;
 
 points1 = [0 0];
 points2 = [1 4];
 points3 = [0 5];
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, figNum);
 
 assert(isequal(is_counterClockwise,1))
 
 %% BASIC example 2 - negative
-fig_num = 2;
-figure(fig_num);clf;
+figNum = 2;
+figure(figNum);clf;
 
 points1 = [0 0];
 points2 = [-1 4];
 points3 = [0 5];
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, figNum);
 
 assert(isequal(is_counterClockwise,-1))
 
 %% BASIC example 3 - stacked
-fig_num = 3;
-figure(fig_num);clf;
+figNum = 3;
+figure(figNum);clf;
 
 points1 = [0 0; 3 3;];
 points2 = [-1 4; 4 4];
 points3 = [0 5; 3 5];
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, figNum);
 
 assert(isequal(is_counterClockwise,[-1; 1]))
 
 %% BASIC example 11 - CCW arc, with test point exactly at start point (gives 0)
-fig_num = 1;
-figure(fig_num);clf;
+figNum = 1;
+figure(figNum);clf;
 
 points1 = [0 0];
 points2 = [0 0];
 points3 = [0 5];
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, figNum);
 
 assert(isequal(is_counterClockwise,0))
 
 
 %% BASIC example 12 - CCW arc, with test point exactly at start point (gives 0)
-fig_num = 1;
-figure(fig_num);clf;
+figNum = 1;
+figure(figNum);clf;
 
 points1 = [0 0];
 points2 = [0 5];
 points3 = [0 5];
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3, figNum);
 
 assert(isequal(is_counterClockwise,0))
 %% Debugging case
-fig_num = 1232;
-figure(fig_num);clf;
+figNum = 1232;
+figure(figNum);clf;
 
 seed_points = [2 3; 4 5; 6 3; 1 1; -2 -1];
 
 % Find if the arcs are counterclockwise or clockwise
-is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(seed_points(1:end-2,:), seed_points(2:end-1,:), seed_points(3:end,:), figNum);
 assert(isequal(is_counterClockwise,[-1; -1; 1]))
 
 %% Test of fast mode
@@ -116,7 +116,7 @@ if 1==0
     points1 = [2 3; 3 4];
     points2 = [4 5];
     points3 = [5 6; 7 8];
-    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3,fig_num);
+    is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, points2, points3,figNum);
 
 end
 

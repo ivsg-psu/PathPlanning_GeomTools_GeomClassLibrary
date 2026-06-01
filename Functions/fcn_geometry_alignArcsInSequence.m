@@ -19,7 +19,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %
 % Format:
 % revised_fitSequence_parameters = ...
-% fcn_geometry_alignArcsInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (fig_num))
+% fcn_geometry_alignArcsInSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (continuity_level), (figNum))
 %
 % INPUTS:
 %      fitSequence_bestFitType: a cell array of length N that contains
@@ -72,7 +72,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %           from one position to another in order for a vehicle to remain
 %           centered on a path.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -105,9 +105,9 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 
 % Revision history:
 % 2024_04_19 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_06_21 - Sean Brennan
-% -- changed spiral parameter format to new style:
+% - changed spiral parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -118,13 +118,13 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %                K0,  % The initial curvature
 %                Kf   % The final curvature
 %              ] 
-% -- changed line parameter format to new standard:
+% - changed line parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -132,12 +132,12 @@ function [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibi
 %              s_Length,
 %             ]
 % 2024_06_21 - Sean Brennan
-% -- added continuity_level as an input option
+% - added continuity_level as an input option
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -162,9 +162,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -199,20 +199,20 @@ if (4<=nargin)
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
         % Does user want to specify animation_figure_handles?
         % flag_plot_subfigs = 0;
 
         if length(temp)>1
-            fig_num           = temp(1);
+            figNum           = temp(1);
             % h_plotPoints      = temp(2);
             % h_plotPercentage  = temp(3);
             % h_plotFitShape    = temp(4);
@@ -238,7 +238,7 @@ flag_be_verbose = 0;
 %% Prep the plots
 if flag_do_plots
         % Plot the results in the given figure number
-        temp_h = figure(fig_num);
+        temp_h = figure(figNum);
         flag_rescale_axis = 0;
         if isempty(get(temp_h,'Children'))
             flag_rescale_axis = 1;
@@ -253,7 +253,7 @@ if flag_do_plots
 
         segment_length = [];
         format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',7 ');
-        fcn_geometry_plotFitSequences(input_types, input_parameters, segment_length, format_string, (fig_num));
+        fcn_geometry_plotFitSequences(input_types, input_parameters, segment_length, format_string, (figNum));
 
 
         % Make axis slightly larger?
@@ -401,29 +401,29 @@ for ith_fit = 1:NfitsInSequence-1
 
     if flag_do_debug
         
-        debug_fig_num_iterated = ith_fit+56575;
-        figure(debug_fig_num_iterated);
+        debug_figNum_iterated = ith_fit+56575;
+        figure(debug_figNum_iterated);
 
         sgtitle('Debugging')
         subplot(1,2,2);
         cla;
         axis equal;
-        fcn_geometry_plotFitSequences(revised_subSequence_types, revised_sequence_parameters,(debug_fig_num_iterated));
+        fcn_geometry_plotFitSequences(revised_subSequence_types, revised_sequence_parameters,(debug_figNum_iterated));
         temp_axis = axis;
         title('Results from last joint alignment');
 
         subplot(1,2,1);
         cla;
         axis equal
-        fcn_geometry_plotFitSequences(input_types, input_parameters,(debug_fig_num_iterated));        
-        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(debug_fig_num_iterated));
+        fcn_geometry_plotFitSequences(input_types, input_parameters,(debug_figNum_iterated));        
+        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(debug_figNum_iterated));
         axis(temp_axis);
         title('Cumulative alignments')
 
     elseif flag_do_plots
-        figure(fig_num);
+        figure(figNum);
 
-        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,[],[],(fig_num));
+        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,[],[],(figNum));
 
         % Match axis
         axis(good_axis);
@@ -462,7 +462,7 @@ if flag_do_plots
     %
     % else
     % Plot the results in the given figure number
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -479,7 +479,7 @@ if flag_do_plots
 
     segment_length = [];
     format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',7 ');
-    fcn_geometry_plotFitSequences(input_types, input_parameters, segment_length, format_string, (fig_num));
+    fcn_geometry_plotFitSequences(input_types, input_parameters, segment_length, format_string, (figNum));
 
 
     % Make axis slightly larger?
@@ -495,7 +495,7 @@ if flag_do_plots
     good_axis = axis;
 
     % Plot the aligned geometries on the left
-    fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,[],[],(fig_num));
+    fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,[],[],(figNum));
 
     % Match axis
     axis(good_axis);
@@ -558,7 +558,7 @@ if 2==continuity_level
     % Check feasibility
     % Format:
     % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = ...
-    % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+    % fcn_geometry_isC2FeasibleArcToArc(arc_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
     % Is a C2 solution feasible?
     [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, ~, ~] = ...
@@ -668,7 +668,7 @@ end % Ends fcn_INTERNAL_alignArcToX
 %             % Check feasibility
 %             % Format:
 %             % [flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = ...
-%             % fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (fig_num));
+%             % fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (figNum));
 %             [flag_is_feasible, feasibility_distance, closest_feasible_arc_parameters] = ...
 %                 fcn_geometry_isC2FeasibleLineToArc(segment_parameters, arc_parameters, (transverse_threshold), (in_boundary_margin), (-1));
 % 
@@ -687,7 +687,7 @@ end % Ends fcn_INTERNAL_alignArcToX
 %             % Calculate parameters
 %             % Format:
 %             % [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-%             % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
+%             % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (figNum))
 %             %
 %             % Call function
 %             [revised_segment_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...

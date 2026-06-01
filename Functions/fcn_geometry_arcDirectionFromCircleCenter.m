@@ -7,7 +7,7 @@ function is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points,
 %
 % FORMAT:
 %
-% is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter,(fig_num))
+% is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter,(figNum))
 %
 % INPUTS:
 %
@@ -19,7 +19,7 @@ function is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points,
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      figNum: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -43,11 +43,11 @@ function is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points,
 
 % Revision history:
 % 2024_04_02 - sbrennan@psu.edu
-% -- original write of the code
+% - original write of the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -113,7 +113,7 @@ flag_do_plots = 0;
 if (0==flag_max_speed) && (3 <= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -155,7 +155,7 @@ is_counterClockwise = sum(vote_clockwise)>(N_points/2);
 if flag_do_plots
 
     % Prep the figure
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

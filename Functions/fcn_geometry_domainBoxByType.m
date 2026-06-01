@@ -12,7 +12,7 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %     domain_box = fcn_geometry_domainBoxByType(...
 %     type_of_domain,...
 %     (options),
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -25,7 +25,7 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %                domain_box = fcn_geometry_domainBoxByType(...
 %                'arc',...
 %                circleCenter, circleRadius, angles, distance_from_circle_to_boundary,
-%                (fig_num))
+%                (figNum))
 %
 %          'line' or 'segment': produces a line type bounding box. This is
 %          a box bound that includes + and - distances about the line or
@@ -34,11 +34,11 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 %                domain_box = fcn_geometry_domainBoxByType(...
 %                'line',...
 %                unit_line_projection_vector, base_point_on_line, [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], distance_from_line_to_boundary,
-%                (fig_num))
+%                (figNum))
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -61,14 +61,14 @@ function domainShape = fcn_geometry_domainBoxByType(type_of_domain, varargin)
 
 % Revision History:
 % 2024_01_17 - S. Brennan
-% -- wrote the function
+% - wrote the function
 % 2024_05_15 - Aneesh Batchu
-% -- Added a case for "cubic polynomial"
+% - Added a case for "cubic polynomial"
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -173,7 +173,7 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (6==nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plot = 1;
     else
         flag_do_plot = 0;
@@ -251,7 +251,7 @@ end
 if flag_do_plot
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

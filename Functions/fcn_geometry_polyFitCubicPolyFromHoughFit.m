@@ -6,7 +6,7 @@ function regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_dom
 %
 % FORMAT:
 %
-% regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_domain, (best_fit_domain_box_projection_distance), (fig_num))
+% regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_domain, (best_fit_domain_box_projection_distance), (figNum))
 %
 % INPUTS:
 %
@@ -21,7 +21,7 @@ function regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_dom
 %      project in both the positive and negative directions to produce the
 %      best_fit_domain_box.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -45,11 +45,11 @@ function regression_domain = fcn_geometry_polyFitCubicPolyFromHoughFit(Hough_dom
 
 % Revision history:
 % 2024_06_08 - Aneesh Batchu
-% -- wrote the code originally
+% - wrote the code originally
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -72,9 +72,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -106,13 +106,13 @@ if (2<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -204,7 +204,7 @@ regression_domain.best_fit_domain_box = domainShape;
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -221,7 +221,7 @@ if flag_do_plots
     % plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',5,'Color',current_color);
 
     % Plot the domains
-    fcn_geometry_plotFitDomains(regression_domain, fig_num);
+    fcn_geometry_plotFitDomains(regression_domain, figNum);
 
     % Make axis slightly larger?
     if flag_rescale_axis

@@ -22,7 +22,7 @@ function points_tangent = ...
 %     centers,...
 %     radii,...
 %     points,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -34,7 +34,7 @@ function points_tangent = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -63,13 +63,13 @@ function points_tangent = ...
 
 % Revision History:
 % 2021-04-23
-% -- Revised the comments area, prepped function for geometry class
+% - Revised the comments area, prepped function for geometry class
 % 2021-04-25
-% -- Fixed a bug with calculation of intersection
+% - Fixed a bug with calculation of intersection
 % 2021-05-22
-% -- Using external fcn_geometry_plotCircle for plotting
+% - Using external fcn_geometry_plotCircle for plotting
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options 
+% - added max speed options 
 
 
 
@@ -142,13 +142,13 @@ end
 
 % % Does user want to show the plots?
 % if 4 == nargin
-%     fig_num = varargin{1};
-%     figure(fig_num);
+%     figNum = varargin{1};
+%     figure(figNum);
 %     flag_do_plot = 1;
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -158,14 +158,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (4 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -239,7 +239,7 @@ points_tangent = [points_tangent_top; points_tangent_bottom];
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     clf;
     hold on;
     axis equal;

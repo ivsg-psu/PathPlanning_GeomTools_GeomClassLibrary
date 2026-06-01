@@ -10,7 +10,7 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 %
 % FORMAT: 
 % 
-% [dist_btw_unit_refVectAndInputVec, vectorsCloseTOref] = fcn_geometry_findVectorsInAlignment(inputVectors, refVector, tolerance, fig_num)
+% [dist_btw_unit_refVectAndInputVec, vectorsCloseTOref] = fcn_geometry_findVectorsInAlignment(inputVectors, refVector, tolerance, figNum)
 %
 % INPUTS:
 %
@@ -30,7 +30,7 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 % 
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 % 
@@ -60,10 +60,10 @@ function [dist_btw_unit_refVectAndInputVec, vectorsCloseToRef] = fcn_geometry_fi
 
 % Revision history:
 % 2024_01_23 
-% -- wrote the code - Aneesh Batchu
+% - wrote the code - Aneesh Batchu
 % 2024_01_26 - S. Brennan
-% -- added 2D plotting
-% -- cleaned up comments a bit
+% - added 2D plotting
+% - cleaned up comments a bit
 
 flag_max_speed = 0;
 if (nargin==4 && isequal(varargin{end},-1))
@@ -86,9 +86,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -125,13 +125,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -149,7 +149,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Calculate the unit vectors of the input vectors (inputVectors)
-% unitVectors_inputVectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+% unitVectors_inputVectors = fcn_geometry_calcUnitVector(input_vectors, figNum);
 % unitVectors_inputVectors = (1./sqrt(sum(inputVectors.^2,2))).*inputVectors;
 vector_magnitude = sum(inputVectors.^2,2).^0.5;
 unitVectors_inputVectors = inputVectors./vector_magnitude;
@@ -184,7 +184,7 @@ vectorsCloseToRef = inputVectors(indices,:);
 
 if flag_do_plots
 
-    figure(fig_num)
+    figure(figNum)
     hold on;
     grid on;
     axis equal

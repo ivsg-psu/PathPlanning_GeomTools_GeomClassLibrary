@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_01_15 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -19,7 +19,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -36,8 +36,8 @@ corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outl
     (probability_of_corruption), (magnitude_of_corruption), (234));
 
 
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 points = corrupted_outlieronearc_test_points;
 circleCenter = true_circleCenter;
@@ -45,7 +45,7 @@ circleRadius = true_circleRadius;
 transverse_tolerance = 0.2;
 
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (figNum));
 assert(length(agreement_indicies)>1);
 
 %% Test of fast mode
@@ -58,7 +58,7 @@ trueParameters = [true_circleCenter true_circleRadius];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -87,24 +87,24 @@ transverse_tolerance = 1;
 station_tolerance = 2;
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num));
+    agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num));
+    agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -124,6 +124,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToCircle(points,fig_num);
+    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToCircle(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2023_12_29
-% -- wrote the code
+% - wrote the code
 
 %% Set up the workspace
 
@@ -23,13 +23,13 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Example - 0 - BASIC call
-fig_num = 1;
+figNum = 1;
 
 input_distances = [-100 -99 0 3 6 7 8.5 9 22]';
 base_point_index = 6;
 station_tolerance = 2;
 
-sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
@@ -37,25 +37,25 @@ assert(isequal(sequence_indicies,[5 6 7 8]'))
 
 
 %% Example - 1 - BASIC call
-fig_num = 1;
+figNum = 1;
 
 input_distances = [-1 0 3 6 7 8.5 9 10 11.5 13 14 15 16 19 22]';
 base_point_index = 6;
 station_tolerance = 2;
 
-sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
 
 %% Example - 2 - BASIC call
-fig_num = 1;
+figNum = 1;
 
 input_distances = [-1 0 3 4 5 6 7 8.5 9 10 11.5 13 14 15 16 17 18 19 20 21 22]';
 base_point_index = 6;
 station_tolerance = 2;
 
-sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
@@ -83,18 +83,18 @@ input_distances = [
     11.401131738044334
     11.500873555619966];
 
-fig_num = 2;
+figNum = 2;
 
 base_point_index = 10;
 station_tolerance = 0.1;
 
-sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
 
 %% Example - 3 - fast implementation mode
-fig_num = 333;
+figNum = 333;
 
 input_distances = [
     0
@@ -126,7 +126,7 @@ REPS = 10; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -137,7 +137,7 @@ REPS = 10; minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+    sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -189,7 +189,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 
 
 %% Example - 999 - DEBUGGING - out of order sequence
-fig_num = 999;
+figNum = 999;
 
 input_distances = [    0.6044
     0.2950
@@ -206,7 +206,7 @@ input_distances = [    0.6044
 base_point_index = 1;
 station_tolerance = 2;
 
-sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, fig_num);
+sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, figNum);
 
 assert(length(sequence_indicies) > 1);
 assert(length(sequence_indicies(1,:)) == 1);
@@ -257,7 +257,7 @@ if 1==0
         5.7000
         ];
 
-    fig_num = 4444;
+    figNum = 4444;
 
     base_point_index = 91;
     station_tolerance = 1;

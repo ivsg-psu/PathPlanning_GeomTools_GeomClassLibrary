@@ -10,7 +10,7 @@ function [dist] = ...
 %
 % FORMAT:
 %
-% [DIST] = fcn_geometry_euclideanPointToPointsDistance(POINT1, POINTS2, (fig_num))
+% [DIST] = fcn_geometry_euclideanPointToPointsDistance(POINT1, POINTS2, (figNum))
 %
 % INPUTS:
 %
@@ -22,7 +22,7 @@ function [dist] = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -51,15 +51,15 @@ function [dist] = ...
 
 % Revision History:
 % 2021-05-28 - S. Brennan
-% -- revised function to prep for geometry class 
-% -- rewrote function to use vector sum
-% -- added plotting option
+% - revised function to prep for geometry class 
+% - rewrote function to use vector sum
+% - added plotting option
 % 2021-06-05
-% -- fixed comments, added debugging option
+% - fixed comments, added debugging option
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options 
+% - added max speed options 
 % 2024_08_27 - Sean Brennan
-% -- fixed function to clearly be different from PointsToPoints function
+% - fixed function to clearly be different from PointsToPoints function
 
 %% Debugging and Input checks
 
@@ -116,13 +116,13 @@ end
 
 % % Does user want to show the plots?
 % if 3 == nargin
-%     fig_num = varargin{end};
-%     figure(fig_num);
+%     figNum = varargin{end};
+%     figure(figNum);
 %     flag_do_plot = 1;
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -132,14 +132,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (3 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -171,7 +171,7 @@ dist = sum((ones(Npoints,1)*point1-points2).^2,2).^0.5;
 
 if flag_do_plot
     % Prepare the figure
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

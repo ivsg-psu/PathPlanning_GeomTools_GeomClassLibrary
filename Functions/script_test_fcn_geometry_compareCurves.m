@@ -2,15 +2,15 @@
 % Exercises the function: fcn_geometry_compareCurves
 % Revision history:
 % 2024_04_14
-% -- wrote the code
-% -- revised from script_test_fcn_geometry_fitVectorToNPoints
+% - wrote the code
+% - revised from script_test_fcn_geometry_fitVectorToNPoints
 %
 close all;
 
 
 %% Test 1: a line as reference curve, another line as the test curve
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0 0];
@@ -49,7 +49,7 @@ curve_test_segment_length = [];
 [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 
 % Test sizes of variables
@@ -67,8 +67,8 @@ assert(flag_is_similar);
 
 
 %% Test 2: a line as reference curve, another line as the test curve, high threshold
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0 0];
@@ -107,7 +107,7 @@ curve_test_segment_length = [];
 [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 
 % Test sizes of variables
@@ -124,8 +124,8 @@ assert(isequal(size(std_dev_error),[1 1]));
 assert(~flag_is_similar);
 
 %% Test 3: a line as reference curve, another line as the test curve, low threshold
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [0 0];
@@ -164,7 +164,7 @@ curve_test_segment_length = [];
 [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 
 % Test sizes of variables
@@ -182,8 +182,8 @@ assert(~flag_is_similar);
 
 
 %% Test 201: an arc as reference curve, another line as the test curve, low threshold
-fig_num = 201;
-figure(fig_num); clf;
+figNum = 201;
+figure(figNum); clf;
 
 % Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy            = [4 -7];
@@ -224,7 +224,7 @@ curve_test_segment_length = [];
 [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 
 % Test sizes of variables
@@ -243,8 +243,8 @@ assert(~flag_is_similar);
 
 
 %% Test 202: an arc as reference curve, another line as the test curve, high threshold
-fig_num = 202;
-figure(fig_num); clf;
+figNum = 202;
+figure(figNum); clf;
 
 % Fill the arc parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 arc_center_xy            = [4 -7];
@@ -285,7 +285,7 @@ curve_test_segment_length = [];
 [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 
 % Test sizes of variables
@@ -341,7 +341,7 @@ curve_test_segment_length = [];
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
@@ -349,7 +349,7 @@ for i=1:REPS
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
         fcn_geometry_compareCurves(...
         reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-        (threshold), (curve_test_segment_length), (fig_num));
+        (threshold), (curve_test_segment_length), (figNum));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -357,7 +357,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
@@ -365,7 +365,7 @@ for i=1:REPS
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
         fcn_geometry_compareCurves(...
         reference_curve_type_string, reference_curve_parameters, test_curve_type_string, test_curve_parameters,...
-        (threshold), (curve_test_segment_length), (fig_num));
+        (threshold), (curve_test_segment_length), (figNum));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -386,6 +386,6 @@ assert(averageTimeFast<averageTimeSlow);
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [root_point, unit_vector] = fcn_geometry_compareCurves(points,fig_num);
+    [root_point, unit_vector] = fcn_geometry_compareCurves(points,figNum);
     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 end

@@ -5,7 +5,7 @@ function [estimated_spiralLength, estimated_spiralStartAngle, estimated_spiralEn
 % unit circle.
 %
 % Format:
-% estimated_length = fcn_geometry_estimateSpiralLength(circle2_radius, offset, (fig_num))
+% estimated_length = fcn_geometry_estimateSpiralLength(circle2_radius, offset, (figNum))
 %
 % INPUTS:
 %
@@ -15,7 +15,7 @@ function [estimated_spiralLength, estimated_spiralStartAngle, estimated_spiralEn
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -40,11 +40,11 @@ function [estimated_spiralLength, estimated_spiralStartAngle, estimated_spiralEn
 % Questions or comments? sbrennan@psu.edu
 
 % 2024_07_30 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -69,9 +69,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -107,12 +107,12 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 0==flag_max_speed && 3<=nargin
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp; %#ok<NASGU>
+        figNum = temp; %#ok<NASGU>
         flag_do_plots = 1;
     end
 end
@@ -202,7 +202,7 @@ angle_larger_to_smaller    = atan2(larger_to_smaller_vector(2),larger_to_smaller
 
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

@@ -12,7 +12,7 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 % distances can be unsorted.
 %
 % Format: 
-% sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, (fig_num))
+% sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, base_point_index, station_tolerance, (figNum))
 %
 % INPUTS:
 %      input_distances: a Nx1 vector of distances where N is the number of
@@ -25,7 +25,7 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -48,15 +48,15 @@ function sequence_indicies = fcn_geometry_findPointsInSequence(input_distances, 
 
 % Revision history:
 % 2023_12_29 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
-% -- added check on base point index
+% - added fast mode option
+% - added environmental variable options
+% - added check on base point index
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -79,9 +79,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 23434; %#ok<NASGU>
+    debug_figNum = 23434; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -117,13 +117,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if 0==flag_max_speed && 4<= nargin
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -195,7 +195,7 @@ sequence_indicies = sort_order_of_indicies(sequence_sorted_indicies);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

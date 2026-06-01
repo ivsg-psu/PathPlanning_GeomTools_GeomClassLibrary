@@ -3,14 +3,14 @@
 
 % Revision history:
 % 2024_01_09 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 %% Fill test data 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -22,7 +22,7 @@ circle_radius = 2;
 M = 50; % points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 % % Add outliers?
 % % Corrupt the results
@@ -30,16 +30,16 @@ circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_rad
 % magnitude_of_corruption = 1;
 % 
 % % corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-% %     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% %     (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 % Basic call with clean data
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 hold on;
 
-[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, figNum);
 
 assert(length(regression_fit_circle(1,:))==3);
 assert(length(domain_box(:,1))>1);
@@ -58,8 +58,8 @@ fprintf(1,'Fitted circle radius (meters): %.4f \n',regression_fit_circle(1,3));
 fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(circle_radius - regression_fit_circle(1,3)));
 
 %% Basic call with bad data
-fig_num = 2;
-figure(fig_num);
+figNum = 2;
+figure(figNum);
 clf;
 hold on;% circle
 
@@ -68,7 +68,7 @@ circle_radius = 2;
 M = 50; % points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 % Add outliers?
 % Corrupt the results
@@ -80,7 +80,7 @@ corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_tes
 
 
 
-[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, fig_num);
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([corrupted_circle_test_points(1,:); corrupted_circle_test_points(2,:); corrupted_circle_test_points(end,:)],corrupted_circle_test_points, figNum);
 
 assert(length(regression_fit_circle(1,:))==3);
 assert(length(domain_box(:,1))>1);
@@ -99,8 +99,8 @@ fprintf(1,'Fitted circle radius (meters): %.4f \n',regression_fit_circle(1,3));
 fprintf(1,'Radius distance error between actual and fitted (meters) %.4f\n',(circle_radius - regression_fit_circle(1,3)));
 
 %% A hard fit
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 hold on;
 
@@ -121,7 +121,7 @@ circle_test_points = [...
    1.197469930495013   0.066122973520127
    1.300222611467405   0.024754636272782];
 
-[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, fig_num);
+[regression_fit_circle, domain_box, radial_errors, standard_deviation] = fcn_geometry_fitCircleRegressionFromHoughFit([circle_test_points(1,:); circle_test_points(2,:); circle_test_points(end,:)],circle_test_points, figNum);
 
 assert(length(regression_fit_circle(1,:))==3);
 assert(length(domain_box(:,1))>1);
@@ -140,7 +140,7 @@ circle_radius = 2;
 M = 50; % points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 tic;
 for i=1:REPS
@@ -176,7 +176,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

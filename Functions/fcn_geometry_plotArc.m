@@ -26,7 +26,7 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %     (flag_arc_is_counterclockwise),
 %     (degree_step),
 %     (format),
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -53,7 +53,7 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 %        A format string, e.g. 'b-', that dictates the plot style or
 %        A color vector, e.g. [1 0 0.23], that dictates the line color
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -77,21 +77,21 @@ function arc_points = fcn_geometry_plotArc(centers, radii, start_angle_in_radian
 
 % Revision History:
 % 2021-05-22 - S. Brennan
-% -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
-% -- eliminates repo on fcn_plotCircles
+% - new function from fcn_geometry_findAngleUsing3PointsOnCircle
+% - eliminates repo on fcn_plotCircles
 % 2024_01_16 - S. Brennan
-% -- updated comments
-% -- added fast mode by allowing fig_num set to -1
-% -- added degree_step as an optional input
-% -- fixed bug in figure argument input
-% -- added arc_points as outputs
+% - updated comments
+% - added fast mode by allowing figNum set to -1
+% - added degree_step as an optional input
+% - fixed bug in figure argument input
+% - added arc_points as outputs
 % 2024_04_12 - S Brennan
-% -- added flag_arc_is_counterclockwise input
+% - added flag_arc_is_counterclockwise input
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -187,7 +187,7 @@ if (0==flag_max_speed)
     if (8<=nargin)
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            figNum = temp;
             flag_do_plot = 1;
         else
             flag_do_plot = 0;
@@ -290,7 +290,7 @@ end
 if flag_do_plot
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

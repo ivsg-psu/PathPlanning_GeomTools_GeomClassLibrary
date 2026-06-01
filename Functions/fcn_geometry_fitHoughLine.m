@@ -34,7 +34,7 @@ function domains = fcn_geometry_fitHoughLine(points, transverse_tolerance, stati
 %      fits greater than or equal to points_required_for_agreement. The
 %      results of the line fit will be saved in a cell array.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -60,32 +60,32 @@ function domains = fcn_geometry_fitHoughLine(points, transverse_tolerance, stati
 
 % Revision history:
 % 2023_12_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2023_12_29 - S. Brennan
-% -- added debug mode that uses environmental variables
-% -- added speed mode
+% - added debug mode that uses environmental variables
+% - added speed mode
 % 2023_12_31 - S. Brennan
-% -- externalized station checks to fcn_geometry_findPointsInSequence
-% -- now allows both line and line segment fitting
-% -- modified to only ouput the best fit
+% - externalized station checks to fcn_geometry_findPointsInSequence
+% - now allows both line and line segment fitting
+% - modified to only ouput the best fit
 % 2024_01_14 - S. Brennan
-% -- added points_required_for_agreement option
-% -- fixed minor bug where fastmode looking at varargin{1}, not
+% - added points_required_for_agreement option
+% - fixed minor bug where fastmode looking at varargin{1}, not
 % varargin{end}
-% -- added best_fitted_parameters_unitvector_basepoint_distance_form output
-% -- added multi-line fitting option, much faster than doing one-at-a-time
+% - added best_fitted_parameters_unitvector_basepoint_distance_form output
+% - added multi-line fitting option, much faster than doing one-at-a-time
 % 2024_01_15 - S. Brennan
-% -- functionalized fcn_INTERNAL_findPhisRhos
-% -- changed outputs to domain types
-% -- added fcn_geometry_plotFitDomains for plotting
+% - functionalized fcn_INTERNAL_findPhisRhos
+% - changed outputs to domain types
+% - added fcn_geometry_plotFitDomains for plotting
 % 2024_06_22 - Sean Brennan
-% -- changed line parameter format to new standard:
+% - changed line parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -95,7 +95,7 @@ function domains = fcn_geometry_fitHoughLine(points, transverse_tolerance, stati
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -118,9 +118,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -170,13 +170,13 @@ if 4<= nargin
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -317,7 +317,7 @@ domains = fcn_INTERNAL_filldomains(points, best_fit_parameters_unitvector_basepo
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -341,7 +341,7 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',40);
 
     % Plot the domains
-    fcn_geometry_plotFitDomains(domains, fig_num);
+    fcn_geometry_plotFitDomains(domains, figNum);
 
     % Plot all line fits? NOTE: this can be confusing as these are the
     % INPUT line segments, not the actual line segments at the end of the
@@ -383,7 +383,7 @@ if flag_do_plots
     end
 
     %% Plot the Hough space results, from least to best
-    figure(fig_num+1);
+    figure(figNum+1);
     clf;
     hold on;
     grid on;

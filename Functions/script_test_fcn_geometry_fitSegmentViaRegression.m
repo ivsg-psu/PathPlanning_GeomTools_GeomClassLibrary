@@ -3,16 +3,16 @@
 
 % Revision history:
 % 2023_12_15 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_11 - S. Brennan
-% -- added assertion testing
+% - added assertion testing
 
 close all;
 
 
 %% Basic call - line fitting
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 rng(1);
@@ -25,7 +25,7 @@ line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 
 % Test the regression
-[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, fig_num);
+[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, figNum);
 
 % Check the output type and size
 assert(isequal(size(best_fit_parameters),[1 4]));
@@ -38,8 +38,8 @@ assert(isequal(round(std_dev_orthogonal_distance,1),round(sigma,1)));
 
 
 %% Vertical line fit, down to up
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 rng(1)
 
@@ -50,7 +50,7 @@ sigma = 0.02;
 line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 % Test the regression
-[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, fig_num);
+[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, figNum);
 
 % Check the output type and size
 assert(isequal(size(best_fit_parameters),[1 4]));
@@ -61,8 +61,8 @@ assert(isequal(round(std_dev_orthogonal_distance,1),round(sigma,1)));
 
 
 %% Vertical line fit, down to up
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 rng(1)
 
@@ -73,7 +73,7 @@ sigma = 0.02;
 line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 % Test the regression
-[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, fig_num);
+[best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, figNum);
 
 % Check the output type and size
 assert(isequal(size(best_fit_parameters),[1 4]));
@@ -97,24 +97,24 @@ sigma = 0.02;
 line_test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, -1);
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, fig_num);
+    [best_fit_parameters, std_dev_orthogonal_distance] = fcn_geometry_fitSegmentViaRegression(line_test_points, figNum);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-     [best_fit_parameters, std_dev_orthogonal_distance] =  fcn_geometry_fitSegmentViaRegression(line_test_points, fig_num);
+     [best_fit_parameters, std_dev_orthogonal_distance] =  fcn_geometry_fitSegmentViaRegression(line_test_points, figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -134,7 +134,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

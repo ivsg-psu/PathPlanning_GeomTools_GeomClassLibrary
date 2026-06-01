@@ -3,13 +3,13 @@
 
 % Revision history:
 % 2024_01_15 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 %% BASIC call with arc data, fitting it with a circle by not specifying station tolerance
-fig_num = 111;
-figure(fig_num); clf;
+figNum = 111;
+figure(figNum); clf;
 
 rng(383)
 
@@ -21,7 +21,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -48,7 +48,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = 1;
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle,1));
 assert(length(agreement_indicies)>1);
@@ -56,8 +56,8 @@ assert(length(start_angle_in_radians) == 1);
 assert(length(end_angle_in_radians) == 1);
 
 %% BASIC call with arc data, fitting it with an arc by specifying low station tolerance
-fig_num = 222;
-figure(fig_num); clf;
+figNum = 222;
+figure(figNum); clf;
 
 rng(383)
 
@@ -69,7 +69,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -95,7 +95,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle,0));
 assert(length(agreement_indicies)>1);
@@ -104,8 +104,8 @@ assert(length(end_angle_in_radians) == 1);
 
 
 %% BASIC call with arc data, fitting it with a circle by specifying large station tolerance
-fig_num = 333;
-figure(fig_num); clf;
+figNum = 333;
+figure(figNum); clf;
 
 rng(383)
 
@@ -117,7 +117,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -144,7 +144,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle,1));
 assert(length(agreement_indicies)>1);
@@ -153,8 +153,8 @@ assert(length(end_angle_in_radians) == 1);
 
 
 %% BASIC call with arc data, forcing circle fit (which is not possible, so throws "bad fit" or flag_is_a_cirlce = -1) using flag_force_circle_fit
-fig_num = 444;
-figure(fig_num); clf;
+figNum = 444;
+figure(figNum); clf;
 
 rng(383)
 
@@ -166,7 +166,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -194,7 +194,7 @@ flag_force_circle_fit = 1;
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle,-1));
 assert(isequal(agreement_indicies,[]));
@@ -203,14 +203,14 @@ assert(length(end_angle_in_radians) == 1);
 
 
 %% BASIC call with circle data, fitting it with a circle by not specifying station tolerance
-fig_num = 1111;
-figure(fig_num); clf;
+figNum = 1111;
+figure(figNum); clf;
 
 rng(383);
 
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -222,7 +222,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -231,7 +231,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 inputPoints = corrupted_circle_test_points;
 base_point_index = 1;
@@ -243,7 +243,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle, 1));
 assert(length(agreement_indicies)>1);
@@ -255,14 +255,14 @@ assert(length(end_angle_in_radians) == 1);
 % NOTE: notice how this is much slower than the previous call, as it takes
 % siginificant computation to check arcs, which is required when
 % station_tolerance is given
-fig_num = 2222;
-figure(fig_num); clf;
+figNum = 2222;
+figure(figNum); clf;
 
 rng(383);
 
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -274,7 +274,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -283,7 +283,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 inputPoints = corrupted_circle_test_points;
 base_point_index = 1;
@@ -295,7 +295,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle, 1));
 assert(length(agreement_indicies)>1);
@@ -305,14 +305,14 @@ assert(length(end_angle_in_radians) == 1);
 
 %% BASIC call with circle data, fitting it with an arc by specifying station tolerance is too small
 % The arc cannot jump the "gaps" in the circle
-fig_num = 3333;
-figure(fig_num); clf;
+figNum = 3333;
+figure(figNum); clf;
 
 rng(383);
 
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -324,7 +324,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -333,7 +333,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 inputPoints = corrupted_circle_test_points;
@@ -346,7 +346,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = [];
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle, 0));
 assert(~isequal(agreement_indicies,[]));
@@ -355,8 +355,8 @@ assert(length(end_angle_in_radians) == 1);
 
 
 %% BASIC call with threshold_to_check_arc and arc data, and circle fit is good so arc is attempted
-fig_num = 44444;
-figure(fig_num); clf;
+figNum = 44444;
+figure(figNum); clf;
 
 rng(383)
 
@@ -368,7 +368,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -395,7 +395,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = 10;
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 
 assert(isequal(flag_is_a_circle, 0));
 assert(length(agreement_indicies)>1);
@@ -403,8 +403,8 @@ assert(length(start_angle_in_radians) == 1);
 assert(length(end_angle_in_radians) == 1);
 
 %% BASIC call with threshold_to_check_arc and arc data, and circle fit is bad so arc is NOT attempted
-fig_num = 44445;
-figure(fig_num); clf;
+figNum = 44445;
+figure(figNum); clf;
 
 rng(383)
 
@@ -416,7 +416,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -442,7 +442,7 @@ flag_force_circle_fit = [];
 threshold_to_check_arc = 10;
 
 [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+    fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 assert(isequal(flag_is_a_circle, -1));
 assert(isequal(agreement_indicies,[]));
 assert(length(start_angle_in_radians) == 1);
@@ -461,7 +461,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
@@ -484,17 +484,17 @@ circleRadius = true_circleRadius2;
 transverse_tolerance = 0.1;
 station_tolerance = 1;
 flag_force_circle_fit = [];
-fig_num = -1;
+figNum = -1;
 
 % Perform the calculation in slow mode
 threshold_to_check_arc = [];
-fig_num = -1;
+figNum = -1;
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
     [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-        fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+        fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
@@ -502,13 +502,13 @@ averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
 threshold_to_check_arc = 10;
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
     [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-        fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+        fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -536,7 +536,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % M = 8; % Number of points per meter
 % sigma = 0.02;
 % 
-% outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+% outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 % 
 % % Corrupt the results
 % probability_of_corruption = 0.3;
@@ -563,13 +563,13 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % threshold_to_check_arc = 10;
 % 
 % % Perform the calculation in slow mode
-% fig_num = [];
+% figNum = [];
 % REPS = 100; minTimeSlow = Inf;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 %     [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-%         fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+%         fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 % 
 %     telapsed = toc(tstart);
 %     minTimeSlow = min(telapsed,minTimeSlow);
@@ -577,13 +577,13 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % averageTimeSlow = toc/REPS;
 % 
 % % Perform the operation in fast mode
-% fig_num = -1;
+% figNum = -1;
 % minTimeFast = Inf; nsum = 10;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 %     [agreement_indicies, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-%         fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (fig_num));
+%         fcn_geometry_findAgreementsOfPointsToArc(inputPoints, base_point_index, circleCenter, circleRadius, transverse_tolerance, (station_tolerance), (flag_force_circle_fit),(threshold_to_check_arc), (figNum));
 % 
 %     telapsed = toc(tstart);
 %     minTimeFast = min(telapsed,minTimeFast);
@@ -604,6 +604,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToArc(points,fig_num);
+    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToArc(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

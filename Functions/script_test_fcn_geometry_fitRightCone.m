@@ -5,7 +5,7 @@
 
 % Revision history:
 % 2024_01_24
-% -- first write of the code
+% - first write of the code
 
 %% Set up the workspace
 close all
@@ -20,8 +20,8 @@ idx_scan = 1;
 test_ring = ptCloud_pts_layers_separated_cell{idx_scan}.Ring0;
 inputPoints = test_ring(:,1:3);
 ring_id = test_ring(1,5);
-fig_num = 1;
-[cone_parameters,fittedPoints,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,fig_num);
+figNum = 1;
+[cone_parameters,fittedPoints,fitting_result] = fcn_geometry_fitRightCone(inputPoints,ring_id,figNum);
 
 assert(length(cone_parameters(1,:)) == 2);
 assert(length(fittedPoints(:,1))>2);

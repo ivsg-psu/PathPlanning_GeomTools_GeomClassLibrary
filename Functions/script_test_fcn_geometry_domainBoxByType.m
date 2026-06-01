@@ -3,9 +3,9 @@
 
 % Revision history:
 % 2024_02_12 - S . Brennan
-% -- Edited for new function using plotCircle as starter
+% - Edited for new function using plotCircle as starter
 % 2024_04_11 - S . Brennan
-% -- Added assertions
+% - Added assertions
 
 close all
 
@@ -25,8 +25,8 @@ rng(1);
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Lines
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BASIC example to produce domain for one line, typical situation
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 unit_line_projection_vector = fcn_geometry_calcUnitVector([1 1]);
 base_point_on_line = [0 0];
@@ -39,14 +39,14 @@ domain_box = fcn_geometry_domainBoxByType(...
     unit_line_projection_vector, base_point_on_line, ...
     [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], ...
     distance_from_line_to_boundary,...
-    (fig_num));
+    (figNum));
 
 
 assert(issimplified(domain_box));
 
 %% BASIC example to show it works even if transverse distances in wrong order
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 unit_line_projection_vector = fcn_geometry_calcUnitVector([1 1]);
 base_point_on_line = [0 0];
@@ -59,14 +59,14 @@ domain_box = fcn_geometry_domainBoxByType(...
     unit_line_projection_vector, base_point_on_line, ...
     [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], ...
     distance_from_line_to_boundary,...
-    (fig_num));
+    (figNum));
 
 
 assert(issimplified(domain_box));
 
 %% BASIC example to show it works with negative distances
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 unit_line_projection_vector = fcn_geometry_calcUnitVector([1 1]);
 base_point_on_line = [0 0];
@@ -79,7 +79,7 @@ domain_box = fcn_geometry_domainBoxByType(...
     unit_line_projection_vector, base_point_on_line, ...
     [transverse_distance_to_lowest_point, transverse_distance_to_highest_point], ...
     distance_from_line_to_boundary,...
-    (fig_num));
+    (figNum));
 
 
 assert(issimplified(domain_box));
@@ -114,8 +114,8 @@ assert(issimplified(domain_box));
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Arcs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BASIC example to produce domain for one arc, typical situation
-fig_num = 20;
-figure(fig_num); clf;
+figNum = 20;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2;
@@ -128,13 +128,13 @@ distance_from_circle_to_boundary = 0.5;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(issimplified(domain_box));
 
 %% BASIC example to produce domain for one arc, uncertainty produces negative radii
-fig_num = 21;
-figure(fig_num); clf;
+figNum = 21;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2; 
@@ -147,13 +147,13 @@ distance_from_circle_to_boundary = 2;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(~issimplified(domain_box));
 
 %% BASIC example for one arc plotting from 0 to 90, negative
-fig_num = 22;
-figure(fig_num); clf;
+figNum = 22;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2; 
@@ -166,13 +166,13 @@ distance_from_circle_to_boundary = 0.5;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(issimplified(domain_box));
 
 %% BASIC example for one arc plotting from -90 to 90, positive
-fig_num = 23;
-figure(fig_num); clf;
+figNum = 23;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2; 
@@ -185,15 +185,15 @@ distance_from_circle_to_boundary = 0.5;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(issimplified(domain_box));
 
 %% BASIC example for one arc plotting from 90 to -90, positive
 % Must add 360 degrees to end point 
 
-fig_num = 24;
-figure(fig_num); clf;
+figNum = 24;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2; 
@@ -206,13 +206,13 @@ distance_from_circle_to_boundary = 0.5;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(issimplified(domain_box));
 
 %% BASIC example - show that can change number of points in the arc via degree_step
-fig_num = 25;
-figure(fig_num); clf;
+figNum = 25;
+figure(figNum); clf;
 
 circleCenter = [1 3];
 circleRadius = 2; 
@@ -225,7 +225,7 @@ distance_from_circle_to_boundary = 0.5;
 domain_box = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
 
 assert(issimplified(domain_box));
 
@@ -259,7 +259,7 @@ distance_from_circle_to_boundary = 0.5;
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
@@ -268,7 +268,7 @@ for i=1:REPS
     domain_box1 = fcn_geometry_domainBoxByType(...
     'arc',...
     circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-    (fig_num));
+    (figNum));
     
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -276,7 +276,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
@@ -285,7 +285,7 @@ for i=1:REPS
     domain_box2 = fcn_geometry_domainBoxByType(...
         'arc',...
         circleCenter, circleRadius, angles, distance_from_circle_to_boundary, ...
-        (fig_num));
+        (figNum));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -309,7 +309,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % arguments
 if 1==0
 %% BREAK CASES 1 - break on centers
-fig_num = 999;
+figNum = 999;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4];

@@ -15,7 +15,7 @@ function visible_arc_angles = ...
 %     centers,...
 %     radii,...
 %     points,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -27,7 +27,7 @@ function visible_arc_angles = ...
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -52,16 +52,16 @@ function visible_arc_angles = ...
 
 % Revision History:
 % 2021-05-23
-% -- Created function from fcn_geometry_findTangentPointsFromPointToCircle
+% - Created function from fcn_geometry_findTangentPointsFromPointToCircle
 % 2024_01_17 - S. Brennan
-% -- improved comments a bit
-% -- added max speed options
-% -- fixed bug wherein it crashes if empty figure given
+% - improved comments a bit
+% - added max speed options
+% - fixed bug wherein it crashes if empty figure given
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -130,7 +130,7 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (4 <= nargin)
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp; %#ok<NASGU>
+        figNum = temp; %#ok<NASGU>
     end
 end
 
@@ -178,7 +178,7 @@ visible_arc_angles(squared_diff<0,:) = NaN;
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     clf;
     hold on;
     grid on; grid minor;

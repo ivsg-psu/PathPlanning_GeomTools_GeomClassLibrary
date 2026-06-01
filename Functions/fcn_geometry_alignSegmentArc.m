@@ -20,7 +20,7 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %
 % Format:
 % [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-% fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
+% fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (figNum))
 %
 % INPUTS:
 %
@@ -48,7 +48,7 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %      (default), or 2 for C2 continuity. For an explanation of continuity,
 %      see fcn_geometry_alignGeometriesInSequence
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -87,9 +87,9 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 
 % Revision history:
 % 2024_05_13 - Sean Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_06_16 - Sean Brennan
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %               [
 %                x0,  % The initial x value
@@ -100,14 +100,14 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -115,12 +115,12 @@ function [revised_segment_parameters, revised_arc_parameters, revised_intermedia
 %              s_Length,
 %             ]
 % 2024_06_26 - S. Brennan
-% -- fixed bug due to line definition change not being updated in final
+% - fixed bug due to line definition change not being updated in final
 % translation offset correction
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -145,9 +145,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 7564;
+    debug_figNum = 7564;
 else
-    debug_fig_num = [];
+    debug_figNum = [];
 end
 
 
@@ -206,12 +206,12 @@ if (4<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -229,10 +229,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plot inputs?
-fcn_INTERNAL_prepDebugFigure(arc_parameters, segment_parameters, debug_fig_num);
+fcn_INTERNAL_prepDebugFigure(arc_parameters, segment_parameters, debug_figNum);
 
 %% Check to see if arc and segment intersect
-intersection_point1 = fcn_INTERNAL_ArcSegmentIntersection(arc_parameters, segment_parameters, 1, debug_fig_num);
+intersection_point1 = fcn_INTERNAL_ArcSegmentIntersection(arc_parameters, segment_parameters, 1, debug_figNum);
 if (length(intersection_point1(:,1))>1)&&(0==continuity_level)
     warning('on','backtrace');
     warning('Multiple intersection points found between a segment and arc geometry with a requested connection type of C0 continuity. Unable to resolve which intersection to use.');
@@ -243,9 +243,9 @@ arc_parameters_flipped = fcn_geometry_flipGeom('arc',  arc_parameters, -1);
 segment_parameters_flipped = fcn_geometry_flipGeom('segment',  segment_parameters, -1);
 
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -264,9 +264,9 @@ end
     fcn_geometry_alignArcSegment(...
     arc_parameters_flipped, segment_parameters_flipped, (threshold), (continuity_level), (-1));
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -291,9 +291,9 @@ revised_offset_segment_parameters = fcn_geometry_flipGeom('segment',  revised_in
 % Flip the intermediate geometry
 revised_offset_intermediate_geometry_join_parameters = fcn_geometry_flipGeom(revised_inverse_intermediate_geometry_join_type,  revised_inverse_intermediate_geometry_join_parameters, -1);
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -326,7 +326,7 @@ St_transform_XYtoSt = transformMatrix_translation_into_origin;
 
 [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_offset_arc_parameters, revised_offset_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_offset_intermediate_geometry_join_parameters, St_transform_XYtoSt, 0, debug_fig_num);
+    revised_offset_arc_parameters, revised_offset_segment_parameters, revised_inverse_intermediate_geometry_join_type, revised_offset_intermediate_geometry_join_parameters, St_transform_XYtoSt, 0, debug_figNum);
 
 
 %% Plot the results (for debugging)?
@@ -342,7 +342,7 @@ St_transform_XYtoSt = transformMatrix_translation_into_origin;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -427,9 +427,9 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_prepDebugFigure
-function fcn_INTERNAL_prepDebugFigure(arc_parameters, line_parameters, debug_fig_num)
-if ~isempty(debug_fig_num)
-    figure(debug_fig_num);
+function fcn_INTERNAL_prepDebugFigure(arc_parameters, line_parameters, debug_figNum)
+if ~isempty(debug_figNum)
+    figure(debug_figNum);
     clf;
 
     % Plot the inputs
@@ -437,7 +437,7 @@ if ~isempty(debug_fig_num)
 
 
     fcn_geometry_plotCircle(arc_parameters(1,1:2),arc_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
 
     fcn_geometry_plotGeometry('arc',arc_parameters);
     fcn_geometry_plotGeometry('segment',line_parameters);
@@ -462,7 +462,7 @@ end
 end % Ends fcn_INTERNAL_prepDebugFigure
 
 %% fcn_INTERNAL_ArcSegmentIntersection
-function  intersection_point_arc_to_segment = fcn_INTERNAL_ArcSegmentIntersection(arc_parameters,segment_parameters, subplot_number, debug_fig_num)
+function  intersection_point_arc_to_segment = fcn_INTERNAL_ArcSegmentIntersection(arc_parameters,segment_parameters, subplot_number, debug_figNum)
 firstFitType = 'arc';
 firstFitType_parameters = arc_parameters;
 secondFitType = 'segment';
@@ -471,9 +471,9 @@ secondFitType_parameters = segment_parameters;
 intersection_point_arc_to_segment = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, -1);
 
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the intersection
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -488,7 +488,7 @@ end % Ends fcn_INTERNAL_ArcSegmentIntersection
 
 %% fcn_INTERNAL_findShiftToMatchSegmentToArc
 function [desired_arc_parameters, desired_segment_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
-    fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, segment_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_segment, debug_fig_num)
+    fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, segment_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_segment, debug_figNum)
 % Calculates the delta amount to match the segment to the arc. The delta
 % values are measured FROM desired point TO actual point
 
@@ -656,7 +656,7 @@ switch continuity_level
                     % Call function again with revised parameters that
                     % should work
                     [desired_arc_parameters, desired_segment_parameters, desired_intermediate_geometry_join_parameters] = ...
-                        fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, revised_segment_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
+                        fcn_INTERNAL_findShiftToMatchSegmentToArc(arc_parameters, revised_segment_parameters, continuity_level, intersection_point, [], 0, debug_figNum);
                     flag_spiral_was_calculated = 1;
                 else
                     % Not possible
@@ -746,15 +746,15 @@ switch continuity_level
 end
 
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the bounding box
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
     subplot(3,2,4);
     fcn_geometry_plotCircle(desired_arc_parameters(1,1:2),desired_arc_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
 
     fcn_geometry_plotGeometry('arc',desired_arc_parameters);
     fcn_geometry_plotGeometry('segment',desired_segment_parameters);
@@ -777,7 +777,7 @@ end % Ends fcn_INTERNAL_findShiftToMatchSegmentToArc
 %% fcn_INTERNAL_convertParametersOutOfStOrientation
 function [revised_arc_parameters, revised_segment_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_arc_parameters_St, revised_segment_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc_is_flipped, debug_fig_num)
+    revised_arc_parameters_St, revised_segment_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc_is_flipped, debug_figNum)
 
 % Call the function to convert from ST back to XY
 st_parameters_type_strings{1} = 'segment';
@@ -794,9 +794,9 @@ revised_segment_parameters = XY_parameters{1};
 revised_arc_parameters     = XY_parameters{2};
 revised_intermediate_geometry_join_parameters = XY_parameters{3};
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 

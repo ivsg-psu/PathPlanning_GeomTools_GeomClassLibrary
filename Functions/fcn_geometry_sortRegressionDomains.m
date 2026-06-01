@@ -23,7 +23,7 @@ function [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fc
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -54,15 +54,15 @@ function [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fc
 
 % Revision History
 % 2024_02_29 - Aneesh Batchu
-% -- wrote the code 
+% - wrote the code 
 % 2024_03_12 - Aneesh Batchu
-% -- Modified the function to take the tolerance as the input and output
+% - Modified the function to take the tolerance as the input and output
 % the closeEndPointMatrix. 
 % 2024_03_25 - Aneesh Batchu
-% -- This function can now sort all types of regression domains (not just
+% - This function can now sort all types of regression domains (not just
 % segments)
 % 2024_03_28 - Aneesh Batchu
-% -- Function is modifed to "fcn_geometry_sortRegressionDomains" from
+% - Function is modifed to "fcn_geometry_sortRegressionDomains" from
 % "fcn_geometry_sortHoughSegments"
 
 
@@ -87,9 +87,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -116,13 +116,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -240,7 +240,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    figure(fig_num)
+    figure(figNum)
 
     % Plotting the close break point pairs
     plot(sortedHoughSegmentEndPoints(:,1), sortedHoughSegmentEndPoints(:,2), 'oc', 'MarkerSize',20, 'DisplayName','First Points', 'LineWidth',3);

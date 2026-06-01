@@ -2,13 +2,13 @@
 % Exercises the function: fcn_geometry_fitRadiusToPoints
 
 % 2024_06_27 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 %% Basic example - normal case
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 rng(1); % Fix the random number, for debugging
@@ -30,10 +30,10 @@ arc_pattern = [...
 M = 10; % How many points per meter
 sigma = 0.1; % The standard deviation in the points relative to the perfect function fit, in meters
 
-[test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, fig_num);
+[test_points, ~, ~, trueArcStartIndicies, trueNamedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, figNum);
 
 % Call the function
-[radius, radius_maximum] = fcn_geometry_fitRadiusToPoints(test_points, fig_num);
+[radius, radius_maximum] = fcn_geometry_fitRadiusToPoints(test_points, figNum);
 
 % Check sizes
 assert(isequal(size(radius),[1 1]));

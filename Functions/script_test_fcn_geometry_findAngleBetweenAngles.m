@@ -2,13 +2,13 @@
 % Exercises the function: fcn_geometry_findAngleBetweenAngles
 % Revision history:
 % 2024_01_07
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 %% Test 1: a basic test 
-fig_num = 1;
+figNum = 1;
 
 
 start_angle_in_radians = 0*pi/180;
@@ -16,12 +16,12 @@ end_angle_in_radians = 90*pi/180;
 angles_to_test_in_radians = 45*pi/180;
 direction = 1;
 
-[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num));
+[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (figNum));
 
 assert(isequal(isAngleBetween,1));
 
 %% Test 2: a basic test - vectorized
-fig_num = 2;
+figNum = 2;
 
 
 start_angle_in_radians = 0*pi/180;
@@ -30,14 +30,14 @@ end_angle_in_radians = start_angle_in_radians+change_in_angle;
 angles_to_test_in_radians = (start_angle_in_radians:(start_angle_in_radians+2*pi))';
 direction = 1;
 
-[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num));
+[isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (figNum));
 correct_results = (angles_to_test_in_radians-start_angle_in_radians)<=end_angle_in_radians;
 assert(isequal(isAngleBetween,correct_results));
 
 %% Test 3: systematic testing
-fig_num = 3;
-figure(fig_num); clf;
-set(fig_num,'UserData',[]);
+figNum = 3;
+figure(figNum); clf;
+set(figNum,'UserData',[]);
 
 increment_angle = 45;
 increment_angle_in_radians = (increment_angle*pi/180);
@@ -52,7 +52,7 @@ for ith_start = 1:length(start_angles_in_radians)
         end_angle_in_radians = start_angle_in_radians+change_in_angle;
         angles_to_test_in_radians = (start_angle_in_radians:increment_angle_in_radians:(start_angle_in_radians + 2*pi - increment_angle_in_radians))';
 
-        [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num));
+        [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (figNum));
         correct_results = round((angles_to_test_in_radians-start_angle_in_radians),8)<=round(mod(change_in_angle,2*pi),8);
         drawnow;
         assert(isequal(isAngleBetween,correct_results));
@@ -67,7 +67,7 @@ for ith_start = 1:length(start_angles_in_radians)
         end_angle_in_radians = start_angle_in_radians+change_in_angle;
         angles_to_test_in_radians = (start_angle_in_radians:increment_angle_in_radians:(start_angle_in_radians + 2*pi - increment_angle_in_radians))';
 
-        [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num));
+        [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (figNum));
         correct_results = round((angles_to_test_in_radians-start_angle_in_radians),8)>=round(mod(change_in_angle,2*pi),8);
         drawnow;
         assert(isequal(isAngleBetween,correct_results));
@@ -118,6 +118,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

@@ -21,7 +21,7 @@ function [point_flags] = ...
 %     fcn_geometry_flagPointsCloserToOriginThanLineSegment(...
 %     segment_points, ...
 %     test_points, ...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %      segment_points: a 2x2 vector where the first row is the [x y]
@@ -33,7 +33,7 @@ function [point_flags] = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -56,16 +56,16 @@ function [point_flags] = ...
 
 % Revision history:
 % 2020_06_25 
-% -- wrote the code
+% - wrote the code
 % 2021_05_26
-% -- Improved the comments, prepped for geometry class
+% - Improved the comments, prepped for geometry class
 % 2021_05_31
-% -- Fixed bug where points beyond the origin were also included
+% - Fixed bug where points beyond the origin were also included
 % incorrectly
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options
+% - added max speed options
 % 2024_04_15 - S. Brennan
-% -- added plot handles to legend entries to keep from causing warnings 
+% - added plot handles to legend entries to keep from causing warnings 
 
 
 %% Debugging and Input checks
@@ -127,13 +127,13 @@ end
 
 % % Does user want to show the plots?
 % if 3 == nargin
-%     fig_num = varargin{end};
-%     figure(fig_num);
+%     figNum = varargin{end};
+%     figure(figNum);
 %     flag_do_plot = 1;
 % else
 %     if flag_do_debug
 %         fig = figure; 
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -143,14 +143,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (3 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -205,7 +205,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     hold on;
     grid on;
     axis equal;

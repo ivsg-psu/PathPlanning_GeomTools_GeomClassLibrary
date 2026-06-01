@@ -51,7 +51,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 %
 % Format:
 % revised_fitSequence_parameters = ...
-% fcn_geometry_isFeasibleGeomSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (fig_num))
+% fcn_geometry_isFeasibleGeomSequence(fitSequence_bestFitType, fitSequence_parameters, threshold, (figNum))
 %
 % INPUTS:
 %      fitSequence_bestFitType: a cell array of length N that contains
@@ -66,7 +66,7 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -89,11 +89,11 @@ function [revised_fitSequence_types, revised_fitSequence_parameters] = ...
 
 % Revision history:
 % 2024_04_19 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -118,9 +118,9 @@ flag_do_debug = 1;
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -145,20 +145,20 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
         % Does user want to specify animation_figure_handles?
         % flag_plot_subfigs = 0;
 
         if length(temp)>1
-            fig_num           = temp(1);
+            figNum           = temp(1);
             % h_plotPoints      = temp(2);
             % h_plotPercentage  = temp(3);
             % h_plotFitShape    = temp(4);
@@ -228,17 +228,17 @@ for ith_fit = 1:NfitsInSequence-1
 
     if flag_do_debug
         
-        debug_fig_num_iterated = ith_fit+56575;
-        figure(debug_fig_num_iterated);
+        debug_figNum_iterated = ith_fit+56575;
+        figure(debug_figNum_iterated);
 
         sgtitle('Debugging')
         subplot(1,2,2);
-        fcn_geometry_plotFitSequences(revised_sequence_types, revised_sequence_parameters,(debug_fig_num_iterated));
+        fcn_geometry_plotFitSequences(revised_sequence_types, revised_sequence_parameters,(debug_figNum_iterated));
         temp_axis = axis;
         title('Results from last joint alignment');
 
         subplot(1,2,1);
-        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(debug_fig_num_iterated));
+        fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(debug_figNum_iterated));
         axis(temp_axis);
         title('Cumulative alignments')
 
@@ -282,7 +282,7 @@ if flag_do_plots
     %
     % else
     % Plot the results in the given figure number
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -292,7 +292,7 @@ if flag_do_plots
     % if flag_plot_subfigs == 1
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %     % Final fit
-    %     figure(fig_num);
+    %     figure(figNum);
     %     subplot(2,2,4);
     %     hold on;
     %     grid on;
@@ -311,7 +311,7 @@ if flag_do_plots
     %     end
     %
     %     % Plot the domain fits
-    %     fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+    %     fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(figNum));
     %
     %     axis(original_axis);
     %
@@ -327,7 +327,7 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    fcn_geometry_plotFitSequences(input_types, input_parameters,(fig_num));
+    fcn_geometry_plotFitSequences(input_types, input_parameters,(figNum));
 
 
     % Make axis slightly larger?
@@ -350,7 +350,7 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(fig_num));
+    fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(figNum));
 
     % Match axis
     axis(good_axis);
@@ -405,7 +405,7 @@ switch X_fitType
         % Arc to Arc
         % Call function
         % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-        % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+        % fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (figNum))
         
         [revised_arc_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignArcArc(...
             arc_parameters, X_parameters, (threshold), (continuity_level), (77777));
@@ -456,7 +456,7 @@ switch X_fitType
         % Segment to Arc
         % Format:
         % [revised_segment_parameters, revised_arc_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-        % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (fig_num))
+        % fcn_geometry_alignSegmentArc(segment_parameters, arc_parameters, (threshold), (continuity_level),  (figNum))
         %
         % Call function
         [revised_segment_parameters, revised_X_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...

@@ -11,7 +11,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 %
 % Format:
 % [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-% fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num))
+% fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum))
 %
 % INPUTS:
 %
@@ -45,7 +45,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 %      listed in the secondary_parameters_type_strings. See
 %      fcn_geometry_fillEmptyDomainStructure for details.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -85,13 +85,13 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Revision history:
 % 2024_05_02 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_09 - S. Brennan
-% -- fixed bug in segment calculation wherein unit vector gives NaN if
+% - fixed bug in segment calculation wherein unit vector gives NaN if
 %    start and end points are same
-% -- fixed bug where NaN inputs cause it to crash
+% - fixed bug where NaN inputs cause it to crash
 % 2024_06_16 - Sean Brennan
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -103,14 +103,14 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -120,7 +120,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -145,9 +145,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -202,12 +202,12 @@ if (4<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -519,7 +519,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

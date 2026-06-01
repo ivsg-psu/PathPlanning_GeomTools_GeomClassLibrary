@@ -9,7 +9,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 %
 % [X_coord,Y_coord,Z_coord] = ...
 % fcn_geometry_concentricSquaresPointDensity(N_points, ext_length, ..
-% (noise_lvl), (diagonal_flag),(fig_num))
+% (noise_lvl), (diagonal_flag),(figNum))
 %
 % INPUTS:
 %   
@@ -20,7 +20,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 %
 %       noise_lvl: Noise to give the figure
 %       diagonal_flag: 1 or 0 input to have a diagonal half have noise
-%       fig_num: Assigns a custom number to the figure
+%       figNum: Assigns a custom number to the figure
 %
 % OUTPUTS:
 %       
@@ -40,7 +40,7 @@ function [points] = fcn_geometry_concentricSquaresPointDensity(N_points,ext_leng
 % Questions or comments? opg5041@psu.edu or 267-304-8354
 
 %% Debug and Max speed
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 
@@ -51,18 +51,18 @@ if (nargin==6 && isequal(varargin{end},-1))
 else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
-    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
-    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
-    if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
     end
 end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -82,7 +82,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % flag_do_plots = 1;
-% fig_num=1;
+% figNum=1;
 
 if flag_max_speed == 0
     % Are there the right number of inputs?
@@ -112,21 +112,21 @@ if 5 <= nargin
     end
 end
 
-% %Does user want specific fig_num?
+% %Does user want specific figNum?
 % if 5 == nargin
 %     temp = varargin{end};
 %     if ~isempty(temp)
-%         fig_num = temp;
+%         figNum = temp;
 %     end
 % end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (6<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -235,7 +235,7 @@ end
 
 if flag_do_plots
 
-    figure(fig_num);
+    figure(figNum);
     %plot3(X,Y,Z)
 
 

@@ -2,23 +2,23 @@
 % Exercises the function: fcn_geometry_shufflePointOrdering
 % Revision history:
 % 2023_12_17
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 %% Test 1: a basic test 
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 seed_points = [2 3; 4 5; 3 2];
 M = 10;
 sigma = 0.02;
 
-test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
-shuffled_points = fcn_geometry_shufflePointOrdering(test_points, (fig_num));
+shuffled_points = fcn_geometry_shufflePointOrdering(test_points, (figNum));
 
 assert(length(shuffled_points(:,1))>1);
 assert(length(shuffled_points(1,:))==2);
@@ -67,6 +67,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_07_06 - S. Brennan
-% -- wrote the code, using script_test_fcn_geometry_plotGeometry as a starter
+% - wrote the code, using script_test_fcn_geometry_plotGeometry as a starter
 
 
 

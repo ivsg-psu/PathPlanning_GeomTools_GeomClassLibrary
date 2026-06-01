@@ -3,66 +3,66 @@
 
 % Revision History:
 % 2021-05-28 - S. Brennan
-% -- revised function to prep for geometry class
-% -- rewrote function to use vector sum
-% -- added plotting option
+% - revised function to prep for geometry class
+% - rewrote function to use vector sum
+% - added plotting option
 % 2021-06-05
-% -- fixed comments, added debugging option
+% - fixed comments, added debugging option
 
 
 %% BASIC example - single points in 2D
-fig_num = 1;
+figNum = 1;
 
 pt1 = [1 1];
 pt2 = [2 3];
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(isequal(round(dist,4), 2.2361));
 
 %% BASIC example - two points in 2D
-fig_num = 2;
+figNum = 2;
 
 pt1 = [1 1; 0 0];
 pt2 = [2 3; 4 0] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(isequal(round(dist,4), [2.2361; 4]));
 
 %% BASIC example - many points in 2D
-fig_num = 3;
+figNum = 3;
 
 pt1 = rand(5,2);
 pt2 = rand(5,2);
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(~isequal(round(dist,4), [1; 1; 1; 1; 1]));
 %% BASIC example - single points in 3D
-fig_num = 31;
+figNum = 31;
 
 pt1 = [1 1 0];
 pt2 = [2 3 2];
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(isequal(round(dist,4), 3));
 
 %% BASIC example - two points in 3D
-fig_num = 32;
+figNum = 32;
 
 pt1 = [1 1 0; 0 0 1];
 pt2 = [2 3 4; 4 0 2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(isequal(round(dist,4), [4.5826; 4.1231]));
 
 %% BASIC example - multiple points in 3D
-fig_num = 33;
+figNum = 33;
 
 pt1 = [-1 1 0; 0 0 1; -3 -2 -4];
 pt2 = [2 3 4; 4 0 2; -5 3 -2] ;
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 assert(isequal(round(dist,4), [5.3852; 4.1231; 5.7446]));
 
 %% BASIC example - multiple points in 3D
-fig_num = 34;
+figNum = 34;
 
 pt1 = rand(5,3);
 pt2 = rand(5,3);
-dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,fig_num);
+dist=fcn_geometry_euclideanPointsToPointsDistance(pt1,pt2,figNum);
 
 %% Test of fast implementation mode 
 
@@ -70,24 +70,24 @@ pt1 = rand(5,3);
 pt2 = rand(5,3);
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointsToPointsDistance(pt1, pt2, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

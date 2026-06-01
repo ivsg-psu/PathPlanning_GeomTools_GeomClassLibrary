@@ -2,20 +2,20 @@
 % Exercises the function: fcn_geometry_fitHoughLine
 % Revision history:
 % 2023_12_14
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 %% Test 1: a basic test of line segment fitting with 2 points
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 points_required_for_agreement = [];
 
-domains= fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine([1 0; 1 1], transverse_tolerance, station_tolerance, points_required_for_agreement, figNum);
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -70,15 +70,15 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
-fig_num = 2;
-figure(fig_num);
+figNum = 2;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 points_required_for_agreement = [];
 
-domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, figNum);
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -135,15 +135,15 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = [];
 points_required_for_agreement = [];
 
-domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement,  figNum);
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -200,15 +200,15 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
-fig_num = 4;
-figure(fig_num);
+figNum = 4;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 points_required_for_agreement = 20;
 
-domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, figNum);
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -265,8 +265,8 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
-fig_num = 5;
-figure(fig_num);
+figNum = 5;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
@@ -275,7 +275,7 @@ points_required_for_agreement = 20;
 
 domains = fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement);
 
-fcn_geometry_plotFitDomains(domains, fig_num);
+fcn_geometry_plotFitDomains(domains, figNum);
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -332,15 +332,15 @@ test_points = fcn_geometry_corruptPointsWithOutliers(test_points,...
 % Shuffle points?
 test_points = fcn_geometry_shufflePointOrdering(test_points);
 
-fig_num = 6;
-figure(fig_num);
+figNum = 6;
+figure(figNum);
 clf;
 
 transverse_tolerance = 0.2;
 station_tolerance = 0.4;
 points_required_for_agreement = length(test_points(:,1))+1;
 
-domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, fig_num);
+domains= fcn_geometry_fitHoughLine(test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, figNum);
 
 
 % Check the output type and size
@@ -442,6 +442,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitHoughLine(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitHoughLine(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

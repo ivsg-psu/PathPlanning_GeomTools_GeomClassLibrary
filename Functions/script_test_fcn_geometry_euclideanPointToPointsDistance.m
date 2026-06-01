@@ -3,21 +3,21 @@
 
 % Revision History:
 % 2024_01_18 - Aneesh Batchu
-% -- added basic assertions
+% - added basic assertions
 
 %% BASIC example - two points in 2D
-fig_num = 201;
-figure(fig_num);
+figNum = 201;
+figure(figNum);
 clf;
 
 pt1 = [1 1];
 pt2 = [1 3; 4 1] ;
-dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, fig_num);
-title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',fig_num), 'Interpreter','none','FontSize',12);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, figNum);
+title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing 2D points');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(1==length(dist(1,:)));
@@ -27,16 +27,16 @@ assert(length(dist(:,1))== length(pt2(:,1)))
 assert(isequal(round(dist,4), [2 3]'));
 
 %% BASIC example - two points in 2D, no plotting
-fig_num = 202;
-figure(fig_num);
-close(fig_num)
+figNum = 202;
+figure(figNum);
+close(figNum)
 
 pt1 = [1 1];
 pt2 = [1 3; 4 1] ;
 dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, []);
 
 % Was a figure created?
-assert(all(~ishandle(fig_num)));
+assert(all(~ishandle(figNum)));
 
 % Does the data have right size?
 assert(1==length(dist(1,:)));
@@ -46,19 +46,19 @@ assert(length(dist(:,1))== length(pt2(:,1)))
 assert(isequal(round(dist,4), [2 3]'));
 
 %% BASIC example - many points in 2D
-fig_num = 203;
-figure(fig_num);
+figNum = 203;
+figure(figNum);
 clf;
 
 pt1 = [0 0];
 angles = 2*pi*rand(6,1);
 pt2 = [cos(angles) sin(angles)];
-dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, fig_num);
-title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',fig_num), 'Interpreter','none','FontSize',12);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, figNum);
+title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing many random 2D points');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(1==length(dist(1,:)));
@@ -69,18 +69,18 @@ assert(isequal(round(dist,4), ones(length(angles),1)));
 
 
 %% BASIC example - two points in 3D
-fig_num = 301;
-figure(fig_num);
+figNum = 301;
+figure(figNum);
 clf;
 
 pt1 = [1 1 0];
 pt2 = [1 1 4; 4 1 0] ;
-dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, fig_num);
-title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',fig_num), 'Interpreter','none','FontSize',12);
+dist=fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, figNum);
+title(sprintf('Example %.0d: showing fcn_geometry_euclideanPointToPointsDistance',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing 3D points');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(1==length(dist(1,:)));
@@ -96,24 +96,24 @@ pt1 = rand(1,3);
 pt2 = rand(5,3);
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (fig_num));
+    dist = fcn_geometry_euclideanPointToPointsDistance(pt1, pt2, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

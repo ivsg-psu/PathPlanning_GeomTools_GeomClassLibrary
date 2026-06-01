@@ -58,7 +58,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 % segments would be fit by spirals.
 %
 % Format: 
-% domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (fig_num))
+% domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, (figNum))
 %
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -79,7 +79,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -108,30 +108,30 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 
 % Revision history:
 % 2023_12_14 
-% -- wrote the code
+% - wrote the code
 % 2024_01_01 
-% -- modified to use updated versions of fitHoughLine code set
+% - modified to use updated versions of fitHoughLine code set
 % 2024_01_02 
-% -- line segment versions now working
+% - line segment versions now working
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 % 2024_01_09- S. Brennan
-% -- added circle fitting
+% - added circle fitting
 % 2024_01_10- S. Brennan
-% -- added arc fitting
+% - added arc fitting
 % 2024_01_15 - S. Brennan
-% -- typo fix on domain field
+% - typo fix on domain field
 % 2024_01_17 - S. Brennan
-% -- added domains within Hough fitting
+% - added domains within Hough fitting
 % 2024_06_22 - Sean Brennan
-% -- changed line parameter format to new standard:
+% - changed line parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -141,7 +141,7 @@ function domains = fcn_geometry_HoughSegmentation(points, threshold_max_points, 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -164,9 +164,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -204,13 +204,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (5<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -291,7 +291,7 @@ domains{domain_count}.best_fit_domain_box = nan;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -334,7 +334,7 @@ if flag_do_plots
         % Plot all the points in very light grey
         plot(points(:,1),points(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
 
-        fcn_geometry_plotFitDomains(domains{ith_domain}, fig_num);
+        fcn_geometry_plotFitDomains(domains{ith_domain}, figNum);
 
         % Make axis slightly larger?
         if flag_rescale_axis
@@ -373,9 +373,9 @@ function Hough_domains = ...
     fcn_INTERNAL_findBestFit(input_points,transverse_tolerance, station_tolerance, fit_type_to_search, threshold_max_points, flag_max_speed)
 
 if flag_max_speed==1
-    fig_num = -1;
+    figNum = -1;
 else
-    fig_num = []; % Shut off the figure number
+    figNum = []; % Shut off the figure number
 end
 
 % Calculate the best agreements between different fit types, returning the
@@ -385,7 +385,7 @@ switch fit_type_to_search
     case 'line'
         % Check line fitting - minimum model order is 2 points
         Hough_domains = ...
-            fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, threshold_max_points, (fig_num));
+            fcn_geometry_fitHoughLine(input_points, transverse_tolerance, station_tolerance, threshold_max_points, (figNum));
 
     case 'circle'
 
@@ -402,7 +402,7 @@ switch fit_type_to_search
         % Check circle fitting - minimum model order is 3 points
         Hough_domains  = ...
             fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
-            (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+            (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
     case 'arc'
         % If the station_tolerance is empty, then arc fitting should not do
@@ -423,7 +423,7 @@ switch fit_type_to_search
             % Check circle fitting - minimum model order is 3 points
             Hough_domains  = ...
                 fcn_geometry_fitHoughCircle(input_points, transverse_tolerance, ...
-                (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));        
+                (station_tolerance), (threshold_max_points), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));        
         else
             Hough_domains  = fcn_geometry_fillEmptyDomainStructure;
         end

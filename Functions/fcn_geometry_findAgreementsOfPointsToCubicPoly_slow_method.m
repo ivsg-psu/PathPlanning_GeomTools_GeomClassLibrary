@@ -10,7 +10,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 %
 % FORMAT:
 %
-% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (fig_num))
+% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, source_points, fittedParameters, transverse_tolerance, (station_tolerance), (total_points_including_source_points), (figNum))
 %
 % INPUTS:
 %
@@ -41,7 +41,7 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 %      you want including the source points for getting a better transverse
 %      tolerance.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -67,42 +67,42 @@ function [agreement_indices, polygon_vertices] = fcn_geometry_findAgreementsOfPo
 
 % Revision history:
 % 2024_05_10 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 % 2024_05_13 - Aneesh Batchu
-% -- "polygon_vertices" are included as the output to plot the polygon
+% - "polygon_vertices" are included as the output to plot the polygon
 % domain
 % 2024_05_17 - Aneesh Batchu
-% -- Added station_tolerance to the code. This code finds the agreement
+% - Added station_tolerance to the code. This code finds the agreement
 % indices that are not just in transverse agreement but also in station
 % agreement
 % 2024_05_29 - Aneesh Batchu
-% -- Added an internal function to interpolate the source points,
+% - Added an internal function to interpolate the source points,
 % generating more domain points and eventually obtaining a better domain
 % box around the area of interest.
-% -- Added polyfit to the upper and lower boundary points to get a better
+% - Added polyfit to the upper and lower boundary points to get a better
 % domain
 % 2024_05_30 - Aneesh Batchu 
-% -- If the slope at any point (source/interpolated) point is zero, the
+% - If the slope at any point (source/interpolated) point is zero, the
 % corresponding unit tangent vectors is multiplied with transverse
 % tolerance (instead of orthogonal vectors to find the domain boundaries)
-% -- Added a conditional statement 
+% - Added a conditional statement 
 % (&& length(indices_in_transverse_agreement)>=2) for finding the points
 % that are within the station_tolerance limit.
-% -- Removed base_point_index from the inputs
+% - Removed base_point_index from the inputs
 % 2024_06_03 - Aneesh Batchu
-% -- Functionalized unit orthogonal vectors and domain
+% - Functionalized unit orthogonal vectors and domain
 % vertices(fcn_INTERNAL_findUnitOrthogonalVectors and
 % fcn_INTERNAL_findDomainVertices) 
-% -- Added "total_points_including_source_points" as one of the inputs
+% - Added "total_points_including_source_points" as one of the inputs
 % 2024_06_05 - Aneesh Batchu
-% -- polygon_vertices are changed when station tolerance is given as the
+% - polygon_vertices are changed when station tolerance is given as the
 % input
-% -- Functionalized the slope finding method
+% - Functionalized the slope finding method
 % "fcn_INTERNAL_findSlopesAtEachPoint"
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -125,9 +125,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -195,13 +195,13 @@ if (6<= nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -304,13 +304,13 @@ agreement_indices = sort(agreement_indices);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end
     
-    figure(fig_num)
+    figure(figNum)
     hold on;
     grid on;
     % axis equal

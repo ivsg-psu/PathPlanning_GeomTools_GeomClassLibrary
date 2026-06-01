@@ -2,11 +2,11 @@
 % Exercises the function: fcn_geometry_fitHoughCubicPolynomial
 % Revision history:
 % 2024_05_16 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 % 2024_05_20 - Aneesh Batchu
-% -- Added assertions
+% - Added assertions
 % 2024-05_20 - Aneesh Batchu
-% -- Modified the station tolerances in the examples for better
+% - Modified the station tolerances in the examples for better
 % visualization and comparison
 
 close all;
@@ -28,8 +28,8 @@ close all;
 
 rng(123)
 
-fig_num = 11211;
-figure(fig_num); clf;
+figNum = 11211;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -66,7 +66,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -103,8 +103,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 11212;
-figure(fig_num); clf;
+figNum = 11212;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -141,7 +141,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -178,8 +178,8 @@ assert(isnan(domain.best_fit_parameters));
 %% Test 3: a basic linear polynomial (y = 0.3x) - points_required_for_agreement = 20, 
 rng(123)
 
-fig_num = 11213;
-figure(fig_num); clf;
+figNum = 11213;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -216,7 +216,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -253,8 +253,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 11214;
-figure(fig_num); clf;
+figNum = 11214;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -291,7 +291,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -329,8 +329,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 11215;
-figure(fig_num); clf;
+figNum = 11215;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -367,7 +367,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -418,8 +418,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 12111;
-figure(fig_num); clf;
+figNum = 12111;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = -0.1; % Coefficient for x^2
@@ -453,7 +453,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -490,8 +490,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 12112;
-figure(fig_num); clf;
+figNum = 12112;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0.1; % Coefficient for x^2
@@ -525,7 +525,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -562,8 +562,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 12113;
-figure(fig_num); clf;
+figNum = 12113;
+figure(figNum); clf;
 
 
 a = 0; % Coefficient for x^3
@@ -598,7 +598,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -650,8 +650,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21111;
-figure(fig_num); clf;
+figNum = 21111;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -686,7 +686,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -723,8 +723,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21112;
-figure(fig_num); clf;
+figNum = 21112;
+figure(figNum); clf;
 
  
 
@@ -760,7 +760,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -808,8 +808,8 @@ assert(isnan(domain.best_fit_parameters));
 
 %% Test 1: a basic constant (y = 5) (Station tolerance)
 
-fig_num = 1112;
-figure(fig_num); clf;
+figNum = 1112;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -843,7 +843,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -889,8 +889,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 22221;
-figure(fig_num); clf;
+figNum = 22221;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -943,7 +943,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -980,8 +980,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 22222;
-figure(fig_num); clf;
+figNum = 22222;
+figure(figNum); clf;
 
 a = 0.01; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -1033,7 +1033,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1070,8 +1070,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 22223;
-figure(fig_num); clf;
+figNum = 22223;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -1142,7 +1142,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1179,8 +1179,8 @@ assert(isnan(domain.best_fit_parameters));
 %% Test 4: a random cubic curve (imitating the real road)
 rng(123)
 
-fig_num = 22224;
-figure(fig_num); clf;
+figNum = 22224;
+figure(figNum); clf;
 
 a = 0.0001; % Coefficient for x^3
 b = 0.01; % Coefficient for x^2
@@ -1214,7 +1214,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1251,8 +1251,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 22225;
-figure(fig_num); clf;
+figNum = 22225;
+figure(figNum); clf;
 
 a = 0.1; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -1286,7 +1286,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1323,8 +1323,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 22224;
-figure(fig_num); clf;
+figNum = 22224;
+figure(figNum); clf;
 
 a = 0.05; % Coefficient for x^3
 b = -0.10; % Coefficient for x^2
@@ -1357,7 +1357,7 @@ total_points_after_interpolating_points_in_domain = 20;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (fig_num));
+domains = fcn_geometry_fitHoughCubicPolynomial(inputPoints, tolerance, (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_after_interpolating_points_in_domain), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1

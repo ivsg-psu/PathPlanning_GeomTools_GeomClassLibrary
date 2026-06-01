@@ -5,7 +5,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 % continuity is preserved.
 % 
 % Format: 
-% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFitC2(Hough_domain, prior_parameters, (best_fit_domain_box_projection_distance), (fig_num))
+% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitArcRegressionFromHoughFitC2(Hough_domain, prior_parameters, (best_fit_domain_box_projection_distance), (figNum))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -24,7 +24,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 %      the transverse direction, but 3 meters tolerance in the station
 %      direction.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -52,27 +52,27 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitArcR
 
 % Revision history:
 % 2024_01_09 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_01_18 - S Brennan
-% -- changed to domain inputs and outputs
+% - changed to domain inputs and outputs
 % 2024_04_02 - S Brennan
-% -- added best_fit_domain_box_projection_distance as an input option
+% - added best_fit_domain_box_projection_distance as an input option
 % 2024_04_14 - S Brennan
-% -- fixed output angles to be between 0 and 2*pi
-% -- added fcn_geometry_fillColorFromNumberOrName for plotting
+% - fixed output angles to be between 0 and 2*pi
+% - added fcn_geometry_fillColorFromNumberOrName for plotting
 % 2024_04_17 - S Brennan
-% -- fixed bug in plotting
-% -- fixed error due to best_fit_domain_box_projection_distance not being
+% - fixed bug in plotting
+% - fixed error due to best_fit_domain_box_projection_distance not being
 % used in the track data
-% -- added option to best_fit_domain_box_projection_distance to allow both
+% - added option to best_fit_domain_box_projection_distance to allow both
 % transverse AND station tolerances
 % 2024_07_05 - S. Brennan
-% -- fixed ordering so that best_fit_domain_box_projection_distance is in
+% - fixed ordering so that best_fit_domain_box_projection_distance is in
 % St coordinate ordering, station - then transverse
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -95,9 +95,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -139,13 +139,13 @@ if (3<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -257,7 +257,7 @@ end
 
 %% Shift the solution via C2 continuity check
 % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, varargin)
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (transverse_tolerance/2), (0.0001), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(prior_parameters, [circleCenter, circleRadius], (transverse_tolerance/2), (0.0001), (figNum));
 
 regression_domain.best_fit_parameters = possible_best_fit_parameters;
 regression_domain.best_fit_parameters(1,1:3) = closest_feasible_arc2_parameters(1,1:3);
@@ -308,7 +308,7 @@ end
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -333,7 +333,7 @@ if flag_do_plots
     plot(associated_points_in_domain(:,1),associated_points_in_domain(:,2),'.','MarkerSize',5,'Color',current_color);
 
     % Plot the domains
-    fcn_geometry_plotFitDomains(regression_domain, fig_num);
+    fcn_geometry_plotFitDomains(regression_domain, figNum);
 
     % Make axis slightly larger?
     if flag_rescale_axis

@@ -34,7 +34,7 @@ function [...
 %     radii_end,...
 %     cross_products_start,...
 %     cross_products_end,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -64,7 +64,7 @@ function [...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -95,16 +95,16 @@ function [...
 
 % Revision History:
 % 2021-04-25
-% -- First write of the code
+% - First write of the code
 % 2021-05-22
-% -- Added plotting from: fcn_geometry_plotCircle
+% - Added plotting from: fcn_geometry_plotCircle
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options 
+% - added max speed options 
 % 2024_04_23 - S. Brennan
-% -- force function to output nan outputs if circles overlap 
+% - force function to output nan outputs if circles overlap 
 % 2024_04_30 - S. Brennan
-% -- updated plotting to make the start (green) and end (red) circles more clear 
-% -- force function to output nan outputs if circles inside each other
+% - updated plotting to make the start (green) and end (red) circles more clear 
+% - force function to output nan outputs if circles inside each other
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -186,13 +186,13 @@ end
 
 % % Does user want to show the plots?
 % if 7 == nargin
-%     fig_num = varargin{1};
-%     figure(fig_num);
+%     figNum = varargin{1};
+%     figure(figNum);
 %     flag_do_plot = 1;
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -202,14 +202,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (7 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -418,13 +418,13 @@ end % Ends check to see if outside tangents should be calculated
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     hold on;
     axis equal;
     grid on; grid minor;
     
     % Plot the circles
-    fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,fig_num);
+    fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,figNum);
     
     % Plot the tangent points    
     plot(points_tangent_start(:,1),points_tangent_start(:,2),'g.','MarkerSize',30);
@@ -446,8 +446,8 @@ end
 end % Ends function
 
 %% For plotting
-function fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,fig_num)
-figure(fig_num);
+function fcn_plotCircles(centers_start,centers_end,radii_start,radii_end,figNum)
+figure(figNum);
 hold on;
 axis equal;
 grid on; grid minor;

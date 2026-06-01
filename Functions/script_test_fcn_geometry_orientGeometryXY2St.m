@@ -3,19 +3,19 @@
 
 % Revision history:
 % 2024_05_02 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_09 - S. Brennan
-% -- fixed bug in segment calculation wherein unit vector gives NaN if
+% - fixed bug in segment calculation wherein unit vector gives NaN if
 % start and end points are same
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -26,8 +26,8 @@
 close all;
 
 %% Basic test 1.1 - a line segment alone
-fig_num = 11;
-figure(fig_num); clf;
+figNum = 11;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_angle = 30*pi/180;
@@ -46,7 +46,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 4]));
@@ -64,8 +64,8 @@ assert(isequal(round(rotation_angle*180/pi,4),-30));
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 1.11 - a line segment of zero length
-fig_num = 111;
-figure(fig_num); clf;
+figNum = 111;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_angle = 30*pi/180;
@@ -84,7 +84,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 4]));
@@ -102,8 +102,8 @@ assert(isequal(round(rotation_angle*180/pi,4),-30));
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 1.12 - a NaN line segment
-fig_num = 112;
-figure(fig_num); clf;
+figNum = 112;
+figure(figNum); clf;
 
 segment_parameters   = nan(1,4);
 
@@ -114,7 +114,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 4]));
@@ -132,8 +132,8 @@ assert(isnan(rotation_angle));
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 1.21 - an arc alone, counter-clockwise
-fig_num = 121;
-figure(fig_num); clf;
+figNum = 121;
+figure(figNum); clf;
 
 arc_center_xy            = [2 3];
 arc_radius               = 4;
@@ -159,7 +159,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -178,8 +178,8 @@ assert(isequal(flag_primary_parameter_is_flipped,0));
 
 
 %% Basic test 1.22 - an arc alone, clockwise
-fig_num = 122;
-figure(fig_num); clf;
+figNum = 122;
+figure(figNum); clf;
 
 arc_center_xy            = [2 3];
 arc_radius               = 4;
@@ -205,7 +205,7 @@ secondary_parameters = [];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -224,8 +224,8 @@ assert(isequal(flag_primary_parameter_is_flipped,1));
 
 
 %% Basic test 2.1 - a line segment with other geometries
-fig_num = 21;
-figure(fig_num); clf;
+figNum = 21;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -323,7 +323,7 @@ secondary_parameters{6}              = [5 5 -40*pi/180 4 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 4]));
@@ -347,8 +347,8 @@ assert(isequal(round(rotation_angle*180/pi,4),-30));
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 2.21 - an arc, counter-clockwise with other geometries
-fig_num = 221;
-figure(fig_num); clf;
+figNum = 221;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 % Fill in the arc parameters
@@ -454,7 +454,7 @@ secondary_parameters{6}              = [5 5 -40*pi/180 4 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -478,8 +478,8 @@ assert(isequal(round(rotation_angle*180/pi,4),-90));
 assert(isequal(flag_primary_parameter_is_flipped,0));
 
 %% Basic test 2.22 - an arc,clockwise with other geometries
-fig_num = 222;
-figure(fig_num); clf;
+figNum = 222;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 % Fill in the arc parameters
@@ -585,7 +585,7 @@ secondary_parameters{6}              = [5 5 -40*pi/180 4 -1 4];
 
 % Call the function
 [st_primary_parameters, st_secondary_parameters, St_transform, rotation_angle, flag_primary_parameter_is_flipped] = ...
-fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (fig_num));
+fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_parameters, (secondary_parameters_type_strings), (secondary_parameters), (figNum));
 
 % Check size of results
 assert(isequal(size(st_primary_parameters),[1 7]));
@@ -612,6 +612,6 @@ assert(isequal(flag_primary_parameter_is_flipped,1));
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_orientGeometryXY2St(points,fig_num);
+    [slope,intercept] = fcn_geometry_orientGeometryXY2St(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

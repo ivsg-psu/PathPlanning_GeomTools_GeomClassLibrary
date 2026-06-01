@@ -4,15 +4,15 @@
 
 % Revision history:
 % 2023_11_22
-% -- first write of the code
+% - first write of the code
 
 
 %% Set up the workspace
 close all
 
 %% Basic example
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 % Fill in the true values
 sphere_center = [6 2 0];
@@ -26,12 +26,12 @@ assert(length(XYZ_array(:,1))==N_points);
 
 
 % Call the fitting function
-[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, figNum);
 
 
 
 % Print the results
-fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', figNum)
 fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
 
 true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];
@@ -66,8 +66,8 @@ assert(length(errors(:,1))>2);
 % histogram(errors,50)
 
 %% Half sphere example
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 % Fill in the true values
 sphere_center = [6 2 0];
@@ -82,11 +82,11 @@ assert(length(XYZ_array(:,1))==N_points);
 XYZ_array = XYZ_array(XYZ_array(:,1)<sphere_center(1),:);
 
 % Call the fitting function
-[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, figNum);
 
 
 % Print the results
-fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', figNum)
 fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
 
 true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];
@@ -121,8 +121,8 @@ assert(length(errors(:,1))>2);
 % histogram(errors,50)
 
 %% Partial sphere example
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 % Fill in the true values
 sphere_center = [6 2 0];
@@ -137,11 +137,11 @@ assert(length(XYZ_array(:,1))==N_points);
 XYZ_array = XYZ_array(XYZ_array(:,1)<(sphere_center(1) - sphere_radius*2/3),:);
 
 % Call the fitting function
-[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, fig_num);
+[C_sphere,R_sphere,~, errors] = fcn_geometry_FitSphereLSQRegression(XYZ_array, figNum);
 
 
 % Print the results
-fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', fig_num)
+fprintf(1,'\n\nFigure %.0d results of sphere regression fitting:\n', figNum)
 fprintf(1,'                          centerX        centerY         centerZ        radius (meters)\n');
 
 true_params = [sphere_center(1,1),sphere_center(1,2), sphere_center(1,3), sphere_radius];

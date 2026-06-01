@@ -3,17 +3,17 @@
 
 % Revision history:
 % 2024_04_24 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_28 - S. Brennan
-% -- modified for parameter inputs, instead of raw inputs
+% - modified for parameter inputs, instead of raw inputs
 
 close all
 
 %% Basic test - circle 1 and circle 2 are large and small, counter-clockwise
 % If larger to smaller, then small one has to be inside. If any outside, it
 % will not join.
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -24,7 +24,7 @@ circle2_center_XY = [0.2 1.1];
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -34,8 +34,8 @@ assert(isequal(round(spiral_join_parameters,4),[ -0.5746    0.0555   -0.1927    
 
 %% Basic test - circle 1 and circle 2 are large and small, counter-clockwise
 % show that if circle is outside, it will not join
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -47,7 +47,7 @@ circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -60,8 +60,8 @@ assert(all(isnan(spiral_join_parameters)));
 %% Basic test - circle 1 and circle 2 are small and large, counter-clockwise
 % If smaller to larger, then small one has to be inside. If any outside, it
 % will not join.
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -72,7 +72,7 @@ circle2_center_XY = [0.2 1.8];
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -82,8 +82,8 @@ assert(isequal(round(spiral_join_parameters,4),[-0.9770    1.2132   -1.7856    3
 
 %% Basic test - circle 1 and circle 2 are small and large, counter-clockwise
 % Show that if circle is outside, it will not join
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -94,7 +94,7 @@ circle2_center_XY = [0.2 2.2];
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -107,8 +107,8 @@ assert(all(isnan(spiral_join_parameters)));
 %% Basic test - circle 1 and circle 2 are large and small, CLOCKWISE
 % If clockwise, the small circle must be completely outside the large
 % circle
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -121,7 +121,7 @@ circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -131,8 +131,8 @@ assert(isequal(round(spiral_join_parameters,4),[-0.5312    0.0474   -0.1780    1
 
 %% Basic test - circle 1 and circle 2 are large and small, CLOCKWISE
 % show that if circle is outside, it will not join
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -144,7 +144,7 @@ flag_circle2_is_counterclockwise = -1;
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -157,8 +157,8 @@ assert(all(isnan(spiral_join_parameters)));
 %% Basic test - circle 1 and circle 2 are small and large, CLOCKWISE
 % If smaller to larger, then small one has to be inside. If any outside, it
 % will not join.
-fig_num = 7;
-figure(fig_num); clf;
+figNum = 7;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -170,7 +170,7 @@ flag_circle2_is_counterclockwise = -1;
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 % Check size of results
 assert(isequal(size(spiral_join_parameters),[1 6]));
@@ -180,8 +180,8 @@ assert(isequal(round(spiral_join_parameters,4),[-0.7503    0.3388   -0.8484    1
 
 %% Basic test - circle 1 and circle 2 are small and large, CLOCKWISE
 % Show that if circle is outside, it will not join
-fig_num = 8;
-figure(fig_num); clf;
+figNum = 8;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -194,7 +194,7 @@ circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 
 % Check size of results
@@ -206,8 +206,8 @@ assert(space_between_circles<0);
 
 %% FAIL test - circle 1 and circle 2 are small and large, COUNTERCLOCKWISE
 % Show that if circle is outside, it will not join
-fig_num = 9999;
-figure(fig_num); clf;
+figNum = 9999;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -219,7 +219,7 @@ flag_circle2_is_counterclockwise = 1;
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 
 % Check size of results
@@ -231,8 +231,8 @@ assert(space_between_circles>0);
 
 %% FAIL test - not sure why this is not working well?
 % Show that if circle is outside, it will not join
-fig_num = 99988;
-figure(fig_num); clf;
+figNum = 99988;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -244,7 +244,7 @@ flag_circle2_is_counterclockwise = 1;
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 
 % Check size of results
@@ -272,8 +272,8 @@ assert(space_between_circles>0);
 
 %% Line test - circle 1 and line, line below x-axis - feasible
 % Show that if line is outside, it will join
-fig_num = 101;
-figure(fig_num); clf;
+figNum = 101;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -285,7 +285,7 @@ flag_circle2_is_counterclockwise = [];
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 
 % Check size of results
@@ -298,8 +298,8 @@ assert(space_between_circles==0.2);
 
 %% Line test - circle 1 and line, line above x-axis - not feasible
 % Show that if line is not outside, it will not join
-fig_num = 102;
-figure(fig_num); clf;
+figNum = 102;
+figure(figNum); clf;
 
 
 % Try positive curvature
@@ -311,7 +311,7 @@ flag_circle2_is_counterclockwise = [];
 circle1_parameters = [0 circle1_radius  circle1_radius];
 circle2_parameters = [circle2_center_XY circle2_radius];
 
-[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, fig_num);
+[spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, flag_circle2_is_counterclockwise, figNum);
 
 
 % Check size of results

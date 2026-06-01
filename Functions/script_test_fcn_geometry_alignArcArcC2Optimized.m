@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_07_26 S. Brennan
-% -- wrote the code from fcn_geometry_alignArcArc
+% - wrote the code from fcn_geometry_alignArcArc
 
 close all;
 
@@ -23,8 +23,8 @@ close all;
 
 
 %% Basic test 1.1 - checking plot inputs of arcs that are correctly oriented
-fig_num = 11;
-figure(fig_num); clf;
+figNum = 11;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -74,10 +74,10 @@ fitSequence_parameters{2}  = arc2_parameters;
 continuity_level = 2;
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArc(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 % Generate XY data
-XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[], [], (fig_num));
+XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[], [], (figNum));
 plot(XY_data(:,1),XY_data(:,2),'k.');
 
 
@@ -97,8 +97,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 %% Basic test 1.2 - checking plot inputs of arcs, arc1 is incorrectly oriented
-fig_num = 12;
-figure(fig_num); clf;
+figNum = 12;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -142,7 +142,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 in bad orientation');
 
@@ -160,8 +160,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000         0         0         0         0    0.2000]));
 
 %% Basic test 1.3 - checking plot inputs of arcs, arc2 is incorrectly oriented
-fig_num = 13;
-figure(fig_num); clf;
+figNum = 13;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -205,7 +205,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 2 in bad orientation');
 
@@ -224,8 +224,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000   
 
 
 %% Basic test 1.4 - checking plot inputs of arcs, arc1 and arc2 is incorrectly oriented
-fig_num = 14;
-figure(fig_num); clf;
+figNum = 14;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -269,7 +269,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking that arc1 is joined to arc2: C1 continuous, arc 1 and arc2 in bad orientation');
 
@@ -303,8 +303,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[1.0000   
 % working
 
 %% Basic test 2.1 - checking the + to + cross product combination
-fig_num = 21;
-figure(fig_num); clf;
+figNum = 21;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -358,7 +358,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to + ');
 
@@ -376,8 +376,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.7160   
 
 
 %% Basic test 2.20 - checking the + to - cross product combination, no intersection
-fig_num = 220;
-figure(fig_num); clf;
+figNum = 220;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -431,7 +431,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to - ');
 
@@ -448,8 +448,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6649    0.7469    0.7469    2.3351         0    0.6782]));
 
 %% Basic test 2.21 - checking the + to - cross product combination, intersection
-fig_num = 221;
-figure(fig_num); clf;
+figNum = 221;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -503,7 +503,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to - ');
 
@@ -520,8 +520,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3419    0.9397    0.9397    2.6581         0         0]));
 
 %% Basic test 2.30 - checking the - to + cross product combination, no intersection
-fig_num = 230;
-figure(fig_num); clf;
+figNum = 230;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -583,7 +583,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
 
@@ -601,8 +601,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3144   
 
 
 %% Basic test 2.311 - checking the - to + cross product combination, intersecting circles, no intersecting arcs
-fig_num = 2311;
-figure(fig_num); clf;
+figNum = 2311;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -664,7 +664,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
 
@@ -682,8 +682,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429   
 
 
 %% Basic test 2.312 - checking the - to + cross product combination, intersecting circles, no intersecting arcs
-fig_num = 2312;
-figure(fig_num); clf;
+figNum = 2312;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -745,7 +745,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
 
@@ -763,8 +763,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429   
 
 
 %% Basic test 2.313 - checking the - to + cross product combination, intersecting circles, two intersecting arcs
-fig_num = 233;
-figure(fig_num); clf;
+figNum = 233;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -826,7 +826,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are - to + ');
 
@@ -845,8 +845,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6429   
 
 
 %% Basic test 2.4 - checking the - to - cross product combination
-fig_num = 24;
-figure(fig_num); clf;
+figNum = 24;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -900,7 +900,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are - to - ');
 
@@ -941,8 +941,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.9992   
 
 
 %% Basic test 3.11 - checking the + to + cross product combination, large to small, feasible, no intersection
-fig_num = 311;
-figure(fig_num); clf;
+figNum = 311;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -997,7 +997,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -1017,8 +1017,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.12 - checking the + to + cross product combination, large to small with shift blocked, no intersection
 % Setting tolerance to empty makes shift blocked
-fig_num = 312;
-figure(fig_num); clf;
+figNum = 312;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1071,7 +1071,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -1089,8 +1089,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.131 - checking the + to + cross product combination, large to small with shift allowed, no intersection
-fig_num = 3131;
-figure(fig_num); clf;
+figNum = 3131;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1144,7 +1144,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1163,8 +1163,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.132 - checking the + to + cross product combination, large to small with shift allowed, one intersection
-fig_num = 3131;
-figure(fig_num); clf;
+figNum = 3131;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1219,7 +1219,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1238,8 +1238,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.133 - checking the + to + cross product combination, large to small with shift allowed, two intersections
-fig_num = 3133;
-figure(fig_num); clf;
+figNum = 3133;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1294,7 +1294,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1314,8 +1314,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.21 - checking the + to + cross product combination, small to large, feasible
-fig_num = 321;
-figure(fig_num); clf;
+figNum = 321;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1369,7 +1369,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -1386,8 +1386,8 @@ assert(isempty(revised_intermediate_geometry_join_type));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.22 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 322;
-figure(fig_num); clf;
+figNum = 322;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1441,7 +1441,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -1458,8 +1458,8 @@ assert(isempty(revised_intermediate_geometry_join_type));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.23 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 323;
-figure(fig_num); clf;
+figNum = 323;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1513,7 +1513,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1533,8 +1533,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.31 - checking the + to - cross product combination, large to small, feasible
-fig_num = 331;
-figure(fig_num); clf;
+figNum = 331;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1588,7 +1588,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -1606,8 +1606,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
-fig_num = 332;
-figure(fig_num); clf;
+figNum = 332;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1661,7 +1661,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -1678,8 +1678,8 @@ assert(isempty(revised_intermediate_geometry_join_type));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.33 - checking the + to - cross product combination, large to small with shift allowed
-fig_num = 333;
-figure(fig_num); clf;
+figNum = 333;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1733,7 +1733,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1754,8 +1754,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.41 - checking the + to + cross product combination, small to large, feasible
-fig_num = 341;
-figure(fig_num); clf;
+figNum = 341;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1809,7 +1809,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -1826,8 +1826,8 @@ assert(isempty(revised_intermediate_geometry_join_type));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.42 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 342;
-figure(fig_num); clf;
+figNum = 342;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1881,7 +1881,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -1898,8 +1898,8 @@ assert(isempty(revised_intermediate_geometry_join_type));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.43 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 343;
-figure(fig_num); clf;
+figNum = 343;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1953,7 +1953,7 @@ continuity_level = 0;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -1993,8 +1993,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 % 4
 
 %% Basic test 4.11 - checking the + to + cross product combination, large to small, feasible
-fig_num = 411;
-figure(fig_num); clf;
+figNum = 411;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2049,7 +2049,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -2067,8 +2067,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3725   
 
 %% Basic test 4.12 - checking the + to + cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
-fig_num = 412;
-figure(fig_num); clf;
+figNum = 412;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -2121,7 +2121,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -2139,8 +2139,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 4.13 - checking the + to + cross product combination, large to small with shift allowed
-fig_num = 413;
-figure(fig_num); clf;
+figNum = 413;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2194,7 +2194,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -2215,8 +2215,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.9196   
 
 
 %% Basic test 4.21 - checking the + to + cross product combination, small to large, feasible
-fig_num = 421;
-figure(fig_num); clf;
+figNum = 421;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2270,7 +2270,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -2287,8 +2287,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5226    0.8526    0.8526    0.0774         0         0]));
 
 %% Basic test 4.22 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 422;
-figure(fig_num); clf;
+figNum = 422;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -2342,7 +2342,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -2359,8 +2359,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.23 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 423;
-figure(fig_num); clf;
+figNum = 423;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2414,7 +2414,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -2434,8 +2434,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5000   
 
 
 %% Basic test 4.31 - checking the + to - cross product combination, large to small, feasible
-fig_num = 431;
-figure(fig_num); clf;
+figNum = 431;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2489,7 +2489,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -2507,8 +2507,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6757   
 
 %% Basic test 4.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
-fig_num = 432;
-figure(fig_num); clf;
+figNum = 432;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -2562,7 +2562,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -2579,8 +2579,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.33 - checking the + to - cross product combination, large to small with shift allowed
-fig_num = 433;
-figure(fig_num); clf;
+figNum = 433;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2634,7 +2634,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -2655,8 +2655,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5000   
 
 
 %% Basic test 4.41 - checking the + to + cross product combination, small to large, feasible
-fig_num = 441;
-figure(fig_num); clf;
+figNum = 441;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2710,7 +2710,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -2727,8 +2727,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6691    0.7431    0.7431   -0.0691         0    0.9014]));
 
 %% Basic test 4.42 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 442;
-figure(fig_num); clf;
+figNum = 442;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -2782,7 +2782,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -2799,8 +2799,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.43 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 443;
-figure(fig_num); clf;
+figNum = 443;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2854,7 +2854,7 @@ continuity_level = 1;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -2895,8 +2895,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.5000  
 % 5
 
 %% Basic test 5.11 - checking the + to + cross product combination, large to small, feasible
-fig_num = 511;
-figure(fig_num); clf;
+figNum = 511;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -2950,7 +2950,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -2968,8 +2968,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.5139   
 
 %% Basic test 5.12 - checking the + to + cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
-fig_num = 512;
-figure(fig_num); clf;
+figNum = 512;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -3023,7 +3023,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -3040,8 +3040,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.13 - checking the + to + cross product combination, large to small with shift allowed
-fig_num = 513;
-figure(fig_num); clf;
+figNum = 513;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3095,7 +3095,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -3116,8 +3116,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ 0.8148  
 
 
 %% Basic test 5.21 - checking the + to + cross product combination, small to large, feasible
-fig_num = 521;
-figure(fig_num); clf;
+figNum = 521;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3171,7 +3171,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -3188,8 +3188,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.0542   -0.3985    0.0543    1.9199    1.0000    0.3333]));
 
 %% Basic test 5.22 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 522;
-figure(fig_num); clf;
+figNum = 522;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -3243,7 +3243,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -3260,8 +3260,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.23 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 523;
-figure(fig_num); clf;
+figNum = 523;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3315,7 +3315,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -3335,8 +3335,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8148   
 
 
 %% Basic test 5.31 - checking the + to - cross product combination, large to small, feasible
-fig_num = 531;
-figure(fig_num); clf;
+figNum = 531;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3390,7 +3390,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -3408,8 +3408,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.6757   
 
 %% Basic test 5.32 - checking the + to - cross product combination, large to small with shift blocked
 % Setting tolerance to empty makes shift blocked
-fig_num = 532;
-figure(fig_num); clf;
+figNum = 532;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -3463,7 +3463,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -3480,8 +3480,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.33 - checking the + to - cross product combination, large to small with shift allowed
-fig_num = 533;
-figure(fig_num); clf;
+figNum = 533;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3535,7 +3535,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -3556,8 +3556,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8413   
 
 
 %% Basic test 5.41 - checking the + to + cross product combination, small to large, feasible
-fig_num = 541;
-figure(fig_num); clf;
+figNum = 541;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3611,7 +3611,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, feasible');
 
@@ -3628,8 +3628,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.3754   -0.3269    0.3849    1.3580    1.0000   -0.3333]));
 
 %% Basic test 5.42 - checking the + to + cross product combination, small to large, with shift blocked
-fig_num = 542;
-figure(fig_num); clf;
+figNum = 542;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -3683,7 +3683,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift blocked');
 
@@ -3700,8 +3700,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.43 - checking the + to + cross product combination, small to large, with shift allowed
-fig_num = 543;
-figure(fig_num); clf;
+figNum = 543;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -3755,7 +3755,7 @@ continuity_level = 2;
 
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_geometry_alignArcArcC2Optimized(...
-    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (fig_num));
+    arc1_parameters, arc2_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle('Checking ST conversion: cross-products are + to +, not feasible and shift allowed');
 
@@ -3781,6 +3781,6 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[0.8306   
 if 1==0
     % FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_alignArcArcC2Optimized(points,fig_num);
+    [slope,intercept] = fcn_geometry_alignArcArcC2Optimized(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

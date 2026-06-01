@@ -5,26 +5,26 @@
 
 % Revision history:
 % 2024_04_02 - sbrennan@psu.edu
-% -- original write of the code
+% - original write of the code
 close all;
 
 %% BASIC example 1 - positive
-fig_num = 1;
-figure(fig_num);clf;
+figNum = 1;
+figure(figNum);clf;
 
 points = [0 0; 1 4; 0 5];
 circleCenter = [-2 2];
-is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter, figNum);
 
 assert(isequal(is_counterClockwise,1))
 
 %% BASIC example 2 - negative
-fig_num = 2;
-figure(fig_num);clf;
+figNum = 2;
+figure(figNum);clf;
 
 points = [0 0; 1 4; 0 5];
 circleCenter = [4 3];
-is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter, fig_num);
+is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points, circleCenter, figNum);
 
 assert(isequal(is_counterClockwise,0))
 
@@ -70,7 +70,7 @@ if 1==0
     points1 = [2 3; 3 4];
     points2 = [4 5];
     points3 = [5 6; 7 8];
-    is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points1, points2, points3,fig_num);
+    is_counterClockwise = fcn_geometry_arcDirectionFromCircleCenter(points1, points2, points3,figNum);
 
 end
 

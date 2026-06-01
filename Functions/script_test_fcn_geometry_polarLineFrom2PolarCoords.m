@@ -3,14 +3,14 @@
 
 % Revision history:
 % 2021_05_27
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 
 %% script_test_fcn_geometry_polarLineFrom2PolarCoords
-fig_num = 1;
+figNum = 1;
 
 start_point_cart = [1 1];
 end_point_cart   = [4 3];
@@ -20,7 +20,7 @@ end_point_cart   = [4 3];
 points = [theta1,r1;theta2,r2];
 
 % Calculate the line
-[phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points,fig_num);
+[phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points,figNum);
 axis([0 5 0 5]);
 assert(isequal(round(phi,4),-0.9828));
 assert(isequal(round(rho,4),-0.2774));
@@ -36,24 +36,24 @@ end_point_cart   = [4 3];
 points = [theta1,r1;theta2,r2];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points, (fig_num));
+    [phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points, (fig_num));
+    [phi,rho] = fcn_geometry_polarLineFrom2PolarCoords(points, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

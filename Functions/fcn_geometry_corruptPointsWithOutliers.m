@@ -4,7 +4,7 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 % direction using a random-normal magnitude.
 %
 % corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
-% (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% (probability_of_corruption), (magnitude_of_corruption), (figNum));
 %
 % INPUTS:
 %
@@ -20,7 +20,7 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 %      outlier multiplied by a random-normal distribution. The default is
 %      2.
 %
-%      fig_num: the figure number to use for plotting
+%      figNum: the figure number to use for plotting
 %
 % OUTPUTS:
 %
@@ -42,19 +42,19 @@ function corrupted_points = fcn_geometry_corruptPointsWithOutliers(input_points,
 
 % Revision history:
 % 2023_12_12 
-% -- wrote the code
+% - wrote the code
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 % 2024_01_05 - S. Brennan
-% -- switched to random-normal distributions
-% -- fixed bug where only y values were being corrupted
+% - switched to random-normal distributions
+% - fixed bug where only y values were being corrupted
 % 2024_01_23 - S. Brennan
-% -- added support for 3 dimensional points
+% - added support for 3 dimensional points
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -77,9 +77,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -128,13 +128,13 @@ if 3<= nargin
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -192,7 +192,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

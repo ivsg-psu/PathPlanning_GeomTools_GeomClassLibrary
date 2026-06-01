@@ -61,7 +61,7 @@ function [...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -87,12 +87,12 @@ function [...
 
 % Revision History:
 % 2021-04-22
-% -- Added input checking
-% -- Added cross-product to see if innner/outer connected
+% - Added input checking
+% - Added cross-product to see if innner/outer connected
 % 2024_01_08 - S. Brennan
-% -- fixed bug with cross function call to force it to cross column-wise
+% - fixed bug with cross function call to force it to cross column-wise
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options 
+% - added max speed options 
 
 
 %% Debugging and Input checks
@@ -175,14 +175,14 @@ end
 
 % % Does user want to show the plots?
 % if 8 == nargin
-%     fig_num = varargin{1};
-%     figure(fig_num);
+%     figNum = varargin{1};
+%     figure(figNum);
 %     flag_do_plot = 1;
 %     % flag_new_figure = 0;
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %         % flag_new_figure = 1;
 %     end
@@ -194,14 +194,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (8 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -405,7 +405,7 @@ end
 
 if flag_do_plot
     % Set up the figure
-    figure(fig_num);
+    figure(figNum);
     clf;
     hold on;
     axis equal;

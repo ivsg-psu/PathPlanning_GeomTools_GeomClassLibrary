@@ -13,7 +13,7 @@ function [first_unit_normal_vector, base_point, flags_in_directional_agreement, 
 % FORMAT: 
 %
 % [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = ...
-%    fcn_geometry_findPlaneNormal(points,(fig_num))
+%    fcn_geometry_findPlaneNormal(points,(figNum))
 %
 % INPUTS:
 %
@@ -22,7 +22,7 @@ function [first_unit_normal_vector, base_point, flags_in_directional_agreement, 
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -60,11 +60,11 @@ function [first_unit_normal_vector, base_point, flags_in_directional_agreement, 
 
 % Revision history:
 % 2024_05_30 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -119,14 +119,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (2 == nargin) 
     temp_axis = varargin{1};
     if ~isempty(temp_axis)
-        fig_num = temp_axis;
-        figure(fig_num);
+        figNum = temp_axis;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number; 
+        figNum = fig.Number; 
         flag_do_plot = 1;
     end
 end
@@ -180,7 +180,7 @@ flags_in_magnitude_agreement = round(abs(allDotProducts),6)==1;
 if flag_do_plot
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

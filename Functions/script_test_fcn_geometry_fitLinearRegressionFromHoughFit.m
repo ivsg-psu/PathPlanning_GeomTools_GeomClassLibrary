@@ -3,17 +3,17 @@
 
 % Revision history:
 % 2023_12_15 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_11 - S. Brennan
-% -- added assertion testing
+% - added assertion testing
 
 close all;
 
 
 %% Basic call - line fitting
 
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 % Fill in points
@@ -42,7 +42,7 @@ points_required_for_agreement = 20;
 domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -111,8 +111,8 @@ assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
 %% Now plot the results
 
-fig_num = 2;
-figure(fig_num);
+figNum = 2;
+figure(figNum);
 clf;
 hold on;
 
@@ -143,7 +143,7 @@ points_required_for_agreement = 20;
 domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -165,8 +165,8 @@ assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
 %% Vertical line fit
 
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 % Fill in points
 seed_points = [2 3; 2 15];
@@ -195,7 +195,7 @@ points_required_for_agreement = 20;
 domains_line_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 
-[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], fig_num);
+[regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_line_fitting{1}, [], figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -221,8 +221,8 @@ fprintf(1,'Measured standard deviation in fit, transverse direction (total least
 %% Basic call - segment fitting
 
 % Fill test data 
-fig_num = 4;
-figure(fig_num);
+figNum = 4;
+figure(figNum);
 clf;
 
 % Fill in points
@@ -251,7 +251,7 @@ points_required_for_agreement = 20;
 
 domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -273,8 +273,8 @@ assert(issimplified(regression_domain.best_fit_3_sigma_box));
 %% Test the best_fit_domain_box_projection_distance input
 
 % Fill test data 
-fig_num = 5;
-figure(fig_num);
+figNum = 5;
+figure(figNum);
 clf;
 
 % Fill in points
@@ -304,7 +304,7 @@ points_required_for_agreement = 20;
 domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
 best_fit_domain_box_projection_distance = 2; % A HUGE number
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, best_fit_domain_box_projection_distance, fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, best_fit_domain_box_projection_distance, figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -325,8 +325,8 @@ assert(issimplified(regression_domain.best_fit_3_sigma_box));
 
 %% Fill test data 
 
-fig_num = 6;
-figure(fig_num);
+figNum = 6;
+figure(figNum);
 clf;
 hold on;
 
@@ -356,7 +356,7 @@ points_required_for_agreement = 20;
 
 domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test_points, transverse_tolerance, station_tolerance, points_required_for_agreement, -1);
 
-regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], fig_num);
+regression_domain = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{1}, [], figNum);
 
 % Check the output type and size
 assert(isstruct(regression_domain));
@@ -406,24 +406,24 @@ domains_segment_fitting = fcn_geometry_fitHoughLine(shuffled_corrupted_line_test
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], figNum);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], fig_num);
+    [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(domains_segment_fitting{3}, [], figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -440,7 +440,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 
 % %% Debugging example
 % % Noisy vertical line
-% fig_num = 999;
+% figNum = 999;
 % points = [
 %    9.991259411578580   0.200000000000000
 %   10.001803670408686   0.300000000000000
@@ -488,7 +488,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % test_domain.best_fit_parameters = [10 0 10 5];
 % 
 % 
-% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, fig_num);
+% [regression_domain, std_dev_transverse_distance] = fcn_geometry_fitLinearRegressionFromHoughFit(test_domain, figNum);
 % fprintf(1,'\n\nFitting results: \n');
 % fprintf(1,'Standard deviation in fit, transverse direction (total least squares), in meters: %.4f\n',std_dev_transverse_distance);
 % 
@@ -498,7 +498,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

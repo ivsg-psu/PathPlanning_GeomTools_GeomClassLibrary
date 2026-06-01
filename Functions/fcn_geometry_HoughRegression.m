@@ -4,7 +4,7 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 % fitting on each domain.
 %
 % Format: 
-% domains = fcn_geometry_HoughRegression(Hough_domains, (best_fit_domain_box_projection_distance), (fig_num))
+% domains = fcn_geometry_HoughRegression(Hough_domains, (best_fit_domain_box_projection_distance), (figNum))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -26,7 +26,7 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 %      tolerance), or is "outside" the fit (if distance is greater than the
 %      tolerance).
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -55,18 +55,18 @@ function regression_domains = fcn_geometry_HoughRegression(Hough_domains, vararg
 
 % Revision history:
 % 2024_01_18
-% -- wrote the code
+% - wrote the code
 % 2024_05_17 - Aneesh Batchu
-% -- Added a case for 'Hough cubic polynomial'
+% - Added a case for 'Hough cubic polynomial'
 % 2026_01_07 - Aneesh Batchu
-% -- Renamed transverse_tolerance to
+% - Renamed transverse_tolerance to
 % best_fit_domain_box_projection_distance. Now, this
 % "best_fit_domain_box_projection_distance" can take both
 % transverse_tolerance and station_tolerance
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -89,9 +89,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -138,13 +138,13 @@ if (2<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -194,7 +194,7 @@ regression_domains{domain_count} = Hough_domains{end};
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -245,7 +245,7 @@ if flag_do_plots
         % Plot all the points in very light grey
         plot(points(:,1),points(:,2),'.','MarkerSize',30,'Color',[0.8 0.8 0.8]);
 
-        fcn_geometry_plotFitDomains(regression_domains{ith_domain}, fig_num);
+        fcn_geometry_plotFitDomains(regression_domains{ith_domain}, figNum);
 
 
        

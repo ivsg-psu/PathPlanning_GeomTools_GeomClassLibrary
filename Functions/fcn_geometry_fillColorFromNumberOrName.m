@@ -10,7 +10,7 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 % The color space by default is 'gem12'.
 % 
 % Format: 
-% color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number, (string_identifier), (fig_num))
+% color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number, (string_identifier), (figNum))
 %
 % INPUTS:
 %      plot_number: an integer specifying the plot number to use for
@@ -42,7 +42,7 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 %      NOTE: because the team commonly plots data in red to green, a custom
 %      colormap is available in this function called "redtogreen".
 %
-%      fig_num: a figure number to plot results (not yet implemented). If
+%      figNum: a figure number to plot results (not yet implemented). If
 %      set to -1, skips any input checking or debugging, no figures will be
 %      generated, and sets up code to maximize speed.
 %
@@ -73,21 +73,21 @@ function color_vector = fcn_geometry_fillColorFromNumberOrName(plot_number,varar
 
 % Revision history:
 % 2024_04_11 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_17 - S Brennan
-% -- added points type
+% - added points type
 % 2024_05_06 - Aneesh Batchu
-% -- added line segment as one of the names for the segment case
+% - added line segment as one of the names for the segment case
 % 2024_05_09 - S. Brennan
-% -- added none type
+% - added none type
 % 2024_05_15 - Aneesh Batchu
-% -- added a case for "cubic polynomial"
+% - added a case for "cubic polynomial"
 % 2024_07_15 - S. Brennan
-% -- adeed colormap_string input option
+% - adeed colormap_string input option
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -110,9 +110,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -163,13 +163,13 @@ if (3<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; %#ok<NASGU> % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; %#ok<NASGU> % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp; %#ok<NASGU>
+        figNum = temp; %#ok<NASGU>
         flag_do_plots = 1;
     end
 end
@@ -263,7 +263,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    % temp_h = figure(fig_num);
+    % temp_h = figure(figNum);
     % flag_rescale_axis = 0;
     % if isempty(get(temp_h,'Children'))
     %     flag_rescale_axis = 1;
@@ -294,7 +294,7 @@ if flag_do_plots
     % quiver(base_point_of_domain(:,1),base_point_of_domain(:,2),unit_tangent_vector_of_domain(:,1),unit_tangent_vector_of_domain(:,2),0,'g','Linewidth',5);
     % 
     % % Plot the domain
-    % fcn_geometry_plotFitDomains(regression_domain, fig_num);
+    % fcn_geometry_plotFitDomains(regression_domain, figNum);
     % 
     % % Make axis slightly larger? And since this is the first one, save the
     % % axis limits.

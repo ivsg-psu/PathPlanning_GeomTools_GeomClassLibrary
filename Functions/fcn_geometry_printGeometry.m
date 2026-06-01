@@ -5,7 +5,7 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 % user-defined FID. 
 %
 % Format:
-%      fcn_geometry_printGeometry(plot_type_string, parameters, (flag_print_header), (lead_string), (fig_num))
+%      fcn_geometry_printGeometry(plot_type_string, parameters, (flag_print_header), (lead_string), (figNum))
 %
 % INPUTS:
 %
@@ -42,7 +42,7 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 % OUTPUTS:
 %
 %      XY_data: the data produced during plotting calculations. Note: this
-%      data is returned even if fig_num is empty or set to -1.
+%      data is returned even if figNum is empty or set to -1.
 %
 % DEPENDENCIES:
 %
@@ -58,13 +58,13 @@ function fcn_geometry_printGeometry(plot_type_string, parameters, varargin)
 
 % Revision history:
 % 2024_07_06 - S. Brennan
-% -- wrote the code, using fcn_geometry_plotGeometry as a starter
+% - wrote the code, using fcn_geometry_plotGeometry as a starter
 % 2024_07_21 - S. Brennan
-% -- added crossbar options for separation
+% - added crossbar options for separation
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -89,9 +89,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -341,7 +341,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    % temp_h = figure(fig_num);
+    % temp_h = figure(figNum);
     % flag_rescale_axis = 0;
     % if isempty(get(temp_h,'Children'))
     %     flag_rescale_axis = 1;

@@ -15,7 +15,7 @@ function [phi_start,change_in_phi] = ...
 %     p_apex,...
 %     vertex_1,...
 %     vertex_2,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -27,7 +27,7 @@ function [phi_start,change_in_phi] = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -133,13 +133,13 @@ end
 
 % % Does user want to show the plots?
 % if 4 == nargin
-%     fig_num = varargin{end};
-%     figure(fig_num);
+%     figNum = varargin{end};
+%     figure(figNum);
 %     flag_do_plot = 1;    
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -149,14 +149,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (4 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -217,7 +217,7 @@ change_in_phi = (change - pi).*is_positive_cross_vertex_1_to_vertex_2;
 
 if flag_do_plot
     % Set up the figure
-    figure(fig_num);
+    figure(figNum);
     clf;
     grid on;
     hold on;

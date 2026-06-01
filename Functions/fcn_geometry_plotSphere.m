@@ -9,7 +9,7 @@ function sphere_points = fcn_geometry_plotSphere(centers,radii,varargin)
 %     centers,...
 %     radii,...
 %     (color_vector);
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -23,7 +23,7 @@ function sphere_points = fcn_geometry_plotSphere(centers,radii,varargin)
 %      color_vector: A color vector, e.g. [1 0 0.23], that dictates the
 %      sphere color. 
 %
-%      fig_num: a figure number to plot results.
+%      figNum: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -45,13 +45,13 @@ function sphere_points = fcn_geometry_plotSphere(centers,radii,varargin)
 
 % Revision History:
 % 2021-05-22
-% -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
-% -- eliminates repo on fcn_plotCircles
+% - new function from fcn_geometry_findAngleUsing3PointsOnCircle
+% - eliminates repo on fcn_plotCircles
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -125,13 +125,13 @@ if (0==flag_max_speed)
     if (4 <= nargin)
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            figNum = temp;
         else
             flag_do_plot = 0;
         end
     else
         fig = gcf;
-        fig_num = fig.Number;
+        figNum = fig.Number;
     end
 else
     flag_do_plot = 0;
@@ -205,7 +205,7 @@ end
 if flag_do_plot
     % set up the figure and check if it has been used before. If not used
     % already, note that the axes will be re-scaled
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

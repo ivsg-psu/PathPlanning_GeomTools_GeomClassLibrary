@@ -4,13 +4,13 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 % fields include:
 %
 % Format:
-% emptyDomain = fcn_geometry_fillEmptyDomainStructure((fig_num))
+% emptyDomain = fcn_geometry_fillEmptyDomainStructure((figNum))
 %
 % INPUTS:
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -163,13 +163,13 @@ function emptyDomain = fcn_geometry_fillEmptyDomainStructure(varargin)
 
 % Revision history:
 % 2024_01_15 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_15 - Aneesh Batchu
-% -- added comments for 'Hough cubic polynomial'
+% - added comments for 'Hough cubic polynomial'
 
 %% Debugging and Input checks
  
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -192,9 +192,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -230,12 +230,12 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 1<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp; %#ok<NASGU>
+        figNum = temp; %#ok<NASGU>
         flag_do_plots = 1;
     end
 end
@@ -272,7 +272,7 @@ emptyDomain.best_fit_3_sigma_box = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-%     temp_h = figure(fig_num);
+%     temp_h = figure(figNum);
 %     flag_rescale_axis = 0;
 %     if isempty(get(temp_h,'Children'))
 %         flag_rescale_axis = 1;
@@ -346,7 +346,7 @@ if flag_do_plots
 %     end
 % 
 %     % Plot the Hough space results, from least to best
-%     figure(fig_num+1);
+%     figure(figNum+1);
 %     clf;
 %     hold on;
 %     grid on;

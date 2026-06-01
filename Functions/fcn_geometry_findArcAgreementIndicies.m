@@ -15,7 +15,7 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % FORMAT:
 % 
 % [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-%    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, (fig_num));
+%    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, (figNum));
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -40,7 +40,7 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 % 
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -72,15 +72,15 @@ function [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radian
 
 % Revision history:
 % 2024_01_09 - S. Brennan
-% -- first write of the code
+% - first write of the code
 % 2024_01_12 - S. Brennan
-% -- fixed typo in test script name
+% - fixed typo in test script name
 % 2024_04_17 - S. Brennan
-% -- fixed typo in test script name
+% - fixed typo in test script name
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -103,9 +103,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 234343; %#ok<NASGU>
+    debug_figNum = 234343; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -148,13 +148,13 @@ if 0==flag_max_speed
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (6<=nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -281,7 +281,7 @@ end
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -303,7 +303,7 @@ if flag_do_plots
         title('Arc fit');
     end
 
-    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num);
+    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',figNum);
     plot(points(index_source_point,1),points(index_source_point,2),'bo','MarkerSize',15);
 
     % Plot the results

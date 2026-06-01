@@ -4,7 +4,7 @@ function [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_
 %
 % FORMAT:
 %
-% [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (fig_num))
+% [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_radians, end_angle_in_radians, direction, angles_to_test_in_radians, (figNum))
 %
 % INPUTS:
 %
@@ -19,7 +19,7 @@ function [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      figNum: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -43,12 +43,12 @@ function [isAngleBetween]  = fcn_geometry_findAngleBetweenAngles(start_angle_in_
 
 % Revision history:
 % 2024_01_07 - sbrennan@psu.edu
-% -- original write of the code
+% - original write of the code
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -113,7 +113,7 @@ flag_do_plots = 0;
 if (5 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -158,7 +158,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -198,7 +198,7 @@ if flag_do_plots
     else % Update the results
 
         % Grab plot information
-        current_figure = get(fig_num,'UserData');
+        current_figure = get(figNum,'UserData');
 
         % Update the input angles
         set(current_figure.h1,'XData', [0; cos(start_angle_in_radians)]);

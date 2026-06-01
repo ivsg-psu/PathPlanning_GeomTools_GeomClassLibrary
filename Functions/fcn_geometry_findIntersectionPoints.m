@@ -1,4 +1,4 @@
-function intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, fig_num)
+function intersection_point = fcn_geometry_findIntersectionPoints(breakPointsCell, figNum)
 
 % This function is still under development. This function will/may be
 % merged into fcn_geometry_findBreakPoints function. 
@@ -49,7 +49,7 @@ intersection_point = AA\bb;
 fprintf('Intersection Point (using back slash operator) : (%.4f, %.4f)\n', intersection_point(1), intersection_point(2));
 
 % Plotting the intersection point using the best fit parameters
-figure(fig_num)
+figure(figNum)
 hold on 
 
 % Define x range for plotting

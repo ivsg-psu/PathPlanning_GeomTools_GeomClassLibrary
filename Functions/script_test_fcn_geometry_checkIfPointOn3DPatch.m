@@ -2,8 +2,8 @@
 % Exercises the function: fcn_geometry_checkIfPointOn3DPatch
 % Revision history:
 % 2021_06_12
-% -- wrote the code
-% -- revised from fcn_geometry_fitPlaneLinearRegression
+% - wrote the code
+% - revised from fcn_geometry_fitPlaneLinearRegression
 
 close all;
 
@@ -23,8 +23,8 @@ close all;
 
 
 %% Demo case 1: basic plane test in X=Z
-fig_num = 0001;
-figure(fig_num);
+figNum = 0001;
+figure(figNum);
 clf;
 
 patchPoints = [0 0 0; 4 0 4; 3 5 3; 2 2 2; 1 6 1];
@@ -37,7 +37,7 @@ testPoints = [testPointsX testPointsY testPointsZ];
 
 tolerance = 1; 
 
-[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
 
 
 % Check variable types
@@ -57,7 +57,7 @@ assert(isequal(size(flag_projectsInsidePatch),[Npoints 1]));
 % assert(isequal(flag_projectsInsidePatch,[1 0 1 1 0]'));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 
 %% Basic testing examples in 3D
@@ -74,8 +74,8 @@ assert(isequal(get(gcf,'Number'),fig_num));
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Testing%20%20Examples%20%20-%203D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Test case 1: basic plane test in XY
-fig_num = 1001;
-figure(fig_num);
+figNum = 1001;
+figure(figNum);
 clf;
 
 patchPoints = [0 0 0; 10 0 0; 10 10 0]*0.5;
@@ -89,7 +89,7 @@ testPoints = [...
 
 tolerance = []; % Use default
 
-[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
 
 
 % Check variable types
@@ -109,11 +109,11 @@ assert(isequal(flag_isOn3DPatchPlane,[1 1 0 0 0]'));
 assert(isequal(flag_projectsInsidePatch,[1 0 1 1 0]'));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Test case 2: basic plane test in XY with tolerance
-fig_num = 1002;
-figure(fig_num);
+figNum = 1002;
+figure(figNum);
 clf;
 
 patchPoints = [0 0 0; 10 0 0; 10 10 0]*0.5;
@@ -127,7 +127,7 @@ testPoints = [...
 
 tolerance = 0.6; 
 
-[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
 
 
 % Check variable types
@@ -147,11 +147,11 @@ assert(isequal(flag_isOn3DPatchPlane,[1 1 0 1 0]'));
 assert(isequal(flag_projectsInsidePatch,[1 0 1 1 0]'));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Test case 3: basic plane test in XZ
-fig_num = 1003;
-figure(fig_num);
+figNum = 1003;
+figure(figNum);
 clf;
 
 patchPoints = [0 0 0; 10 0 0; 10 10 0]*0.5;
@@ -168,7 +168,7 @@ testPoints  = [testPoints(:,1)  testPoints(:,3)  testPoints(:,2)];
  
 tolerance = []; % Use default
 
-[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+[flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
 
 
 % Check variable types
@@ -188,7 +188,7 @@ assert(isequal(flag_isOn3DPatchPlane,[1 1 0 0 0]'));
 assert(isequal(flag_projectsInsidePatch,[1 0 1 1 0]'));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Fast Mode Tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -205,9 +205,9 @@ assert(isequal(get(gcf,'Number'),fig_num));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Basic example - NO FIGURE
-fig_num = 9901;
-figure(fig_num);
-close(fig_num);
+figNum = 9901;
+figure(figNum);
+close(figNum);
 
 patchPoints = [0 0 0; 4 0 4; 3 5 3; 2 2 2; 1 6 1];
 
@@ -237,12 +237,12 @@ assert(isequal(size(flag_projectsInsidePatch),[Npoints 1]));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Basic example - NO FIGURE, FAST MODE
-fig_num = 9902;
-figure(fig_num);
-close(fig_num);
+figNum = 9902;
+figure(figNum);
+close(figNum);
 
 patchPoints = [0 0 0; 4 0 4; 3 5 3; 2 2 2; 1 6 1];
 
@@ -271,12 +271,12 @@ assert(isequal(size(flag_projectsInsidePatch),[Npoints 1]));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Compare speeds of pre-calculation versus post-calculation versus a fast variant
-fig_num = 9903;
-figure(fig_num);
-close(fig_num);
+figNum = 9903;
+figure(figNum);
+close(figNum);
 rng(1823);
 
 
@@ -292,13 +292,13 @@ tolerance = 1;
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 Niterations = 100; minTimeSlow = Inf; 
 tic;
 for i=1:Niterations
     tstart = tic;
     [flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = ...
-        fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+        fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -306,13 +306,13 @@ end
 slow_method = toc/Niterations;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:Niterations
     tstart = tic;
     [flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch] = ...
-        fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num));
+        fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -342,6 +342,6 @@ ylabel('Execution time (Milliseconds)')
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [root_point, unit_vector] = fcn_geometry_checkIfPointOn3DPatch(points,fig_num);
+    [root_point, unit_vector] = fcn_geometry_checkIfPointOn3DPatch(points,figNum);
     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 end

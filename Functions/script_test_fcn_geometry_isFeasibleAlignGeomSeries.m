@@ -3,13 +3,13 @@
 
 % Revision history:
 % 2024_05_18 - S Brennan
-% -- wrote the code
+% - wrote the code
 close all;
 
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 % Check to see if the fits were calculated earlier
@@ -31,19 +31,19 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
     fitting_tolerance = [0.5 10]; % Units are meters
     flag_fit_backwards = 0;
     
-    figure(fig_num);
+    figure(figNum);
     plot(XY_data(:,1),XY_data(:,2),'k.','MarkerSize',20)
     
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum);
 
 
 end
 
 
 %% Check if the fits are feasible
-fig_num = 2;
-figure(fig_num);clf;
+figNum = 2;
+figure(figNum);clf;
 fitting_tolerance = 0;
 
 clear fits_to_check_types fits_to_check_parameters
@@ -55,14 +55,14 @@ fits_to_check_parameters = fitSequence_parameters_forward;
 % end
 
 plot(XY_data(:,1),XY_data(:,2),'k.','MarkerSize',20)
-fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(fig_num));
+fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(figNum));
 
 distances_by_continuity = zeros(length(fits_to_check_types)-1,3);
 for ith_continuity = 1:3
     continuity_level = ith_continuity-1;
 
     [joint_feasibility, joint_distance_of_failure] = ...
-        fcn_geometry_isFeasibleAlignGeomSeries(fits_to_check_types, fits_to_check_parameters, continuity_level,(fitting_tolerance),(fig_num));
+        fcn_geometry_isFeasibleAlignGeomSeries(fits_to_check_types, fits_to_check_parameters, continuity_level,(fitting_tolerance),(figNum));
 
     distances_by_continuity(:,ith_continuity) = joint_distance_of_failure;
 

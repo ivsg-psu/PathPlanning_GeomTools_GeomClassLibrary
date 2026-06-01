@@ -23,7 +23,7 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 % 
 % Format: 
 % [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSequence_parameters, fitSequence_bestFitType] = ...
-% fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (fig_num))
+% fcn_geometry_fitSequentialArcs(points_to_fit, (fitting_tolerance), (flag_fit_backwards), (figNum))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed to
@@ -44,22 +44,22 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 %      process to proceed "backwards", e.g. from the end of the data set to
 %      the beginning. Default is 0.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
 %      NOTE: this code is often used with animations and supports a special
-%      fig_num input. Namely, the user can pass an array that includes the
+%      figNum input. Namely, the user can pass an array that includes the
 %      figure number and a set of figure handles that, if set, will update
 %      an animation of the fitting progress into 4 subplots, so that the
 %      user can view results. The array is as follows:
 %
-%           fig_num(1): the figure number of the plot to use
-%           fig_num(2): a handle to the h_plotPoints, that animates the
+%           figNum(1): the figure number of the plot to use
+%           figNum(2): a handle to the h_plotPoints, that animates the
 %           points being tested
-%           fig_num(3): h_plotPercentage, to animate the percentage
+%           figNum(3): h_plotPercentage, to animate the percentage
 %           agreement
-%           fig_num(4): h_plotFitShape to animate the domain fit shape
+%           figNum(4): h_plotFitShape to animate the domain fit shape
 %
 % OUTPUTS:
 %
@@ -92,14 +92,14 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 
 % Revision history:
 % 2024_04_03 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_17 - S. Brennan
-% -- fixed the animation subfigure issues to be consistent with fig_num
+% - fixed the animation subfigure issues to be consistent with figNum
 % 2024_04_19 - S. Brennan
-% -- added ability to provide tolerances in station and transverse
+% - added ability to provide tolerances in station and transverse
 % directions separately
 % 2024_06_21 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -109,7 +109,7 @@ function [fitSequence_points, fitSequence_shapes, fitSequence_endIndicies, fitSe
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -134,9 +134,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -182,20 +182,20 @@ end
 
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)        
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
         % Does user want to specify animation_figure_handles?
         flag_plot_subfigs = 0;
 
         if length(temp)>1
-            fig_num           = temp(1);
+            figNum           = temp(1);
             h_plotPoints      = temp(2);
             h_plotPercentage  = temp(3);
             h_plotFitShape    = temp(4);
@@ -259,7 +259,7 @@ fitSequence_endIndicies{Ndomains} = current_segment_start_index;
 
 % Initialize subfigure plots?
 if flag_do_plots==1 && 1==flag_plot_subfigs
-    figure(fig_num);
+    figure(figNum);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Plot the input points
@@ -572,7 +572,7 @@ if flag_do_plots
 
     else
         % Plot the results in the given figure number
-        temp_h = figure(fig_num);
+        temp_h = figure(figNum);
         flag_rescale_axis = 0;
         if isempty(get(temp_h,'Children'))
             flag_rescale_axis = 1;
@@ -582,7 +582,7 @@ if flag_do_plots
     if flag_plot_subfigs == 1
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Final fit
-        figure(fig_num);
+        figure(figNum);
         subplot(2,2,4);
         hold on;
         grid on;
@@ -601,13 +601,13 @@ if flag_do_plots
         end
 
         % Plot the domain fits
-        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(figNum));
 
         axis(original_axis);
 
 
     else
-        figure(fig_num);
+        figure(figNum);
         hold on;
         grid on;
         axis equal;
@@ -631,7 +631,7 @@ if flag_do_plots
         end
 
         % Plot the domain fits
-        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+        fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(figNum));
 
         % Make axis slightly larger?
         if flag_rescale_axis

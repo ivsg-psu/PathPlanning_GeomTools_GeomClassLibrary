@@ -5,8 +5,8 @@
 
 
 %% test 1 - Simple example
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -15,12 +15,12 @@ anglesToSearch = linspace(0,360,37)'*pi/180;
 angleRange = 15*pi/180;
 
 % Test the function
-nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing simple example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -33,9 +33,9 @@ assert(isequal(nearbyIndicies,[1 2 36 37]'));
 
 
 %% test 2 - Simple example - no plotting
-fig_num = 2;
-figure(fig_num);
-close(fig_num);
+figNum = 2;
+figure(figNum);
+close(figNum);
 
 % Fill some data
 anchorAngle = 0;
@@ -47,7 +47,7 @@ nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angle
 
 
 % Was a figure created?
-assert(all(~ishandle(fig_num)));
+assert(all(~ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -59,8 +59,8 @@ assert(isequal(nearbyIndicies,[1 2 36 37]'));
 
 
 %% test 3 - empty result example
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -69,20 +69,20 @@ anglesToSearch = linspace(0,40,6)'*pi/180;
 angleRange = 15*pi/180;
 
 % Test the function
-nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing empty result example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(isempty(nearbyIndicies));
 
 
 %% test 4 - rollover angles example
-fig_num = 4;
-figure(fig_num);
+figNum = 4;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -91,12 +91,12 @@ anglesToSearch = linspace(-180,180,37)'*pi/180;
 angleRange = 15*pi/180;
 
 % Test the function
-nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_anglesNearAngle',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing rollover angles example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -115,7 +115,7 @@ angleRange = 15*pi/180;
 
 
 % Test the function
-fig_num=[];
+figNum=[];
 REPS=5; 
 minTimeSlow=Inf;
 maxTimeSlow=-Inf;
@@ -124,7 +124,7 @@ tic;
 % Slow mode calculation - code copied from plotVehicleXYZ
 for i=1:REPS
     tstart=tic;
-    nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
+    nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (figNum));
     telapsed=toc(tstart);
     minTimeSlow=min(telapsed,minTimeSlow);
     maxTimeSlow=max(telapsed,maxTimeSlow);
@@ -133,12 +133,12 @@ averageTimeSlow=toc/REPS;
 % Slow mode END
 
 % Fast Mode Calculation
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (fig_num));
+    nearbyIndicies = fcn_geometry_anglesNearAngle(anchorAngle, anglesToSearch, angleRange, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

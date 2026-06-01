@@ -10,7 +10,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, tolerance, varar
 %
 % FORMAT: 
 %
-% domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (fig_num)) 
+% domains = fcn_geometry_fitHoughCubicPolynomial(points, transverse_tolerance, (station_tolerance), (points_required_for_agreement), (flag_find_only_best_agreement), (total_points_including_source_points), (figNum)) 
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -47,7 +47,7 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, tolerance, varar
 %      source points are interpolated to generate a good (visually
 %      appealing) domain shape. 
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -74,35 +74,35 @@ function domains = fcn_geometry_fitHoughCubicPolynomial(points, tolerance, varar
 
 % Revision history:
 % 2024_05_11 - Aneesh Batchu
-% -- Started the code
+% - Started the code
 % 2024_05_12 - Aneesh Batchu
-% -- Functionalized a code that finds agreement indices
+% - Functionalized a code that finds agreement indices
 % 2024_05_14 - Aneesh Batchu
-% -- Prepared parameters for domains and formed the domains
+% - Prepared parameters for domains and formed the domains
 % 2024_05_15 - Aneesh Batchu
-% -- Added a case for cubic polynomial in fcn_geometry_plotFitDomains
+% - Added a case for cubic polynomial in fcn_geometry_plotFitDomains
 % 2024_05_16 - Aneesh Batchu
-% -- Functionalized this code. 
+% - Functionalized this code. 
 % 2024_05_17 - Aneesh Batchu
-% -- Added station tolerance as one of the inputs
+% - Added station tolerance as one of the inputs
 % 2024_05_20 - Aneesh Batchu
-% -- Added wait bar
+% - Added wait bar
 % 2024_06_05 - Aneesh Batchu
-% -- Added "total_points_including_source_points" as one of the inputs
+% - Added "total_points_including_source_points" as one of the inputs
 % 2024_06_05 - Aneesh Batchu
-% -- Modified the function "fcn_geometry_findAgreementsOfPointsToCubicPoly"
+% - Modified the function "fcn_geometry_findAgreementsOfPointsToCubicPoly"
 % to find the agreement indices faster. More details of the function are
 % mentioned in the instructions of that function. 
 % 2024_06_18 - Aneesh Batchu
-% -- Changed the inputs of "fcn_geometry_findAgreementsOfPointsToCubicPoly"
+% - Changed the inputs of "fcn_geometry_findAgreementsOfPointsToCubicPoly"
 % 2025_11_04 - Aneesh Batchu
-% -- Added a conditional statement in Step 2 under
+% - Added a conditional statement in Step 2 under
 % flag_find_only_best_agreement case. If the best agreement count is less
 % than 4 points, the cubic polynomial is not fitted.  
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -125,9 +125,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 234343; %#ok<NASGU>
+    debug_figNum = 234343; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -190,13 +190,13 @@ if (5<= nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (6<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -374,7 +374,7 @@ domains = fcn_INTERNAL_filldomains(points, best_fit_cubic_poly_coefficients, bes
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -392,7 +392,7 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the domains
-    fcn_geometry_plotFitDomains(domains, fig_num);
+    fcn_geometry_plotFitDomains(domains, figNum);
 
 
     % Make axis slightly larger?

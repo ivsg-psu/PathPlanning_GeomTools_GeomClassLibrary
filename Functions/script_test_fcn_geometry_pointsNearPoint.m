@@ -5,8 +5,8 @@
 
 
 %% test 1 - Simple example
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -15,12 +15,12 @@ pointsToSearch = [linspace(0,5,6)' zeros(6,1)];
 searchRadius = 2;
 
 % Test the function
-nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing simple example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -33,9 +33,9 @@ assert(isequal(nearbyIndicies,[1 2 3]'));
 
 
 %% test 2 - Simple example - no plotting
-fig_num = 2;
-figure(fig_num);
-close(fig_num);
+figNum = 2;
+figure(figNum);
+close(figNum);
 
 % Fill some data
 anchorPoint = [0 0];
@@ -47,7 +47,7 @@ nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searc
 
 
 % Was a figure created?
-assert(all(~ishandle(fig_num)));
+assert(all(~ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -59,8 +59,8 @@ assert(isequal(nearbyIndicies,[1 2 3]'));
 
 
 %% test 3 - empty result example
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -69,20 +69,20 @@ pointsToSearch = [linspace(4,5,3)' zeros(3,1)];
 searchRadius = 2;
 
 % Test the function
-nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing empty result example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(isempty(nearbyIndicies));
 
 
 %% test 4 - 3D points example
-fig_num = 4;
-figure(fig_num);
+figNum = 4;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -91,12 +91,12 @@ pointsToSearch = [linspace(0,5,6)' zeros(6,2)];
 searchRadius = 2;
 
 % Test the function
-nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing 3D points example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -107,8 +107,8 @@ assert(length(nearbyIndicies(:,1))== 3)
 assert(isequal(nearbyIndicies,[1 2 3]'));
 
 %% test 5 - Lots of points
-fig_num = 5;
-figure(fig_num);
+figNum = 5;
+figure(figNum);
 clf;
 
 % Fill some data
@@ -117,12 +117,12 @@ pointsToSearch = 10*rand(50,2) - ones(50,2)*5;
 searchRadius = 2;
 
 % Test the function
-nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
-title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',fig_num), 'Interpreter','none','FontSize',12);
+nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
+title(sprintf('Example %.0d: showing fcn_geometry_pointsNearPoint',figNum), 'Interpreter','none','FontSize',12);
 subtitle('Showing many points example');
 
 % Was a figure created?
-assert(all(ishandle(fig_num)));
+assert(all(ishandle(figNum)));
 
 % Does the data have right size?
 assert(~isempty(nearbyIndicies));
@@ -141,7 +141,7 @@ searchRadius = 2;
 
 
 % Test the function
-fig_num=[];
+figNum=[];
 REPS=5; 
 minTimeSlow=Inf;
 maxTimeSlow=-Inf;
@@ -150,7 +150,7 @@ tic;
 % Slow mode calculation - code copied from plotVehicleXYZ
 for i=1:REPS
     tstart=tic;
-    nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
+    nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
     telapsed=toc(tstart);
     minTimeSlow=min(telapsed,minTimeSlow);
     maxTimeSlow=max(telapsed,maxTimeSlow);
@@ -159,12 +159,12 @@ averageTimeSlow=toc/REPS;
 % Slow mode END
 
 % Fast Mode Calculation
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (fig_num));
+    nearbyIndicies = fcn_geometry_pointsNearPoint(anchorPoint, pointsToSearch, searchRadius, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

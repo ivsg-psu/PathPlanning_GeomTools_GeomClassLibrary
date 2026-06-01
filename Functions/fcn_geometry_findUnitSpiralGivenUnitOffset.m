@@ -28,7 +28,7 @@ function [spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGi
 %      well are saved to file to avoid calculation in the future, as this
 %      process is very slow.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -54,11 +54,11 @@ function [spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGi
 
 % Revision history:
 % 2024_04_06 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -70,20 +70,20 @@ else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
-    MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS");
-    MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG = getenv("MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG");
-    if ~isempty(MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG);
-        flag_check_inputs  = str2double(MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS);
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -122,13 +122,13 @@ elseif (1<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -184,7 +184,7 @@ end
 %     if flag_load_all_data
 % 
 %         % Load the data from scratch
-%         [unit_spiral_offsets,unit_spiral_end_angles_radians, unit_spiral_lengths, unit_spiral_end_XYs] = fcn_INTERNAL_calculateUnitSpiralData(fig_num);
+%         [unit_spiral_offsets,unit_spiral_end_angles_radians, unit_spiral_lengths, unit_spiral_end_XYs] = fcn_INTERNAL_calculateUnitSpiralData(figNum);
 % 
 %         % % Grab the file's date of creation
 %         % st = dbstack;
@@ -213,7 +213,7 @@ end
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -314,12 +314,12 @@ error = abs(offset-actual_offset);
 end % Ends fcn_INTERNAL_findLengthFromOffset
 
 %% fcn_INTERNAL_calculateUnitSpiralData
-function [unit_spiral_offsets,unit_spiral_end_angles_radians, unit_spiral_lengths, unit_spiral_end_XYs] = fcn_INTERNAL_calculateUnitSpiralData(fig_num) %#ok<DEFNU>
+function [unit_spiral_offsets,unit_spiral_end_angles_radians, unit_spiral_lengths, unit_spiral_end_XYs] = fcn_INTERNAL_calculateUnitSpiralData(figNum) %#ok<DEFNU>
 
 % PREP THE FIGURE?
 % Plot the circle
-if ~isempty(fig_num)
-    figure(fig_num);
+if ~isempty(figNum)
+    figure(figNum);
     clf;
     subplot(2,2,1); axis equal; grid on; hold on; xlabel('Unit x [m]'),ylabel('Unit y [m]');
     subplot(2,2,2); axis equal; grid on; hold on; xlabel('Unit x [m]'),ylabel('Unit y [m]');
@@ -381,8 +381,8 @@ for length_index = 1:N_points
 
 
     % Plot the circle
-    if 0==mod(length_index,100) && ~isempty(fig_num)
-        figure(fig_num);
+    if 0==mod(length_index,100) && ~isempty(figNum)
+        figure(figNum);
         subplot(2,2,1);
         plot(circle_center(:,1),circle_center(:,2),'r+');
         angles = (0:1:360)'*pi/180;
@@ -393,7 +393,7 @@ for length_index = 1:N_points
     end
 end
 
-figure(fig_num);
+figure(figNum);
 subplot(2,2,1);
 plot([-1 0],[0 0],'k-');
 plot(x_arc,y_arc,'b-');
@@ -402,14 +402,14 @@ angles = (0:1:360)'*pi/180;
 XY_circle = (1/Kf)*[cos(angles) sin(angles)] + circle_center;
 plot(XY_circle(:,1),XY_circle(:,2),'r-');
 
-figure(fig_num);
+figure(figNum);
 subplot(2,2,2);
 plot(unit_spiral_lengths, unit_spiral_offsets,'k.-');
 xlabel('Spiral lengths [m]');
 ylabel('Sprial offsets [m]');
 
 
-figure(fig_num);
+figure(figNum);
 subplot(2,2,3);
 plot(unit_spiral_lengths,unit_spiral_end_angles_radians,'k.-');
 xlabel('Sprial lengths [m]');
@@ -467,7 +467,7 @@ end
 unit_spiral_fit_lengths = L0_curve(unit_spiral_offsets_test);
 length_errors = unit_spiral_test_lengths - unit_spiral_fit_lengths;
 
-figure(fig_num);
+figure(figNum);
 subplot(2,2,4);
 plot(unit_spiral_test_lengths,length_errors,'k.');
 axis normal;
@@ -524,7 +524,7 @@ fprintf(1,'Done calculating calibration data.\n');
 %     errors_in_length(offset_index,1) = L0_approximate_true - L0_predicted(offset_index,1);
 % end
 % 
-% figure(fig_num);
+% figure(figNum);
 % subplot(2,2,4);
 % plot(true_unit_spiral_offsets,errors_in_length,'k.-');
 % xlabel('Sprial offset input [m]');

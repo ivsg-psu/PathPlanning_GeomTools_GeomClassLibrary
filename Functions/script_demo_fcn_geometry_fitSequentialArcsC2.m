@@ -2,9 +2,9 @@
 % Exercises the function: fcn_geometry_fitSequentialArcsC2
 
 % 2024_04_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_07_06 - S. Brennan
-% -- typo fix in function calls
+% - typo fix in function calls
 
 close all;
 
@@ -26,8 +26,8 @@ close all;
 rng(1);
 
 %%% Use fillArcSequence to create some test data
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 rng(1); % Fix the random number, for debugging
@@ -73,11 +73,11 @@ end
 
 
 % Initialize the subplots
-fig_num_array(1) = fig_num;
-fig_num_array(2) = 0;
-fig_num_array(3) = 0;
-fig_num_array(4) = 0;
-figure(fig_num); clf;
+figNum_array(1) = figNum;
+figNum_array(2) = 0;
+figNum_array(3) = 0;
+figNum_array(4) = 0;
+figure(figNum); clf;
 
 % Add starter points (truth) onto subplot 2,1,1
 subplot(2,2,1);
@@ -104,22 +104,22 @@ end
 fitting_tolerance = [1 0.2]; % Station is 1 meter, transverse is 0.1 meter 
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, figNum_array);
 
 % Plot the true results
 subplot(2,2,4);
-fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array(1)));
+fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(figNum_array(1)));
 
 
 %%% Perform the fit backwards
 fitting_tolerance = [1 0.2]; % Station is 1 meter, transverse is 0.1 meter 
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
-    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(test_points, fitting_tolerance, flag_fit_backwards, figNum_array);
 
 % Plot the true results
 subplot(2,2,4);
-fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(fig_num_array(1)));
+fcn_geometry_plotFitSequences(trueNamedCurveTypes, trueParameters,(figNum_array(1)));
 
 % Print the results
 fcn_geometry_printFitSequences(fitSequence_bestFitType_forward, fitSequence_parameters_forward, (1), ('Forward fit'), (1))
@@ -177,7 +177,7 @@ fprintf(1,'\n');
 
 % Add vertical lines to indicate where the segments were identified as
 % changing
-figure(fig_num_array(1));
+figure(figNum_array(1));
 subplot(2,2,3);
 for ith_start = 1:NfitsInSequence
     
@@ -186,7 +186,7 @@ for ith_start = 1:NfitsInSequence
     plot([probable_arc_boundary_indicies(ith_start) probable_arc_boundary_indicies(ith_start)],[-0.1 1.1],'-','Color',current_color);
 end
 
-figure(fig_num_array(1));
+figure(figNum_array(1));
 subplot(2,2,4);
 
 % Plot the fitted groups of points. If any of the points are mis-labeled,
@@ -204,16 +204,16 @@ end
 % % Check revised_fitSequence_parameters_backward: The backward parameter inputs are not actually backward
 % % paramters. Check the inputs. 
 % 
-% % fig_num = 23456;
-% % figure(fig_num);clf;
+% % figNum = 23456;
+% % figure(figNum);clf;
 % % 
 % % fitting_tolerance = 5;
 % % continuity_level = 2;
-% % revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward,  fitting_tolerance, continuity_level, fig_num);
-% % revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance, continuity_level, fig_num);
+% % revised_fitSequence_parameters_forward  = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_forward, fitSequence_parameters_forward,  fitting_tolerance, continuity_level, figNum);
+% % revised_fitSequence_parameters_backward = fcn_geometry_alignGeometriesInSequence(fitSequence_bestFitType_backward,fitSequence_parameters_backward, fitting_tolerance, continuity_level, figNum);
 % % 
-% % fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
-% % fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(fig_num));
+% % fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(figNum));
+% % fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, revised_fitSequence_parameters_backward,(figNum));
 % % 
 % % subplot(1,2,1);
 % % good_axis_limits = axis;
@@ -229,11 +229,11 @@ parameters_backward = fitSequence_parameters_backward;
 
 
 % Plot the original data
-fig_num = 23456;
-figure(fig_num);clf;
+figNum = 23456;
+figure(figNum);clf;
 
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, parameters_forward,(fig_num));
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, parameters_backward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, parameters_forward,(figNum));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, parameters_backward,(figNum));
 good_axis_limits = axis;
 
 
@@ -244,8 +244,8 @@ end
 fitSequence_bestFitType_averaged = fitSequence_bestFitType_forward;
 
 %%% Plot the errors between true curves and fitted curves
-comparison_fig_num = 2828;
-figure(comparison_fig_num); clf;
+comparison_figNum = 2828;
+figure(comparison_figNum); clf;
 hold on;
 
 threshold = 0.15;
@@ -261,7 +261,7 @@ for ith_fit = 1:NfitsInSequence
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_forward{ith_fit}, parameters_forward{ith_fit},...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
 
     max_forward_error = max(max_forward_error,max_error);
     title('Forward fitting');
@@ -272,7 +272,7 @@ for ith_fit = 1:NfitsInSequence
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_backward{ith_fit}, parameters_backward{ith_fit},...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
     max_backward_error = max(max_backward_error,max_error);
     title('Reverse fitting');
     axis(good_axis_limits)
@@ -282,7 +282,7 @@ for ith_fit = 1:NfitsInSequence
     [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_compareCurves(...
     trueNamedCurveTypes{ith_fit}, trueParameters{ith_fit}, fitSequence_bestFitType_averaged{ith_fit}, fitSequence_parameters_averaged{ith_fit},...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
     max_averaged_error = max(max_averaged_error,max_error);
     title('Averaged fitting');
     axis(good_axis_limits)
@@ -305,8 +305,8 @@ fprintf(1,'Max backward fitting error: %.3f meters\n',max_backward_error);
 fprintf(1,'Max averaged fitting error: %.3f meters\n',max_averaged_error);
 
 %% Plot the errors between original points and fitted curves
-comparison_fig_num = 73434;
-figure(comparison_fig_num); clf;
+comparison_figNum = 73434;
+figure(comparison_figNum); clf;
 hold on;
 
 threshold = 0.15;
@@ -321,7 +321,7 @@ subplot(1,3,1);
     fcn_geometry_comparePointsToCurve(...
     fitSequence_bestFitType_forward, fitSequence_parameters_forward, ...
     test_points, ...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
 
 title('Forward fitting');
 axis(good_axis_limits)
@@ -334,7 +334,7 @@ subplot(1,3,2);
     fcn_geometry_comparePointsToCurve(...
     fitSequence_bestFitType_backward, fitSequence_parameters_backward, ...
     test_points, ...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
 
 title('Backward fitting');
 axis(good_axis_limits)
@@ -347,7 +347,7 @@ subplot(1,3,3);
     fcn_geometry_comparePointsToCurve(...
     fitSequence_bestFitType_averaged, fitSequence_parameters_averaged, ...
     test_points, ...
-    (threshold), (curve_test_segment_length), (comparison_fig_num));
+    (threshold), (curve_test_segment_length), (comparison_figNum));
 
 title('Averaged fitting');
 axis(good_axis_limits)
@@ -383,13 +383,13 @@ fprintf(1,'Std averaged fitting error: %.3f meters\n',std_dev_error_averaged);
 
 %% Test track data
 % Initialize the subplots
-fig_num = 9999;
+figNum = 9999;
 
-fig_num_array(1) = fig_num;
-fig_num_array(2) = 0;
-fig_num_array(3) = 0;
-fig_num_array(4) = 0;
-figure(fig_num); clf;
+figNum_array(1) = figNum;
+figNum_array(2) = 0;
+figNum_array(3) = 0;
+figNum_array(4) = 0;
+figure(figNum); clf;
 
 
 % Check to see if XY data for the centerline of the original track lane was loaded earlier
@@ -408,17 +408,17 @@ small_XY_data = XY_data(small_XY_data_indicies,:);
 fitting_tolerance = [1 10]; % Units are meters
 flag_fit_backwards = 0;
 [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum_array);
 
 
 % Perform the fit backwards
 flag_fit_backwards = 1;
 [fitSequence_points_backward, fitSequence_shapes_backward, fitSequence_endIndicies_backward, fitSequence_parameters_backward, fitSequence_bestFitType_backward] = ...
-    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num_array);
+    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum_array);
 
 %% Plot results
-fig_num = 234343;
-figure(fig_num);
+figNum = 234343;
+figure(figNum);
 clf;
 
 subplot(1,2,1);
@@ -445,7 +445,7 @@ for ith_domain = 1:length(fitSequence_points_forward)
 end
 
 % Plot the domain fits
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, fitSequence_parameters_forward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, fitSequence_parameters_forward,(figNum));
 
 % Make axis slightly larger?
 temp = axis;
@@ -479,7 +479,7 @@ for ith_domain = 1:length(fitSequence_points_backward)
 end
 
 % Plot the domain fits
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, fitSequence_parameters_backward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_backward, fitSequence_parameters_backward,(figNum));
 
 % Make axis slightly larger?
 temp = axis;

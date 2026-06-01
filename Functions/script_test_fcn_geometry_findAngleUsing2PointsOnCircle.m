@@ -8,7 +8,7 @@
 close all
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
-fig_num = 1;
+figNum = 1;
 centers = [0 0];
 radii = [1];  %#ok<*NBRAK>
 
@@ -26,7 +26,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),4.7124));
 
@@ -40,7 +40,7 @@ fcn_summarize(angles,...
 
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
-fig_num = 2;
+figNum = 2;
 centers = [0 0];
 radii = [1];
 
@@ -58,7 +58,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(-pi/2,4)));
 
@@ -71,7 +71,7 @@ fcn_summarize(angles,...
     cross_products);
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
-fig_num = 31;
+figNum = 31;
 
 centers = [0 0];
 radii = [1];
@@ -89,7 +89,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(3*pi/2,4)));
 
@@ -102,7 +102,7 @@ fcn_summarize(angles,...
     cross_products);
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
-fig_num = 32;
+figNum = 32;
 
 centers = [0 0];
 radii = [1];
@@ -120,7 +120,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(-pi/2,4)));
 
@@ -134,7 +134,7 @@ fcn_summarize(angles,...
 
 
 %% BASIC example for one circle, incoming and outgoing are on separate sides of -180
-fig_num = 41;
+figNum = 41;
 
 centers = [0 0];
 radii = [1];
@@ -152,7 +152,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(pi/2,4)));
 
@@ -165,7 +165,7 @@ fcn_summarize(angles,...
     cross_products);
 
 %% BASIC example for one circle, incoming and outgoing are on separate sides of -180
-fig_num = 42;
+figNum = 42;
 apex_points = [-1 0];
 centers = [0 0];
 radii = [1];
@@ -183,7 +183,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 
 assert(isequal(round(angles,4),round(-3*pi/2,4)));
@@ -199,7 +199,7 @@ fcn_summarize(angles,...
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
-fig_num = 51;
+figNum = 51;
 
 centers = [0 0];
 radii = [1];
@@ -217,7 +217,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(pi,4)));
 
@@ -232,7 +232,7 @@ fcn_summarize(angles,...
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
-fig_num = 52;
+figNum = 52;
 
 centers = [0 0];
 radii = [1];
@@ -250,7 +250,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(-pi,4)));
 
@@ -264,7 +264,7 @@ fcn_summarize(angles,...
 
 
 %% BASIC example for one circle, incoming and outgoing are same point
-fig_num = 61;
+figNum = 61;
 
 centers = [0 0];
 radii = [1];
@@ -282,7 +282,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(0,4)));
 
@@ -296,7 +296,7 @@ fcn_summarize(angles,...
     cross_products);
 
 %% BASIC example for one circle, incoming and outgoing are same point
-fig_num = 62;
+figNum = 62;
 
 centers = [0 0];
 radii = [1];
@@ -314,7 +314,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round(0,4)));
 
@@ -328,7 +328,7 @@ fcn_summarize(angles,...
 
 
 %% ADVANCED example - vectorized
-fig_num = 100;
+figNum = 100;
 
 centers = [0 0; 4 4; 8 10; -6 10];
 radii = [1; 2; 4; 3];
@@ -346,7 +346,7 @@ true_angle = start_angles - end_angles;
     start_points_on_circle,...
     end_points_on_circle,...
     cross_products,...
-    fig_num);
+    figNum);
 
 assert(isequal(round(angles,4),round([-pi/4; 3*pi/4; -pi/2; 7*pi/4],4)));
 
@@ -361,7 +361,7 @@ fcn_summarize(angles,...
 
 
 %% Debugging example
-fig_num = 22232;
+figNum = 22232;
 
 circle_centers = [0 2];
 radii = 2;
@@ -376,12 +376,12 @@ is_counterClockwise = -1;
     points1,...
     points2,...
     is_counterClockwise,...
-    fig_num);
+    figNum);
 
 assert(isequal(angles,-pi/2));
 
 %% Debugging example
-fig_num = 234343;
+figNum = 234343;
 
 circle_centers = [0 2];
 radii = 2;
@@ -396,7 +396,7 @@ is_counterClockwise = 1;
     points1,...
     points2,...
     is_counterClockwise,...
-    fig_num);
+    figNum);
 
 assert(isequal(angles,pi));
 

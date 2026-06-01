@@ -5,7 +5,7 @@ function [regression_fit_circle_center_and_radius, domain_box, radial_errors, st
 % finds the circular regression fit circle and domain box. 
 % 
 % Format: 
-% [regression_fit_circle_center_and_radius, domain_box] = fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, (fig_num))
+% [regression_fit_circle_center_and_radius, domain_box] = fcn_geometry_fitCircleRegressionFromHoughFit(source_points,associated_points_in_domain, (figNum))
 %
 % INPUTS:
 %      source_points: a 3x2 matrix of the points used to create the Hough circle fit (used to find direction): 
@@ -21,7 +21,7 @@ function [regression_fit_circle_center_and_radius, domain_box, radial_errors, st
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot the results.
+%      figNum: a figure number to plot the results.
 %
 % OUTPUTS:
 %
@@ -53,11 +53,11 @@ function [regression_fit_circle_center_and_radius, domain_box, radial_errors, st
 
 % Revision history:
 % 2024_01_09 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -80,9 +80,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -115,13 +115,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (3<= nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -179,7 +179,7 @@ domain_box = [inner_arc; flipud(outer_arc)];
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -200,7 +200,7 @@ if flag_do_plots
     current_color = get(h_plot,'Color');
 
     % Plot the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,fig_num);
+    fcn_geometry_plotCircle(circleCenter, circleRadius, current_color,figNum);
     plot(circleCenter(1,1),circleCenter(1,2),'b+','MarkerSize',30);
 
     % Plot the domain

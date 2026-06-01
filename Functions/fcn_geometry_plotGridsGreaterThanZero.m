@@ -6,7 +6,7 @@ function [total_points_in_grids_greater_than_zero, ...
          grid_AABBs, ...
          gridIndices, ...
          input_points, ...
-         fig_num_gridLines_greater_than_zero_point_density)
+         figNum_gridLines_greater_than_zero_point_density)
 
 
 %% Debugging and Input checks
@@ -35,16 +35,16 @@ function [total_points_in_grids_greater_than_zero, ...
 %  |_|  |_|\__,_|_|_| |_|
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% -----------------------------NOTE------------------------------
+% NOTE
 % After finding the grids without anypoints, the grids are completely
 % removed from the analysis. Only, grids with greater than zero points were
 % analyzed from here. 
-% -----------------------------NOTE------------------------------
+% NOTE
 
 % Plot all the grids greater than zero point density
 
 % Figure number
-figure(fig_num_gridLines_greater_than_zero_point_density); clf;
+figure(figNum_gridLines_greater_than_zero_point_density); clf;
 
 hold on
 grid on

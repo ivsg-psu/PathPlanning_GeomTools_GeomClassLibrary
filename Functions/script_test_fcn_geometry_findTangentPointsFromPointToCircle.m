@@ -6,44 +6,44 @@
 %      -- first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
 
 %% BASIC example for one circle and one point
-fig_num = 1;
+figNum = 1;
 centers = [0 0];
 radii = 1;
 points = [2 3];
 points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points,fig_num); %#ok<*NASGU>
+    centers,radii,points,figNum); %#ok<*NASGU>
 
 assert(isequal(round(points_tangent,4),[0.9533,-0.3022;-0.6456,0.7637]));
 
 %% ADVANCED example that uses vectors of centers and points
-fig_num = 2;
+figNum = 2;
 centers = [0 0; 1 4];
 radii = [1; 1];
 points = [2 3; 3 4];
 points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points,fig_num);
+    centers,radii,points,figNum);
 
 assert(length(points_tangent(1,:))==2); % Does it have 2 columns?
 assert(length(points_tangent(:,1))>=1); % Does it have 1 or more rows?
 
 %% ADVANCED example that has one point too close to the center
-fig_num = 2;
+figNum = 2;
 centers = [0 0; 1 4];
 radii = [1; 1];
 points = [0.5 0.5; 3 4];
 points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points,fig_num);
+    centers,radii,points,figNum);
 
 assert(length(points_tangent(1,:))==2); % Does it have 2 columns?
 assert(length(points_tangent(:,1))>=1); % Does it have 1 or more rows?
 
 %% ADVANCED example that has one point too close to the center
-fig_num = 2;
+figNum = 2;
 centers = [0 0; 1 4];
 radii = [1; 1];
 points = [1 2; 1.5 4];
 points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points,fig_num);
+    centers,radii,points,figNum);
 
 assert(length(points_tangent(1,:))==2); % Does it have 2 columns?
 assert(length(points_tangent(:,1))>=1); % Does it have 1 or more rows?
@@ -55,26 +55,26 @@ radii = 1;
 points = [2 3];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points, (fig_num));
+    centers,radii,points, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-    centers,radii,points, (fig_num));
+    centers,radii,points, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -94,13 +94,13 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 %% ADVANCED example that lets user select a point among circles, and move it around
 % enable_advanced_example = false; % flag advanced example off for non-interactive execution
 % if enable_advanced_example
-%     fig_num = 999;
+%     figNum = 999;
 % 
 %     centers = [0 0; 1 4; 4 2];
 %     radii = [1; 2; 0.5];
 %     points = [-2*ones(length(radii),1) 4*ones(length(radii),1)];
 %     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-%         centers,radii,points,fig_num);
+%         centers,radii,points,figNum);
 %     % Loop until right button is hit
 %     button = 1;
 %     while sum(button) <=1   % read ginputs until a mouse right-button occurs
@@ -109,18 +109,18 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 %         points = [xp*ones(length(centers(:,1)),1),...
 %             yp*ones(length(centers(:,1)),1)];
 %         points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-%             centers,radii,points,fig_num);
+%             centers,radii,points,figNum);
 %     end
 % end
 
 %% FAIL CONDITIONS
 if 1==0
     %% ADVANCED example that has one point on the center
-    fig_num = 2;
+    figNum = 2;
     centers = [0 0; 1 4];
     radii = [1; 1];
     points = [1 1; 1 4];
     points_tangent = fcn_geometry_findTangentPointsFromPointToCircle(...
-        centers,radii,points,fig_num);
+        centers,radii,points,figNum);
 
 end

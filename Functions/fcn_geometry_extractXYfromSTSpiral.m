@@ -17,7 +17,7 @@ function [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s, l0, h0, x0,
 %
 % FORMAT: 
 %
-%       [x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,l0,h0,x0,y0,K0,Kf,(fig_num))
+%       [x_arc,y_arc] = fcn_geometry_extractXYfromSTSpiral(s,l0,h0,x0,y0,K0,Kf,(figNum))
 %
 % INPUTS:
 %
@@ -44,7 +44,7 @@ function [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s, l0, h0, x0,
 %
 %      (OPTIONAL INPUTS): 
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -71,18 +71,18 @@ function [x_spiral,y_spiral] = fcn_geometry_extractXYfromSTSpiral(s, l0, h0, x0,
 
 % Revision history:
 % 2022_03_20 - C. Beal
-% -- wrote the code
+% - wrote the code
 % 2024_03_22 - S. Brennan
-% -- wrote the code, taking the code out of the ParseXODR library under the
+% - wrote the code, taking the code out of the ParseXODR library under the
 % function fcn_ParseXODR_extractXYfromSTSpiral
 % 2024_04_05 - S. Brennan
-% -- fixed typos in the function definition in the header comments (grrr)
+% - fixed typos in the function definition in the header comments (grrr)
 % 2024_04_14 - S. Brennan
-% -- added fcn_geometry_fillColorFromNumberOrName for plotting
+% - added fcn_geometry_fillColorFromNumberOrName for plotting
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -94,20 +94,20 @@ else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 1; % Flag to perform input checking
-    MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS");
-    MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG = getenv("MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG");
-    if ~isempty(MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_PARSEXODR_FLAG_DO_DEBUG);
-        flag_check_inputs  = str2double(MATLABFLAG_PARSEXODR_FLAG_CHECK_INPUTS);
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
     end
 end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -131,13 +131,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (8<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -175,7 +175,7 @@ y_spiral = y0 + (sqrt(pi/2)*(sin(K0^2/(4*z1) - h0)*(fresnelc(K0/(sqrt(z1)*sqrt(2
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

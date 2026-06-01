@@ -7,7 +7,7 @@ function geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParamete
 % 
 % FORMAT: 
 %
-% geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, (fig_num)) 
+% geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, (figNum)) 
 % 
 % INPUTS:
 %
@@ -23,7 +23,7 @@ function geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParamete
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -47,11 +47,11 @@ function geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParamete
 
 % Revision History
 % 2024_06_25 - Sean Brennan
-% -- wrote the code 
+% - wrote the code 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -74,9 +74,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -100,13 +100,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -204,7 +204,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

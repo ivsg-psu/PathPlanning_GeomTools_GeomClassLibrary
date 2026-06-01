@@ -2,13 +2,13 @@
 % Exercises the function: fcn_geometry_arcAngleFrom3Points
 % Revision history:
 % 2023_12_17
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 %% Test 1: a basic test with 3 points: 180 CCW vertical
-fig_num = 1;
+figNum = 1;
 
 
 points1 = [0 0];
@@ -16,7 +16,7 @@ points2 = [2 2];
 points3 = [0 4];
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,pi/2));
 assert(isequal(arc_angle_in_radians_1_to_3,pi));
 assert(isequal(circle_centers,[0 2]));
@@ -24,14 +24,14 @@ assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,-pi/2));
 
 %% Test 2: a basic test with 3 points: 180 CW vertical
-fig_num = 2;
+figNum = 2;
 
 points1 = [0 0];
 points2 = [-2 2];
 points3 = [0 4];
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,-pi/2));
 assert(isequal(arc_angle_in_radians_1_to_3,-pi));
 assert(isequal(circle_centers,[0 2]));
@@ -39,7 +39,7 @@ assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,-pi/2));
 
 %% Test 3: a basic test with 3 points: 180 CCW horizontal
-fig_num = 3;
+figNum = 3;
 
 
 points1 = [0 0];
@@ -47,7 +47,7 @@ points2 = [2 -2];
 points3 = [4 0];
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,pi/2));
 assert(isequal(arc_angle_in_radians_1_to_3,pi));
 assert(isequal(circle_centers,[2 0]));
@@ -56,14 +56,14 @@ assert(isequal(start_angles_in_radians,pi));
 
 
 %% Test 4: a basic test with 3 points: 180 CW horizontal
-fig_num = 4;
+figNum = 4;
 
 points1 = [0 0];
 points2 = [2 2];
 points3 = [4 0];
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,-pi/2));
 assert(isequal(arc_angle_in_radians_1_to_3,-pi));
 assert(isequal(circle_centers,[2 0]));
@@ -71,7 +71,7 @@ assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,pi));
 
 %% Test 5: a basic test with 3 points: in same sector
-fig_num = 5;
+figNum = 5;
 
 Radius = 2;
 points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
@@ -81,7 +81,7 @@ points2 = points(2,:);
 points3 = points(3,:);
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,pi/4));
 assert(isequal(arc_angle_in_radians_1_to_3,pi/2));
 assert(isequal(circle_centers,[0 0]));
@@ -89,7 +89,7 @@ assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,0));
 
 %% Test 6: a basic test with 3 points: in same sector
-fig_num = 6;
+figNum = 6;
 
 Radius = 2;
 points = Radius*[[cos(0)    sin(0)]; [cos(pi/4) sin(pi/4)]; [cos(pi/2) sin(pi/2)]];
@@ -99,7 +99,7 @@ points2 = points(3,:);
 points3 = points(2,:);
 
 [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+    fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 assert(isequal(arc_angle_in_radians_1_to_2,-3*pi/2));
 assert(isequal(arc_angle_in_radians_1_to_3,-7*pi/4));
 assert(isequal(circle_centers,[0 0]));
@@ -107,14 +107,14 @@ assert(isequal(radii,2));
 assert(isequal(start_angles_in_radians,0));
 
 %% Test 999: not working
-% fig_num = 999;
+% figNum = 999;
 % 
 % points1 = [   -0.3473    0.0304; -0.3473    0.0304];
 % points2 = [-1.8462    2.7692; 0 0];
 % points3 = [-1.9696    2.3473; -1.9696    2.3473];
 % 
 % [arc_angle_in_radians_1_to_2, arc_angle_in_radians_1_to_3, circle_centers, radii, start_angles_in_radians] = ...
-%     fcn_geometry_arcAngleFrom3Points(points1, points2, points3, fig_num);
+%     fcn_geometry_arcAngleFrom3Points(points1, points2, points3, figNum);
 
 %% Test of fast mode
 
@@ -162,6 +162,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

@@ -2,7 +2,7 @@
 % Exercises the function: fcn_geometry_findAgreementsOfPointsToLineVector
 % Revision history:
 % 2024_01_14
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -32,8 +32,8 @@ assert(length(test_points)>1);
 assert(length(test_points(1,:)) == 2);
 
 %% Test 1: a basic test of line segment fitting, specifying index-type base_point_index
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 rng(383);
 
@@ -63,15 +63,15 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point,-1);
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 
-[agreement_indicies,station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+[agreement_indicies,station_distances] = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 assert(length(station_distances(1,:)) == 2);
 
 
 %% Test 2: a basic test of line segment fitting, specifying point-type base_point_index
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 rng(383);
 
@@ -100,13 +100,13 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 
 %% Test 3: a basic test of line segment fitting, showing unit vector effect
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 rng(383);
 
@@ -135,13 +135,13 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 
 %% Test 4: a basic test of line segment fitting, showing unit vector effect
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 rng(383);
 
@@ -170,13 +170,13 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,
 transverse_tolerance = 0.2;
 station_tolerance = 2;
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 
 %% Test 5: a basic test of line segment fitting, showing transverse_tolerance effect
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 rng(383);
 
@@ -205,15 +205,15 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,
 transverse_tolerance = 1;
 station_tolerance = 2;
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 
 %% Test 6: a basic test of line segment fitting, showing station_tolerance effect
 % NOTE: the lines indicate that the stations are NOT re-sorted if
 % station_tolerance is not specified
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 rng(383);
 
@@ -242,7 +242,7 @@ unit_projection_vector = fcn_geometry_calcUnitVector(end_point-base_point_index,
 transverse_tolerance = 1;
 station_tolerance = [];
 
-agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
 
 assert(length(agreement_indicies)>1);
 
@@ -277,24 +277,24 @@ transverse_tolerance = 1;
 station_tolerance = 2;
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 10; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+    agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (fig_num));
+    agreement_indicies = fcn_geometry_findAgreementsOfPointsToLineVector( test_points, unit_projection_vector, base_point_index, transverse_tolerance, station_tolerance, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -314,6 +314,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToLineVector(points,fig_num);
+    [slope,intercept] = fcn_geometry_findAgreementsOfPointsToLineVector(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

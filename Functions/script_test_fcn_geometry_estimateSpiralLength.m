@@ -3,13 +3,13 @@
 
 % Revision history:
 % 2024_07_30 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all
 
 %% Simple fit test
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 circle1_parameters = [0 1  1];
@@ -18,7 +18,7 @@ offset = 0.001;
 circle2_parameters = [0 circle2_radius+offset  circle2_radius];
 
 [estimated_spiralLength, estimated_spiralStartAngle, estimated_spiralEndAngle, angle_larger_to_smaller] = ...
-    fcn_geometry_estimateSpiralLength(circle1_parameters, circle2_parameters, fig_num);
+    fcn_geometry_estimateSpiralLength(circle1_parameters, circle2_parameters, figNum);
 
 % Calculate the true values
 spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], -1);
@@ -57,7 +57,7 @@ circle2_parameters = [0 circle2_radius+offset  circle2_radius];
 
 
 % Perform the calculation in slow mode
-% fig_num = [];
+% figNum = [];
 REPS = 10; minTimeSlow = Inf;
 tic;
 for i=1:REPS
@@ -69,7 +69,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
@@ -151,8 +151,8 @@ if 1==0
         end_angles = nan*circle2_radii;
 
         if 1==flag_do_plots
-            fig_num = 111111;
-            figure(fig_num); clf;
+            figNum = 111111;
+            figure(figNum); clf;
         end
 
         for jth_radius = 1:Ncircles
@@ -184,7 +184,7 @@ if 1==0
 
             if 1 == 1
                 if 1==flag_do_plots
-                    spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], fig_num);
+                    spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], figNum);
                 else
                     spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, [], -1);
                 end
@@ -215,7 +215,7 @@ if 1==0
 
                 % Compare the actual and predicted length
                 % [estimated_spiralLength, estimated_spiralStartAngle, estimated_spiralEndAngle, angle_larger_to_smaller] = ...
-                %    fcn_geometry_estimateSpiralLength(circle1_parameters, circle2_parameters, fig_num);
+                %    fcn_geometry_estimateSpiralLength(circle1_parameters, circle2_parameters, figNum);
 
                 estimated_length = fcn_INTERNAL_estimateSpiralLength(circle2_radius, offset);
                 estimated_startAngle = fcn_INTERNAL_estimateSpiralStartAngle(circle2_radius, offset);

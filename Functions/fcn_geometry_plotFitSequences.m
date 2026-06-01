@@ -3,7 +3,7 @@ function [XY_data, fit_numbers_of_data] = fcn_geometry_plotFitSequences(fitSeque
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-% XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (segment_length), (format), (fig_num))
+% XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, (segment_length), (format), (figNum))
 %
 % INPUTS:
 %
@@ -29,7 +29,7 @@ function [XY_data, fit_numbers_of_data] = fcn_geometry_plotFitSequences(fitSeque
 %      This is a pass through parameter to fcn_geometry_plotGeometry - see
 %      that function for examples.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
 %      figure.
@@ -37,7 +37,7 @@ function [XY_data, fit_numbers_of_data] = fcn_geometry_plotFitSequences(fitSeque
 % OUTPUTS:
 %
 %      XY_data: the data produced during plotting calculations. Note: this
-%      data is returned even if fig_num is empty or set to -1.
+%      data is returned even if figNum is empty or set to -1.
 %
 %     fit_numbers_of_data: the specific fit, one value for each XY data
 %     point, indicating which fit produced the XY data in the fit sequence
@@ -56,17 +56,17 @@ function [XY_data, fit_numbers_of_data] = fcn_geometry_plotFitSequences(fitSeque
 
 % Revision history:
 % 2024_04_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_06_26 - S. Brennan
-% -- added segment_length and format input options 
+% - added segment_length and format input options 
 % 2024_06_26 - S. Brennan
-% -- added XY_data output
+% - added XY_data output
 % 2024_07_20 - S. Brennan
-% -- added model number output
+% - added model number output
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -91,9 +91,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -150,17 +150,17 @@ if 4 <= nargin
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 0==flag_max_speed
     flag_do_plots = 1;
     if 5<= nargin
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            figNum = temp;
         end
     else
-        fig_num = gcf;
+        figNum = gcf;
     end
 end
 
@@ -202,7 +202,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -218,7 +218,7 @@ if flag_do_plots
     for ith_domain = 1:length(fitSequence_bestFitType)
         plot_type_string = fitSequence_bestFitType{ith_domain};
         parameters       = fitSequence_parameters{ith_domain};
-        fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, fig_num);
+        fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, figNum);
     end
 
     axis equal;

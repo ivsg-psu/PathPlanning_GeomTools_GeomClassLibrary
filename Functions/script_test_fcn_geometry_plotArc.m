@@ -8,8 +8,8 @@
 close all
 
 %% BASIC example for one arc plotting from 0 to 90, counter-clockwise
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 centers = [1 3];
 radii = 2; 
@@ -19,11 +19,11 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example for one arc plotting from 0 to 90, clockwise
-fig_num = 101;
-figure(fig_num); clf;
+figNum = 101;
+figure(figNum); clf;
 
 centers = [1 3];
 radii = 2; 
@@ -33,12 +33,12 @@ flag_arc_is_counterclockwise = 0;
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 %% BASIC example for one arc plotting from 0 to 90, negative
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 centers = [1 3];
 radii = 2; 
@@ -48,11 +48,11 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example for one arc plotting from -90 to 90, positive
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 centers = [1 3];
 radii = 2; 
@@ -62,13 +62,13 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example for one arc plotting from 90 to -90, positive
 % Must add 360 degrees to end point 
 
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 centers = [1 3];
 radii = 2; 
@@ -78,11 +78,11 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example for multiple arcs
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 centers = [1 3; 2 4];
 
@@ -94,11 +94,11 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example for multiple arcs, with mixed start
-fig_num = 501;
-figure(fig_num); clf;
+figNum = 501;
+figure(figNum); clf;
 
 centers = [1 3; 2 4];
 
@@ -110,15 +110,15 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [];
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 
 
 
 %% BASIC example - pass in color string
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 centers = [1 2];
 radii = 3;
@@ -128,12 +128,12 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = 'm';
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 %% BASIC example - pass in point attributes
-fig_num = 7;
-figure(fig_num); clf;
+figNum = 7;
+figure(figNum); clf;
 
 centers    = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
@@ -143,12 +143,12 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = 'r.';
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 %% BASIC example - show that can pass in color index
-fig_num = 8;
-figure(fig_num); clf;
+figNum = 8;
+figure(figNum); clf;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
@@ -158,12 +158,12 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = [0.5 0.5 1]; % A light blue
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 %% BASIC example - show that can pass in full complex string
-fig_num = 9;
-figure(fig_num); clf;
+figNum = 9;
+figure(figNum); clf;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
@@ -173,11 +173,11 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = sprintf(' ''.'',''Color'',[0 0.5 0],''MarkerSize'', 20');
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example - show that multiple arcs work with negative endpoints
-fig_num = 901;
-figure(fig_num); clf;
+figNum = 901;
+figure(figNum); clf;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
@@ -187,12 +187,12 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = sprintf(' ''.'',''Color'',[0 0.5 0],''MarkerSize'', 20');
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 
 %% BASIC example 6 - change colors on plotting
-fig_num = 10;
-figure(fig_num); clf;
+figNum = 10;
+figure(figNum); clf;
 hold on;
 
 centers  = [1 2; 2 4; 3 5];
@@ -204,12 +204,12 @@ degree_step = [];
 
 
 for i_arc=1:length(centers(:,1))
-    fcn_geometry_plotArc(centers(i_arc,:),radii(i_arc), start_angle_in_radians(i_arc,:), end_angle_in_radians(i_arc,:),(flag_arc_is_counterclockwise), (degree_step), [0  0 0.3*i_arc], fig_num);
+    fcn_geometry_plotArc(centers(i_arc,:),radii(i_arc), start_angle_in_radians(i_arc,:), end_angle_in_radians(i_arc,:),(flag_arc_is_counterclockwise), (degree_step), [0  0 0.3*i_arc], figNum);
 end
 
 %% BASIC example - show that can change number of points in the arc via degree_step
-fig_num = 11;
-figure(fig_num); clf;
+figNum = 11;
+figure(figNum); clf;
 
 % Show defaults in blue
 centers  = [1 2; 2 4; 3 5];
@@ -220,7 +220,7 @@ flag_arc_is_counterclockwise = [];
 degree_step = [];
 format = sprintf(' ''.'',''Color'',[0 0 1],''MarkerSize'', 20');
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 % Plot sparse in red
 centers  = [1 2; 2 4; 3 5];
@@ -231,12 +231,12 @@ flag_arc_is_counterclockwise = [];
 degree_step = 10;
 format = sprintf(' ''.'',''Color'',[1 0 0],''MarkerSize'', 40');
 
-fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), fig_num);
+fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format), figNum);
 
 %% BASIC example - show that can can use fcn_geometry_plotArc to generate arc data, in matrix or cell arrays, even without plotting 
-% set fig_num to empty after clearing the figure
-fig_num = 12;
-figure(fig_num); clf;
+% set figNum to empty after clearing the figure
+figNum = 12;
+figure(figNum); clf;
 
 centers = [3 4];
 radii = 2; 
@@ -245,9 +245,9 @@ end_angle_in_radians = 135 * pi/180;
 flag_arc_is_counterclockwise = [];
 degree_step = []; % Default is 1 degree
 format = [];
-fig_num = [];
+figNum = [];
 
-arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(fig_num));
+arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(figNum));
 
 % Pull multiple arcs at the same time
 centers  = [1 2; 2 4; 3 5];
@@ -256,14 +256,14 @@ start_angle_in_radians = [0; 180; 270] * pi/180;
 end_angle_in_radians = [90; 200; 320] * pi/180;
 degree_step = 5;
 format = [];
-fig_num = [];
+figNum = [];
 
-arc_points_cell_array = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(fig_num));
+arc_points_cell_array = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(figNum));
 
 
-fig_num = 12;
-figure(fig_num); clf;
-figure(fig_num);
+figNum = 12;
+figure(figNum); clf;
+figure(figNum);
 hold on; grid on;
 axis equal
 plot(arc_points_matrix(:,1),arc_points_matrix(:,2),'b.-','MarkerSize',20);
@@ -279,30 +279,30 @@ end_angle_in_radians = 135 * pi/180;
 flag_arc_is_counterclockwise = [];
 degree_step = []; % Default is 1 degree
 format = [];
-fig_num = [];
+figNum = [];
 
-arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(fig_num));
+arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(figNum));
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(fig_num));
+    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(fig_num));
+    arc_points_matrix = fcn_geometry_plotArc(centers, radii, start_angle_in_radians, end_angle_in_radians, (flag_arc_is_counterclockwise), (degree_step), (format),(figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -325,7 +325,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % arguments
 if 1==0
 %% BREAK CASES 1 - break on centers
-fig_num = 999;
+figNum = 999;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4];

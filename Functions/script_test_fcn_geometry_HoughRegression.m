@@ -3,11 +3,11 @@
 
 % Revision history:
 % 2023_12_15 - S. Brennan
-% -- wrote the code. Did not finish test cases
+% - wrote the code. Did not finish test cases
 % 2024_06_14 - S. Brennan
-% -- fixed more test cases, still not finished
+% - fixed more test cases, still not finished
 % 2026_01_07 - Aneesh Batchu
-% -- Fixed test cases: Basic example 3: find arc data
+% - Fixed test cases: Basic example 3: find arc data
 % Advanced example: find line segments and circles and arcs in same data set
 
 close all;
@@ -15,8 +15,8 @@ close all;
 rng(1)
 
 %% Basic example: find one line segment
-fig_num = 10; 
-figure(fig_num); clf;
+figNum = 10; 
+figure(figNum); clf;
 
 
 % Single segment
@@ -42,10 +42,10 @@ input_points = corrupted_single_segment_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -86,7 +86,7 @@ assert(isnan(regression_domain.best_fit_source_indicies));
 assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Basic example: find 5 lines within noisy data
-fig_num = 20;
+figNum = 20;
 
 % Multiple segments
 seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
@@ -108,10 +108,10 @@ input_points = corrupted_multi_segment_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -155,7 +155,7 @@ assert(isnan(regression_domain.best_fit_domain_box));
 % segments are created by imposing constraints on separation
 
 % Call the segmentation function
-fig_num = 30;
+figNum = 30;
 
 % Multiple segments
 seed_points = [2 3; 4 5; 7 0; 9 5; 10 20; 13 14];
@@ -178,10 +178,10 @@ input_points = corrupted_multi_segment_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -223,7 +223,7 @@ assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Basic example 3: find circle data
 
-fig_num = 40;
+figNum = 40;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 2; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
@@ -239,7 +239,7 @@ probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (figNum));
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
     (probability_of_corruption), (magnitude_of_corruption),-1);
 
@@ -248,10 +248,10 @@ input_points = corrupted_circle_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -298,8 +298,8 @@ assert(isnan(regression_domain.best_fit_domain_box));
 % warning('Aneesh, you need to fix this section') -- Fixed
 rng(123)
 
-fig_num = 22224;
-figure(fig_num); clf;
+figNum = 22224;
+figure(figNum); clf;
 
 a = 0.05; % Coefficient for x^3
 b = -0.10; % Coefficient for x^2
@@ -332,13 +332,13 @@ total_points_including_source_points = 20;
 Hough_domains = fcn_geometry_fitHoughCubicPolynomial(...
     inputPoints, [transverse_tolerance, station_tolerance], ...
     (points_required_for_agreement), (flag_find_only_best_agreement), ...
-    (total_points_including_source_points), (fig_num));
+    (total_points_including_source_points), (figNum));
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -378,7 +378,7 @@ assert(isnan(regression_domain.best_fit_parameters))
 % warning('Aneesh or Sean, you need to fix this section') -- Fixed
 % (2026_01_07 - Aneesh Batchu)
 
-fig_num = 50;
+figNum = 50;
 transverse_tolerance = 0.03; % Units are meters
 station_tolerance = 1; % Units are meters. Usually station tolerance needs to be larger than transverse tolerance, and it needs to be large enough that it can span gaps in corrupted data
 threshold_max_points = 20;
@@ -395,7 +395,7 @@ probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 % Fill test data for 1 arc
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num); 
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, figNum); 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
 
@@ -404,10 +404,10 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 
 best_fit_domain_box_projection_distance = [transverse_tolerance, station_tolerance]; 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -449,8 +449,8 @@ assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Advanced example: find line segments and circles in same data set
 
-fig_num = 60; 
-figure(fig_num); clf;
+figNum = 60; 
+figure(figNum); clf;
 
 % Single segment
 seed_points = [5 0; 15 10];
@@ -477,7 +477,7 @@ probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (figNum));
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
     (probability_of_corruption), (magnitude_of_corruption),-1);
 
@@ -489,10 +489,10 @@ input_points = [corrupted_circle_test_points; corrupted_single_segment_test_poin
 Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -533,8 +533,8 @@ assert(isnan(regression_domain.best_fit_source_indicies));
 assert(isnan(regression_domain.best_fit_domain_box));
 
 %% Advanced example: find line segments and circles and arcs in same data set
-fig_num = 70; 
-figure(fig_num); clf;
+figNum = 70; 
+figure(figNum); clf;
 
 % warning('on','backtrace');
 % warning('This call produces error in fcn_geometry_findArcAgreementIndicies, line 235 in fcn_geometry_fitArcRegressionFromHoughFit, where start/end angle is the same. This should never happen.');
@@ -567,7 +567,7 @@ probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma,-1); % (figNum));
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
     (probability_of_corruption), (magnitude_of_corruption),-1);
 
@@ -583,7 +583,7 @@ probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 % Fill test data for 1 arc
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, figNum);
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
     (probability_of_corruption), (magnitude_of_corruption), (-1));
 
@@ -596,10 +596,10 @@ Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_point
 
 best_fit_domain_box_projection_distance = [transverse_tolerance, station_tolerance];
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, best_fit_domain_box_projection_distance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -681,22 +681,22 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 
 % Call the segmentation function
-fig_num = 80;
+figNum = 80;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
 threshold_max_points = 30;
 input_points = multi_segment_test_points;
 Hough_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, -1);
 
-fig_num = 81;
-figure(fig_num); clf;
-fcn_geometry_plotFitDomains(Hough_domains, fig_num);
+figNum = 81;
+figure(figNum); clf;
+fcn_geometry_plotFitDomains(Hough_domains, figNum);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -740,8 +740,8 @@ assert(isnan(regression_domain.best_fit_domain_box));
 
 rng(123)
 
-fig_num = 22221;
-figure(fig_num); clf;
+figNum = 22221;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -813,13 +813,13 @@ Hough_domains = fcn_geometry_fitHoughCubicPolynomial(...
     inputPoints, [transverse_tolerance, station_tolerance], ...
     (points_required_for_agreement), ...
     (flag_find_only_best_agreement), (total_points_including_source_points), ...
-    (fig_num));
+    (figNum));
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, figNum);
 
 % To plot all the domains at once on ONE plot, use the following command
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 % Check the output type and size
 for ith_domain = 1:length(regression_domains)-1
@@ -883,31 +883,31 @@ multi_segment_test_points = [multi_segment_test_points; outliers];
 
 
 % Call the segmentation function
-fig_num = 90;
+figNum = 90;
 transverse_tolerance = 0.1; % Units are meters
 station_tolerance = 0.6; % Units are meters
 threshold_max_points = 30;
 input_points = multi_segment_test_points;
-Hough_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
-fig_num = 91;
-figure(fig_num); clf;
-fcn_geometry_plotFitDomains(Hough_domains, fig_num);
+figNum = 91;
+figure(figNum); clf;
+fcn_geometry_plotFitDomains(Hough_domains, figNum);
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains,  transverse_tolerance, fig_num+2);
-fcn_geometry_plotFitDomains(regression_domains, fig_num+1);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains,  transverse_tolerance, figNum+2);
+fcn_geometry_plotFitDomains(regression_domains, figNum+1);
 
 
 % Test of fast mode
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 1; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
 
-    regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, (fig_num));
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, (figNum));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -915,13 +915,13 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
 
-    regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, (fig_num));
+    regression_domains = fcn_geometry_HoughRegression(Hough_domains, transverse_tolerance, (figNum));
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -943,7 +943,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

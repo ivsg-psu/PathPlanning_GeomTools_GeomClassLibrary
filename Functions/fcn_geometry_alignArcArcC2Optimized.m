@@ -9,7 +9,7 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %
 % Format:
 % [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters]  = ...
-% fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (fig_num))
+% fcn_geometry_alignArcArc(arc1_parameters, arc2_parameters, (threshold), (continuity_level),  (figNum))
 %
 % INPUTS:
 %
@@ -38,7 +38,7 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 %      (default), or 2 for C2 continuity. For an explanation of continuity,
 %      see fcn_geometry_alignGeometriesInSequence
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -78,11 +78,11 @@ function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate
 
 % Revision history:
 % 2024_07_26 S. Brennan
-% -- wrote the code from fcn_geometry_alignArcArc
+% - wrote the code from fcn_geometry_alignArcArc
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -107,9 +107,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 999978;
+    debug_figNum = 999978;
 else
-    debug_fig_num = [];
+    debug_figNum = [];
 end
 
 
@@ -169,12 +169,12 @@ if (4<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -192,18 +192,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plot inputs?
-fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num);
+fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_figNum);
 
 % % Is a C2 solution feasible?
 % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
 %     fcn_geometry_isC2FeasibleArcToArc(arc1_parameters, arc2_parameters, (.2), (0.01), (-1))
 
 %% Check to see if arc1 and arc2 intersect
-intersection_point1 = fcn_INTERNAL_ArcArcIntersection(arc1_parameters, arc2_parameters, 1, debug_fig_num);
+intersection_point1 = fcn_INTERNAL_ArcArcIntersection(arc1_parameters, arc2_parameters, 1, debug_figNum);
 
 %% Rearrange parameters so line is always the 1st input, arc is 2nd
 % Fix the parameters to make the ordering is correct
-[clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point1, debug_fig_num);
+[clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point1, debug_figNum);
 
 % % Is a C2 solution feasible?
 % [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters, d12, merge_distance] = ...
@@ -211,7 +211,7 @@ intersection_point1 = fcn_INTERNAL_ArcArcIntersection(arc1_parameters, arc2_para
 
 
 %% Get new intersection point, if arcs changed shape
-intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clean_arc2_parameters, 2, debug_fig_num);
+intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clean_arc2_parameters, 2, debug_figNum);
 
 %% Rotate the geometries out of XY into ST coordinates
 % so that the tangent line is oriented horizontally
@@ -219,11 +219,11 @@ intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clea
 % This is to make the debugging MUCH easier, as it reduces permutations.
 % Again, this is fixed in later steps.
 [st_arc1_parameters, st_arc2_parameters, St_transform_XYtoSt, flag_arc1_is_flipped] = ...
-    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters, continuity_level, intersection_point2, debug_fig_num); 
+    fcn_INTERNAL_convertParametersToStOrientation(clean_arc1_parameters, clean_arc2_parameters, continuity_level, intersection_point2, debug_figNum); 
 
 %% Check how much shift is needed to connect arc1 to arc2
 [desired_st_arc1_parameters, desired_st_arc2_parameters, desired_st_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
-    fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters, continuity_level, intersection_point2, threshold, flag_perform_shift_of_arc2, debug_fig_num);
+    fcn_INTERNAL_findShiftToMatchArcToArc(st_arc1_parameters, st_arc2_parameters, continuity_level, intersection_point2, threshold, flag_perform_shift_of_arc2, debug_figNum);
 % Deltas are from desired to actual
 
 %% Perform shift to join arcs 1 and 2
@@ -231,12 +231,12 @@ intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clea
     fcn_INTERNAL_performShift(threshold, continuity_level, ...
     st_arc1_parameters, st_arc2_parameters, ...
     desired_st_arc1_parameters, desired_st_arc2_parameters, ...
-    desired_st_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, debug_fig_num);
+    desired_st_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, debug_figNum);
 
 %% Rotate results out of St back into XY
 [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_fig_num);
+    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_figNum);
 
 %% Plot the results (for debugging)?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,7 +251,7 @@ intersection_point2 = fcn_INTERNAL_ArcArcIntersection(clean_arc1_parameters,clea
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -269,9 +269,9 @@ if flag_do_plots
 
     % Plot the inputs
     fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),figNum);
     fcn_geometry_plotCircle(arc2_parameters(1,1:2),arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),figNum);
     
     fcn_geometry_plotGeometry('arc',arc1_parameters);
     fcn_geometry_plotGeometry('arc',arc2_parameters);
@@ -298,9 +298,9 @@ if flag_do_plots
 
     % Plot the outputs
     fcn_geometry_plotCircle(revised_arc1_parameters(1,1:2),revised_arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),figNum);
     fcn_geometry_plotCircle(revised_arc2_parameters(1,1:2),revised_arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),figNum);
 
     fcn_geometry_plotGeometry('arc',revised_arc1_parameters);
     fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
@@ -347,7 +347,7 @@ end % Ends main function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%§
 
 %% fcn_INTERNAL_fixOrientationAndOrdering
-function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point, debug_fig_num)
+function [clean_arc1_parameters, clean_arc2_parameters] = fcn_INTERNAL_fixOrientationAndOrdering(arc1_parameters, arc2_parameters, intersection_point, debug_figNum)
 % This function takes the parameter inputs and produces parameter sets such
 % that the arc1 is first, it is oriented so that it ends at the junction
 % with arc2, and the arc2 starts at the junction. It only does this check
@@ -500,8 +500,8 @@ else
     clean_arc2_parameters = arc2_parameters;
 end
 
-if ~isempty(debug_fig_num)
-    figure(debug_fig_num);
+if ~isempty(debug_figNum)
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -509,9 +509,9 @@ if ~isempty(debug_fig_num)
     subplot(3,2,2);
 
     fcn_geometry_plotCircle(clean_arc1_parameters(1,1:2),clean_arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
     fcn_geometry_plotCircle(clean_arc2_parameters(1,1:2),clean_arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_figNum);
 
     fcn_geometry_plotGeometry('arc',clean_arc1_parameters);
     fcn_geometry_plotGeometry('arc',clean_arc2_parameters);
@@ -531,7 +531,7 @@ end % ends fcn_INTERNAL_fixOrientationAndOrdering
 
 
 %% fcn_INTERNAL_ArcArcIntersection
-function  intersection_point_both_arcs = fcn_INTERNAL_ArcArcIntersection(arc1_parameters,arc2_parameters, subplot_number, debug_fig_num)
+function  intersection_point_both_arcs = fcn_INTERNAL_ArcArcIntersection(arc1_parameters,arc2_parameters, subplot_number, debug_figNum)
 
 % Calculate needed values from parameter sets
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -583,9 +583,9 @@ arc2_is_counter_clockwise     = arc2_parameters(1,7);
 [xout,yout] = circcirc(arc1_center_xy(1,1),arc1_center_xy(1,2),arc1_radius,arc2_center_xy(1,1),arc2_center_xy(1,2),arc2_radius);
 
 % Check results of above
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the intersection
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,subplot_number);
 
     % Plot the intersections
@@ -651,9 +651,9 @@ else
     intersection_point_both_arcs = [nan nan];
 end
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the intersection
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -667,7 +667,7 @@ end % Ends fcn_INTERNAL_ArcArcIntersection
 
 %% fcn_INTERNAL_convertParametersToStOrientation
 function [st_arc1_parameters, st_arc2_parameters, St_transform_XYtoSt, flag_arc1_is_flipped] = ...
-    fcn_INTERNAL_convertParametersToStOrientation(arc1_parameters, arc2_parameters, continuity_level, intersection_point, debug_fig_num)
+    fcn_INTERNAL_convertParametersToStOrientation(arc1_parameters, arc2_parameters, continuity_level, intersection_point, debug_figNum)
 
 % Calculate needed values from parameter sets
 % Get the arc fit details from arc2 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -729,8 +729,8 @@ switch continuity_level
              arc1_vector_center_to_intersection = intersection_point - arc1_center_xy;
 
              % Plot the vector (for debugging)?
-             if ~isempty(debug_fig_num)
-                 figure(debug_fig_num);
+             if ~isempty(debug_figNum)
+                 figure(debug_figNum);
                  subplot(3,2,1);
 
                  % Plot the projection vector
@@ -784,7 +784,7 @@ switch continuity_level
         %     radii_end,...
         %     (flag_inside_or_out),...
         %     (voting_points_start,voting_points_end),...
-        %     (fig_num))
+        %     (figNum))
 
 
         % Is the tangent on the inside or outside. For tangents to be on the
@@ -846,8 +846,8 @@ switch continuity_level
             arc1_vector_center_to_arc_end = points_tangent_start1 - arc1_center_xy;
 
             % Plot the vector (for debugging)?
-            if ~isempty(debug_fig_num)
-                figure(debug_fig_num);
+            if ~isempty(debug_figNum)
+                figure(debug_figNum);
                 subplot(3,2,1);
 
                 % Plot the projection vector
@@ -894,8 +894,8 @@ switch continuity_level
             circle1_to_circle2_projection_vector = arc2_center_xy - arc1_center_xy;
 
             % Plot the vector (for debugging)?
-            if ~isempty(debug_fig_num)
-                figure(debug_fig_num);
+            if ~isempty(debug_figNum)
+                figure(debug_figNum);
                 subplot(3,2,1);
 
                 % Plot the projection vector
@@ -964,8 +964,8 @@ switch continuity_level
         error('This continuity not possible yet')
 end
 
-if ~isempty(debug_fig_num)
-    figure(debug_fig_num);
+if ~isempty(debug_figNum)
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -978,9 +978,9 @@ if ~isempty(debug_fig_num)
     ylabel('t [meters]')
 
     fcn_geometry_plotCircle(st_arc1_parameters(1,1:2),st_arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
     fcn_geometry_plotCircle(st_arc2_parameters(1,1:2),st_arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_figNum);
 
     fcn_geometry_plotGeometry('arc',st_arc1_parameters);
     fcn_geometry_plotGeometry('arc',st_arc2_parameters);
@@ -997,7 +997,7 @@ end % Ends fcn_INTERNAL_convertParametersToStOrientation
 
 %% fcn_INTERNAL_findShiftToMatchArcToArc
 function [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type] = ...
-    fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_fig_num)
+    fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, arc2_parameters, continuity_level, intersection_point, threshold, flag_perform_shift_of_arc2, debug_figNum)
 % Calculates the delta amount to match the arc to the arc. The delta
 % values are measured FROM desired point TO actual point
 
@@ -1368,9 +1368,9 @@ switch continuity_level
                     revised_arc2_parameters = arc2_parameters;
                     revised_arc2_parameters(1,1:2) = arc2_parameters(1,1:2) + unit_direction_vector_to_shift_arc2*sign_of_vector*(abs(space_between_circles)+0.001);
 
-                    if ~isempty(debug_fig_num)
-                        plotting_fig_num = 454545;
-                        figure(plotting_fig_num);
+                    if ~isempty(debug_figNum)
+                        plotting_figNum = 454545;
+                        figure(plotting_figNum);
                         clf;
 
                         subplot(1,2,1);
@@ -1378,9 +1378,9 @@ switch continuity_level
                         axis equal
                         grid on;
                         fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
-                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_fig_num);
+                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_figNum);
                         fcn_geometry_plotCircle(arc2_parameters(1,1:2),arc2_parameters(1,3),...
-                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_fig_num);
+                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_figNum);
                         fcn_geometry_plotGeometry('arc',arc1_parameters);
                         fcn_geometry_plotGeometry('arc',arc2_parameters);
 
@@ -1389,15 +1389,15 @@ switch continuity_level
                         axis equal
                         grid on;
                         fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
-                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_fig_num);
+                            sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),plotting_figNum);
                         fcn_geometry_plotCircle(revised_arc2_parameters(1,1:2),revised_arc2_parameters(1,3),...
-                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_fig_num);
+                            sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),plotting_figNum);
                         fcn_geometry_plotGeometry('arc',arc1_parameters);
                         fcn_geometry_plotGeometry('arc',revised_arc2_parameters);
                     end
 
                     [desired_arc1_parameters, desired_arc2_parameters, desired_intermediate_geometry_join_parameters] = ...
-                        fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_fig_num);
+                        fcn_INTERNAL_findShiftToMatchArcToArc(arc1_parameters, revised_arc2_parameters, continuity_level, intersection_point, [], 0, debug_figNum);
                 else
                     % Not possible
                     desired_arc1_parameters = nan(size(arc1_parameters));
@@ -1441,17 +1441,17 @@ end
 % end
 
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the bounding box
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
     subplot(3,2,4);
     fcn_geometry_plotCircle(desired_arc1_parameters(1,1:2),desired_arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
     fcn_geometry_plotCircle(desired_arc2_parameters(1,1:2),desired_arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_figNum);
 
     fcn_geometry_plotGeometry('arc',desired_arc1_parameters);
     fcn_geometry_plotGeometry('arc',desired_arc2_parameters);
@@ -1475,7 +1475,7 @@ function [revised_arc1_parameters_St,revised_arc2_parameters_St, revised_interme
     st_arc1_parameters, st_arc2_parameters, ...
     desired_st_arc1_parameters, desired_st_arc2_parameters, ...
     desired_intermediate_geometry_join_parameters, desired_intermediate_geometry_join_type, ...
-    debug_fig_num)
+    debug_figNum)
 
 % Find out how much arc2 is shifting by looking at how much the center of
 % arc2 is moving
@@ -1527,9 +1527,9 @@ else
             error('This continuity not possible yet')
     end
 end
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -1548,7 +1548,7 @@ end % Ends fcn_INTERNAL_performShift
 %% fcn_INTERNAL_convertParametersOutOfStOrientation
 function [revised_arc1_parameters, revised_arc2_parameters, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = ...
     fcn_INTERNAL_convertParametersOutOfStOrientation(...
-    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_fig_num)
+    revised_arc1_parameters_St, revised_arc2_parameters_St, revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters_St, St_transform_XYtoSt, flag_arc1_is_flipped, debug_figNum)
 
 % Call the function to convert from ST back to XY
 st_parameters_type_strings{1} = 'arc';
@@ -1565,9 +1565,9 @@ revised_arc1_parameters = XY_parameters{1};
 revised_arc2_parameters = XY_parameters{2};
 revised_intermediate_geometry_join_parameters = XY_parameters{3};
 
-if ~isempty(debug_fig_num)
+if ~isempty(debug_figNum)
     % Plot the results
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,1);
     debug_axis = axis;
 
@@ -1583,9 +1583,9 @@ end
 end % Ends fcn_INTERNAL_convertParametersOutOfStOrientation
 
 %% fcn_INTERNAL_prepDebugFigure
-function fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_fig_num)
-if ~isempty(debug_fig_num)
-    figure(debug_fig_num);
+function fcn_INTERNAL_prepDebugFigure(arc1_parameters, arc2_parameters, debug_figNum)
+if ~isempty(debug_figNum)
+    figure(debug_figNum);
     clf;
 
     % Plot the inputs
@@ -1593,9 +1593,9 @@ if ~isempty(debug_fig_num)
 
 
     fcn_geometry_plotCircle(arc1_parameters(1,1:2),arc1_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0 0.6 0],''LineWidth'',1 '),debug_figNum);
     fcn_geometry_plotCircle(arc2_parameters(1,1:2),arc2_parameters(1,3),...
-        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_fig_num);
+        sprintf(' ''--'',''Color'',[0.6 0 0],''LineWidth'',1 '),debug_figNum);
 
 
     fcn_geometry_plotGeometry('arc',arc1_parameters);

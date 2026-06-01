@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_06_25 - Sean Brennan
-% -- wrote the code
+% - wrote the code
 
 
 % TO-DO
@@ -12,8 +12,8 @@
 close all
 
 %% Basic Test: circle - no change
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [-3 3];
@@ -30,14 +30,14 @@ bad_circle1_parameters = circle1_parameters;
 geomType = 'circle';
 geomParameters = bad_circle1_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(isequal(round(geomParameters_good,4),  round(geomParameters_cleaned,4)));
 
 %% Basic Test: arc - bad start and end angles
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 % Fill in arc 2
 arc2_center_xy            = [3 0];
@@ -65,14 +65,14 @@ bad_arc2_parameters(1,4:5) = arc2_parameters(1,4:5)-2*pi;
 geomType = 'arc';
 geomParameters = bad_arc2_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(isequal(round(geomParameters_good,4),  round(geomParameters_cleaned,4)));
 
 %% Basic Test: line - bad angle
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 % Fill in line
 line_unit_tangent_vector = [0 1];
@@ -90,14 +90,14 @@ bad_line_parameters(1,3) = line_parameters(1,3)-2*pi;
 geomType = 'line';
 geomParameters = bad_line_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(isequal(round(geomParameters_good,4),  round(geomParameters_cleaned,4)));
 
 %% Basic Test: segment - bad angle and length
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 % Fill in line
 segment_unit_tangent_vector = [0 1];
@@ -118,14 +118,14 @@ bad_segment_parameters(1,4)   = -1*segment_length;
 geomType = 'segment';
 geomParameters = bad_segment_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(isequal(round(geomParameters_good,4),  round(geomParameters_cleaned,4)));
 
 %% Basic Test: spiral - flips start and end stations, flips direction, but otherwise the same
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear spiral_parameters
@@ -139,14 +139,14 @@ spiral_parameters(1,3) = spiral_parameters(1,3) - 2*pi;
 geomType = 'spiral';
 geomParameters = bad_spiral_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(isequal(round(geomParameters_good,4),  round(geomParameters_cleaned,4)));
 
 %% Basic Test: 'none' - does nothing
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear none_parameters
@@ -155,7 +155,7 @@ none_parameters = [nan nan];
 geomType = 'none';
 geomParameters = none_parameters;
 
-geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, fig_num);
+geomParameters_cleaned = fcn_geometry_cleanGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_cleaned)));
 assert(all(isnan(none_parameters)));

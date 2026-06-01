@@ -44,7 +44,7 @@ function [...
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      figNum: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -66,16 +66,16 @@ function [...
 
 % Revision History:
 % 2021-05-22
-% -- new function from fcn_geometry_findAngleUsing3PointsOnCircle
+% - new function from fcn_geometry_findAngleUsing3PointsOnCircle
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 % 2024_01_08 - S. Brennan
-% -- fixed bug with cross function call to force it to cross column-wise
+% - fixed bug with cross function call to force it to cross column-wise
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -151,15 +151,15 @@ if 0 == flag_max_speed
     if 6 == nargin
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
-            figure(fig_num);
+            figNum = temp;
+            figure(figNum);
             flag_do_plot = 1;
             flag_new_figure = 0;
         end
     else
         if flag_do_debug
             fig = figure;
-            fig_num = fig.Number;
+            figNum = fig.Number;
             flag_do_plot = 1;
             flag_new_figure = 1;
         end
@@ -228,7 +228,7 @@ angles(positive_reflex_indicies)= angles(positive_reflex_indicies) - 2*pi;
 if flag_do_plot
     % Set up the figure
     if flag_new_figure
-        figure(fig_num);
+        figure(figNum);
     else
         clf;
     end

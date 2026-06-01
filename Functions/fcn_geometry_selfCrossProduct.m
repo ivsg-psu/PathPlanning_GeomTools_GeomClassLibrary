@@ -14,7 +14,7 @@ function [cross_products, err] ...
 %     = ...
 %     fcn_geometry_selfCrossProduct(...
 %     path,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -24,7 +24,7 @@ function [cross_products, err] ...
 %  
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -61,11 +61,11 @@ function [cross_products, err] ...
 
 % Revision History:
 % 2021-04-25
-% -- First write of the code
+% - First write of the code
 % 2024_01_08 - S. Brennan
-% -- fixed bug with cross function call to force it to cross column-wise
+% - fixed bug with cross function call to force it to cross column-wise
 % 2024_01_17 - Aneesh Batchu
-% -- added max speed options 
+% - added max speed options 
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
@@ -123,13 +123,13 @@ end
 
 % % Does user want to show the plots?
 % if 2 == nargin
-%     fig_num = varargin{1};
-%     figure(fig_num);
+%     figNum = varargin{1};
+%     figure(figNum);
 %     flag_do_plot = 1;
 % else
 %     if flag_do_debug
 %         fig = figure;
-%         fig_num = fig.Number;
+%         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
@@ -139,14 +139,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (2 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -193,7 +193,7 @@ end
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     hold on;
     axis equal;
     grid on; grid minor;

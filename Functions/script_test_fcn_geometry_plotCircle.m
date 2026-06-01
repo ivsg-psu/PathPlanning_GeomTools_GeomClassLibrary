@@ -8,63 +8,63 @@
 close all
 
 %% BASIC example for one circle
-fig_num = 1;
-figure(fig_num); axis square; grid minor;
+figNum = 1;
+figure(figNum); axis square; grid minor;
 
 center = [1 3];
 radius = [2]; %#ok<*NBRAK>
-fcn_geometry_plotCircle(center,radius,[],fig_num);
+fcn_geometry_plotCircle(center,radius,[],figNum);
 
 %% BASIC example for multiple circles
-fig_num = 2;
-figure(fig_num); axis square; grid minor;
+figNum = 2;
+figure(figNum); axis square; grid minor;
 
 centers = [1 3; 2 4];
 radii = [2; 3];
-fcn_geometry_plotCircle(centers,radii,[],fig_num);
+fcn_geometry_plotCircle(centers,radii,[],figNum);
 
 
 %% BASIC example 3
-fig_num = 3;
+figNum = 3;
 
 centers = [1 2];
 radii = 3;
-fcn_geometry_plotCircle(centers,radii,'b',fig_num);
+fcn_geometry_plotCircle(centers,radii,'b',figNum);
 
 %% BASIC example 4
-fig_num = 4;
+figNum = 4;
 
 centers    = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
-fcn_geometry_plotCircle(centers,radii,'r.',fig_num);
+fcn_geometry_plotCircle(centers,radii,'r.',figNum);
 
 
 %% BASIC example 5
-fig_num = 5;
+figNum = 5;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
 
 % Do a light blue
-fcn_geometry_plotCircle(centers,radii,[0.5 0.5 1],fig_num);
+fcn_geometry_plotCircle(centers,radii,[0.5 0.5 1],figNum);
 
 %% BASIC example 6 - many circles
-fig_num = 6;
+figNum = 6;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4; 5];
 
 for i_circle=1:length(centers(:,1))
-    fcn_geometry_plotCircle(centers(i_circle,:),radii(i_circle),[0.3*i_circle 0.3*i_circle 1],fig_num);
+    fcn_geometry_plotCircle(centers(i_circle,:),radii(i_circle),[0.3*i_circle 0.3*i_circle 1],figNum);
 end
 
 %% BASIC example 7 - complex plot string
-fig_num = 7;
-figure(fig_num); clf;
+figNum = 7;
+figure(figNum); clf;
 
 centers    = [1 2];
 radii = [3];
-fcn_geometry_plotCircle(centers,radii,sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',2 '),fig_num);
+fcn_geometry_plotCircle(centers,radii,sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',2 '),figNum);
 
 
 
@@ -73,7 +73,7 @@ fcn_geometry_plotCircle(centers,radii,sprintf(' ''-'',''Color'',[0.6 0 0],''Line
 % arguments
 if 1==0
 %% BREAK CASES 1 - break on centers
-fig_num = 999;
+figNum = 999;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4];

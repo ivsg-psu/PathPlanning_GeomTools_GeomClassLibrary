@@ -3,9 +3,9 @@
 
 % Revision history:
 % 2024_01_09 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_02 - S Brennan
-% -- added best_fit_domain_box_projection_distance as an input option
+% - added best_fit_domain_box_projection_distance as an input option
 
 close all;
 
@@ -13,8 +13,8 @@ close all;
 
 rng(123)
 
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 hold on;
 
@@ -24,7 +24,7 @@ arc_seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, figNum);
 
 start_vector = arc_seed_points(1,:)-arc_true_circleCenter;
 arc_true_start_angle_in_radians = atan2(start_vector(2),start_vector(1));
@@ -40,17 +40,17 @@ flag_find_only_best_agreement = [];
 flag_use_permutations = [];
 
 % Find all the domains
-fig_num = 234;
-figure(fig_num); clf;
+figNum = 234;
+figure(figNum); clf;
 inputPoints = onearc_test_points;
 domains_onearc_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
 
 best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_onearc_test_points{1}, best_fit_domain_box_projection_distance, fig_num);
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_onearc_test_points{1}, best_fit_domain_box_projection_distance, figNum);
 
 true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00, 1.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
@@ -87,8 +87,8 @@ assert(isequal(size(domain.best_fit_parameters),[1 7]));
 
 rng(123)
 
-fig_num = 234;
-figure(fig_num); clf;
+figNum = 234;
+figure(figNum); clf;
 
 arc_seed_points = [2 3; 4 5; 6 3];
 [arc_true_circleCenter, arc_true_circleRadius] = fcn_geometry_circleCenterFrom3Points(arc_seed_points(1,:),arc_seed_points(2,:),arc_seed_points(3,:),-1);
@@ -96,7 +96,7 @@ arc_seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(arc_seed_points, M, sigma); %, figNum);
 
 % start_vector = arc_seed_points(1,:)-arc_true_circleCenter;
 % arc_true_start_angle_in_radians = atan2(start_vector(2),start_vector(1));
@@ -112,22 +112,22 @@ flag_find_only_best_agreement = [];
 flag_use_permutations = [];
 
 % Find all the domains
-fig_num = 234;
-figure(fig_num); clf;
+figNum = 234;
+figure(figNum); clf;
 inputPoints = onearc_test_points;
 domains_onearc_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
 
 % Add outliers?
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
-fig_num = -1;
+figNum = -1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 % Fill test data - 2 arcs
 twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
@@ -146,21 +146,21 @@ expected_radii_range = [1 10];
 flag_find_only_best_agreement = [];
 flag_use_permutations = [];
 
-fig_num = 235;
-figure(fig_num); clf;
+figNum = 235;
+figure(figNum); clf;
 inputPoints = corrupted_twoarc_test_points;
 domains_corrupted_twoarc_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
-fig_num = 2;
-figure(fig_num);
+figNum = 2;
+figure(figNum);
 clf;
 hold on;
 
 best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_twoarc_test_points{1}, best_fit_domain_box_projection_distance, figNum); 
 
 true_params = [arc_true_circleCenter(1,1),arc_true_circleCenter(1,2), arc_true_circleRadius, arc_true_start_angle_in_radians, arc_true_end_angle_in_radians, 0.00, 1.00 ];
 fprintf(1,'\n\nResults of arc regression fitting:\n')
@@ -200,9 +200,9 @@ circle_center = [4 3];
 circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
-fig_num = -1;
+figNum = -1;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
 
 % Add outliers?
@@ -211,7 +211,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
@@ -225,17 +225,17 @@ flag_use_permutations = [];
 
 domains_corrupted_circle_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
 
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 hold on;
 
 best_fit_domain_box_projection_distance = [];
 regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, figNum); 
 
 true_params = circle_true_parameters(1,1:3);
 fprintf(1,'\n\nResults of circle regression fitting:\n')
@@ -275,9 +275,9 @@ circle_center = [4 3];
 circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
-fig_num = -1;
+figNum = -1;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
 
 % Add outliers?
@@ -286,7 +286,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
@@ -300,19 +300,19 @@ flag_use_permutations = [];
 
 domains_corrupted_circle_test_points  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
 best_fit_domain_box_projection_distance = [];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
 
    regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, figNum); 
 
     
     telapsed = toc(tstart);
@@ -321,14 +321,14 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
 
     regression_domain  =  ...
-    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, fig_num); 
+    fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, best_fit_domain_box_projection_distance, figNum); 
 
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -349,7 +349,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

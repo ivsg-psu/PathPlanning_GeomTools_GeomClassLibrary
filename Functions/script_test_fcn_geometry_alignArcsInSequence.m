@@ -3,11 +3,11 @@
 
 % Revision history:
 % 2024_04_19 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_02 - S Brennan / A. Batchu
-% -- add more test cases
+% - add more test cases
 % 2024_06_26 - S Brennan
-% -- working with test track data
+% - working with test track data
 
 close all;
 
@@ -64,13 +64,13 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         if 0==flag_fit_type || 1==flag_fit_type
             %%%%%
             % Perform the fit forwards or backwards
-            fig_num = ith_fit;
-            figure(fig_num);
+            figNum = ith_fit;
+            figure(figNum);
             clf;
 
             flag_fit_backwards = flag_fit_type;
             [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters, fitSequence_bestFitType] = ...
-                fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+                fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum);
             title('Forwards sequential fit');
         end
 
@@ -86,17 +86,17 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
             % flag_find_only_best_agreement = 0;
             % flag_use_permutations = [];
             % % Perform the fit using Hough
-            % fig_num = 11;
-            % figure(fig_num);
+            % figNum = 11;
+            % figure(figNum);
             % clf;
             %
             % domains  = ...
             % fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
-            %         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+            %         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
             % title('Hough fit');
             %
             % % [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-            % %     fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+            % %     fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum);
 
         end
 
@@ -121,8 +121,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
 
     %%%
     % Connect the fits so that the lines perfectly align with the arcs
-    fig_num = 100*ith_fit;
-    figure(fig_num);
+    figNum = 100*ith_fit;
+    figure(figNum);
     clf;
     continuity_level = 2;
 
@@ -130,7 +130,7 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
     fits_to_check_parameters = fitSequence_parameters;
 
     [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance, flag_fit_failed] =  ...
-        fcn_geometry_alignArcsInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (fig_num));
+        fcn_geometry_alignArcsInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (figNum));
 
     %%%%
     % Check fitting quality
@@ -149,8 +149,8 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         plot(data_to_analyze(:,1),data_to_analyze(:,2),'k.','MarkerSize',5);
 
         % Check the fits
-        fig_num = 1000*ith_fit;
-        figure(fig_num);
+        figNum = 1000*ith_fit;
+        figure(figNum);
         clf;
 
         threshold           = []; %max(max_feasibility_distance,fitting_tolerance(1,2));
@@ -160,7 +160,7 @@ for ith_fit = 1:length(fitting_parameters_to_test(:,1))
         [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_reference_points, mean_error, max_error, std_dev_error] = ...
             fcn_geometry_comparePointsToCurve(...
             revised_fitSequence_types, revised_fitSequence_parameters, data_to_analyze, ...
-            (threshold), (curve_test_segment_length), (fig_num));
+            (threshold), (curve_test_segment_length), (figNum));
     else
 
         revised_fitSequence_types = {};

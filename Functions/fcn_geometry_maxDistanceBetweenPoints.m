@@ -7,7 +7,7 @@ function max_distance = fcn_geometry_maxDistanceBetweenPoints(points_to_check, v
 % distance, but it will always upper-bound the actual maximum distance.
 % 
 % Format: 
-% max_distance = fcn_geometry_maxDistanceBetweenPoints(points_to_check, (fig_num))
+% max_distance = fcn_geometry_maxDistanceBetweenPoints(points_to_check, (figNum))
 %
 % INPUTS:
 %      points_to_check: an [Nx2] matrix of N different [x y] points.
@@ -34,12 +34,12 @@ function max_distance = fcn_geometry_maxDistanceBetweenPoints(points_to_check, v
 
 % Revision history:
 % 2024_06_27 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -64,9 +64,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -112,13 +112,13 @@ end
 
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)        
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -152,14 +152,14 @@ max_distance = real(sum((max_values-min_values).^2,2).^0.5);
 if flag_do_plots
 
     
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end
 
     % Set up figure
-    figure(fig_num);
+    figure(figNum);
     hold on;
     grid on;
     axis equal;

@@ -13,7 +13,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 % aligned vertically.
 % 
 % Format: 
-% [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, (fig_num))
+% [regression_fit_line_segment, domain_box] = fcn_geometry_fitLinearRegressionFromHoughFit(Hough_domain, (figNum))
 %
 % INPUTS:
 %      Hough_domain: a structure that records details of the domain of
@@ -27,7 +27,7 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 %      empty, defaults to 2 standard deviations to thus give a box that is
 %      +/- 2 sigma.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -59,27 +59,27 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 
 % Revision history:
 % 2023_12_14 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 % 2024_01_12 - S. Brennan
-% -- fixed output angles to 0 to 2*pi range
+% - fixed output angles to 0 to 2*pi range
 % 2024_01_13 - S. Brennan
-% -- replaced linear least-squares-y regression with vector regression
-% -- added std_dev_transverse_distance as an output
-% -- fixed bug doe to wrap-around errors when doing angle alignment check
+% - replaced linear least-squares-y regression with vector regression
+% - added std_dev_transverse_distance as an output
+% - fixed bug doe to wrap-around errors when doing angle alignment check
 % 2024_01_15 - S. Brennan
-% -- switched inputs and outputs to domain types
+% - switched inputs and outputs to domain types
 % 2024_04_11 - S Brennan
-% -- added best_fit_domain_box_projection_distance as an input option
-% -- fixed plotting of results to show input points
-% -- now uses fcn_geometry_domainBoxByType to calculate bounding boxes
-% -- fixed bounding box bug when standard deviations are very close to 0
+% - added best_fit_domain_box_projection_distance as an input option
+% - fixed plotting of results to show input points
+% - now uses fcn_geometry_domainBoxByType to calculate bounding boxes
+% - fixed bounding box bug when standard deviations are very close to 0
 % 2024_04_14 - S. Brennan
-% -- added fcn_geometry_fillColorFromNumberOrName for plotting
+% - added fcn_geometry_fillColorFromNumberOrName for plotting
 % 2024_06_21 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -87,12 +87,12 @@ function [regression_domain, std_dev_orthogonal_distance] = fcn_geometry_fitLine
 %              s_Length,
 %             ]
 % 2024_07_21 - S Brennan
-% -- simplified by functionalizing code into fcn_geometry_fitSegmentViaRegression
+% - simplified by functionalizing code into fcn_geometry_fitSegmentViaRegression
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -115,9 +115,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -158,13 +158,13 @@ if (2<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -264,7 +264,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -286,7 +286,7 @@ if flag_do_plots
     quiver(base_point_on_line(:,1),base_point_on_line(:,2),unit_converted_regression_vector(:,1),unit_converted_regression_vector(:,2),0,'g','Linewidth',5);
         
     % Plot the domain
-    fcn_geometry_plotFitDomains(regression_domain, fig_num);
+    fcn_geometry_plotFitDomains(regression_domain, figNum);
 
     % Make axis slightly larger? And since this is the first one, save the
     % axis limits.

@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_06_29 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 close all
 
@@ -30,8 +30,8 @@ close all
 
 %% 1.1 Basic test - circle1 outside circle2, 
 
-fig_num = 1101;
-figure(fig_num);
+figNum = 1101;
+figure(figNum);
 clf;
 
 % Fill in circle1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -57,7 +57,7 @@ threshold = 0;
 in_boundary_margin = 0.000001;
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -72,13 +72,13 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.5500    0.5500]
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.000001;
-[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 %% 1.2 Basic test - circle1 inside circle2
 
-fig_num = 1201;
-figure(fig_num);
+figNum = 1201;
+figure(figNum);
 clf;
 
 % Fill in circle1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -104,7 +104,7 @@ threshold = 0;
 in_boundary_margin = 0.000001;
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -119,13 +119,13 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    2.9500    2.9500]
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.000001;
-[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 %% 1.3 Basic test - circle1 outside of circle2
 
-fig_num = 1301;
-figure(fig_num);
+figNum = 1301;
+figure(figNum);
 clf;
 
 % Fill in circle1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -151,7 +151,7 @@ threshold = 0;
 in_boundary_margin = 0.000001;
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, circle2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -166,8 +166,8 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),round(circle2_parameter
 
 %% 2.1 Basic test - arc2 inside arc1
 
-fig_num = 2101;
-figure(fig_num);
+figNum = 2101;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -227,7 +227,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -242,13 +242,13 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    0.5500    0.5500 
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.000001;
-[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, ~, ~] = fcn_geometry_isC1FeasibleArcToArc(circle1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 %% 2.2 Basic test - arc1 in arc2
 
-fig_num = 2201;
-figure(fig_num);
+figNum = 2201;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -306,7 +306,7 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 threshold = 0;
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -322,15 +322,15 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0    2.9500    2.9500 
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.00001;
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 
 
 %% 2.3 Basic test - arc1 outside of arc2
 
-fig_num = 2301;
-figure(fig_num);
+figNum = 2301;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -390,7 +390,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -406,7 +406,7 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[ 0   -1.9500    1.9500
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.00001;
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 
@@ -414,8 +414,8 @@ assert(isequal(round(flag_is_feasible,4),1));
 
 %% 3.1 Basic test - feasible arc1 outside of arc2 (arc1 BEFORE arc2)
 
-fig_num = 3101;
-figure(fig_num);
+figNum = 3101;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -475,7 +475,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -490,8 +490,8 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[3.0000    4.0000    4.
 
 %% 3.2 Basic test - infeasible arc1 outside of arc2 (arc1 AFTER arc2), locked together
 
-fig_num = 3201;
-figure(fig_num);
+figNum = 3201;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -551,7 +551,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -567,13 +567,13 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[3.0000    4.0000    4.
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.00001;
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));
 
 %% 3.3 Basic test - infeasible arc1 outside of arc2 (arc1 AFTER arc2), r2 less than r1
 
-fig_num = 3301;
-figure(fig_num);
+figNum = 3301;
+figure(figNum);
 clf;
 
 % Fill in arc1 parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -633,7 +633,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -649,5 +649,5 @@ assert(isequal(round(closest_feasible_arc2_parameters,4),[0.0001    4.0000    4.
 % Show new parameters are feasible, if nudged in boundary by VERY small
 % amount
 in_boundary_margin = 0.00001;
-[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC1FeasibleArcToArc(arc1_parameters, closest_feasible_arc2_parameters, (threshold), (in_boundary_margin), (figNum));
 assert(isequal(round(flag_is_feasible,4),1));

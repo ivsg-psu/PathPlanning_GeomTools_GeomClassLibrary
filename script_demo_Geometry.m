@@ -18,120 +18,149 @@
 % 2024 - Xinyu Cao
 
 
-%% Revision History:
-% 2023_11_21 - sbrennan@psu.edu
-% -- started a demo code set
-% 2023_12_27 - sbrennan@psu.edu
-% -- switched to using environment settings for checking input parameters
+%% REVISION HISTORY:
+% 2023_11_21 by Sean Brennan, sbrennan@psu.edu
+% -Started a demo code set
+%
+% 2023_12_27 by Sean Brennan, sbrennan@psu.edu
+% -Switched to using environment settings for checking input parameters
+%
 % 2023_12_28 - Aneesh Batchu 
-% -- updated Max speed options in all the functions
-% -- fast mode updated for all functions
-% -- fast mode in fig num updated for all functions
-% -- inputs updated for fast mode in all functions
-% -- figures not created if fast mode activated
-% -- each function has working test scripts to make sure fast mode works 
-% -- updated the README.md file.
-% 2024_03_14 - sbrennan@psu.edu
-% -- updated the Path library dependence to the new function
-% 2024_04_11 - sbrennan@psu.edu
-% -- add lines and segments to domainBoxByType
-% -- used domainBoxByType call in fcn_geometry_fitLinearRegressionFromHoughFit
-% -- went through all the scripts and removeed all clc commands
-% 2024_04_14 - sbrennan@psu.edu
-% -- added joinLineToArc functionality but without spiral joins
-% -- added fillArcSequenceTestPoints with true values
-% 2024_04_15 - sbrennan@psu.edu
-% -- added fcn_geometry_fitSequentialArcs
-% -- added methods to compare similar geometries to find the maximum error
+% -Updated Max speed options in all the functions
+% -Fast mode updated for all functions
+% -Fast mode in fig num updated for all functions
+% -Inputs updated for fast mode in all functions
+% -Figures not created if fast mode activated
+% -Each function has working test scripts to make sure fast mode works 
+% -Updated the README.md file.
+%
+% 2024_03_14 by Sean Brennan, sbrennan@psu.edu
+% -Updated the Path library dependence to the new function
+%
+% 2024_04_11 by Sean Brennan, sbrennan@psu.edu
+% -Add lines and segments to domainBoxByType
+% -Used domainBoxByType call in fcn_geometry_fitLinearRegressionFromHoughFit
+% -Went through all the scripts and removeed all clc commands
+%
+% 2024_04_14 by Sean Brennan, sbrennan@psu.edu
+% -Added joinLineToArc functionality but without spiral joins
+% -Added fillArcSequenceTestPoints with true values
+%
+% 2024_04_15 by Sean Brennan, sbrennan@psu.edu
+% -Added fcn_geometry_fitSequentialArcs
+% -Added methods to compare similar geometries to find the maximum error
 % between them (for example, an arc versus an arc or a line versus an arc,
 % or a line versus a line), or even points versus points. See functions:
 % compareCurves, comparePointsToCurve, and comparePointsToPoints
-% -- fixed plotCircle to produce outputs, just like plotArc
-% -- ran test scripts to make sure above changes don't break codes
-% -- updated the intersection calculation to use the Path
+% -Fixed plotCircle to produce outputs, just like plotArc
+% -Ran test scripts to make sure above changes don't break codes
+% -Updated the intersection calculation to use the Path
 % library function, NOT the geometry library version. Aneesh did this
 % earlier but did not add it to the revisions list.
-% -- Need to remove long data prints in test scripts
-% 2024_04_17 - S. Brennan
-% -- added testing times to script_test_all_functions
-% -- sped up testing in fcn_geometry_findAngleBetweenAngles, 
-% -- sped up testing in fcn_geometry_findPhiConstraints 
-% -- added rng seed specification to test script for domainBoxByType since 
+% -Need to remove long data prints in test scripts
+%
+% 2024_04_17 by Sean Brennan, sbrennan@psu.edu
+% -Added testing times to script_test_all_functions
+% -Sped up testing in fcn_geometry_findAngleBetweenAngles, 
+% -Sped up testing in fcn_geometry_findPhiConstraints 
+% -Added rng seed specification to test script for domainBoxByType since 
 %    some results were throwing errors
-% -- updated test script and function for
+% -Updated test script and function for
 % fcn_geometry_findTangentPointsTwoCircles in prep for region checking
-% 2024_04_20 - S. Brennan
-% -- added C0, C1, and C2 continuity type join options for alignLineToArc
+%
+% 2024_04_20 by Sean Brennan, sbrennan@psu.edu
+% -Added C0, C1, and C2 continuity type join options for alignLineToArc
+%
 % 2024_04_25 - Aneesh Batchu
-% -- Wrote Assertions to the missing test scripts. 
-% -- Also, sped up the test scripts to run faster. 
+% -Wrote Assertions to the missing test scripts. 
+% -Also, sped up the test scripts to run faster. 
+%
 % 2024_05_06 - Aneesh Batchu
-% -- Added codes to calculate intersections between lines and arcs and arcs
+% -Added codes to calculate intersections between lines and arcs and arcs
 % to arcs
-% 2024_05_10 - Sean Brennan
-% -- Finished arc to arc alignment codes, alignArcToArc
-% -- Updated plotGeometry to allow string argument inputs
-% 2024_05_14 - Sean Brennan
-% -- Finished alignArcSegment
-% -- Added flipGeom functionality. Starting to use this in codes.
+%
+% 2024_05_10 by Sean Brennan, sbrennan@psu.edu
+% -Finished arc to arc alignment codes, alignArcToArc
+% -Updated plotGeometry to allow string argument inputs
+%
+% 2024_05_14 by Sean Brennan, sbrennan@psu.edu
+% -Finished alignArcSegment
+% -Added flipGeom functionality. Starting to use this in codes.
+%
 % 2024_05_16 - Aneesh Batchu
-% -- Created "fcn_geometry_fitHoughTransform" to find a cubic polynomial
+% -Created "fcn_geometry_fitHoughTransform" to find a cubic polynomial
 % hough domain
-% 2024_05_17 - Sean Brennan
-% -- Fixed fcn_geometry_alignSegmentArc
-% 2024_06_14 - Sean Brennan
-% -- Fixed fcn_geometry_alignSegmentArc
-% 2024_06_19 - 2024_06_21 - Sean Brennan
-% -- Reparameterized spiral, line, and segment definitions to be consistent with
+%
+% 2024_05_17 by Sean Brennan, sbrennan@psu.edu
+% -Fixed fcn_geometry_alignSegmentArc
+%
+% 2024_06_14 by Sean Brennan, sbrennan@psu.edu
+% -Fixed fcn_geometry_alignSegmentArc
+%
+% 2024_06_19 - 2024_06_21 by Sean Brennan, sbrennan@psu.edu
+% -Reparameterized spiral, line, and segment definitions to be consistent with
 % each other and with the other parameter sets
+%
 % 2024_06_24 - Aneesh Batchu
-% -- created "fcn_geometry_surfaceAnalysis" to classify mapped surfaces
+% -Created "fcn_geometry_surfaceAnalysis" to classify mapped surfaces
 % into drivable and non-drivable surfaces. 
-% 2024_07_10 - Sean Brennan
-% -- added printing commands to show details of geometric fit, useful for
+%
+% 2024_07_10 by Sean Brennan, sbrennan@psu.edu
+% -Added printing commands to show details of geometric fit, useful for
 % debugging geometric fitting steps. See fcn_geometry_printGeometry and
 % fcn_geometry_printFitSequences 
-% 2024_07_30 - S. Brennan
-% -- added spiral approximation function
-% -- added function to find nearest boundary points
-% -- fixed subtle bugs within fcn_geometry_separatePointsIntoGrids where
+%
+% 2024_07_30 by Sean Brennan, sbrennan@psu.edu
+% -Added spiral approximation function
+% -Added function to find nearest boundary points
+% -Fixed subtle bugs within fcn_geometry_separatePointsIntoGrids where
 % boundary points were not correctly identified in edge cases
+%
 % 2024_08_02 - Aneesh Batchu
-% -- added a script to find the nearest boundaries of drivable and
+% -Added a script to find the nearest boundaries of drivable and
 % non-drivable surfaces. 
-% 2024_08_27 - S. Brennan
-% -- added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
-% -- added a bit more structure to the README.md to start to match it to
+%
+% 2024_08_27 by Sean Brennan, sbrennan@psu.edu
+% -Added fcn_geometry_anglesNearAngle, fcn_geometry_pointsNearPoint 
+% -Added a bit more structure to the README.md to start to match it to
 % this demo
-% 2024_09_26 - S. Brennan
-% -- Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
-% 2025_05_30 - S. Brennan
-% -- Updated plane fitting as it wasn't working for vertical data
-% 2025_06_12 - S. Brennan
-% -- Added function to test if a point is within a 3D patch segment
-% -- See: script_test_fcn_geometry_checkIfPointOn3DPatch
-% 2025_07_02 - S. Brennan
-% -- Updated Path library dependency
-% 2025_10_18 - S. Brennan
-% -- Added fcn_geometry_findPolytopeOrientations
-% -- Updated DebugTools_v2025_09_26b
-% -- Updated PathClass_v2025_08_03
-% -- Tried to fix broken functions during testing. Too many. See to-do
+%
+% 2024_09_26 by Sean Brennan, sbrennan@psu.edu
+% -Updated function fcn_INTERNAL_clearUtilitiesFromPathAndFolders
+%
+% 2025_05_30 by Sean Brennan, sbrennan@psu.edu
+% -Updated plane fitting as it wasn't working for vertical data
+%
+% 2025_06_12 by Sean Brennan, sbrennan@psu.edu
+% -Added function to test if a point is within a 3D patch segment
+% -See: script_test_fcn_geometry_checkIfPointOn3DPatch
+%
+% 2025_07_02 by Sean Brennan, sbrennan@psu.edu
+% -Updated Path library dependency
+%
+% 2025_10_18 by Sean Brennan, sbrennan@psu.edu
+% -Added fcn_geometry_findPolytopeOrientations
+% -Updated DebugTools_v2025_09_26b
+% -Updated PathClass_v2025_08_03
+% -Tried to fix broken functions during testing. Too many. See to-do
 %    % items
+%
 % 2025_11_05 - Aneesh Batchu
 %  -- Fixed "fcn_geometry_fitHoughCubicPolynomial"
-% -- Added a conditional statement in Step 2 under
+% -Added a conditional statement in Step 2 under
 % flag_find_only_best_agreement case. If the best agreement count is less
 % than 4 points, the cubic polynomial is not fitted.
+%
 % 2026_01_07 - Aneesh Batchu
-% -- Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
+% -Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
 %   % In test cases, Basic example 3: find arc data and Advanced example:
 %   % find line segments and circles and arcs in same data set
-% -- Removed this script from "Fucntions" directory
+% -Removed this script from "Fucntions" directory
 %   %'script_test_fcn_geometry_boundaryAnalysis'. This function does not
 %   % belong in this repo. 
+%
 % 2026_01_18 - Aneesh Batchu
-% -- Removed the scripts that don't belong in this repo. 
+% -Removed the scripts that don't belong in this repo. 
 %   % * script_test_fcn_geometry_concatenatePoints
 %   % * script_test_fcn_geometry_concentricCubesPointDensity
 %   % * script_test_fcn_geometry_findDrivenPath
@@ -139,28 +168,43 @@
 %   % * script_test_fcn_geometry_surfaceAnalysis
 %   % * script_test_fcn_geometry_vehiclePosition
 %   % * script_test_fcn_geometry_createHistogram
+%
+% 2026_06_01 by Sean Brennan, sbrennan@psu.edu
+% - Moved testing scripts to TO ADD
+% - In script_test_all_functions
+%   % * Deleted function - now uses the DebugTools library
+% - In script_demo_Geometry
+%   % * Fixed header formatting
+%   % * Added section for repo release testing
+%   % * Updated installer to current version
+% - In script_test_fcn_geometry_findPolytopeOrientations
+%   % * Removed clc calls
 
-%% To-do items
-% 2024_04_15 - S. Brennan
-% -- need to check the fcn_geometry_fitSequentialArcs closely. There are
+
+%% TO-DO:
+% 2024_04_15 by Sean Brennan, sbrennan@psu.edu
+% -Need to check the fcn_geometry_fitSequentialArcs closely. There are
 % larger errors at the end points and not sure why.
-% 2024_04_11 - S. Brennan
-% -- Need to fix domain bug in circle regression where the issimplified
+%
+% 2024_04_11 by Sean Brennan, sbrennan@psu.edu
+% -Need to fix domain bug in circle regression where the issimplified
 % test fails. This is because, in the circle regression, the domain box is
 % overlapping itself. This should not be allowed.
-% -- create method to remove overlapping domains within Hough fitting (see bug
+% -Create method to remove overlapping domains within Hough fitting (see bug
 % above)
-% 2024_05_15 - S. Brennan
-% -- add spiral and polynomial types to the alignment options
-% 2024_08_27 - S. Brennan
-% -- fix test scripts in
+%
+% 2024_05_15 by Sean Brennan, sbrennan@psu.edu
+% -Add spiral and polynomial types to the alignment options
+% 2024_08_27 by Sean Brennan, sbrennan@psu.edu
+% -Fix test scripts in
 % script_test_fcn_geometry_euclideanPointsToPointsDistance to be more
 % comprehensive. See: PointToPoints
-% -- copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
+% -Copy fcn_geometry_separatePointsIntoGrids out of findEdge back into
 % geometry
-% -- finish README starting at the Circle Functions area and onward
+% -Finish README starting at the Circle Functions area and onward
+%
 % 2025_06_14, updated 2025_10_20
-% -- need to fix the following test scripts as they are failing
+% -Need to fix the following test scripts as they are failing
 %    (see script_test_all_functions)
 % badScriptNames = {
 %     'script_test_fcn_geometry_alignArcArc';              % 5   <--Sean
@@ -179,71 +223,85 @@
 %     'script_test_fcn_geometry_plotGeometry';             % 108 <--Sean
 %     };
 %    * script_test_fcn_geometry_estimateSpiralLength (needs to be made faster)
-% 2025_10_18 - S. Brennan
-% -- Need to format all function headers to "standard" form. See
+%
+% 2025_10_18 by Sean Brennan, sbrennan@psu.edu
+% -Need to format all function headers to "standard" form. See
 %    % fcn_geometry_findPolytopeOrientations
 
 %% Prep the workspace
 close all
 clc
 
-%% Dependencies and Setup of the Code
-% The code requires several other libraries to work, namely the following
-%
-% * DebugTools - the repo can be found at: https://github.com/ivsg-psu/Errata_Tutorials_DebugTools
 
-
-% List what libraries we need, and where to find the codes for each
-clear library_name library_folders library_url
-
-ith_library = 1;
-library_name{ith_library}    = 'DebugTools_v2025_09_26b';
-library_folders{ith_library} = {'Functions','Data'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/Errata_Tutorials_DebugTools/archive/refs/tags/DebugTools_v2025_09_26b.zip';
-
-ith_library = ith_library+1;
-library_name{ith_library}    = 'PathClass_v2025_08_03';
-library_folders{ith_library} = {'Functions','Data'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary/archive/refs/tags/PathClass_v2025_08_03.zip';
-
-ith_library = ith_library+1;
-library_name{ith_library}    = 'GPSClass_v2023_06_29';
-library_folders{ith_library} = {'Functions'};
-library_url{ith_library}     = 'https://github.com/ivsg-psu/FieldDataCollection_GPSRelatedCodes_GPSClass/archive/refs/tags/GPSClass_v2023_06_29.zip';
-
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'LineFitting_v2023_07_24';
-% library_folders{ith_library} = {'Functions'};
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/FeatureExtraction_Association_LineFitting/archive/refs/tags/LineFitting_v2023_07_24.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'FindCircleRadius_v2023_08_02';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_GeomTools_FindCircleRadius/archive/refs/tags/FindCircleRadius_v2023_08_02.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'BreakDataIntoLaps_v2023_08_25';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/FeatureExtraction_DataClean_BreakDataIntoLaps/archive/refs/tags/BreakDataIntoLaps_v2023_08_25.zip';
-% 
-% ith_library = ith_library+1;
-% library_name{ith_library}    = 'ParseXODR_v2023_10_23';
-% library_folders{ith_library} = {'Functions'};                                
-% library_url{ith_library}     = 'https://github.com/ivsg-psu/PathPlanning_MapTools_ParseXODR/archive/refs/tags/ParseXODR_v2023_10_23.zip';
-
+%%% START OF STANDARD INSTALLER CODE %%%%%%%%%
 
 %% Clear paths and folders, if needed
+if 1==1
+    clear flag_GeomClass_Folders_Initialized
+end
+
 if 1==0
-    clear flag_GeomClass_Folders_Initialized;
     fcn_INTERNAL_clearUtilitiesFromPathAndFolders;
 end
 
+if 1==0
+    % Resets all paths to factory default
+    restoredefaultpath;
+end
+
+%% Install dependencies
+% Define a universal resource locator (URL) pointing to the repos of
+% dependencies to install. Note that DebugTools is always installed
+% automatically, first, even if not listed:
+clear dependencyURLs dependencySubfolders
+ith_repo = 0;
+
+ith_repo = ith_repo+1;
+dependencyURLs{ith_repo} = 'https://github.com/ivsg-psu/PathPlanning_PathTools_PathClassLibrary';
+dependencySubfolders{ith_repo} = {'Functions','Data'};
+ 
+ith_repo = ith_repo+1;
+dependencyURLs{ith_repo} = 'https://github.com/ivsg-psu/FieldDataCollection_GPSRelatedCodes_GPSClass';
+dependencySubfolders{ith_repo} = {'Functions'};
+
+
 %% Do we need to set up the work space?
 if ~exist('flag_GeomClass_Folders_Initialized','var')
-    this_project_folders = {'Functions','Data','LargeData'};
-    fcn_INTERNAL_initializeUtilities(library_name,library_folders,library_url,this_project_folders);
-    flag_GeomClass_Folders_Initialized = 1;
+    
+    % Clear prior global variable flags
+    clear global FLAG_*
+
+    % Navigate to the Installer directory
+    currentFolder = pwd;
+    cd('Installer');
+    % Create a function handle
+    func_handle = @fcn_DebugTools_autoInstallRepos;
+
+    % Return to the original directory
+    cd(currentFolder);
+
+    % Call the function to do the install
+    func_handle(dependencyURLs, dependencySubfolders, (0), (-1));
+
+    % Does LargeData exist?
+    if ~exist(fullfile(pwd,'LargeData'),'dir')
+        mkdir('LargeData');
+    end
+
+    % Add this function's folders to the path
+    this_project_folders = {...
+        'Functions','Data','LargeData'};
+    fcn_DebugTools_addSubdirectoriesToPath(pwd,this_project_folders)
+
+    flag_GeomClass_Folders_Initialized = 1; 
 end
+
+%%% END OF STANDARD INSTALLER CODE %%%%%%%%%
+
+
+
+
+
 
 %% Set environment flags for input checking
 % These are values to set if we want to check inputs or do debugging
@@ -251,6 +309,12 @@ end
 % setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','1');
 setenv('MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS','1');
 setenv('MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG','0');
+
+
+%% Test the repo
+if 1==0
+	fcn_DebugTools_testRepoForRelease('_geometry_');
+end
 
 %% Basic Functions
 
@@ -1867,13 +1931,13 @@ function fcn_INTERNAL_DebugTools_installDependencies(dependency_name, dependency
 
 % Revision history:
 % 2023_01_23:
-% -- wrote the code originally
+% -Wrote the code originally
 % 2023_04_20:
-% -- improved error handling
-% -- fixes nested installs automatically
+% -Improved error handling
+% -Fixes nested installs automatically
 
 % TO DO
-% -- Add input argument checking
+% -Add input argument checking
 
 flag_do_debug = 0; % Flag to show the results for debugging
 flag_do_plots = 0; % % Flag to plot the final results

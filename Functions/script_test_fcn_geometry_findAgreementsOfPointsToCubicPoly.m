@@ -2,11 +2,11 @@
 % Exercises the function: fcn_geometry_findAgreementsOfPointsToCubicPoly
 % Revision history:
 % 2024_05_29 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 % 2024_06_05 - Aneesh Batcu
-% -- Modified the assertions for better demonstration
+% - Modified the assertions for better demonstration
 % 2024_06_14
-% -- Bug fixes and formatting modifications for new fcn (see fcn comments)
+% - Bug fixes and formatting modifications for new fcn (see fcn comments)
 close all
 
 %% Assertions
@@ -37,8 +37,8 @@ close all
 
 rng(123)
 
-fig_num = 1121;
-figure(fig_num); clf;
+figNum = 1121;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -95,7 +95,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -106,8 +106,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1131;
-figure(fig_num); clf;
+figNum = 1131;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -164,7 +164,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -190,8 +190,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1211;
-figure(fig_num); clf;
+figNum = 1211;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 1; % Coefficient for x^2
@@ -245,7 +245,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -256,8 +256,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1311;
-figure(fig_num); clf;
+figNum = 1311;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0.2; % Coefficient for x^2
@@ -312,7 +312,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -323,8 +323,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1311;
-figure(fig_num); clf;
+figNum = 1311;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0.2; % Coefficient for x^2
@@ -379,7 +379,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -405,8 +405,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 2111;
-figure(fig_num); clf;
+figNum = 2111;
+figure(figNum); clf;
 
 a = 1; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -461,7 +461,7 @@ station_tolerance = [];
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>=1);
 assert(isequal(size(agreement_indices,2),1));
@@ -472,8 +472,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 3111;
-figure(fig_num); clf;
+figNum = 3111;
+figure(figNum); clf;
 
 a = 0.2; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -528,7 +528,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -539,8 +539,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 3111;
-figure(fig_num); clf;
+figNum = 3111;
+figure(figNum); clf;
 
 a = 0.2; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -595,7 +595,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -619,8 +619,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1112;
-figure(fig_num); clf;
+figNum = 1112;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -675,7 +675,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -687,8 +687,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1113;
-figure(fig_num); clf;
+figNum = 1113;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -743,7 +743,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -754,8 +754,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 1114;
-figure(fig_num); clf;
+figNum = 1114;
+figure(figNum); clf;
 
 a = 0; % Coefficient for x^3
 b = 0; % Coefficient for x^2
@@ -810,7 +810,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -821,8 +821,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 22221;
-figure(fig_num); clf;
+figNum = 22221;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -896,7 +896,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -908,8 +908,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 rng(123)
 
-fig_num = 22221;
-figure(fig_num); clf;
+figNum = 22221;
+figure(figNum); clf;
 
 
 a = 0.01; % Coefficient for x^3
@@ -983,7 +983,7 @@ station_tolerance = 2;
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));
@@ -992,8 +992,8 @@ assert(isequal(size(dist_btw_points_and_cubic_curve,2),1));
 
 
 %% Working - shows agreement without transverse agreement check
-fig_num = 22221;
-figure(fig_num); clf;
+figNum = 22221;
+figure(figNum); clf;
 
 rng(123)
 
@@ -1069,7 +1069,7 @@ station_tolerance = [];
 % Overall tolerance
 tolerance = [station_tolerance transverse_tolerance];
 
-[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num));
+[agreement_indices,dist_btw_points_and_cubic_curve] = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum));
 
 assert(length(agreement_indices(:,1))>1);
 assert(isequal(size(agreement_indices,2),1));

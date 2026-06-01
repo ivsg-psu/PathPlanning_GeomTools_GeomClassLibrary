@@ -2,13 +2,13 @@
 % Exercises the function: fcn_geometry_plotFitSequences
 % Revision history:
 % 2024_04_12
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 %% BASIC test - line plotting
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-1 0];
@@ -46,21 +46,21 @@ fitSequence_parameters{1}  = line_parameters;
 fitSequence_parameters{2}  = arc_parameters;
 
 
-XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[], [], (fig_num));
+XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,[], [], (figNum));
 
 assert(length(XY_data(1,:))==2);
 assert(length(XY_data(:,1))>=0);
 
 % Show the data that was just plotted (to show it's there) by checking the
 % figure number
-assert(ishandle(fig_num));
+assert(ishandle(figNum));
 
 % Now plot the data - visually check that it lies atop the results.
 plot(XY_data(:,1),XY_data(:,2),'k.');
 
 %% Show how we can pass parameters
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-1 0];
@@ -100,21 +100,21 @@ fitSequence_parameters{2}  = arc_parameters;
 
 segment_length = [];
 format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',7 ');
-XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, segment_length, format_string, (fig_num));
+XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, segment_length, format_string, (figNum));
 
 assert(length(XY_data(1,:))==2);
 assert(length(XY_data(:,1))>=0);
 
 % Show the data that was just plotted (to show it's there) by checking the
 % figure number
-assert(ishandle(fig_num));
+assert(ishandle(figNum));
 
 % Now plot the data - visually check that it lies atop the results.
 plot(XY_data(:,1),XY_data(:,2),'k.');
 
 %% Show how we can get point data without plotting
-fig_num = -1; % NO FIGURE
-% figure(fig_num); clf;
+figNum = -1; % NO FIGURE
+% figure(figNum); clf;
 
 line_unit_tangent_vector = [1 0];
 line_base_point_xy       = [-1 0];
@@ -154,18 +154,18 @@ fitSequence_parameters{2}  = arc_parameters;
 
 segment_length = [];
 format_string = sprintf(' ''-'',''Color'',[0.6 0.6 0.6],''LineWidth'',7 ');
-XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, segment_length, format_string, (fig_num));
+XY_data = fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters, segment_length, format_string, (figNum));
 
 assert(length(XY_data(1,:))==2);
 assert(length(XY_data(:,1))>=0);
 
 % Show the data that was just plotted (to show it's there) by checking the
 % figure number
-% assert(ishandle(fig_num));
+% assert(ishandle(figNum));
 
 % Now plot the data - visually check that it lies atop the results.
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 plot(XY_data(:,1),XY_data(:,2),'k.');
@@ -175,6 +175,6 @@ axis equal;
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_plotFitSequences(points,fig_num);
+    [slope,intercept] = fcn_geometry_plotFitSequences(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

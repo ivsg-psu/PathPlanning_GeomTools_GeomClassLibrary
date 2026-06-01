@@ -33,11 +33,11 @@ function [z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
 %
 % Revision History
 % Aneesh Batchu - 2024_07_08
-% -- wrote the code originally
+% - wrote the code originally
 % Aleksandr Goncharov 2024_07_08
-% -- functionalized the code
+% - functionalized the code
 % Aleksandr Goncharov 2024_07_17
-% -- updated the function to the correct format, created a script
+% - updated the function to the correct format, created a script
 
 
 %Example:[z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
@@ -45,7 +45,7 @@ function [z,mean_z,deviation_from_mean,angles,mean_angle,angle_difference]...
 % 111,222,333);
 
 %% Debug and Max speed
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 
@@ -56,18 +56,18 @@ if (nargin==7 && isequal(varargin{end},-1))
 else
     % Check to see if we are externally setting debug mode to be "on"
     flag_do_debug = 0; % Flag to plot the results for debugging
-    MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS");
-    MATLABFLAG_LOADWZ_FLAG_DO_DEBUG = getenv("MATLABFLAG_LOADWZ_FLAG_DO_DEBUG");
-    if ~isempty(MATLABFLAG_LOADWZ_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG)
-        flag_do_debug = str2double(MATLABFLAG_LOADWZ_FLAG_DO_DEBUG);
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
     end
 end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 

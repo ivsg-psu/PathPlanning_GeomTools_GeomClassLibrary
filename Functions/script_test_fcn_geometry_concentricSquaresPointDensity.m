@@ -22,9 +22,9 @@
 N_points = 100;
 Ext_Square_Size=10;
 Int_Square_Size=3;
-fig_num = 1111;
+figNum = 1111;
 
-[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],[],fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],[],figNum);
 
 assert(length(points)==N_points);
 
@@ -34,10 +34,10 @@ assert(length(points)==N_points);
 N_points = 100;
 Ext_Square_Size=10;
 Int_Square_Size=3;
-fig_num = 2222;
+figNum = 2222;
 noise= 0.5;
 
-[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,[],fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,[],figNum);
 assert(length(points)==N_points);
 
 
@@ -46,10 +46,10 @@ assert(length(points)==N_points);
 N_points = 100;
 Ext_Square_Size=10;
 Int_Square_Size=3;
-fig_num = 3333;
+figNum = 3333;
 diag_flag=1;
 
-[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],diag_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,[],diag_flag,figNum);
 assert(length(points)==N_points);
 
 %% BASIC_example 4 - Create a diagonal line across, noise added
@@ -57,11 +57,11 @@ assert(length(points)==N_points);
 N_points = 100;
 Ext_Square_Size=10;
 Int_Square_Size=3;
-fig_num = 4444;
+figNum = 4444;
 diag_flag=1;
 noise= 0.3;
 
-[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,figNum);
 assert(length(points)==N_points);
 
 
@@ -71,11 +71,11 @@ assert(length(points)==N_points);
 N_points = 100;
 Ext_Square_Size=10;
 Int_Square_Size=3;
-fig_num = 31;
+figNum = 31;
 diag_flag=1;
 noise= 0.3;
 
-[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity(N_points,Ext_Square_Size,Int_Square_Size,noise,diag_flag,figNum);
 assert(length(points)==N_points);
 
 

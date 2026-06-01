@@ -5,15 +5,15 @@
 % 2020_03_20 - started writing the function and script
 % 2020_05_22 - added more comments
 % 2021_05_23
-% -- merged previous function into geometry class
-% -- automated input argument checking
-% -- changed from x,y separate inputs into points inputs
+% - merged previous function into geometry class
+% - automated input argument checking
+% - changed from x,y separate inputs into points inputs
 close all;
 
 %% BASIC example 1
-fig_num = 1;
+figNum = 1;
 points = [0 0; 1 4; 0.5 -1];
-[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
+[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,figNum);
 
 % fcn_summarize(...
 %     centers,...
@@ -23,9 +23,9 @@ assert(isequal(round(centers,4), [3.6667,1.2083]));
 assert(isequal(round(radii,4), 3.8606));
 
 %% ADVANCED example that uses vectors of x and y
-fig_num = 100;
+figNum = 100;
 points = [0 0; 1 4; 0.5 -1; -1 4];
-[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
+[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,figNum);
 
 
 % fcn_summarize(...
@@ -41,11 +41,11 @@ assert(isequal(round(radii(2,1),4), 2.6231));
 %% ADVANCED example that lets user select N points
 % enable_advanced_example = false; % flag advanced example off for non-interactive execution
 % if enable_advanced_example
-%     fig_num = 1000;
-%     figure(fig_num); clf; grid on; axis equal;
+%     figNum = 1000;
+%     figure(figNum); clf; grid on; axis equal;
 % 
 %     points = ginput; % Get arbitrary N points until user hits return
-%     [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
+%     [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,figNum);
 % 
 %     fcn_summarize(...
 %         centers,...
@@ -55,9 +55,9 @@ assert(isequal(round(radii(2,1),4), 2.6231));
 
 
 %% ADVANCED example that uses vectors of x and y
-fig_num = 101;
+figNum = 101;
 points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
-[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,fig_num);
+[centers,radii] = fcn_geometry_circleCenterFrom3Points(points,figNum);
 plot(points(:,1),points(:,2),'r-');
 
 fcn_summarize(...
@@ -66,12 +66,12 @@ fcn_summarize(...
     points);
 
 %% BASIC example that gives same result as above points
-fig_num = 102;
+figNum = 102;
 points = [0 0; 0.5 4; 1 -1; 4 -3; 6 2; 7 -2; 9 3; 11 3; 15 -0.5];
 hold on
 figure(1); clf;
 for i=1:length(points(:,1))-2
-    fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),fig_num);
+    fcn_geometry_circleCenterFrom3Points(points(i:i+2,:),figNum);
     plot(points(:,1),points(:,2),'r-');
 end
 
@@ -79,16 +79,16 @@ end
 %% ADVANCED example that lets user select N points
 % enable_advanced_example = false; % flag advanced example off for non-interactive execution
 % if enable_advanced_example
-%     fig_num = 1001;
+%     figNum = 1001;
 %     x = [1; 2];
 %     y = [1; 2];
 %     button = 1;
-%     figure(fig_num); clf; grid on; axis equal;
+%     figure(figNum); clf; grid on; axis equal;
 %     while sum(button) <=1   % read ginputs until a mouse right-button occurs
 %         % Get a new point and redo plot
 %         [x(end+1),y(end+1),button] = ginput(1); %#ok<SAGROW>
 %         points = [x, y];
-%         fcn_geometry_circleCenterFrom3Points(points,fig_num);
+%         fcn_geometry_circleCenterFrom3Points(points,figNum);
 %     end
 % end
 
@@ -96,10 +96,10 @@ end
 %% ADVANCED example that lets user select N points
 % enable_advanced_example = false; % flag advanced example off for non-interactive execution
 % if enable_advanced_example
-%     fig_num = 1002;
+%     figNum = 1002;
 %     x = [1; 2; 3];
 %     y = [1; 2; 3];
-%     figure(fig_num); clf; grid on; axis equal;
+%     figure(figNum); clf; grid on; axis equal;
 % 
 %     % The following tests the 3 input form:
 %     button = 1;
@@ -111,16 +111,16 @@ end
 %         % Get a new point and redo plot
 %         [x(end),y(end),button] = ginput(1);
 %         points = [x,y];
-%         fcn_geometry_circleCenterFrom3Points(points,fig_num);
+%         fcn_geometry_circleCenterFrom3Points(points,figNum);
 %     end
 % end
 
 %% BASIC example that tests the 3 separate point input styles
-fig_num = 103;
+figNum = 103;
 points1 = [0 0; 5 0];
 points2 = [-2 2; 7 2];
 points3 = [0 4; 5 4];
-fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+fcn_geometry_circleCenterFrom3Points(points1, points2, points3,figNum);
 
 
 %% BASIC example that tests flag_max_speed
@@ -167,13 +167,13 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 %% FAIL CASES
 if 1==0
     %% fails because flag_max_speed is set to value other than -1
-    fig_num = -2;
+    figNum = -2;
     points1 = [0 0; 5 0];
     points2 = [-2 2; 7 2];
     points3 = [0 4; 5 4];
     flag_max_speed = 0;
 
-    fcn_geometry_circleCenterFrom3Points(points1, points2, points3,fig_num);
+    fcn_geometry_circleCenterFrom3Points(points1, points2, points3,figNum);
 end
 %% Function start here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

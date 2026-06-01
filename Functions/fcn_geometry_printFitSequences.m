@@ -44,7 +44,7 @@ function fcn_geometry_printFitSequences(fitSequence_fitTypes, fitSequence_parame
 % OUTPUTS:
 %
 %      XY_data: the data produced during plotting calculations. Note: this
-%      data is returned even if fig_num is empty or set to -1.
+%      data is returned even if figNum is empty or set to -1.
 %
 % DEPENDENCIES:
 %      
@@ -60,14 +60,14 @@ function fcn_geometry_printFitSequences(fitSequence_fitTypes, fitSequence_parame
 
 % Revision history:
 % 2024_07_10 - S. Brennan
-% -- wrote the code using fcn_geometry_plotFitSequences as starter
+% - wrote the code using fcn_geometry_plotFitSequences as starter
 % 2024_07_21 - S. Brennan
-% -- fixed bug where the headers are not printing correctly if mixed styles
+% - fixed bug where the headers are not printing correctly if mixed styles
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -92,9 +92,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -245,7 +245,7 @@ end
 
 % Nothing to plot
 if flag_do_plots
-    % temp_h = figure(fig_num);
+    % temp_h = figure(figNum);
     % flag_rescale_axis = 0;
     % if isempty(get(temp_h,'Children'))
     %     flag_rescale_axis = 1;
@@ -261,7 +261,7 @@ if flag_do_plots
     % for ith_domain = 1:length(fitSequence_fitTypes)
     %     plot_type_string = fitSequence_fitTypes{ith_domain};
     %     parameters       = fitSequence_parameters{ith_domain};
-    %     fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, fig_num);
+    %     fcn_geometry_plotGeometry(plot_type_string, parameters, segment_length, plot_str, figNum);
     % end
     % 
     % axis equal;

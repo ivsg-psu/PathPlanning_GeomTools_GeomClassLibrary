@@ -42,17 +42,17 @@ function [test_points, true_circle_centers, true_circle_radii] = fcn_geometry_fi
 
 % Revision history:
 % 2023_12_17 by S. Brennan 
-% -- wrote the code using fcn_geometry_fillLineTestPoints as starter
+% - wrote the code using fcn_geometry_fillLineTestPoints as starter
 % 2024_01_08 by S. Brennan
-% -- edited comments for correctness
-% -- added fast mode and environmental variables for debugging
+% - edited comments for correctness
+% - added fast mode and environmental variables for debugging
 % 2024_03_31 by S. Brennan
-% -- fixed bug where zoom was not set correctly
-% -- fixed bug where last point is sometimes not set
+% - fixed bug where zoom was not set correctly
+% - fixed bug where last point is sometimes not set
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -75,11 +75,11 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
-    figure(debug_fig_num);
+    debug_figNum = 34838;
+    figure(debug_figNum);
     clf;
 else
-    debug_fig_num = []; 
+    debug_figNum = []; 
 end
 
 %% check input arguments
@@ -112,7 +112,7 @@ flag_do_plots = 0;
 if (4 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -181,7 +181,7 @@ for ith_point = 1:N_segments
     perturbed_points = ones(N_points,1)*circleCenter(ith_point,:) + orthogonal_distances.*unit_radial_vectors;
 
     if flag_do_debug
-        figure(debug_fig_num);
+        figure(debug_figNum);
         hold on;
         grid on;
         axis equal
@@ -212,7 +212,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

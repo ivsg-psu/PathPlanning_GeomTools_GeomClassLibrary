@@ -5,13 +5,13 @@
 
 % Revision History
 % 2024_03_28 - Aneesh Batchu
-% -- Started the script
+% - Started the script
 
 
 % TO-DO
 %
 % Test more cases
-% -- test with different lengths of arcs [pi/3 to pi/6]
+% - test with different lengths of arcs [pi/3 to pi/6]
 % Current cases are only tested with semicircles
 %
 % Check assertions: The distance between the intersection points and the
@@ -24,12 +24,12 @@ close all
 
 % Fill data points with lines and arcs
 rng(3423)
-fig_num = -1;
+figNum = -1;
 
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
-% fig_num = 111;
+% figNum = 111;
 
 % Arc 1 test points
 % seed_points = [2 3; 4 5; 6 3];
@@ -40,48 +40,48 @@ M = 10; % Points per meter
 sigma = 0.02;
 
 % Fill test data for arc 1
-[test_points_arc1, ~, ~] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+[test_points_arc1, ~, ~] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, figNum);
 
-% fig_num = 112;
+% figNum = 112;
 corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+    (probability_of_corruption), (magnitude_of_corruption), figNum);
 
 % Line 1 test points
 seed_points = [6 2; 8.5 2];
 M = 10;
 sigma = 0.02;
 
-% fig_num = 111;
+% figNum = 111;
 % Fill test data for line 1
-test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 
-% fig_num = 112;
+% figNum = 112;
 corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+    (probability_of_corruption), (magnitude_of_corruption), figNum);
 
 % Hough Segmentation
-% fig_num = 501;
+% figNum = 501;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 1; % Units are meters. 
 threshold_max_points = 20;
 input_points = [corrupted_test_points_arc1; corrupted_test_points_line1];
 
-Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
-% fig_num = 601;
+% figNum = 601;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], figNum);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+2);
 
-fig_num = 114;
-fcn_geometry_plotFitDomains(regression_domains, fig_num);
+figNum = 114;
+fcn_geometry_plotFitDomains(regression_domains, figNum);
 tolerance = [];
 
-[endPointsCell, ~, ~] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, fig_num);
+[endPointsCell, ~, ~] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, figNum);
 
 tole = 0.01;
-intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(endPointsCell{1}, endPointsCell{2}, tole, fig_num);
+intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(endPointsCell{1}, endPointsCell{2}, tole, figNum);
 
 % Verify the points
 
@@ -110,12 +110,12 @@ assert(isequal(intersectionPointsAreValid, 1));
 
 % Fill data points with lines and arcs
 rng(3423)
-fig_num = -1;
+figNum = -1;
 
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
-% fig_num = 321;
+% figNum = 321;
 
 % Arc 1 test points
 % seed_points = [2 3; 4 5; 6 3];
@@ -126,49 +126,49 @@ M = 10; % Points per meter
 sigma = 0.02;
 
 % Fill test data for arc 1
-[test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, fig_num);
+[test_points_arc1, true_circle_centers_arc1, true_circle_radii_arc1] = fcn_geometry_fillArcTestPoints(seed_points, M, sigma, figNum);
 
-% fig_num = 322;
+% figNum = 322;
 corrupted_test_points_arc1 = fcn_geometry_corruptPointsWithOutliers(test_points_arc1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+    (probability_of_corruption), (magnitude_of_corruption), figNum);
 
 % Line 1 test points
 seed_points = [6 2; 9 2];
 M = 10;
 sigma = 0.02;
 
-% fig_num = 321;
+% figNum = 321;
 % Fill test data for line 1
-test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 
-% fig_num = 322;
+% figNum = 322;
 corrupted_test_points_line1 = fcn_geometry_corruptPointsWithOutliers(test_points_line1,...
-    (probability_of_corruption), (magnitude_of_corruption), fig_num);
+    (probability_of_corruption), (magnitude_of_corruption), figNum);
 
 % Hough Segmentation
-% fig_num = 305;
+% figNum = 305;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 20;
 input_points = [corrupted_test_points_arc1; corrupted_test_points_line1];
 
-Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
-% fig_num = 306;
+% figNum = 306;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
-% fcn_geometry_plotFitDomains(regression_domains, fig_num+2);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], figNum);
+% fcn_geometry_plotFitDomains(regression_domains, figNum+2);
 
 
-fig_num = 324;
-fcn_geometry_plotFitDomains(regression_domains, fig_num);
+figNum = 324;
+fcn_geometry_plotFitDomains(regression_domains, figNum);
 tolerance = [];
 
-[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, figNum);
 
 tole = 0.01;
-intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(endPointsCell{2}, endPointsCell{1}, tole, fig_num);
+intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(endPointsCell{2}, endPointsCell{1}, tole, figNum);
 
 % Verify the points
 

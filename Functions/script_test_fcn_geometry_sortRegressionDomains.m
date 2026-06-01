@@ -5,7 +5,7 @@
 
 % Revision History
 % 2024_02_28 - Aneesh Batchu
-% -- Started the script
+% - Started the script
 
 %% Clear workspace
 
@@ -15,42 +15,42 @@ close all
 
 rng(343)
 
-fig_num = -1;
+figNum = -1;
 
     % Line test points
 seed_points = [1 2; 2 4; 4 5];
 M = 10;
 sigma = 0.02;
 
-test_points_twoLineSegments = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_twoLineSegments = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Corrupt the points
-% fig_num = 113;
+% figNum = 113;
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(test_points_twoLineSegments,...
-    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+    (probability_of_corruption), (magnitude_of_corruption),figNum);
 
 
 % Hough Segmentation
-% fig_num = 114;
+% figNum = 114;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 10;
 input_points = corrupted_testpoints;
 
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
 clf;
-fig_num = 113;
-fcn_geometry_plotFitDomains(domains, fig_num);
+figNum = 113;
+fcn_geometry_plotFitDomains(domains, figNum);
 
-% figure(fig_num)
+% figure(figNum)
 
 tolerance = [];
 
-[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(domains, tolerance, fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, ~] = fcn_geometry_sortRegressionDomains(domains, tolerance, figNum);
 
 endPointsCell_struct = endPointsCell{end};
 assert(isstruct(endPointsCell_struct));
@@ -75,41 +75,41 @@ end
 
 rng(343)
 
-fig_num = 112;
+figNum = 112;
 
 % Line test points
 seed_points = [1 2; 2 4; 4 5];
 M = 10;
 sigma = 0.02;
 
-test_points_twoLineSegments = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_twoLineSegments = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Corrupt the points
-fig_num = -1;
+figNum = -1;
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(test_points_twoLineSegments,...
-    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+    (probability_of_corruption), (magnitude_of_corruption),figNum);
 
 
 % Hough Segmentation
-% fig_num = 114;
+% figNum = 114;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 10;
 input_points = corrupted_testpoints;
 
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
 clf;
-fig_num = 113;
-fcn_geometry_plotFitDomains(domains, fig_num);
-% figure(fig_num)
+figNum = 113;
+fcn_geometry_plotFitDomains(domains, figNum);
+% figure(figNum)
 
 tolerance = 0.2;
 
-[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(domains, tolerance, fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(domains, tolerance, figNum);
 
 endPointsCell_struct = endPointsCell{end};
 assert(isstruct(endPointsCell_struct));
@@ -134,14 +134,14 @@ end
 
 rng(343)
 
-fig_num = -1;
+figNum = -1;
 
 % Line 1 test points
 seed_points = [1 2; 2 4];
 M = 10;
 sigma = 0.02;
 
-test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_LineSegment1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 
 % Line 2 test points
@@ -149,34 +149,34 @@ seed_points = [2.5 4.5; 4 5];
 M = 10;
 sigma = 0.02;
 
-test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_LineSegment2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 testpoints = [test_points_LineSegment1; test_points_LineSegment2];
 
 % Corrupt the points
-% fig_num = 116;
+% figNum = 116;
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
-    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+    (probability_of_corruption), (magnitude_of_corruption),figNum);
 
 
 % Hough Segmentation
-% fig_num = 117;
+% figNum = 117;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 10;
 input_points = corrupted_testpoints;
 
-domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
 clf;
-fig_num = 116;
-fcn_geometry_plotFitDomains(domains, fig_num);
+figNum = 116;
+fcn_geometry_plotFitDomains(domains, figNum);
 tolerance = 1;
 
-[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(domains, tolerance, fig_num);
+[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(domains, tolerance, figNum);
 
 endPointsCell_struct = endPointsCell{end};
 assert(isstruct(endPointsCell_struct));
@@ -200,71 +200,71 @@ end
 
 rng(343)
 
-% fig_num = 901;
-fig_num = -1;
+% figNum = 901;
+figNum = -1;
 
 % Line test points - Line Segment 1
 seed_points = [-15 0; -10 5];
 M = 10;
 sigma = 0.02;
 
-test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 2
 seed_points = [-10 6; -1 6];
 M = 10;
 sigma = 0.02;
 
-test_points_line2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 3 & 4 & 5
 seed_points = [-2 4; 1 10; 7 4; 13 13];
 M = 10;
 sigma = 0.02;
 
-test_points_line345 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line345 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 6
 seed_points = [10, 12; 18, 3];
 M = 10;
 sigma = 0.02;
 
-test_points_line6 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line6 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 
 testpoints = [test_points_line1; test_points_line2; test_points_line345; test_points_line6];
 
 % Corrupt the points
-% fig_num = 801;
-% fig_nuM = fig_num;
+% figNum = 801;
+% fig_nuM = figNum;
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
-    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+    (probability_of_corruption), (magnitude_of_corruption),figNum);
 
 % Hough Segmentation
-% fig_num = 701;
-fig_num = -1;
+% figNum = 701;
+figNum = -1;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 20;
 input_points = corrupted_testpoints;
 
-Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
 
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], figNum);
 
 clf;
-fig_num = 601;
-fcn_geometry_plotFitDomains(regression_domains, fig_num);
+figNum = 601;
+fcn_geometry_plotFitDomains(regression_domains, figNum);
 
-% fig_num = fig_nuM;
+% figNum = fig_nuM;
 tolerance = 50; 
-% [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, [], fig_num);
-[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, fig_num);
+% [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, [], figNum);
+[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, figNum);
 
 endPointsCell_struct = endPointsCell{end};
 assert(isstruct(endPointsCell_struct));
@@ -290,80 +290,80 @@ end
 
 rng(343)
 
-% fig_num = 902;
-fig_num = -1;
+% figNum = 902;
+figNum = -1;
 
 % Line test points - Line Segment 1
 seed_points = [-15 0; -10 5];
 M = 10;
 sigma = 0.02;
 
-test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line1 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 2
 seed_points = [-8 6; -1 6];
 M = 10;
 sigma = 0.02;
 
-test_points_line2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line2 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 3 & 4
 seed_points = [-4 8; 2 0; 8 0];
 M = 10;
 sigma = 0.02;
 
-test_points_line34 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line34 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 5
 seed_points = [6, -3; 10, 4];
 M = 10;
 sigma = 0.02;
 
-test_points_line5 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line5 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 % Line test points - Line Segment 6
 seed_points = [12, 4; 16, 5];
 M = 10;
 sigma = 0.02;
 
-test_points_line6 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, fig_num);
+test_points_line6 = fcn_geometry_fillLineTestPoints(seed_points, M, sigma, figNum);
 
 
 testpoints = [test_points_line1; test_points_line2; test_points_line34; test_points_line5; test_points_line6];
 
 % Corrupt the points
-% fig_num = 802;
-% fig_nuM = fig_num;
+% figNum = 802;
+% fig_nuM = figNum;
 probability_of_corruption = 0.1;
 magnitude_of_corruption = 3;
 
 corrupted_testpoints = fcn_geometry_corruptPointsWithOutliers(testpoints,...
-    (probability_of_corruption), (magnitude_of_corruption),fig_num);
+    (probability_of_corruption), (magnitude_of_corruption),figNum);
 
 % Hough Segmentation
-% fig_num = 702;
-fig_num = -1;
+% figNum = 702;
+figNum = -1;
 transverse_tolerance = 0.05; % Units are meters
 station_tolerance = 0.5; % Units are meters. 
 threshold_max_points = 20;
 input_points = corrupted_testpoints;
 
-Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+Hough_domains = fcn_geometry_HoughSegmentation(input_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 
-% fig_num = 602;
-fig_num = -1;
+% figNum = 602;
+figNum = -1;
 % Check the regression fit
-regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], fig_num);
+regression_domains = fcn_geometry_HoughRegression(Hough_domains, [], figNum);
 
 clf;
-fig_num = 602;
-fcn_geometry_plotFitDomains(regression_domains, fig_num);
+figNum = 602;
+fcn_geometry_plotFitDomains(regression_domains, figNum);
 
 
-% fig_num = fig_nuM;
+% figNum = fig_nuM;
 tolerance = 50; 
-% [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, [], fig_num);
-[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, fig_num);
+% [endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, [], figNum);
+[endPointsCell, sortedHoughSegmentEndPoints, closeEndPointsMatrix] = fcn_geometry_sortRegressionDomains(regression_domains, tolerance, figNum);
 
 endPointsCell_struct = endPointsCell{end};
 assert(isstruct(endPointsCell_struct));

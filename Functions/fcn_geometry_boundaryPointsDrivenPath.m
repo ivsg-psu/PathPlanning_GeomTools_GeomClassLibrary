@@ -32,9 +32,9 @@ function [boundary_points_driven_path,shift_distance]...
 %
 % Revision History
 % Aneesh Batchu - 2024_07_18
-% -- wrote the code originally
+% - wrote the code originally
 % Steven Young 2024_07_24
-% -- functionalized the code
+% - functionalized the code
 % 
 
 
@@ -142,8 +142,8 @@ boundaryLineNumber_end = 1410 - 6;
 % left_boundary_points = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:3) + lengths_boundary_points;
 % right_boundary_points = VehiclePose(scanLineNumber_start:scanLineNumber_end,1:3) - lengths_boundary_points;
 
-fig_num = 1098;
-figure(fig_num);clf;
+figNum = 1098;
+figure(figNum);clf;
 
 hold on;
 grid on;
@@ -185,8 +185,8 @@ view(3)
 
 %%
 
-ENU_3D_fig_num = 3;
-figure(ENU_3D_fig_num);
+ENU_3D_figNum = 3;
+figure(ENU_3D_figNum);
 
 plot3(left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),left_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 1 0],'MarkerSize',30,'LineWidth',3);
 plot3(right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,1),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,2),right_boundary_points(boundaryLineNumber_start:boundaryLineNumber_end,3),'.','Color',[0 0 1],'MarkerSize',30,'LineWidth',3);
@@ -197,10 +197,10 @@ boundary_points_driven_path = [right_boundary_points(boundaryLineNumber_start:bo
 
 boundary_points_driven_path_LLA = gps_object.ENU2WGSLLA(boundary_points_driven_path);
 
-LLA_fig_num = 2;
-figure(LLA_fig_num);
+LLA_figNum = 2;
+figure(LLA_figNum);
 % Plot the LIDAR data underneath the vehicle in LLA
-figure(LLA_fig_num);
+figure(LLA_figNum);
 geoplot(boundary_points_driven_path_LLA(:,1),boundary_points_driven_path_LLA(:,2),'b.','MarkerSize',30);
 
 

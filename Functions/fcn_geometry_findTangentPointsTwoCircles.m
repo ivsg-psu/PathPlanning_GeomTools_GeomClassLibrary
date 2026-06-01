@@ -35,7 +35,7 @@ function [...
 %     radii_end,...
 %     (flag_inside_or_out),...
 %     (voting_points_start,voting_points_end),...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -65,7 +65,7 @@ function [...
 %      X,Y points which allows user to enter voting points, to keep only
 %      tangents whose start and end are closest to the voting points.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -99,19 +99,19 @@ function [...
 
 % Revision History:
 % 2021-04-23
-% -- Revised the comments area, prepped function for geometry class
+% - Revised the comments area, prepped function for geometry class
 % 2021-05-22
-% -- Added plotting from: fcn_geometry_plotCircle
-% -- Fixed typo on radii difference
+% - Added plotting from: fcn_geometry_plotCircle
+% - Fixed typo on radii difference
 % 2024_04_17 - S. Brennan
-% -- added max speed options
-% -- cleaned up input area
+% - added max speed options
+% - cleaned up input area
 % 2024_04_30 - S. Brennan
-% -- updated plotting to make the start (green) and end (red) circles more clear 
+% - updated plotting to make the start (green) and end (red) circles more clear 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -213,14 +213,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (8 == nargin)
     temp = varargin{4};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure;
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -388,7 +388,7 @@ points_tangent_end   = [points_innertangent_end; points_outertangent_end];
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     hold on;
     axis equal;
     grid on; grid minor;

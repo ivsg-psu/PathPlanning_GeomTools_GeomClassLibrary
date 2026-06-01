@@ -8,7 +8,7 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 % 
 % FORMAT: 
 %
-% fcn_geometry_findIntersectionPointsOfAdjacentSegments(curveStartPoint, curveEndPoint, sortedHoughSegmentEndPoints, fig_num)
+% fcn_geometry_findIntersectionPointsOfAdjacentSegments(curveStartPoint, curveEndPoint, sortedHoughSegmentEndPoints, figNum)
 % 
 % INPUTS:
 %
@@ -22,7 +22,7 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -46,11 +46,11 @@ function intersectionPoints = fcn_geometry_findBreakpointsOfAdjacentSegments(cur
 
 % Revision History
 % 2024_03_02 
-% -- wrote the code - Aneesh Batchu
+% - wrote the code - Aneesh Batchu
 % 2024_03_11 
-% -- Functionalized the code - Aneesh Batchu
+% - Functionalized the code - Aneesh Batchu
 % 2024_03_14
-% -- Replaced this function "fcn_geometry_findIntersectionOfSegments" with
+% - Replaced this function "fcn_geometry_findIntersectionOfSegments" with
 % "fcn_Path_findProjectionHitOntoPath"
 
 flag_max_speed = 0;
@@ -74,9 +74,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -103,13 +103,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -177,7 +177,7 @@ if flag_do_plots
     % hold on
     % plot(plotPoints(:,1), plotPoints(:,2), '--', 'LineWidth',5, 'Color', [1 1 0]);
 
-    figure(fig_num)
+    figure(figNum)
     grid on
     grid minor
     box on

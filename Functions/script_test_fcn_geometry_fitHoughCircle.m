@@ -3,11 +3,11 @@
 
 % Revision history:
 % 2023_12_15
-% -- wrote the code
+% - wrote the code
 % 2024_01_04
-% -- fixed the argument inputs
+% - fixed the argument inputs
 % 2024_01_17
-% -- changed output types to domains
+% - changed output types to domains
 
 %% Set up the workspace
 
@@ -31,8 +31,8 @@ close all
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -45,17 +45,17 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
-fig_num = 111;
-figure(fig_num); clf;
+figNum = 111;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -68,7 +68,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -106,8 +106,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -120,18 +120,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 222;
-figure(fig_num); clf;
+figNum = 222;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -144,7 +144,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range),(flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range),(flag_find_only_best_agreement),(flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -183,8 +183,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -197,18 +197,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 333;
-figure(fig_num); clf;
+figNum = 333;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -221,7 +221,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (figNum));
 
 % % Check the output type and size
 % for ith_domain = 1:length(domains)-2
@@ -260,8 +260,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123);
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -274,18 +274,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 334;
-figure(fig_num); clf;
+figNum = 334;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -298,7 +298,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (figNum));
 
 
 % Check the output type and size
@@ -337,8 +337,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123);
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -351,18 +351,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 444;
-figure(fig_num); clf;
+figNum = 444;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -375,7 +375,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),(flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -413,8 +413,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -427,19 +427,19 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 % Passes because station tolerance is larger
-fig_num = 445;
-figure(fig_num); clf;
+figNum = 445;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -452,7 +452,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -489,8 +489,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -502,7 +502,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -511,10 +511,10 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
-fig_num = 1111;
-figure(fig_num); clf;
+figNum = 1111;
+figure(figNum); clf;
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
@@ -527,7 +527,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -564,8 +564,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -577,7 +577,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -586,14 +586,14 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 % NOTE: notice how this is much slower than the previous call, as it takes
 % siginificant computation to check arcs, which is required when
 % station_tolerance is given
-fig_num = 2222;
-figure(fig_num); clf;
+figNum = 2222;
+figure(figNum); clf;
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
@@ -606,7 +606,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -643,8 +643,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -656,7 +656,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -665,11 +665,11 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 3333;
-figure(fig_num); clf;
+figNum = 3333;
+figure(figNum); clf;
 
 inputPoints = corrupted_circle_test_points;
 transverse_tolerance = 0.1;
@@ -682,7 +682,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -719,8 +719,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -732,7 +732,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -741,7 +741,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 % 1 outlier arc
@@ -752,7 +752,7 @@ seed_points = [6 6; 9 3; 6 0];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 % For debugging
@@ -770,8 +770,8 @@ corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outl
     (probability_of_corruption), (magnitude_of_corruption), (234));
 
 
-fig_num = 4444;
-figure(fig_num); clf;
+figNum = 4444;
+figure(figNum); clf;
 
 inputPoints = [corrupted_circle_test_points; corrupted_outlieronearc_test_points];
 % inputPoints = [circle_test_points; outlieronearc_test_points];
@@ -788,7 +788,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % % Check the output type and size
 % for ith_domain = 1:length(domains)-1
@@ -825,8 +825,8 @@ assert(isnan(domain.best_fit_parameters));
 
 rng(123)
 
-fig_num = 21;
-figure(fig_num);
+figNum = 21;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -838,7 +838,7 @@ circle_radius = 2;
 M = 3; % 5 points per meter
 sigma = 0.02;
 
-circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 
 
 % Add outliers?
@@ -847,7 +847,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 % 1 outlier arc
@@ -858,7 +858,7 @@ trueParameters = [true_circleCenter true_circleRadius];
 M = 8; % Number of points per meter
 sigma = 0.02;
 
-outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+outlieronearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 % For debugging
@@ -876,8 +876,8 @@ corrupted_outlieronearc_test_points= fcn_geometry_corruptPointsWithOutliers(outl
     (probability_of_corruption), (magnitude_of_corruption), (234));
 
 
-fig_num = 5555;
-figure(fig_num); clf;
+figNum = 5555;
+figure(figNum); clf;
 
 inputPoints = [corrupted_circle_test_points; corrupted_outlieronearc_test_points];
 % inputPoints = [circle_test_points; outlieronearc_test_points];
@@ -894,7 +894,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -932,8 +932,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -946,18 +946,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -970,7 +970,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1008,8 +1008,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1022,18 +1022,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -1046,7 +1046,7 @@ flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1084,8 +1084,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1098,14 +1098,14 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 % Fill test data for 2 arcs
 first_fraction = [0 0.5]; % data from 0 to 50 percent
@@ -1137,13 +1137,13 @@ flag_use_permutations = [];
 
 % Use station tolerance low to find only largest arc
 station_tolerance = 0.3;
-fig_num = 7777;
-figure(fig_num); clf;
+figNum = 7777;
+figure(figNum); clf;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1179,13 +1179,13 @@ assert(isnan(domain.best_fit_parameters));
 % Make station tolerance larger so it finds entire arc, connecting together
 % but not finding a circle
 station_tolerance = 3;
-fig_num = 7788;
-figure(fig_num); clf;
+figNum = 7788;
+figure(figNum); clf;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1220,13 +1220,13 @@ assert(isnan(domain.best_fit_parameters));
 
 % Fit a circle by shutting station tolerance off
 station_tolerance = [];
-fig_num = 7799;
-figure(fig_num); clf;
+figNum = 7799;
+figure(figNum); clf;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
     domain = domains{ith_domain};
@@ -1261,13 +1261,13 @@ assert(isnan(domain.best_fit_parameters));
 % Force a circle that forces station tolerance to be met by using flag
 station_tolerance = 10;
 flag_force_circle_fit = 1;
-fig_num = 7766;
-figure(fig_num); clf;
+figNum = 7766;
+figure(figNum); clf;
 
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1310,8 +1310,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1324,18 +1324,18 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 44;
-figure(fig_num); clf;
+figNum = 44;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.3;
@@ -1350,7 +1350,7 @@ flag_use_permutations = 0;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1391,8 +1391,8 @@ assert(isnan(domain.best_fit_parameters));
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1405,18 +1405,18 @@ trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 444;
-figure(fig_num); clf;
+figNum = 444;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.3;
@@ -1431,7 +1431,7 @@ flag_use_permutations = 0.5;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1476,8 +1476,8 @@ fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutation
 rng(123)
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1490,18 +1490,18 @@ trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
-fig_num = 55;
-figure(fig_num); clf;
+figNum = 55;
+figure(figNum); clf;
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.3;
@@ -1516,7 +1516,7 @@ flag_use_permutations = 30;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1554,8 +1554,8 @@ fprintf(1,'Results of flag_use_permutations set to: %.5f\n',flag_use_permutation
 % fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains{1}.best_fit_parameters(1),domains{1}.best_fit_parameters(2),domains{1}.best_fit_parameters(3));
 
 % Now show how it works with "clean" points
-fig_num = 66;
-figure(fig_num); clf;
+figNum = 66;
+figure(figNum); clf;
 
 inputPoints = onearc_test_points;
 transverse_tolerance = 0.3;
@@ -1570,7 +1570,7 @@ flag_use_permutations = 30;
 
 domains  = ...
 fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
 % Check the output type and size
 for ith_domain = 1:length(domains)-1
@@ -1613,8 +1613,8 @@ fprintf(1,'Fit parameters (X Y radius, all in meters): %.3f %.3f %.3f\n',domains
 
 %% Speed test effect of flag_use_permutations
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1627,14 +1627,14 @@ trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 inputPoints = corrupted_onearc_test_points;
 transverse_tolerance = 0.1;
@@ -1650,7 +1650,7 @@ fast_flag_use_permutations = 0;
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 3; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
@@ -1658,7 +1658,7 @@ for i=1:REPS
 
     slowdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (slow_flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (slow_flag_use_permutations), (figNum));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -1666,7 +1666,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
@@ -1674,7 +1674,7 @@ for i=1:REPS
 
     fastdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (fast_flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (fast_flag_use_permutations), (figNum));
     
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
@@ -1697,8 +1697,8 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 
 
 % 1 arc
-fig_num = 23;
-figure(fig_num);
+figNum = 23;
+figure(figNum);
 clf;
 hold on;
 axis equal
@@ -1711,14 +1711,14 @@ trueParameters_onearc_test_points = [true_circleCenter true_circleRadius];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Corrupt the results
 probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption), (figNum));
 
 
 inputPoints = corrupted_onearc_test_points;
@@ -1730,7 +1730,7 @@ expected_radii_range = [1 3];
 flag_find_only_best_agreement = []; flag_use_permutations = [];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 3; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
@@ -1738,7 +1738,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
     
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -1746,7 +1746,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
@@ -1754,7 +1754,7 @@ for i=1:REPS
 
     domains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
 
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -1902,7 +1902,7 @@ flag_use_permutations = [];
 
 
 % Perform the calculation in slow mode
-fig_num = -1;
+figNum = -1;
 flag_find_only_best_agreement = 0; 
 REPS = 3; minTimeSlow = Inf; 
 tic;
@@ -1911,7 +1911,7 @@ for i=1:REPS
 
     slowdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -1919,7 +1919,7 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 flag_find_only_best_agreement = 1; 
 minTimeFast = Inf;
 tic;
@@ -1928,7 +1928,7 @@ for i=1:REPS
 
     fastdomains  = ...
         fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (fig_num));
+        (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement),  (flag_use_permutations), (figNum));
     
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);

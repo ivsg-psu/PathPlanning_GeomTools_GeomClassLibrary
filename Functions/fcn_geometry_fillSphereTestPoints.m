@@ -4,7 +4,7 @@ function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center
 % points around the perimeter of a sphere with points randomly distributed
 % radially, with variance sigma.
 %
-% test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (fig_num))
+% test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center, sphere_radius, sigma, (figNum))
 %
 % INPUTS:
 %
@@ -19,7 +19,7 @@ function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.     
 %
@@ -42,11 +42,11 @@ function test_points = fcn_geometry_fillSphereTestPoints(N_points, sphere_center
 
 % Revision history:
 % 2024_01_23 by S. Brennan
-% -- wrote the code using fcn_geometry_fillArcTestPoints as starter
+% - wrote the code using fcn_geometry_fillArcTestPoints as starter
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -69,11 +69,11 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
-    figure(debug_fig_num);
+    debug_figNum = 34838;
+    figure(debug_figNum);
     clf;
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -120,7 +120,7 @@ flag_do_plots = 0;
 if (0==flag_max_speed) && (5 == nargin) 
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -173,7 +173,7 @@ test_points = perturbed_points;
 if flag_do_plots
     % set up the figure and check if it has been used before. If not used
     % already, note that the axes will be re-scaled
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -195,7 +195,7 @@ if flag_do_plots
     plot3(sphere_center(1,1), sphere_center(1,2), sphere_center(1,3), 'r+','MarkerSize',30);
 
     % Plot the sphere
-    fcn_geometry_plotSphere(sphere_center, sphere_radius, [0 0 1], fig_num);
+    fcn_geometry_plotSphere(sphere_center, sphere_radius, [0 0 1], figNum);
 
     % Plot the results
     plot3(test_points(:,1), test_points(:,2),  test_points(:,3), 'k.','MarkerSize',20);

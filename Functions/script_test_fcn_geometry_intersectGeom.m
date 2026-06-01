@@ -2,23 +2,23 @@
 % Exercises the function: fcn_geometry_intersectGeom
 % Revision history:
 % 2024_05_02 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 % 2024_05_10 - Sean Brennan
-% -- added test cases that do not work
-% -- added to-do list
+% - added test cases that do not work
+% - added to-do list
 % 2024_05_15 - Aneesh Batchu
-% -- modified/created figure numbers based on the format specified below.
-% -- added test cases for circle to line, circle to segment, segment to
+% - modified/created figure numbers based on the format specified below.
+% - added test cases for circle to line, circle to segment, segment to
 % line and line to segment. 
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -27,14 +27,14 @@
 %             ]
 
 % TO-DO
-% -- Add "captions" to each section similar to Arc to Arc so we can find
+% - Add "captions" to each section similar to Arc to Arc so we can find
 % bugs easier (this was done for arc-to-arc but needed for all sections)
-% -- Fix fail cases where overlaps are not detected in arc-to-arc (search for the fig numbers 13090, 13091)
+% - Fix fail cases where overlaps are not detected in arc-to-arc (search for the fig numbers 13090, 13091)
 %    these are infinite overlap cases. The function should return the FIRST
 %    point where the arcs overlap, e.g. the first point on arc2 in this
 %    example. There needs to be some type of check for overlapping
 %    geometries.
-% -- many test cases are missing and are not coded: 
+% - many test cases are missing and are not coded: 
 %    arc to circle (0, 1, 2, or infinite intersections)
 %    line to line (0, 1, or infinite intersections)
 %    line to segment (0, 1, or infinite intersections)
@@ -100,8 +100,8 @@ close all
 % All circle-to-circle figures start with the number 11
 
 %% Basic Test: Circle to Circle Intersection Case - no intersections
-fig_num = 11001;
-figure(fig_num); clf;
+figNum = 11001;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [-3 3];
@@ -126,14 +126,14 @@ firstFitType_parameters = circle1_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Circle to Circle Intersection Case - one intersection
-fig_num = 11101;
-figure(fig_num); clf;
+figNum = 11101;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [-3 0];
@@ -158,15 +158,15 @@ firstFitType_parameters = circle1_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0.0000, 0.0000]));      
 
 
 %% Basic Test: Circle to Circle Intersection Case - two intersections
-fig_num = 11201;
-figure(fig_num); clf;
+figNum = 11201;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [-3 0];
@@ -191,14 +191,14 @@ firstFitType_parameters = circle1_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[2 2]));
 assert(isequal(round(intersection_points,4), [ 0.0000    5.1962; 0.0000   -5.1962]));  
 
 %% Basic Test: Circle to Circle Intersection Case - infinite intersections
-fig_num = 11901;
-figure(fig_num); clf;
+figNum = 11901;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [0 0];
@@ -223,7 +223,7 @@ firstFitType_parameters = circle1_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isinf(intersection_points)));
@@ -243,8 +243,8 @@ assert(all(isinf(intersection_points)));
 close all
 
 %% Basic Test: Circle to Arc Intersection Case - no intersections (no-overlapping circles)
-fig_num = 12001;
-figure(fig_num); clf;
+figNum = 12001;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -279,14 +279,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Circle to Arc Intersection Case - no intersections 
-fig_num = 12002;
-figure(fig_num); clf;
+figNum = 12002;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -321,15 +321,15 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 
 %% Basic Test: Circle to Arc Intersection - arc starts on cicle, no intersection? (BUG??)
-fig_num = 12003;
-figure(fig_num); clf;
+figNum = 12003;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [0 3];
@@ -372,14 +372,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));  
 
 %% Basic Test: Circle to Arc Intersection Case - one intersection
-fig_num = 12101;
-figure(fig_num); clf;
+figNum = 12101;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -414,14 +414,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [ 0.0000    0.0000]));  
                                                                                                                 
 %% Basic Test: Circle to Arc Intersection Case - two intersections
-fig_num = 12101;
-figure(fig_num); clf;
+figNum = 12101;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -456,14 +456,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [ 0.0000    0.0000]));  
 
 %% Basic Test: Circle to Arc Intersection Case - inf intersections
-fig_num = 12901;
-figure(fig_num); clf;
+figNum = 12901;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -498,7 +498,7 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [inf, inf]));  
@@ -518,8 +518,8 @@ assert(isequal(round(intersection_points,4), [inf, inf]));
 close all
 
 %% Basic Test: Line to Circle Intersection - No intersection
-fig_num = 13001;
-figure(fig_num); clf;
+figNum = 13001;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 5]);
 true_start_point_xy = [-4 3];
@@ -548,14 +548,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line to Circle Intersection - one intersections
-fig_num = 13101;
-figure(fig_num); clf;
+figNum = 13101;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 6];
@@ -585,14 +585,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0 6]));
 
 %% Basic Test: Line to Circle Intersection - Two intersections
-fig_num = 13201;
-figure(fig_num); clf;
+figNum = 13201;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 3];
@@ -621,7 +621,7 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[2 2]));
 assert(isequal(intersection_points(1,:),[3 3]));
@@ -644,8 +644,8 @@ assert(isequal(intersection_points(2,:),[-3 3]));
 close all
 
 %% Basic Test: Circle to Segment Intersection - No intersection
-fig_num = 14001;
-figure(fig_num); clf;
+figNum = 14001;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = [0 5];
 true_start_point_xy = [-4 3];
@@ -676,14 +676,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Circle to Segment Intersection - no intersections, segment outside circle
-fig_num = 14002;
-figure(fig_num); clf;
+figNum = 14002;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -716,15 +716,15 @@ secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Circle to Segment Intersection - no intersections, segment inside circle
 
-fig_num = 14003;
-figure(fig_num); clf;
+figNum = 14003;
+figure(figNum); clf;
 
 
 true_segment_unit_tangent_vector = [1 0];
@@ -758,15 +758,15 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 
 %% Basic Test: Circle to Segment Intersection - one intersection, tangent
-fig_num = 14101;
-figure(fig_num); clf;
+figNum = 14101;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 6];
@@ -798,15 +798,15 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0 6]));
 
 
 %% Basic Test: Circle to Segment Intersection - one intersection, crossing inside to outside
-fig_num = 14102;
-figure(fig_num); clf;
+figNum = 14102;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [0 1];
 true_start_point_xy = [0 3];
@@ -838,14 +838,14 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0 6]));
 
 %% Basic Test: Circle to Segment Intersection - Two intersections but outputs the point that is closer to the start point of the segment
-fig_num = 14103;
-figure(fig_num); clf;
+figNum = 14103;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 3];
@@ -877,7 +877,7 @@ firstFitType_parameters = circle_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[-3 3]));
@@ -913,8 +913,8 @@ assert(isequal(round(intersection_points,4),[-3 3]));
 close all
 
 %% Basic Test: Circle to Arc Intersection Case - no intersections (no-overlapping circles)
-fig_num = 21001;
-figure(fig_num); clf;
+figNum = 21001;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -949,14 +949,14 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Circle to Arc Intersection Case - no intersections (overlapping circles)
-fig_num = 21002;
-figure(fig_num); clf;
+figNum = 21002;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -991,15 +991,15 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 
 %% Basic Test: Arc to Circle Intersection - arc starts on cicle, no intersection? (BUG??)
-fig_num = 21003;
-figure(fig_num); clf;
+figNum = 21003;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [0 3];
@@ -1042,14 +1042,14 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));  
 
 %% Basic Test: Circle to Arc Intersection Case - one intersection
-fig_num = 21101;
-figure(fig_num); clf;
+figNum = 21101;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -1084,14 +1084,14 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [ 0.0000    0.0000]));  
                                                                                                                 
 %% Basic Test: Circle to Arc Intersection Case - two intersections
-fig_num = 21101;
-figure(fig_num); clf;
+figNum = 21101;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -1126,14 +1126,14 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [ 0.0000    0.0000])); 
 
 %% Basic Test: Circle to Arc Intersection Case - inf intersections
-fig_num = 12901;
-figure(fig_num); clf;
+figNum = 12901;
+figure(figNum); clf;
 
 % Fill in arc 1
 circle_center_xy            = [-3 0];
@@ -1168,7 +1168,7 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [inf, inf]));  
@@ -1190,8 +1190,8 @@ assert(isequal(round(intersection_points,4), [inf, inf]));
 close all
 
 %% Basic Test: Arc to Arc Intersection - no intersections
-fig_num = 22001;
-figure(fig_num); clf;
+figNum = 22001;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1233,14 +1233,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Arc to Arc Intersection Case - one intersection
-fig_num = 22101; 
-figure(fig_num); clf;
+figNum = 22101; 
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [-3 3];
@@ -1282,14 +1282,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.0000, 1.2679]));
 
 %% Basic Test: Arc to Arc Intersection - one intersection
-fig_num = 22102;
-figure(fig_num); clf;
+figNum = 22102;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1331,14 +1331,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.3333    1.1144]));
 
 %% Basic Test: Arc to Arc Intersection - 2 intersections, arc1 CW, arc2 CW, intersecting arc2 at 2nd intersection
-fig_num = 22103;
-figure(fig_num); clf;
+figNum = 22103;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1380,14 +1380,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0    0]));
 
 %% Basic Test: Arc to Arc Intersection - 2 intersections, arc1 CW, arc2 CW, intersecting arc2 at 2nd intersection
-fig_num = 22104;
-figure(fig_num); clf;
+figNum = 22104;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1429,7 +1429,7 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc1_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0    0]));
@@ -1437,8 +1437,8 @@ assert(isequal(round(intersection_points,4),[0    0]));
 
 
 %% Basic Test: Arc to Arc Intersection - 1 intersection at a tangent
-fig_num = 22105;
-figure(fig_num); clf;
+figNum = 22105;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1480,14 +1480,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[-3    3]));
 
 %% Basic Test: Arc to Arc Intersection - 2 intersections
-fig_num = 22106;
-figure(fig_num); clf;
+figNum = 22106;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1529,14 +1529,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[-2.4167    4.7776]));
 
 %% Basic Test: Arc to Arc Intersection: 2 intersections - Same case, but the arc parameters are interchanged
-fig_num = 22107;
-figure(fig_num); clf;
+figNum = 22107;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1578,14 +1578,14 @@ firstFitType_parameters = arc2_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc1_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[-2.4167    4.7776]));
 
 %% Basic Test: Arc to Arc Intersection - infinite intersections (OUTPUT: NAN) - Ask Dr. B 
-fig_num = 22901;
-figure(fig_num); clf;
+figNum = 22901;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1627,7 +1627,7 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 
 assert(isequal(size(intersection_points),[1 2]));
@@ -1635,8 +1635,8 @@ assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Arc to Arc Intersection - infinite intersections - (BUG??) - Output is NaN
 
-fig_num = 22902;
-figure(fig_num); clf;
+figNum = 22902;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1663,7 +1663,7 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
@@ -1686,8 +1686,8 @@ close all
 
 %% Overlap 1: Arc to Arc Intersection - arc1 parameters are exactly same as arc2
 
-fig_num = 220001;
-figure(fig_num); clf;
+figNum = 220001;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1714,15 +1714,15 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
 
 %% Overlap 2: Arc to Arc Intersection - arc1 parameters are exactly same as arc2, except arc2_is_counter_clockwise = -1
 
-fig_num = 220002;
-figure(fig_num); clf;
+figNum = 220002;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1764,14 +1764,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
 
 %% Overlap 3: Arc to Arc Intersection - arc2 is inside arc 1
-fig_num = 220003;
-figure(fig_num); clf;
+figNum = 220003;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1813,14 +1813,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
 
 %% Overlap 4: Arc to Arc Intersection - arc1 is inside arc 2
-fig_num = 220004;
-figure(fig_num); clf;
+figNum = 220004;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1862,7 +1862,7 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points), [1 1]));
@@ -1885,8 +1885,8 @@ assert(isequal(isnan(intersection_points), [1 1]));
 close all
 
 %% Basic Test: Arc to Line Intersection - no intersection
-fig_num = 23001;
-figure(fig_num); clf;
+figNum = 23001;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1923,14 +1923,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Line Intersection - no intersection
-fig_num = 23002;
-figure(fig_num); clf;
+figNum = 23002;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -1967,14 +1967,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Line Intersection - one intersection
-fig_num = 23101;
-figure(fig_num); clf;
+figNum = 23101;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2011,13 +2011,13 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-1.2209, 0.2597]));
 
 %% Basic Test: Arc to Line Intersection  - one intersection
-fig_num = 23102;
+figNum = 23102;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2053,14 +2053,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [2.7889 1.8944]));
 
 %% Basic Test: Arc to Line Intersection - two intersections - Ask Dr. B
-fig_num = 23103;
-figure(fig_num); clf;
+figNum = 23103;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [3 0];
@@ -2097,14 +2097,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0 0]));
 
 %% Basic Test: Arc to Line Intersection - two intersections
-fig_num = 23104;
-figure(fig_num); clf;
+figNum = 23104;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2140,7 +2140,7 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'line';
 secondFitType_parameters = line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 
 assert(isequal(size(intersection_points),[1 2]));
@@ -2163,8 +2163,8 @@ assert(isequal(round(intersection_points,4), [-2.9490, 2.4490]));
 close all
 
 %% Basic Test: Arc to Segment Intersection - zero intersections (outside)
-fig_num = 24001;
-figure(fig_num); clf;
+figNum = 24001;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 0];
@@ -2205,14 +2205,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Segment Intersection - no intersection
-fig_num = 24002;
-figure(fig_num); clf;
+figNum = 24002;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2254,14 +2254,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Segment Intersection - no intersection
-fig_num = 24003;
-figure(fig_num); clf;
+figNum = 24003;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2300,14 +2300,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Arc to Segment Intersection - one intersection
-fig_num = 24101;
-figure(fig_num); clf;
+figNum = 24101;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 0];
@@ -2350,13 +2350,13 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3 0]));
 
 %% Basic Test: Arc to Segment Intersection  - one intersection 
-fig_num = 24102;
+figNum = 24102;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2397,13 +2397,13 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [2.7889 1.8944]));
 
 %% Basic Test: Arc to Segment Intersection  - one intersection  and arc1_is_counter_clockwise = 0
-fig_num = 24103;
+figNum = 24103;
 
 % Fill in arc 1
 arc1_center_xy            = [0 -1];
@@ -2447,15 +2447,15 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-0.4359, -0.1000]));
 
 %% Basic Test: Arc to Segment Intersection - two intersections
 
-fig_num = 24104;
-figure(fig_num); clf;
+figNum = 24104;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 3];
@@ -2495,14 +2495,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.9490, 2.4490]));
 
 %% Basic Test: Arc to Segment Intersection - one intersection
-fig_num = 24105;
-figure(fig_num); clf;
+figNum = 24105;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 0];
@@ -2543,14 +2543,14 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0 3]));
 
 %% Basic Test: Arc to Segment Intersection - one intersection EXACTLY at end of arc
-fig_num = 24106;
-figure(fig_num); clf;
+figNum = 24106;
+figure(figNum); clf;
 
 % Fill in arc 1
 arc1_center_xy            = [0 -3];
@@ -2591,7 +2591,7 @@ firstFitType_parameters = arc1_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [0 0]));
@@ -2623,8 +2623,8 @@ assert(isequal(round(intersection_points,4), [0 0]));
 close all
 
 %% Basic Test: Line to Circle Intersection - No intersection
-fig_num = 31001;
-figure(fig_num); clf;
+figNum = 31001;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 5]);
 true_start_point_xy = [-4 3];
@@ -2652,14 +2652,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line to Circle Intersection - One intersections
-fig_num = 31101;
-figure(fig_num); clf;
+figNum = 31101;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0];
@@ -2687,14 +2687,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4),[0 0]));
 
 %% Basic Test: Line to Circle Intersection - Two intersections
-fig_num = 31201;
-figure(fig_num); clf;
+figNum = 31201;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 3];
@@ -2722,7 +2722,7 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[2 2]));
 assert(isequal(intersection_points(1,:),[3 3]));
@@ -2743,8 +2743,8 @@ assert(isequal(intersection_points(2,:),[-3 3]));
 close all
 
 %% Basic Test: Line to Arc Intersection - no intersection
-fig_num = 32001;
-figure(fig_num); clf;
+figNum = 32001;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([1 1]);
 true_start_point_xy = [1 8];
@@ -2780,14 +2780,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Line to Arc Intersection - no intersection
-fig_num = 32002;
-figure(fig_num); clf;
+figNum = 32002;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([0 1]);
 true_start_point_xy = [2 0];
@@ -2824,14 +2824,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(all(isnan(intersection_points)));
 
 %% Basic Test: Line to Arc Intersection - One intersection
-fig_num = 32101;
-figure(fig_num); clf;
+figNum = 32101;
+figure(figNum); clf;
 
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([6 2]);
@@ -2869,14 +2869,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-2.2953, 1.0682]));
 
 %% Basic Test: Line to Arc Intersection - one intersection
-fig_num = 32102;
-figure(fig_num); clf;
+figNum = 32102;
+figure(figNum); clf;
 
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([6 2]);
@@ -2917,14 +2917,14 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [2.9807    2.6602]));
 
 %% Basic Test: Line to Arc Intersection
-fig_num = 32103;
-figure(fig_num); clf;
+figNum = 32103;
+figure(figNum); clf;
 
 
 true_line_unit_tangent_vector = [1 0];
@@ -2963,15 +2963,15 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-1.6583, 0.5000]));
 
 %% Basic Test: Line to arc Intersection - two intersections
 
-fig_num = 32104;
-figure(fig_num); clf;
+figNum = 32104;
+figure(figNum); clf;
 
 true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([-1 1]);
 true_start_point_xy = [-0.5 0];
@@ -3008,7 +3008,7 @@ firstFitType_parameters = line_parameters;
 secondFitType = 'arc';
 secondFitType_parameters = arc1_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 
 assert(isequal(size(intersection_points),[1 2]));
@@ -3031,8 +3031,8 @@ close all
 
 %% Basic Test: line to line Intersection - No intersection
 
-fig_num = 33001;
-figure(fig_num); clf;
+figNum = 33001;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3063,15 +3063,15 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: line to line Intersection - line on top of line (WEIRD)
 % 
-% fig_num = 33002;
-% figure(fig_num); clf;
+% figNum = 33002;
+% figure(figNum); clf;
 % 
 % first_true_line_unit_tangent_vector = [0 1];
 % first_true_start_point_xy = [0 0];
@@ -3103,15 +3103,15 @@ assert(isequal(isnan(intersection_points),[1 1]));
 % secondFitType = 'line';
 % secondFitType_parameters = second_line_parameters;
 % 
-% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 % 
 % assert(isequal(size(intersection_points),[1 2]));
 % assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: line to line Intersection - parallel lines, no intersection 
 % 
-% fig_num = 33003;
-% figure(fig_num); clf;
+% figNum = 33003;
+% figure(figNum); clf;
 % 
 % first_true_line_unit_tangent_vector = [ 0 1];
 % first_true_start_point_xy = [0 0];
@@ -3143,14 +3143,14 @@ assert(isequal(isnan(intersection_points),[1 1]));
 % secondFitType = 'line';
 % secondFitType_parameters = second_line_parameters;
 % 
-% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 % 
 % assert(isequal(size(intersection_points),[1 2]));
 % assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: line to line Intersection - inf intersections due to overlapping lines, but catches first part
-fig_num = 33004;
-figure(fig_num); clf;
+figNum = 33004;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3182,7 +3182,7 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [9 0]));
@@ -3190,8 +3190,8 @@ assert(isequal(round(intersection_points,4), [9 0]));
 
 %% Basic Test: line to line Intersection - one intersection
 
-fig_num = 33101;
-figure(fig_num); clf;
+figNum = 33101;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3223,15 +3223,15 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [9 0]));
 
 %% Basic Test: Segment to line Intersection - One intersection
 
-fig_num = 33102;
-figure(fig_num); clf;
+figNum = 33102;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3264,14 +3264,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [4 0]));
 
 %% Basic Test: line to line Intersection - one intersection
-fig_num = 33103;
-figure(fig_num); clf;
+figNum = 33103;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
@@ -3303,14 +3303,14 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3.5, 3.5]));
 
 %% Basic Test: line to line Intersection - infinite intersections (but returns the first intersection point)
-fig_num = 33104;
-figure(fig_num); clf;
+figNum = 33104;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
@@ -3342,7 +3342,7 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [5, 0]));
@@ -3366,8 +3366,8 @@ close all
 
 %% Basic Test: Line to Segment Intersection - No intersection
 
-fig_num = 34101;
-figure(fig_num); clf;
+figNum = 34101;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3400,14 +3400,14 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line to segment Intersection - overlapping - catches first point as one intersection
-fig_num = 34002;
-figure(fig_num); clf;
+figNum = 34002;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = [1 0];
 first_true_start_point_xy = [0 0];
@@ -3441,15 +3441,15 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [9 0]));
 
 %% Basic Test: Line to Segment Intersection - One intersection
 
-fig_num = 34101;
-figure(fig_num); clf;
+figNum = 34101;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -3483,15 +3483,15 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [9 0]));
 
 
 %% Basic Test: Line to Segment Intersection - one intersection
-fig_num = 34102;
-figure(fig_num); clf;
+figNum = 34102;
+figure(figNum); clf;
 
 first_true_line_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
@@ -3524,14 +3524,14 @@ firstFitType_parameters = first_line_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3.5, 3.5]));
 
 %% Basic Test: Line to Segment Intersection - infinite intersections (but returns the first intersection point)
-fig_num = 34103;
-figure(fig_num); clf;
+figNum = 34103;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
@@ -3564,7 +3564,7 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [5, 0]));
@@ -3601,8 +3601,8 @@ assert(isequal(round(intersection_points,4), [5, 0]));
 close all
 
 %% Basic Test: Line segment to circle Intersection
-fig_num = 41001;
-figure(fig_num); clf;
+figNum = 41001;
+figure(figNum); clf;
 
 
 true_segment_unit_tangent_vector = [1 0];
@@ -3638,14 +3638,14 @@ secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line segment to circle Intersection
-fig_num = 41002;
-figure(fig_num); clf;
+figNum = 41002;
+figure(figNum); clf;
 
 
 true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([1 1]);
@@ -3681,15 +3681,15 @@ secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line segment to circle Intersection
 
-fig_num = 41003;
-figure(fig_num); clf;
+figNum = 41003;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [0 3];
@@ -3723,13 +3723,13 @@ firstFitType_parameters = segment_parameters;
 secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line segment to circle Intersection - one intersection point
-fig_num = 41101;
+figNum = 41101;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -3764,14 +3764,14 @@ secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points(1,:),4), [-1.6583, 0.5000]));
 
 %% Basic Test: Line segment to circle Intersection - Two intersections points
-fig_num = 41102;
-figure(fig_num); clf;
+figNum = 41102;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -3806,7 +3806,7 @@ secondFitType = 'circle';
 secondFitType_parameters = circle_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points(1,:),4), [-1.6583, 0.5000]));
@@ -3829,8 +3829,8 @@ assert(isequal(round(intersection_points(1,:),4), [-1.6583, 0.5000]));
 close all
 
 %% Basic Test: Line segment to arc Intersection - No intersection
-fig_num = 42001;
-figure(fig_num); clf;
+figNum = 42001;
+figure(figNum); clf;
 
 
 true_segment_unit_tangent_vector = [1 0];
@@ -3873,14 +3873,14 @@ secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Line segment to arc Intersection - One intersection
-fig_num = 42101;
-figure(fig_num); clf;
+figNum = 42101;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -3923,14 +3923,14 @@ secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-1.6583, 0.5000]));
 
 %% Basic Test: Line segment to arc Intersection - (Fixed it)
-fig_num = 42102;
-figure(fig_num); clf;
+figNum = 42102;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -3973,14 +3973,14 @@ secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [1.6583, 0.5000]));
 
 %% Basic Test: Line segment to arc Intersection - Two intersections
-fig_num = 42103;
-figure(fig_num); clf;
+figNum = 42103;
+figure(figNum); clf;
 
 true_segment_unit_tangent_vector = [1 0];
 true_start_point_xy = [-4 0.5];
@@ -4023,7 +4023,7 @@ secondFitType = 'arc';
 secondFitType_parameters = arc2_parameters;
 
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [-1.6583    0.5000]));
@@ -4046,8 +4046,8 @@ close all
 
 %% Basic Test: Segment to line Intersection - No intersection
 
-fig_num = 43001;
-figure(fig_num); clf;
+figNum = 43001;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -4080,15 +4080,15 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Segment to line Intersection - overlapping so infinite points, returns first one
 % Segment goes from [0 0] to [0 7], line goes from [9 0] downward
-fig_num = 43002;
-figure(fig_num); clf;
+figNum = 43002;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = [1 0];
 first_true_start_point_xy = [0 0];
@@ -4121,7 +4121,7 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [7 0]));
@@ -4129,8 +4129,8 @@ assert(isequal(round(intersection_points,4), [7 0]));
 
 %% Basic Test: Segment to line Intersection - One intersection
 
-fig_num = 43101;
-figure(fig_num); clf;
+figNum = 43101;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -4164,14 +4164,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [4 0]));
 
 %% Basic Test: Segment to line Intersection - one intersection
-fig_num = 43102;
-figure(fig_num); clf;
+figNum = 43102;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
@@ -4205,14 +4205,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3.5, 3.5]));
 
 %% Basic Test: Segment to line Intersection - infinite intersections (but returns the first intersection point)
-fig_num = 43103;
-figure(fig_num); clf;
+figNum = 43103;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
@@ -4246,7 +4246,7 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'line';
 secondFitType_parameters = second_line_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [5, 0]));
@@ -4269,8 +4269,8 @@ close all
 
 %% Basic Test: Segment to segment Intersection - No intersection
 
-fig_num = 44001;
-figure(fig_num); clf;
+figNum = 44001;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -4306,14 +4306,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Segment to segment Intersection - No intersection
-fig_num = 44002;
-figure(fig_num); clf;
+figNum = 44002;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -4349,14 +4349,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(isnan(intersection_points),[1 1]));
 
 %% Basic Test: Segment to segment Intersection - one intersection
-fig_num = 44101;
-figure(fig_num); clf;
+figNum = 44101;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [0 0];
@@ -4391,14 +4391,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [9 0]))
 
 %% Basic Test: Segment to segment Intersection - one intersection
-fig_num = 44102;
-figure(fig_num); clf;
+figNum = 44102;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([2 2]);
 first_true_start_point_xy = [0 0];
@@ -4434,14 +4434,14 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [3.5, 3.5]))
 
 %% Basic Test: Segment to segment Intersection - infinite intersections (but returns the first intersection point)
-fig_num = 44103;
-figure(fig_num); clf;
+figNum = 44103;
+figure(figNum); clf;
 
 first_true_segment_unit_tangent_vector = fcn_geometry_calcUnitVector([7 0]);
 first_true_start_point_xy = [5 0];
@@ -4476,7 +4476,7 @@ firstFitType_parameters = first_segment_parameters;
 secondFitType = 'segment';
 secondFitType_parameters = second_segment_parameters;
 
-intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num);
+intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum);
 
 assert(isequal(size(intersection_points),[1 2]));
 assert(isequal(round(intersection_points,4), [5, 0]))

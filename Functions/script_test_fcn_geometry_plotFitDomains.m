@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_01_12
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -56,18 +56,18 @@ if ~exist('example_domains','var')
 
 
     % Call the segmentation function
-    fig_num = 3;
+    figNum = 3;
     transverse_tolerance = 0.1; % Units are meters
     station_tolerance = 0.2; % Units are meters
     threshold_max_points = 10;
     input_points = multi_segment_test_points;
 
-    example_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, fig_num);
+    example_domains = fcn_geometry_HoughSegmentation(multi_segment_test_points, threshold_max_points, transverse_tolerance, station_tolerance, figNum);
 end
 
 % BASIC test of plotting
-fig_num = 1234;
-figure(fig_num);
+figNum = 1234;
+figure(figNum);
 clf;
 hold on;
 grid on;
@@ -76,7 +76,7 @@ grid minor;
 
 plot(multi_segment_test_points(:,1),multi_segment_test_points(:,2),'k.','MarkerSize',20);
 
-fcn_geometry_plotFitDomains(example_domains, fig_num);
+fcn_geometry_plotFitDomains(example_domains, figNum);
 
 
 
@@ -85,7 +85,7 @@ fcn_geometry_plotFitDomains(example_domains, fig_num);
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

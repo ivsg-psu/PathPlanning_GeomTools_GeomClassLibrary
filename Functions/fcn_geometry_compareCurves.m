@@ -18,7 +18,7 @@ function [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_poi
 % fcn_geometry_compareCurves(...
 % reference_curve_type_string, reference_curve_parameters, ...
 % test_curve_type_string, test_curve_parameters,...
-% (threshold), (curve_test_segment_length), (fig_num))
+% (threshold), (curve_test_segment_length), (figNum))
 %
 % INPUTS:
 %
@@ -48,7 +48,7 @@ function [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_poi
 %      representation as points, representing the length (approximately)
 %      between points. Default is 0.1 meters.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. 
 %      NOTE: for plotting, the points are plotted so that point-pairs with
@@ -95,11 +95,11 @@ function [flag_is_similar, points_XY_on_test_curve, minimum_distance_to_each_poi
 
 % Revision history:
 % 2024_04_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -124,9 +124,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -180,12 +180,12 @@ if 6 <= nargin
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if (0==flag_max_speed) &&  (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp; 
+        figNum = temp; 
         flag_do_plots = 1;
     end
 end
@@ -247,7 +247,7 @@ std_dev_error = std(minimum_distance_to_each_point, 0,"all","omitmissing");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -264,7 +264,7 @@ if flag_do_plots
     Ncolors = length(error_colormap(:,1));
 
     % Plot the inputs
-    fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [],  (fig_num));
+    fcn_geometry_plotGeometry(reference_curve_type_string, reference_curve_parameters, (curve_test_segment_length), [],  (figNum));
 
     % color_vector = fcn_geometry_fillColorFromNumberOrName(2,lower(reference_curve_type_string));
 

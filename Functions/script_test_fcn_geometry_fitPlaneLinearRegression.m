@@ -2,11 +2,11 @@
 % Exercises the function: fcn_geometry_fitPlaneLinearRegression
 % Revision history:
 % 2021_05_24
-% -- wrote the code
-% -- revised from fcn_geometry_fitSlopeInterceptNPoints
+% - wrote the code
+% - revised from fcn_geometry_fitSlopeInterceptNPoints
 % 2025_05_29
-% -- added more comments and testing for figure opening
-% -- added fast mode testing
+% - added more comments and testing for figure opening
+% - added fast mode testing
 %
 close all;
 
@@ -26,8 +26,8 @@ close all;
 
 
 %% Demonstration case 1: basic plane
-fig_num = 0001;
-figure(fig_num);
+figNum = 0001;
+figure(figNum);
 clf;
 
 rng(1823);
@@ -48,7 +48,7 @@ true_z = (Constant*ones(N_points,1)  - points(:,1:end-1)*normalToPlane(1:end-1,1
 
 z = true_z;
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression([x y z],fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression([x y z],figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -74,11 +74,11 @@ assert(isequal(round(unit_vector,4),round(true_parameters(1,1:3),4)));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Demonstration case 2: basic plane with noise
-fig_num = 0002;
-figure(fig_num);
+figNum = 0002;
+figure(figNum);
 clf;
 
 
@@ -103,18 +103,18 @@ true_z = (Constant*ones(Npoints,1)  - X*true_parameters(1,1) - Y*true_parameters
 true_sigma = 0.001;
 Z = true_z + true_sigma*randn(Npoints,1);
 
-[fitted_parameters, standard_deviation_in_z] = fcn_geometry_fitPlaneLinearRegression([X Y Z],fig_num);
+[fitted_parameters, standard_deviation_in_z] = fcn_geometry_fitPlaneLinearRegression([X Y Z],figNum);
 
 assert(isequal(round(true_parameters,1),round(fitted_parameters,1)));
 assert(isequal(round(true_sigma,1),round(standard_deviation_in_z,1)));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %%
 % From: https://www.mathworks.com/matlabcentral/fileexchange/43305-plane-fit
-fig_num = 0003;
-figure(fig_num);
+figNum = 0003;
+figure(figNum);
 clf;
 
 % Generate points that lie approximately in the Z=0 plane
@@ -200,13 +200,13 @@ disp(angle);
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Testing%20%20Examples%20%20-%203D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Basic test case 1: basic plane with 3 points, XY plane
-fig_num = 1001;
-figure(fig_num);
+figNum = 1001;
+figure(figNum);
 clf;
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -232,16 +232,16 @@ assert(isequal(round(unit_vector,4),[0 0 1]));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Basic test case 2: basic plane with 4 points, XY plane
-fig_num = 1002;
-figure(fig_num);
+figNum = 1002;
+figure(figNum);
 clf;
 
 points = [0 0 0; 1 0 0; 0 1 0; 2 2 0];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -267,16 +267,16 @@ assert(isequal(round(unit_vector,4),[0 0 1]));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Basic test case 3: basic plane with 3 points, XZ plane
-fig_num = 1003;
-figure(fig_num);
+figNum = 1003;
+figure(figNum);
 clf;
 
 points = [0 0 0; 1 0 0; 0 0 1];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -302,17 +302,17 @@ assert(isequal(round(unit_vector,4),[0 1 0]));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 
 %% Basic test case 4: basic plane with 3 points, YZ plane
-fig_num = 1004;
-figure(fig_num);
+figNum = 1004;
+figure(figNum);
 clf;
 
 points = [0 0 0; 0 1 0; 0 0 1];
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -338,12 +338,12 @@ assert(isequal(round(unit_vector,4),[1 0 0]));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 
 %% Basic test case 5: basic plane with 3 points, X=Y plane with offset
-fig_num = 1005;
-figure(fig_num);
+figNum = 1005;
+figure(figNum);
 clf;
 
 % z = (-Ax + -By + D)/Constant
@@ -361,7 +361,7 @@ points = [X Y Z];
 
 % Make sure equation adds up to constant: sum(points.*true_parameters(1,1:3),2)
 
-[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+[parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
 % Check variable types
 assert(isnumeric(parameters));
@@ -387,7 +387,7 @@ assert(isequal(round(unit_vector,4),round(true_parameters(1,1:3),4)));
 assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Fast Mode Tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -404,9 +404,9 @@ assert(isequal(get(gcf,'Number'),fig_num));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Basic example - NO FIGURE
-fig_num = 9901;
-figure(fig_num);
-close(fig_num);
+figNum = 9901;
+figure(figNum);
+close(figNum);
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
@@ -437,12 +437,12 @@ assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Basic example of vertex calculation - non-normal wall shrinking, NO FIGURE, FAST MODE
-fig_num = 9902;
-figure(fig_num);
-close(fig_num);
+figNum = 9902;
+figure(figNum);
+close(figNum);
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
@@ -473,23 +473,23 @@ assert(isequal(round(standard_deviation_in_plane_orthogonals,4),0));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Compare speeds of pre-calculation versus post-calculation versus a fast variant
-fig_num = 9903;
-figure(fig_num);
-close(fig_num);
+figNum = 9903;
+figure(figNum);
+close(figNum);
 rng(1823);
 
 points = [0 0 0; 1 0 0; 0 1 0];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -497,12 +497,12 @@ end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [parameters, standard_deviation_in_z, z_fit, unit_vector, base_point, standard_deviation_in_plane_orthogonals] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -520,6 +520,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [root_point, unit_vector] = fcn_geometry_fitPlaneLinearRegression(points,fig_num);
+    [root_point, unit_vector] = fcn_geometry_fitPlaneLinearRegression(points,figNum);
     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 end

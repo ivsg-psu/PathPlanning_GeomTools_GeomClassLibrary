@@ -14,12 +14,12 @@ close all;
 
 
 %% Simple test - should result in 90 to 0
-fig_num = 1;
+figNum = 1;
 
 p_apex = [0 0];
 vertex_1 = [1  0];
 vertex_2 = [0 1];
-[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,figNum);
 % fprintf(1,'Results of phi constrainter: \n');
 % fprintf('\t %.2f \t %.2f\n', ...
 %     mod(phi_start,2*pi)*180/pi, ...
@@ -29,12 +29,12 @@ assert(isequal(round(phi_start,4),1.5708));
 assert(isequal(round(change,4),-1.5708));
 
 %% Simple test - different cross product direction - should result in 90 to 0
-fig_num = 2;
+figNum = 2;
 
 p_apex = [0 0];
 vertex_2 = [1  0];
 vertex_1 = [0 1];
-[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,figNum);
 % fprintf(1,'Results of phi constrainter: \n');
 % fprintf('\t %.2f \t %.2f\n', ...
 %     mod(phi_start,2*pi)*180/pi, ...
@@ -44,12 +44,12 @@ assert(isequal(round(phi_start,4),0));
 assert(isequal(round(change,4),1.5708));
 
 %% Simple test - should result in 0 to 90
-fig_num = 3;
+figNum = 3;
 
 p_apex = [0 0];
 vertex_1 = [-1  0];
 vertex_2 = [0 -1];
-[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,figNum);
 % fprintf(1,'Results of phi constrainter: \n');
 % fprintf('\t %.2f \t %.2f\n', ...
 %     mod(phi_start,2*pi)*180/pi, ...
@@ -59,12 +59,12 @@ assert(isequal(round(phi_start,4),4.7124));
 assert(isequal(round(change,4),-1.5708));
 
 %% Simple test - should result in 90 to 45
-fig_num = 9;
+figNum = 9;
 
 p_apex = [0 0];
 vertex_1 = [1  0];
 vertex_2 = [-1 1];
-[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,figNum);
 % fprintf(1,'Results of phi constrainter: \n');
 % fprintf('\t %.2f \t %.2f\n', ...
 %     mod(phi_start,2*pi)*180/pi, ...
@@ -75,14 +75,14 @@ assert(isequal(round(change,4),-0.7854));
 
 %% Simple test to check the vectorization - should result in 0 to 90, etc
 
-fig_num = 11;
+figNum = 11;
 
 % -45 to 45, 180 to 270
 p_apex =   [0 0;  2                      0; 0 -1; -1 0];
 vertex_1 = [1  0; 2+1/(2^0.5)  -1/(2^0.5) ; -1 -1; -2 0];
 vertex_2 = [0  1; 2+1/(2^0.5)   1/(2^0.5) ; 0  -2; -1 1];
 
-[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,fig_num);
+[phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2,figNum);
 % fprintf(1,'Results of phi constrainter: \n');
 % for ith_vertex = 1:length(p_apex(:,1))
 %     fprintf('\t %.2f \t %.2f\n', ...
@@ -96,7 +96,7 @@ assert(isequal(round(change,4),[-1.5708; -1.5708; -1.5708; 1.5708]));
 %% Simple rotation test to check for unknown issues not yet found
 % Commented out because no assertions!
 %
-% fig_num = 13;
+% figNum = 13;
 % 
 % p_apex =   [0 0;  2                      0; 0 -1; -1 0];
 % vertex_1 = [1  0; 2+1/(2^0.5)  -1/(2^0.5) ; -1 -1; -2 0];
@@ -111,7 +111,7 @@ assert(isequal(round(change,4),[-1.5708; -1.5708; -1.5708; 1.5708]));
 %     vertex_12   = vertex_1*R;
 %     vertex_22   = vertex_2*R;
 % 
-%     [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex2,vertex_12,vertex_22,fig_num);
+%     [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex2,vertex_12,vertex_22,figNum);
 %     % fprintf('\t %.2f \t %.2f\n', ...
 %     %     mod(phi_start,2*pi)*180/pi, ...
 %     %     mod(change,2*pi)*180/pi);
@@ -125,24 +125,24 @@ vertex_1 = [1  0];
 vertex_2 = [-1 1];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2, (fig_num));
+    [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2, (fig_num));
+    [phi_start,change] = fcn_geometry_findPhiConstraints(p_apex,vertex_1,vertex_2, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end

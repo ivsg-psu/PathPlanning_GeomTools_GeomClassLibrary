@@ -10,7 +10,7 @@ function [arcRadius, radius_maximum, circle_center_xy, SNR] = fcn_geometry_fitRa
 % indistinguishable from a line fit. This maximum radius is returned.
 %
 % Format:
-% [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, (fig_num))
+% [arcRadius, radius_maximum, circle_center_xy] = fcn_geometry_fitRadiusToPoints(points_to_fit, (figNum))
 %
 % INPUTS:
 %      points_to_fit: an [Nx2] matrix of N different [x y] points assumed
@@ -26,7 +26,7 @@ function [arcRadius, radius_maximum, circle_center_xy, SNR] = fcn_geometry_fitRa
 %      the small radius is less than the user-given minimum raidus, then
 %      all outputs are set to NaN values.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -56,11 +56,11 @@ function [arcRadius, radius_maximum, circle_center_xy, SNR] = fcn_geometry_fitRa
 
 % Revision history:
 % 2024_06_27 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -85,9 +85,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_figNum = 34838;
 else
-    debug_fig_num = [];
+    debug_figNum = [];
 end
 
 
@@ -133,13 +133,13 @@ end
 
 minimum_radius = 4;
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
     end
@@ -170,7 +170,7 @@ Npoints = length(points_to_fit(:,1));
 
 %% Step 0: Set up debugging figure?
 if flag_do_debug
-    figure(debug_fig_num);
+    figure(debug_figNum);
     clf;
     subplot(3,2,1);
     cla;
@@ -205,7 +205,7 @@ if arcRadius<minimum_radius
 end
 
 if flag_do_debug
-    figure(debug_fig_num);
+    figure(debug_figNum);
     subplot(3,2,2);
     hold on;
     grid on;
@@ -215,7 +215,7 @@ if flag_do_debug
 
     title('Fit');
     plot(points_to_fit(:,1),points_to_fit(:,2),'k.');
-    fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',debug_fig_num);
+    fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',debug_figNum);
     axis(temp_axis);
 end
 
@@ -350,7 +350,7 @@ if 0==flag_this_is_a_bad_fit
 
     if flag_do_debug
 
-        figure(debug_fig_num);
+        figure(debug_figNum);
         subplot(3,2,3);
         cla;
         hold on;
@@ -397,7 +397,7 @@ if flag_do_plots
 
 
     %%%%%%%%%%%%%%%%%%%%%%
-    figure(fig_num)
+    figure(figNum)
     clf;
 
     subplot(1,2,1);    
@@ -423,7 +423,7 @@ if flag_do_plots
 
     if 0==flag_this_is_a_bad_fit
         % Plot the circle fit
-        fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',fig_num);
+        fcn_geometry_plotCircle(circle_center_xy, arcRadius,'r-',figNum);
 
         axis(temp_axis);
 
@@ -479,7 +479,7 @@ if flag_do_plots
         plot(points_rotated(:,1),points_rotated(:,2),'r.');
 
         % Plot the bounding box for the original data
-        fcn_geometry_maxRadiusInsideBox(2*abs(points_rotated(1,1)), abs(points_rotated(1,2)), fig_num);
+        fcn_geometry_maxRadiusInsideBox(2*abs(points_rotated(1,1)), abs(points_rotated(1,2)), figNum);
 
         % Make axis slightly larger
         temp = axis;

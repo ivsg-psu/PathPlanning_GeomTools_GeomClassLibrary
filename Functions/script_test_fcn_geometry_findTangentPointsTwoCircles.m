@@ -3,15 +3,15 @@
 
 % Revision history:
 % 2021_04_22 - S. Brennan
-% -- first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
+% - first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
 % 2024_04_16 - S. Brennan
-% -- added assertions
+% - added assertions
 
 close all
 
 %% BASIC example - find all the points for one circle
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 centers_start = [0 0];
 centers_end   = [0 4];
@@ -29,7 +29,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
  
 
 
@@ -44,8 +44,8 @@ assert(isequal(round(points_tangent_start,4),[0.2976,0.0375;-0.2976,0.0375;0.299
 assert(isequal(round(points_tangent_end,4),[-0.1984,3.9750;0.1984,3.9750;0.1999,4.0050;-0.1999,4.005]));
 
 %% BASIC example - find all the points for two circles
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -63,7 +63,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
  
 
 % Check variable sizes
@@ -76,8 +76,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 
 %% BASIC example - find only inside points
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -95,7 +95,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 
 % Check variable sizes
@@ -108,8 +108,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 
 %% BASIC example - find only outside points
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -127,7 +127,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -139,8 +139,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 
 %% BASIC example - find only outside points with equal radii
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 1; 2 2; -2 2; 2 -2; -2 -2];
 centers_end   = [0 4; 5 1; 4 4; -4 4; 4 -4; -4 -4];
@@ -158,7 +158,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -171,8 +171,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example - find only outside points, with mixed equal/unequal
 % radii
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 1; 2 2; -2 2; 2 -2; -2 -2];
 centers_end   = [0 4; 5 1; 4 4; -4 4; 4 -4; -4 -4];
@@ -190,7 +190,7 @@ voting_points_end   = [];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -203,8 +203,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example - find only outside points with voting to force only
 % one set to be returned.
-fig_num = 7;
-figure(fig_num); clf;
+figNum = 7;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -222,7 +222,7 @@ voting_points_end   = [-0.3 4; 3.7 8];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -235,8 +235,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example - find only inside points with voting to force only
 % one set to be returned.
-fig_num = 8;
-figure(fig_num); clf;
+figNum = 8;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -254,7 +254,7 @@ voting_points_end   = [-0.3 4; 3.7 8];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -267,8 +267,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example - find only inside points with voting to force only
 % one set to be returned. 
-fig_num = 9;
-figure(fig_num); clf;
+figNum = 9;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -286,7 +286,7 @@ voting_points_end   = [-0.3 4; 3.7 8];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -301,8 +301,8 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 % one set to be returned, but give a bad vote (this throws a warning
 % and gives the wrong answer!)
 
-fig_num = 9999;
-figure(fig_num); clf;
+figNum = 9999;
+figure(figNum); clf;
 
 centers_start = [0 0; 1 5];
 centers_end   = [0 4; 4 8];
@@ -320,7 +320,7 @@ voting_points_end   = [-0.3 4; 5 8];
     radii_end,...
     flag_inside_or_outside,...
     voting_points_start,voting_points_end,...
-    fig_num);
+    figNum);
 
 
 % Check variable sizes

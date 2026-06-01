@@ -3,13 +3,13 @@
 
 % Revision history:
 % 2024_05_18 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 
 %% REAL WORLD TEST CASE
 % Test with real-world data (test track)
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 % Check to see if the fits were calculated earlier
@@ -37,8 +37,8 @@ end
 
 
 %% Connect the fits so that the lines perfectly align with the arcs
-fig_num = 2;
-figure(fig_num);clf;
+figNum = 2;
+figure(figNum);clf;
 fitting_tolerance = [10 2];
 
 clear fits_to_check_types fits_to_check_parameters
@@ -47,9 +47,9 @@ for ith_fit = 1:6
     fits_to_check_parameters{ith_fit} = fitSequence_parameters_forward{ith_fit}; %#ok<SAGROW>
 end
 
-fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(fig_num));
+fcn_geometry_plotFitSequences(fits_to_check_types, fits_to_check_parameters,(figNum));
 
 revised_fitSequence_parameters_forward  = ...
-    fcn_geometry_isFeasibleGeomSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, fig_num);
+    fcn_geometry_isFeasibleGeomSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, figNum);
 
-fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(fig_num));
+fcn_geometry_plotFitSequences(fitSequence_bestFitType_forward, revised_fitSequence_parameters_forward,(figNum));

@@ -26,7 +26,7 @@ function [closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEnd
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -52,12 +52,12 @@ function [closeEndPointsMatrix, dist_btw_close_endPoints] = fcn_geometry_findEnd
 
 % Revision History
 % 2024_02_08 - Aneesh Batchu
-% -- wrote the code 
+% - wrote the code 
 % 2024_02_11 - Aneesh Batchu
-% -- modified the function to output the closeBreakPointPairs, later change
+% - modified the function to output the closeBreakPointPairs, later change
 % d to endPointsMatrix
 % 2024_03_12 - Aneesh Batchu
-% -- changed the method to find the end points this function takes the
+% - changed the method to find the end points this function takes the
 % endPointsMatrix as the input to find closeEndPointsMatrix
 
 flag_max_speed = 0;
@@ -81,9 +81,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -110,13 +110,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -166,7 +166,7 @@ closeEndPointsMatrix = [curveStartPoint; reshaped_endPointsMatrix; curveEndPoint
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    figure(fig_num)
+    figure(figNum)
 
 % Plotting the close break point pairs
 plot(reshaped_endPointsMatrix(:,1), reshaped_endPointsMatrix(:,2), '.g', 'MarkerSize',30, 'DisplayName','End Points within Tolerance', 'LineWidth',2);

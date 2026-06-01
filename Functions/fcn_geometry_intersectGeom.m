@@ -21,7 +21,7 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 %
 % FORMAT: 
 %
-% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, fig_num) 
+% intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFitType_parameters, secondFitType,  secondFitType_parameters, figNum) 
 % 
 % INPUTS:
 %
@@ -44,7 +44,7 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -71,49 +71,49 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 
 % Revision History
 % 2024_05_02 - Aneesh Batchu
-% -- wrote the code 
+% - wrote the code 
 % 2024_05_06 - Aneesh Batchu 
-% -- Fixed BUGS in Arc-Arc, line-arc, arc-line, line segment-arc
+% - Fixed BUGS in Arc-Arc, line-arc, arc-line, line segment-arc
 % intersection cases. Added a few conditional statements to remove NaNs
 % from the potential_intersection_points to compute the true "intersection
 % points"
 % 2024_05_10 - Sean Brennan
-% -- added some more comments
-% -- added 'segment' alongside 'line segment' option
-% -- added TO-DO list
-% -- added backtrace on to each error call, to allow fast debugging later
-% -- changed plot style to better see difference between 1st and 2nd input
-% -- functionalized the arc inputs codes (need to do the rest)
-% -- added arc to segment case 
-% -- reordered functions to make cross-dependencies easier, for example
+% - added some more comments
+% - added 'segment' alongside 'line segment' option
+% - added TO-DO list
+% - added backtrace on to each error call, to allow fast debugging later
+% - changed plot style to better see difference between 1st and 2nd input
+% - functionalized the arc inputs codes (need to do the rest)
+% - added arc to segment case 
+% - reordered functions to make cross-dependencies easier, for example
 % arc-to-segment calls circle-to-line, then arc-to-line, before doing
 % arc-to-segment check. That way, if bugs are found/fixed in
 % circle-to-line, they automatically get fixed in arc-to-segment.
 % 2024_05_13 - Aneesh Batchu
-% -- Fixed a bug in the arc-segment case where the arc direction (when
+% - Fixed a bug in the arc-segment case where the arc direction (when
 % arc_parameters(1,7) is undefined (=0)). The function
 % "fcn_INTERNAL_findPointsInArc" calculates the arc angle using arc_start,
 % arc_intersection, and arc_end, and outputs the intersection point that is
 % closest to the arc.
 % 2024_05_15 - S. Brennan
-% -- fixed bug where the arc intersection calculations is given a
+% - fixed bug where the arc intersection calculations is given a
 % counter-clockwise result when intersection points are exactly at
 % start/end of segments. In these cases, the results should count as
 % intersections but were not being noted correctly.
 % 2024_05_15 - Aneesh Batchu
-% -- Added all the missing calculations (line-line, line-segment,
+% - Added all the missing calculations (line-line, line-segment,
 % segment-seg...etc.). See test script for examples
-% -- I organized "line and segment" cases in this function following the
+% - I organized "line and segment" cases in this function following the
 % other cases Dr.B has organized.
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -123,7 +123,7 @@ function intersection_points = fcn_geometry_intersectGeom(firstFitType,  firstFi
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -146,9 +146,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -172,13 +172,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -226,7 +226,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

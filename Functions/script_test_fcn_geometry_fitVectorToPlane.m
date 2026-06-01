@@ -2,15 +2,15 @@
 % % Exercises the function: fcn_geometry_fitVectorToPlane
 % % Revision history:
 % % 2021_05_24
-% % -- wrote the code
-% % -- revised from fcn_geometry_fitSlopeInterceptNPoints
+% % - wrote the code
+% % - revised from fcn_geometry_fitSlopeInterceptNPoints
 % %
 % close all;
 % 
 % %% Test 1: a basic test of generic plane
 % 
-% fig_num = 1;
-% figure(fig_num);
+% figNum = 1;
+% figure(figNum);
 % clf;
 % rng(1823);
 % 
@@ -39,14 +39,14 @@
 % 
 % z = true_z;
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'\nTrue values:');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -76,8 +76,8 @@
 % 
 % %% Test 2: a basic test of perfect XY plane
 % 
-% fig_num = 2;
-% figure(fig_num);
+% figNum = 2;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -107,13 +107,13 @@
 % 
 % z = true_z;
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -142,8 +142,8 @@
 % 
 % %% Test 3: a basic test of perfect XZ plane
 % 
-% fig_num = 3;
-% figure(fig_num);
+% figNum = 3;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -173,13 +173,13 @@
 % 
 % z = true_z;
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -208,8 +208,8 @@
 % 
 % %% Test 4: a basic test of perfect YZ plane
 % 
-% fig_num = 4;
-% figure(fig_num);
+% figNum = 4;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -239,13 +239,13 @@
 % 
 % z = true_z;
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -274,8 +274,8 @@
 % 
 % %% Test 21: a basic test of noisy XY plane
 % 
-% fig_num = 21;
-% figure(fig_num);
+% figNum = 21;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -308,13 +308,13 @@
 % z = true_z + 0.01*randn(N_points,1);
 % 
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -343,8 +343,8 @@
 % 
 % %% Test 31: a basic test of noisy XZ plane
 % 
-% fig_num = 3;
-% figure(fig_num);
+% figNum = 3;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -375,13 +375,13 @@
 % y = true_y + 0.01*randn(N_points,1);
 % z = true_z + 0.01*randn(N_points,1);
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -410,8 +410,8 @@
 % 
 % %% Test 41: a basic test of noisy YZ plane
 % 
-% fig_num = 4;
-% figure(fig_num);
+% figNum = 4;
+% figure(figNum);
 % clf;
 % rng(1823);
 % warning('on','backtrace');
@@ -443,13 +443,13 @@
 % y = true_y + 0.01*randn(N_points,1);
 % z = true_z + 0.01*randn(N_points,1);
 % 
-% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],fig_num);
+% [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],figNum);
 % 
 % plane_distance_from_origin = sum(true_ABC.*points(1,:),2);
 % true_root = true_ABC*plane_distance_from_origin;
 % 
 % % Print results
-% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',fig_num);
+% fprintf(1,'\n\nResults of plane fitting in figure %.0d: \n',figNum);
 % fprintf(1,'True values: \n');
 % table_data = [true_ABC true_root];
 % header_strings = [{'A'}, {'B'},{'C'},{'Root X'},{'Root Y'},{'Root Z'}]; % Headers for each column
@@ -507,24 +507,24 @@
 % z = true_z;
 % 
 % % Perform the calculation in slow mode
-% fig_num = [];
+% figNum = [];
 % REPS = 100; minTimeSlow = Inf; 
 % tic;
 % for i=1:REPS
 %     tstart = tic;
-%     [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],(fig_num));
+%     [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],(figNum));
 %     telapsed = toc(tstart);
 %     minTimeSlow = min(telapsed,minTimeSlow);
 % end
 % averageTimeSlow = toc/REPS;
 % 
 % % Perform the operation in fast mode
-% fig_num = -1;
+% figNum = -1;
 % minTimeFast = Inf; nsum = 10;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
-%     [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],(fig_num));
+%     [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, plane_distances] = fcn_geometry_fitVectorToPlane([x y z],(figNum));
 %     telapsed = toc(tstart);
 %     minTimeFast = min(telapsed,minTimeFast);
 % end
@@ -542,6 +542,6 @@
 % if 1==0
 %     %% FAIL 1: points not long enough
 %     points = [2 3];
-%     [root_point, unit_vector] = fcn_geometry_fitVectorToPlane(points,fig_num);
+%     [root_point, unit_vector] = fcn_geometry_fitVectorToPlane(points,figNum);
 %     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 % end

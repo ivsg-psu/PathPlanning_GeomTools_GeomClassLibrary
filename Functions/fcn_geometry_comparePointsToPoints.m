@@ -14,7 +14,7 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 %  indicies_of_nearest_reference_points, ...
 %  mean_error, max_error, std_dev_error] = ...
 % fcn_geometry_comparePointsToPoints(reference_points_XY, test_points_XY, ...
-% (threshold), (fig_num))
+% (threshold), (figNum))
 %
 % INPUTS:
 %
@@ -31,7 +31,7 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 %      all test points are within the threshold distance, returns
 %      flag_is_similar = 1;
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. 
 %      NOTE: for plotting, the points are plotted so that point-pairs with
@@ -79,11 +79,11 @@ function [flag_is_similar, minimum_distance_to_each_point, indicies_of_nearest_r
 
 % Revision history:
 % 2024_04_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -108,9 +108,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -156,12 +156,12 @@ if (3<=nargin)
 end
 
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if (0==flag_max_speed) &&  (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp; 
+        figNum = temp; 
         flag_do_plots = 1;
     end
 end
@@ -215,7 +215,7 @@ std_dev_error = std(minimum_distance_to_each_point, 0,"all","omitmissing");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

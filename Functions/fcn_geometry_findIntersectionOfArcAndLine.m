@@ -3,12 +3,12 @@ function intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(lineStru
 %
 % This function finds the intersection point(s) of a line segment and an
 % arc by taking the vector regression line segment, regression arc,
-% tolerance, and fig_num as the inputs.
+% tolerance, and figNum as the inputs.
 %
 %
 % FORMAT: 
 %
-% intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(lineStruct, arcStruct, tole, fig_num)
+% intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(lineStruct, arcStruct, tole, figNum)
 % 
 % INPUTS:
 %
@@ -29,7 +29,7 @@ function intersectionPoints = fcn_geometry_findIntersectionOfArcAndLine(lineStru
 %
 % (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -75,9 +75,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -104,13 +104,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (3<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -212,7 +212,7 @@ end
 
 if flag_do_plots
 
-    figure(fig_num)
+    figure(figNum)
 
     % Plot Arc Center
     plot(pointC(1,1), pointC(1,2), 'c.','MarkerSize',30);

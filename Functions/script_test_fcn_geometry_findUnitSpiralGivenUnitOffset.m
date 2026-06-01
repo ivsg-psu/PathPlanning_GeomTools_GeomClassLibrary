@@ -3,15 +3,15 @@
 
 % Revision history:
 % 2024_03_30 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 
 %% BASIC test - perfect fit, perfectly oriented
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 hold on;
 
 % UNIT CIRCLE ANALYSIS
@@ -26,7 +26,7 @@ Kf = 1; % Radius of 1
 
 % Call the function fcn_geometry_extractXYfromSTSpiral to predict the
 % spiral and calculate the offsets, plotting the results
-fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(fig_num));
+fcn_geometry_extractXYfromSTSpiral(s,L0,h0,x0,y0,K0,Kf,(figNum));
 
 
 % Find the center of the circle tangent at the end of the spiral
@@ -51,7 +51,7 @@ plot(XY_circle(:,1),XY_circle(:,2),'r-');
 % fcn_geometry_findUnitSpiralGivenUnitOffset([],234);
 
 % Now find the offset
-[spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGivenUnitOffset(y_offset, fig_num);
+[spiralLength, spiralEndAngleInRadians] = fcn_geometry_findUnitSpiralGivenUnitOffset(y_offset, figNum);
 
 % Check sizes
 assert(length(spiralLength(:,1))==1);
@@ -73,9 +73,9 @@ assert(isequal(round(spiralLength,6),round(L0,6)));
 % circle_radius = 2;
 % M = 3; % 5 points per meter
 % sigma = 0.02;
-% fig_num = -1;
+% figNum = -1;
 % 
-% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (fig_num));
+% circle_test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_radius, M, sigma); % (figNum));
 % circle_true_parameters = [circle_center, circle_radius, 0, 2*pi, 1];
 % 
 % % Add outliers?
@@ -84,7 +84,7 @@ assert(isequal(round(spiralLength,6),round(L0,6)));
 % magnitude_of_corruption = 1;
 % 
 % corrupted_circle_test_points = fcn_geometry_corruptPointsWithOutliers(circle_test_points,...
-%     (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+%     (probability_of_corruption), (magnitude_of_corruption), (figNum));
 % 
 % inputPoints = corrupted_circle_test_points;
 % transverse_tolerance = 0.1;
@@ -98,17 +98,17 @@ assert(isequal(round(spiralLength,6),round(L0,6)));
 % 
 % domains_corrupted_circle_test_points  = ...
 % fcn_geometry_fitHoughCircle(inputPoints, transverse_tolerance, ...
-%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num));
+%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum));
 % 
 % % Perform the calculation in slow mode
-% fig_num = [];
+% figNum = [];
 % REPS = 100; minTimeSlow = Inf;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 % 
 %    regression_domain  =  ...
-%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, figNum); 
 % 
 % 
 %     telapsed = toc(tstart);
@@ -117,14 +117,14 @@ assert(isequal(round(spiralLength,6),round(L0,6)));
 % averageTimeSlow = toc/REPS;
 % 
 % % Perform the operation in fast mode
-% fig_num = -1;
+% figNum = -1;
 % minTimeFast = Inf;
 % tic;
 % for i=1:REPS
 %     tstart = tic;
 % 
 %     regression_domain  =  ...
-%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, fig_num); 
+%     fcn_geometry_fitArcRegressionFromHoughFit(domains_corrupted_circle_test_points{1}, figNum); 
 % 
 %     telapsed = toc(tstart);
 %     minTimeFast = min(telapsed,minTimeFast);
@@ -145,7 +145,7 @@ assert(isequal(round(spiralLength,6),round(L0,6)));
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

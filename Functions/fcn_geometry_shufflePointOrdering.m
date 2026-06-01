@@ -4,7 +4,7 @@ function shuffled_points = fcn_geometry_shufflePointOrdering(input_points, varar
 % between these points randomly distributed with variance sigma.
 %
 % corrupted_points = fcn_geometry_shufflePointOrdering(input_points,
-% (probability_of_corruption), (magnitude_of_corruption), (fig_num));
+% (probability_of_corruption), (magnitude_of_corruption), (figNum));
 %
 % INPUTS:
 %
@@ -13,7 +13,7 @@ function shuffled_points = fcn_geometry_shufflePointOrdering(input_points, varar
 %
 %      (Optional Inputs)
 %
-%      fig_num: the figure number to use for plotting
+%      figNum: the figure number to use for plotting
 %
 % OUTPUTS:
 %
@@ -33,14 +33,14 @@ function shuffled_points = fcn_geometry_shufflePointOrdering(input_points, varar
 
 % Revision history:
 % 2023_12_17 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -63,9 +63,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_figNum = 34838;
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -93,13 +93,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (2<= nargin) && (0 == flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -138,7 +138,7 @@ shuffled_points = shuffled_points(shuffling_order,:);
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    figure(fig_num);
+    figure(figNum);
     hold on;
     grid on;
 

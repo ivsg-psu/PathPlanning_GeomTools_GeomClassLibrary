@@ -3,13 +3,13 @@
 
 % Revision history:
 % 2021_04_25 - S. Brennan
-% -- first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
+% - first write of the code copying functionality from fcn_FastestTraversal_checkInputsToFunctions
 % 2024_04_16 - S. Brennan
-% -- added assertions
+% - added assertions
 
 
 %% BASIC example - find the points for two circle, all inner
-fig_num = 1;
+figNum = 1;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.5]; %#ok<*NBRAK>
@@ -28,7 +28,7 @@ cross_products_end   = [-1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -41,7 +41,7 @@ assert(isequal(round(points_tangent_start,4),[1.2000,0.5417]));
 assert(isequal(round(points_tangent_end,4),[2.8800,1.2750]));
 
 %% BASIC example - find the points for two circle, all inner, opposite cross
-fig_num = 2;
+figNum = 2;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.5];
@@ -60,7 +60,7 @@ cross_products_end   = [ 1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -70,7 +70,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
-fig_num = 3;
+figNum = 3;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.5];
@@ -89,7 +89,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -99,7 +99,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% BASIC example -
 % find the points for two circles, equal radii, outer, negative cross
-fig_num = 4;
+figNum = 4;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.5];
@@ -118,7 +118,7 @@ cross_products_end   = [-1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -129,7 +129,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % vertical orientation
-fig_num = 5;
+figNum = 5;
 centers_start = [1 1];
 centers_end   = [1 3];
 radii_start   = [0.5];
@@ -148,7 +148,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -159,7 +159,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % vertical orientation
-fig_num = 6;
+figNum = 6;
 centers_start = [1 3];
 centers_end   = [1 1];
 radii_start   = [0.5];
@@ -178,7 +178,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -189,7 +189,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for two circles, equal radii, outer, positive cross
 % negative horizontal orientation
-fig_num = 7;
+figNum = 7;
 centers_start = [3 1];
 centers_end   = [1 1];
 radii_start   = [0.5];
@@ -208,7 +208,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -219,7 +219,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross,
 % start circle larger than end circle
-fig_num = 8;
+figNum = 8;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.5];
@@ -238,7 +238,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -249,7 +249,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for two circles, unequal radii, outer, positive cross
 % start circle smaller than end circle
-fig_num = 9;
+figNum = 9;
 centers_start = [1 1];
 centers_end   = [3 1];
 radii_start   = [0.3];
@@ -268,7 +268,7 @@ cross_products_end   = [1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -277,7 +277,7 @@ assert(length(points_tangent_end(1,:))==2); % Does it have 2 columns?
 assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 
 %% ADVANCED example - find the points for three circle, all inner
-fig_num = 11;
+figNum = 11;
 centers_start = [1 1; 3 1];
 centers_end   = [3 1; 5 2];
 radii_start   = [0.5; 0.3];
@@ -296,7 +296,7 @@ cross_products_end = [1; -1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -307,7 +307,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for three circles, two outside, last inside, but where
 % the inside ones are equal radii
-fig_num = 21;
+figNum = 21;
 centers_start = [1 1; 3 1];
 centers_end   = [3 1; 5 2];
 radii_start   = [0.5; 0.3];
@@ -326,7 +326,7 @@ cross_products_end = [1; -1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -337,7 +337,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% BASIC example -
 % find the points for three circles, two outside, last inside, but where
 % all are equal radii
-fig_num = 22;
+figNum = 22;
 centers_start = [1 1; 3 1];
 centers_end   = [3 1; 5 2];
 radii_start   = [0.3; 0.3];
@@ -356,7 +356,7 @@ cross_products_end = [-1; 1];
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    fig_num);
+    figNum);
 
 % Check variable sizes
 assert(length(points_tangent_start(1,:))==2); % Does it have 2 columns?
@@ -367,7 +367,7 @@ assert(length(points_tangent_end(:,1))>=1); % Does it have 1 or more rows?
 %% Test of fast implementation mode 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 
@@ -391,14 +391,14 @@ for i=1:REPS
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    (fig_num));
+    (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
@@ -414,7 +414,7 @@ for i=1:REPS
     radii_end,...
     cross_products_start,...
     cross_products_end,...
-    (fig_num));
+    (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -439,7 +439,7 @@ if 1==0
     % find the points for two circles, unequal radii, outer, zero cross
     % start circle within end circle (criteria is that cross product NOT
     % zero)
-    fig_num = 91;
+    figNum = 91;
     centers_start = [1 1];
     centers_end   = [3 1];
     radii_start   = [2.6];
@@ -458,13 +458,13 @@ if 1==0
         radii_end,...
         cross_products_start,...
         cross_products_end,...
-        fig_num);
+        figNum);
 
     %% FAIL CASE example -
     % find the points for two circles, unequal radii, outer, positive cross
     % start circle within end circle (criteria is that abs(r1 - r2)<= D,
     % where D is distance between centers)
-    fig_num = 91;
+    figNum = 91;
     centers_start = [1 1];
     centers_end   = [3 1];
     radii_start   = [2.6];
@@ -483,14 +483,14 @@ if 1==0
         radii_end,...
         cross_products_start,...
         cross_products_end,...
-        fig_num);
+        figNum);
 
     %% FAIL CASE example -
     % find the points for two circles, unequal radii, inner, circles too
     % close together (criteria is that r1+r2 <= D, where D is distance
     % between centers)
 
-    fig_num = 92;
+    figNum = 92;
     centers_start = [1 1];
     centers_end   = [3 1];
     radii_start   = [1];
@@ -509,7 +509,7 @@ if 1==0
         radii_end,...
         cross_products_start,...
         cross_products_end,...
-        fig_num);
+        figNum);
 
 end
 

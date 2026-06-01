@@ -8,42 +8,42 @@
 close all
 
 %% BASIC example for one circle
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 center = [1 3 5];
 radius = [2]; %#ok<*NBRAK>
 color_vector = [];
-fcn_geometry_plotSphere(center, radius, color_vector, fig_num);
+fcn_geometry_plotSphere(center, radius, color_vector, figNum);
 
 %% BASIC example for one circle, with color
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 center = [1 3 5];
 radius = [2]; %#ok<*NBRAK>
 color_vector = [0 0 1];
-fcn_geometry_plotSphere(center, radius, color_vector, fig_num);
+fcn_geometry_plotSphere(center, radius, color_vector, figNum);
 
 %% BASIC example for one circle, with color, saving data
-fig_num = 21;
-figure(fig_num); clf;
+figNum = 21;
+figure(figNum); clf;
 
 center = [1 3 5];
 radius = [2]; %#ok<*NBRAK>
 color_vector = [0 0 1];
-XYZ_data = fcn_geometry_plotSphere(center, radius, color_vector, fig_num);
+XYZ_data = fcn_geometry_plotSphere(center, radius, color_vector, figNum);
 
 assert(length(XYZ_data(1,:))==3);
 
 %% BASIC example for multiple spheres
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 centers = [1 3 0; 2 4 5];
 radii = [0.4; 1];
 color_vector = [0 1 0];
-XYZ_data = fcn_geometry_plotSphere(centers,radii,color_vector,fig_num);
+XYZ_data = fcn_geometry_plotSphere(centers,radii,color_vector,figNum);
 assert(length(XYZ_data)==2);
 assert(length(XYZ_data{1}(1,:))==3);
 assert(length(XYZ_data{2}(1,:))==3);
@@ -51,13 +51,13 @@ assert(length(XYZ_data{2}(1,:))==3);
 
 %% BASIC example for multiple spheres with colors
 % % Does not work - does not change color
-% fig_num = 4;
-% figure(fig_num); clf;
+% figNum = 4;
+% figure(figNum); clf;
 % 
 % centers = [1 3 0; 2 4 0];
 % radii = [0.4; 1];
 % color_vector = [0 0 1; 1 0 0];
-% fcn_geometry_plotSphere(centers,radii,color_vector,fig_num);
+% fcn_geometry_plotSphere(centers,radii,color_vector,figNum);
 
 
 %% Test of fast implementation mode 
@@ -67,24 +67,24 @@ radii = [0.4; 1];
 color_vector = [0 1 0];
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_geometry_plotSphere(centers,radii,color_vector,fig_num);
+    fcn_geometry_plotSphere(centers,radii,color_vector,figNum);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    fcn_geometry_plotSphere(centers,radii,color_vector,fig_num);
+    fcn_geometry_plotSphere(centers,radii,color_vector,figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -104,7 +104,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 % arguments
 if 1==0
 %% BREAK CASES 1 - break on centers
-fig_num = 999;
+figNum = 999;
 
 centers  = [1 2; 2 4; 3 5];
 radii = [3; 4];

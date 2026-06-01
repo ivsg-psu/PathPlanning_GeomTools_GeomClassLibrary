@@ -3,19 +3,19 @@
 
 % Revision history:
 % 2024_04_12 - Sean Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_19 - Sean Brennan
-% -- renamed from fcn_geometry_joinLineToArc
+% - renamed from fcn_geometry_joinLineToArc
 % 2024_05_10 - Sean Brennan
-% -- added test sections
-% -- changed parameter format for line to new standard:
+% - added test sections
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -38,8 +38,8 @@ close all;
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % 1
 % %% Basic test 1.11 - an arc nearby the line segment joined with C1 continuity, arc forwards, line is forwards
-% fig_num = 11;
-% figure(fig_num); clf;
+% figNum = 11;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -78,7 +78,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking input corrections, arc forward, line forward: C%.0f continuous',continuity_level));
 % 
@@ -96,8 +96,8 @@ close all;
 % assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 % 
 % %% Basic test 1.12 - an arc nearby the line segment joined with C1 continuity, arc backwards, line is forwards
-% fig_num = 12;
-% figure(fig_num); clf;
+% figNum = 12;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -135,7 +135,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0f continuous',continuity_level));
 % 
@@ -153,8 +153,8 @@ close all;
 % assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 % 
 % %% Basic test 1.13 - an arc nearby the line segment joined with C1 continuity, arc forwards, line is backwards
-% fig_num = 13;
-% figure(fig_num); clf;
+% figNum = 13;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -193,7 +193,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking input corrections, arc forward, line backward: C%.0f continuous',continuity_level));
 % 
@@ -213,8 +213,8 @@ close all;
 % 
 % 
 % %% Basic test 1.14 - an arc nearby the line segment joined with C1 continuity, arc backward, line is backward
-% fig_num = 14;
-% figure(fig_num); clf;
+% figNum = 14;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -253,7 +253,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking input corrections, arc backward, line forward: C%.0f continuous',continuity_level));
 % 
@@ -290,8 +290,8 @@ close all;
 % % working
 % 
 % %% Basic test 2.1 - Checking St corrections, arc counter-clockwise
-% fig_num = 21;
-% figure(fig_num); clf;
+% figNum = 21;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -330,7 +330,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking St corrections, arc counter-clockwise: C%.0f continuous',continuity_level));
 % 
@@ -348,8 +348,8 @@ close all;
 % assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 % 
 % %% Basic test 2.2 - Checking St corrections, arc clockwise
-% fig_num = 22;
-% figure(fig_num); clf;
+% figNum = 22;
+% figure(figNum); clf;
 % 
 % tolerance = 0.5; % meters
 % 
@@ -394,7 +394,7 @@ close all;
 % 
 % % Call function
 % [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+%     segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 % 
 % sgtitle(sprintf('Checking St corrections, arc clockwise: C%.0f continuous',continuity_level));
 % 
@@ -435,8 +435,8 @@ close all;
 
 
 %% Basic test 3.11 - checking the (-) cross product, feasible, no intersection
-fig_num = 311;
-figure(fig_num); clf;
+figNum = 311;
+figure(figNum); clf;
 
 tolerance = 1; % meters
 
@@ -475,7 +475,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
@@ -493,8 +493,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.12 - checking the (-) cross product, NOT feasible, no intersection
-fig_num = 312;
-figure(fig_num); clf;
+figNum = 312;
+figure(figNum); clf;
 
 tolerance = 0.1; % meters
 
@@ -534,7 +534,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -552,8 +552,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.13 - checking the (-) cross product, forced NOT feasible, no intersection
-fig_num = 313;
-figure(fig_num); clf;
+figNum = 313;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -594,7 +594,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -612,8 +612,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.21 - checking the (-) cross product, feasible, intersection, feasible
-fig_num = 321;
-figure(fig_num); clf;
+figNum = 321;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -653,7 +653,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
@@ -671,8 +671,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.22 - checking the (-) cross product, intersection, not feasible
-fig_num = 322;
-figure(fig_num); clf;
+figNum = 322;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -712,7 +712,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
@@ -730,8 +730,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.31 - checking the (+) cross product, feasible, no intersection
-fig_num = 331;
-figure(fig_num); clf;
+figNum = 331;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -769,7 +769,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
@@ -787,8 +787,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.32 - checking the (+) cross product, NOT feasible, no intersection
-fig_num = 332;
-figure(fig_num); clf;
+figNum = 332;
+figure(figNum); clf;
 
 tolerance = 0.1; % meters
 
@@ -826,7 +826,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -844,8 +844,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.33 - checking the (+) cross product, forced NOT feasible, no intersection
-fig_num = 333;
-figure(fig_num); clf;
+figNum = 333;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -883,7 +883,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -901,8 +901,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,''));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 3.41 - checking the (+) cross product, feasible, intersection, feasible
-fig_num = 341;
-figure(fig_num); clf;
+figNum = 341;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -941,7 +941,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
@@ -960,8 +960,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 3.42 - checking the (+) cross product, intersection, NOT feasible
-fig_num = 342;
-figure(fig_num); clf;
+figNum = 342;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -999,7 +999,7 @@ continuity_level = 0;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
@@ -1042,8 +1042,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 4.11 - checking the (-) cross product, feasible, no intersection
-fig_num = 411;
-figure(fig_num); clf;
+figNum = 411;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1083,7 +1083,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
@@ -1101,8 +1101,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.12 - checking the (-) cross product, NOT feasible, no intersection
-fig_num = 412;
-figure(fig_num); clf;
+figNum = 412;
+figure(figNum); clf;
 
 tolerance = 0.1; % meters
 
@@ -1141,7 +1141,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -1159,8 +1159,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.13 - checking the (-) cross product, forced NOT feasible, no intersection
-fig_num = 413;
-figure(fig_num); clf;
+figNum = 413;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1201,7 +1201,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -1219,8 +1219,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.21 - checking the (-) cross product, feasible, intersection, feasible
-fig_num = 421;
-figure(fig_num); clf;
+figNum = 421;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -1261,7 +1261,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
@@ -1279,8 +1279,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.22 - checking the (-) cross product, feasible, intersection, not feasible
-fig_num = 422;
-figure(fig_num); clf;
+figNum = 422;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -1320,7 +1320,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
@@ -1338,8 +1338,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.31 - checking the (+) cross product, feasible, no intersection
-fig_num = 431;
-figure(fig_num); clf;
+figNum = 431;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1379,7 +1379,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
@@ -1397,8 +1397,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.32 - checking the (+) cross product, NOT feasible, no intersection
-fig_num = 432;
-figure(fig_num); clf;
+figNum = 432;
+figure(figNum); clf;
 
 tolerance = 0.1; % meters
 
@@ -1437,7 +1437,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -1455,8 +1455,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.33 - checking the (+) cross product, forced NOT feasible, no intersection
-fig_num = 433;
-figure(fig_num); clf;
+figNum = 433;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1494,7 +1494,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -1512,8 +1512,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'segment'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 4.41 - checking the (+) cross product, feasible, intersection, feasible
-fig_num = 441;
-figure(fig_num); clf;
+figNum = 441;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -1553,7 +1553,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
@@ -1572,8 +1572,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 4.42 - checking the (+) cross product, feasible, intersection, not feasible
-fig_num = 442;
-figure(fig_num); clf;
+figNum = 442;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -1612,7 +1612,7 @@ continuity_level = 1;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
@@ -1651,8 +1651,8 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 
 %% Basic test 5.11 - checking the (-) cross product, feasible, no intersection
-fig_num = 511;
-figure(fig_num); clf;
+figNum = 511;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1692,7 +1692,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, no intersection',continuity_level));
 
@@ -1710,8 +1710,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674    0         0    1.5662         0    1.0000]));
 
 %% Basic test 5.12 - checking the (-) cross product, NOT feasible, no intersection
-fig_num = 512;
-figure(fig_num); clf;
+figNum = 512;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -1750,7 +1750,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -1768,8 +1768,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.13 - checking the (-) cross product, forced NOT feasible, no intersection
-fig_num = 513;
-figure(fig_num); clf;
+figNum = 513;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -1808,7 +1808,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -1826,8 +1826,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.21 - checking the (-) cross product, feasible, intersection, feasible
-fig_num = 521;
-figure(fig_num); clf;
+figNum = 521;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -1868,7 +1868,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, feasible, intersection',continuity_level));
 
@@ -1886,8 +1886,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[  -0.7674    0         0    1.5662         0    1.0000]));
 
 %% Basic test 5.22 - checking the (-) cross product, feasible, intersection, not feasible
-fig_num = 522;
-figure(fig_num); clf;
+figNum = 522;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -1925,7 +1925,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc counter-clockwise, NOT feasible, intersection',continuity_level));
 
@@ -1943,8 +1943,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.31 - checking the (+) cross product, feasible, no intersection
-fig_num = 531;
-figure(fig_num); clf;
+figNum = 531;
+figure(figNum); clf;
 
 tolerance = 0.4; % meters
 
@@ -1984,7 +1984,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, no intersection',continuity_level));
 
@@ -2003,8 +2003,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[-0.7674  
 
 
 %% Basic test 5.32 - checking the (+) cross product, NOT feasible, no intersection
-fig_num = 532;
-figure(fig_num); clf;
+figNum = 532;
+figure(figNum); clf;
 
 tolerance = 0.1; % meters
 
@@ -2044,7 +2044,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, no intersection',continuity_level));
 
@@ -2062,8 +2062,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.33 - checking the (+) cross product, forced NOT feasible, no intersection
-fig_num = 533;
-figure(fig_num); clf;
+figNum = 533;
+figure(figNum); clf;
 
 tolerance = []; % meters
 
@@ -2103,7 +2103,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, forced NOT feasible, no intersection',continuity_level));
 
@@ -2121,8 +2121,8 @@ assert(strcmp(revised_intermediate_geometry_join_type,'spiral'));
 assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 
 %% Basic test 5.41 - checking the (+) cross product, feasible, intersection, feasible
-fig_num = 541;
-figure(fig_num); clf;
+figNum = 541;
+figure(figNum); clf;
 
 tolerance = 0.7; % meters
 
@@ -2162,7 +2162,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, feasible, intersection',continuity_level));
 
@@ -2181,8 +2181,8 @@ assert(isequal(round(revised_intermediate_geometry_join_parameters,4),[ -1.0749 
 
 
 %% Basic test 5.42 - checking the (+) cross product, feasible, intersection, not feasible
-fig_num = 542;
-figure(fig_num); clf;
+figNum = 542;
+figure(figNum); clf;
 
 tolerance = 0.01; % meters
 
@@ -2220,7 +2220,7 @@ continuity_level = 2;
 
 % Call function
 [revised_segment_parameters, revised_arc_parameters,  revised_intermediate_geometry_join_type, revised_intermediate_geometry_join_parameters] = fcn_geometry_alignSegmentArc(...
-    segment_parameters, arc_parameters, (tolerance), (continuity_level), (fig_num));
+    segment_parameters, arc_parameters, (tolerance), (continuity_level), (figNum));
 
 sgtitle(sprintf('Checking C%.0f continuous, arc clockwise, NOT feasible, intersection',continuity_level));
 
@@ -2242,6 +2242,6 @@ assert(all(isnan(revised_intermediate_geometry_join_parameters)));
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_alignSegmentArc(points,fig_num);
+    [slope,intercept] = fcn_geometry_alignSegmentArc(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

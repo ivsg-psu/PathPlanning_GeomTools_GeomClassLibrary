@@ -1,4 +1,4 @@
-function [intAngle,intPoint] = fcn_geometry_findIntersectionLineSegmentWithCircle(pa,pb,pc,R)
+function [intAngle,intPoint] = fcn_geometry_findIntersectionLineSegmentWithCircle(pa,pb,pc,R, varargin)
 % fcn_geometry_findIntersectionLineSegmentWithCircle Evaluates an edge
 % against a circle to determine whether there will be any intersections
 % between the two.
@@ -37,14 +37,36 @@ function [intAngle,intPoint] = fcn_geometry_findIntersectionLineSegmentWithCircl
 %     2022_03_06
 %     -- wrote the code
 
-flag_do_debug = 0; % Flag to plot the results for debugging
-flag_check_inputs = 1; % Flag to perform input checking
+%% Debugging and Input checks
+
+% Check if flag_max_speed set. This occurs if the figNum variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+flag_max_speed = 0;
+if (nargin==5 && isequal(varargin{end},-1))
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 0; % Flag to perform input checking
+    flag_max_speed = 1;
+else
+    % Check to see if we are externally setting debug mode to be "on"
+    flag_do_debug = 0; % Flag to plot the results for debugging
+    flag_check_inputs = 1; % Flag to perform input checking
+    MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS = getenv("MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS");
+    MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG = getenv("MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG");
+    if ~isempty(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS) && ~isempty(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG)
+        flag_do_debug = str2double(MATLABFLAG_GEOMETRY_FLAG_DO_DEBUG);
+        flag_check_inputs  = str2double(MATLABFLAG_GEOMETRY_FLAG_CHECK_INPUTS);
+    end
+end
 
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    
+    debug_figNum = 34838; %#ok<NASGU>
+else
+    debug_figNum = []; %#ok<NASGU>
 end
+
 
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,21 +80,22 @@ end
 %              |_|
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if 0==flag_max_speed
+    if flag_check_inputs == 1
+        % Are there the right number of inputs?
+        narginchk(4,4);
 
-if flag_check_inputs == 1
-    % Are there the right number of inputs?
-    narginchk(4,4);
+        % Check to see that there were three points provided in the proper
+        % format
+        if any(size(pa) ~= [1 2]) || any(size(pb) ~= [1 2]) || any(size(pc) ~= [1 2])
+            warning('One or more input points is the wrong size (should be 1 x 2).');
+            return;
+        end
 
-    % Check to see that there were three points provided in the proper
-    % format
-    if any(size(pa) ~= [1 2]) || any(size(pb) ~= [1 2]) || any(size(pc) ~= [1 2])
-        warning('One or more input points is the wrong size (should be 1 x 2).');
-        return;
-    end
-    
-    % Check the radius
-    if any(size(R) ~= [1 1]) || R <= 0
-        error('Radius either negative or not scalar valued.')
+        % Check the radius
+        if any(size(R) ~= [1 1]) || R <= 0
+            error('Radius either negative or not scalar valued.')
+        end
     end
 end
 
@@ -85,8 +108,8 @@ alpha = -((pa(1)-pc(1))*(pb(1)-pa(1)) + (pa(2)-pc(2))*(pb(2)-pa(2)))/((pb(1)-pa(
 % calculate the location of the point of minimum radius
 if alpha < 1 && alpha > 0
     pminR = pa + alpha*(pb - pa);
-% If the minimum radius is outside of the segment, set the point to
-% infinity so that it is ignored when determining intersections
+    % If the minimum radius is outside of the segment, set the point to
+    % infinity so that it is ignored when determining intersections
 else
     pminR = [inf inf];
 end
@@ -94,7 +117,7 @@ end
 % Check for the case where there is a tangency between the line segment and
 % the circle
 if norm(pminR - pc) == R
-        % Calculate the associated circular angle of intersection from the
+    % Calculate the associated circular angle of intersection from the
     % scalar distance along the line segment (alpha)
     intAngle(1) = atan2(pminR(2) - pc(2),pminR(1) - pc(1));
     % Normalize the range of the intersection angle to [0,2*pi]
@@ -106,11 +129,11 @@ if norm(pminR - pc) == R
     end
     % Compute the actual point of intersection
     intPoint(1,:) = pminR;
-    
+
 elseif (norm(pminR-pc) < R && norm(pa-pc) > R && norm(pb-pc) > R)
     % In this case, there are two intersections. One lies between pa and
     % pminR and the other lies between pminR and pb. Compute both.
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % First line segment, from pa to pminR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -144,7 +167,7 @@ elseif (norm(pminR-pc) < R && norm(pa-pc) > R && norm(pb-pc) > R)
     end
     % Compute the actual point of intersection
     intPoint(1,:) = pa + alpha*(pminR-pa);
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Second line segment, from pminR to pb
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,16 +201,16 @@ elseif (norm(pminR-pc) < R && norm(pa-pc) > R && norm(pb-pc) > R)
     end
     % Compute the actual point of intersection
     intPoint(2,:) = pminR + alpha*(pb-pminR);
-% Next, check to see if no intersections are possible
+    % Next, check to see if no intersections are possible
 elseif (norm(pa-pc) > R && norm(pb-pc) > R) || (norm(pa-pc) < R && norm(pb-pc) < R)
     % If no intersection (or two intersections) possible, return empty
     % vectors of the intersection angle and point
     intAngle = [];
     intPoint = [];
-% Next, check for the case where there are two intersections between the
-% line segment and circle. This occurs if both of the endpoints of the line
-% segment are outside of the circle but the distance to the nearest point
-% on the line is less than the circle radius.
+    % Next, check for the case where there are two intersections between the
+    % line segment and circle. This occurs if both of the endpoints of the line
+    % segment are outside of the circle but the distance to the nearest point
+    % on the line is less than the circle radius.
 else
     % Calculate the coefficients of the quadratic equation for alpha
     % (the scalar distance along the line segment)

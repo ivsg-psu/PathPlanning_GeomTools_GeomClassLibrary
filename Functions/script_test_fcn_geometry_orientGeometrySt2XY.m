@@ -3,12 +3,12 @@
 
 % Revision history:
 % 2024_05_02 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_09 - S. Brennan
-% -- fixed bug in segment calculation wherein unit vector gives NaN if
+% - fixed bug in segment calculation wherein unit vector gives NaN if
 % start and end points are same
 % 2024_06_16 - Sean Brennan
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -20,7 +20,7 @@
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_16 - Sean Brennan
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %               [
 %                x0,  % The initial x value
@@ -31,7 +31,7 @@
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -42,8 +42,8 @@
 close all;
 
 %% Basic test 1.1 - a line segment alone
-fig_num = 11;
-figure(fig_num); clf;
+figNum = 11;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 segment_angle = 30*pi/180;
@@ -66,7 +66,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -77,8 +77,8 @@ assert(isequal(round(XY_parameters{1},4),round(primary_parameters,4)));
 
 
 %% Basic test 1.11 - a line segment of zero length
-fig_num = 111;
-figure(fig_num); clf;
+figNum = 111;
+figure(figNum); clf;
 
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -102,7 +102,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -113,8 +113,8 @@ assert(isequal(round(XY_parameters{1},4),round(primary_parameters,4)));
 
 
 %% Basic test 1.12 - a NaN line segment
-fig_num = 112;
-figure(fig_num); clf;
+figNum = 112;
+figure(figNum); clf;
 
 
 clear segment_parameters
@@ -131,7 +131,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -143,8 +143,8 @@ assert(all(isnan(XY_parameters{1})));
 
 
 %% Basic test 1.21 - an arc alone, counter-clockwise
-fig_num = 121;
-figure(fig_num); clf;
+figNum = 121;
+figure(figNum); clf;
 
 arc_center_xy            = [2 3];
 arc_radius               = 4;
@@ -174,7 +174,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -194,7 +194,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, original_parame
 
 % Call the function to convert from ST back to XY
 [XY_parameters2] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check results
 assert(isequal(round(XY_parameters2{1},4),round(original_parameteters,4)));
@@ -202,8 +202,8 @@ assert(isequal(round(XY_parameters2{1},4),round(original_parameteters,4)));
 
 
 %% Basic test 1.22 - an arc alone, clockwise
-fig_num = 122;
-figure(fig_num); clf;
+figNum = 122;
+figure(figNum); clf;
 
 arc_center_xy            = [2 3];
 arc_radius               = 4;
@@ -232,7 +232,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -252,7 +252,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, original_parame
 
 % Call the function to convert from ST back to XY
 [XY_parameters2] = ...
-fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(primary_parameters_type_string, st_primary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check results
 assert(isequal(round(XY_parameters2{1},4),round(original_parameteters,4)));
@@ -260,8 +260,8 @@ assert(isequal(round(XY_parameters2{1},4),round(original_parameteters,4)));
 
 
 %% Basic test 2.1 - a line segment with other geometries
-fig_num = 21;
-figure(fig_num); clf;
+figNum = 21;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 
@@ -364,7 +364,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -384,7 +384,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters2] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check results
 
@@ -394,8 +394,8 @@ end
 
 
 %% Basic test 2.21 - an arc, counter-clockwise with other geometries
-fig_num = 221;
-figure(fig_num); clf;
+figNum = 221;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 % Fill in the arc parameters
@@ -504,7 +504,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -524,7 +524,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters2] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check results
 
@@ -534,8 +534,8 @@ end
 
 
 %% Basic test 2.22 - an arc,clockwise with other geometries
-fig_num = 222;
-figure(fig_num); clf;
+figNum = 222;
+figure(figNum); clf;
 clear secondary_parameters secondary_parameters_type_strings
 
 % Fill in the arc parameters
@@ -644,7 +644,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check size of results
 assert(iscell(XY_parameters));
@@ -664,7 +664,7 @@ fcn_geometry_orientGeometryXY2St(primary_parameters_type_string, primary_paramet
 
 % Call the function to convert from ST back to XY
 [XY_parameters2] = ...
-fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (fig_num));
+fcn_geometry_orientGeometrySt2XY(secondary_parameters_type_strings, st_secondary_parameters, St_transform_XYtoSt, flag_primary_parameter_is_flipped, (figNum));
 
 % Check results
 
@@ -677,6 +677,6 @@ end
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_orientGeometryXY2St(points,fig_num);
+    [slope,intercept] = fcn_geometry_orientGeometryXY2St(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

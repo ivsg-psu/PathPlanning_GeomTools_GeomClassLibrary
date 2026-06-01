@@ -3,9 +3,9 @@
 
 % Revision history:
 % 2024_01_09
-% -- wrote the code
+% - wrote the code
 % 2024_01_12
-% -- fixed typo in one of the printouts to use correct function name.
+% - fixed typo in one of the printouts to use correct function name.
 
 
 %% Set up the workspace
@@ -26,8 +26,8 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 %% Example - 1 - BASIC call with arc data, fitting it to source point 10
-fig_num = 111;
-figure(fig_num); clf;
+figNum = 111;
+figure(figNum); clf;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
@@ -36,7 +36,7 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 
 % Fill test data - 2 arcs
@@ -49,7 +49,7 @@ index_source_point = 10;
 station_tolerance = 0.5;
 
 [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num);
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, figNum);
 
 assert(isequal(flag_is_a_circle,0));
 assert(length(indicies_in_station_agreement)>1);
@@ -57,8 +57,8 @@ assert(length(start_angle_in_radians) == 1);
 assert(length(end_angle_in_radians) == 1);
 
 %% Example - 2 - BASIC call with arc data, fitting it to source point 55
-fig_num = 222;
-figure(fig_num); clf;
+figNum = 222;
+figure(figNum); clf;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
@@ -66,7 +66,7 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 
 % Fill test data - 2 arcs
@@ -79,7 +79,7 @@ index_source_point = 40;
 station_tolerance = 0.5;
 
 [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num);
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, figNum);
 
 assert(isequal(flag_is_a_circle,0));
 assert(length(indicies_in_station_agreement)>1);
@@ -88,8 +88,8 @@ assert(length(end_angle_in_radians) == 1);
 
 %% Example - 3 - BASIC call with arc data, fitting it to source point 10
 % But with a larger tolerance that will bridge the arcs
-fig_num = 333;
-figure(fig_num); clf;
+figNum = 333;
+figure(figNum); clf;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
@@ -97,7 +97,7 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 
 % Fill test data - 2 arcs
@@ -110,7 +110,7 @@ index_source_point = 10;
 station_tolerance = 2;
 
 [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num); %#ok<*ASGLU>
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, figNum); %#ok<*ASGLU>
 
 assert(isequal(flag_is_a_circle,0));
 assert(length(indicies_in_station_agreement)>1);
@@ -118,8 +118,8 @@ assert(length(start_angle_in_radians) == 1);
 assert(length(end_angle_in_radians) == 1);
 
 %% Example - 1 - BASIC call with circle data, fitting it with a circle
-fig_num = 444;
-figure(fig_num); clf;
+figNum = 444;
+figure(figNum); clf;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
@@ -127,7 +127,7 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Fill test data - 2 arcs
 twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
@@ -139,7 +139,7 @@ index_source_point = 10;
 station_tolerance = 10;
 
 [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num);
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, figNum);
 
 assert(isequal(flag_is_a_circle,1));
 assert(length(indicies_in_station_agreement)>1);
@@ -154,7 +154,7 @@ seed_points = [2 3; 4 5; 6 3];
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Fill test data - 2 arcs
 twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
@@ -201,15 +201,15 @@ fprintf(1,'Average ratio of fast mode to slow mode (unitless): %.3f\n',averageTi
 fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSlow/minTimeFast);
 
 %% ERROR Example - 1 - Show how it works with corrupted data (it still works)
-fig_num = 999;
-figure(fig_num); clf;
+figNum = 999;
+figure(figNum); clf;
 
 seed_points = [2 3; 4 5; 6 3];
 [true_circleCenter, true_circleRadius] = fcn_geometry_circleCenterFrom3Points(seed_points(1,:),seed_points(2,:),seed_points(3,:),-1);
 M = 10; % Number of points per meter
 sigma = 0.02;
 
-onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, fig_num);
+onearc_test_points = fcn_geometry_fillArcTestPoints(seed_points, M, sigma); %, figNum);
 
 % Add outliers?
 % Corrupt the results
@@ -217,7 +217,7 @@ probability_of_corruption = 0.3;
 magnitude_of_corruption = 1;
 
 corrupted_onearc_test_points = fcn_geometry_corruptPointsWithOutliers(onearc_test_points,...
-    (probability_of_corruption), (magnitude_of_corruption)); %, (fig_num));
+    (probability_of_corruption), (magnitude_of_corruption)); %, (figNum));
 
 % Fill test data - 2 arcs
 twoarc_test_points = [onearc_test_points(1:30,:); onearc_test_points(50:60,:)];
@@ -232,7 +232,7 @@ index_source_point = 10;
 station_tolerance = 0.5;
 
 [indicies_in_station_agreement, flag_is_a_circle, start_angle_in_radians, end_angle_in_radians] = ...
-    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, fig_num);
+    fcn_geometry_findArcAgreementIndicies(points, circleCenter, circleRadius, index_source_point, station_tolerance, figNum);
 
 assert(isequal(flag_is_a_circle,0));
 assert(length(indicies_in_station_agreement)>1);

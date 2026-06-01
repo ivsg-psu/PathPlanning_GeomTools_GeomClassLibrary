@@ -21,7 +21,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_input2_parame
 %    fcn_geometry_isFeasibleAlignGeomPair(...
 %    input1_type, input1_parameters, ...
 %    input2_type, input2_parameters, ...
-%    continuity, (threshold), (fig_num))
+%    continuity, (threshold), (figNum))
 %
 % INPUTS:
 %      input1_type: a string denoting the first geometry type, consisting
@@ -78,7 +78,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_input2_parame
 %      threshold in the station direction, but 0.2 meters threshold in the
 %      transverse direction. Default is 0.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -104,11 +104,11 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_input2_parame
 
 % Revision history:
 % 2024_04_19 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -133,9 +133,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -170,20 +170,20 @@ if (6<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (7<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
         % Does user want to specify animation_figure_handles?
         % flag_plot_subfigs = 0;
 
         if length(temp)>1
-            fig_num           = temp(1);
+            figNum           = temp(1);
             % h_plotPoints      = temp(2);
             % h_plotPercentage  = temp(3);
             % h_plotFitShape    = temp(4);
@@ -245,7 +245,7 @@ if flag_do_plots
     %
     % else
     % Plot the results in the given figure number
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -255,7 +255,7 @@ if flag_do_plots
     % if flag_plot_subfigs == 1
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %     % Final fit
-    %     figure(fig_num);
+    %     figure(figNum);
     %     subplot(2,2,4);
     %     hold on;
     %     grid on;
@@ -274,7 +274,7 @@ if flag_do_plots
     %     end
     %
     %     % Plot the domain fits
-    %     fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(fig_num));
+    %     fcn_geometry_plotFitSequences(fitSequence_bestFitType, fitSequence_parameters,(figNum));
     %
     %     axis(original_axis);
     %
@@ -290,7 +290,7 @@ if flag_do_plots
     xlabel('X [meters]');
     ylabel('Y [meters]');
 
-    fcn_geometry_plotFitSequences({input1_type, input2_type},{input1_parameters,input2_parameters},(fig_num));
+    fcn_geometry_plotFitSequences({input1_type, input2_type},{input1_parameters,input2_parameters},(figNum));
 
     title(sprintf('Is continuity %.0d feasible?: %.0d, dist: %.2f',continuity_level,flag_is_feasible,feasibility_distance));
 
@@ -315,7 +315,7 @@ if flag_do_plots
     % xlabel('X [meters]');
     % ylabel('Y [meters]');
     %
-    % fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(fig_num));
+    % fcn_geometry_plotFitSequences(revised_fitSequence_types, revised_fitSequence_parameters,(figNum));
     %
     % % Match axis
     % axis(good_axis);

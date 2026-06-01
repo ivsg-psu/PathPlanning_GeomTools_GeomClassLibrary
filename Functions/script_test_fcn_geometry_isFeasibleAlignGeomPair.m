@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_05_26 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 % The first geometery, if the fig number starts with:
 % 1: Circles
@@ -51,8 +51,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% C0 Arc to Arc Continuity test - NOT FEASIBLE
-fig_num = 220001;
-figure(fig_num);
+figNum = 220001;
+figure(figNum);
 clf;
 
 
@@ -106,7 +106,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -117,8 +117,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.5));
 
 %% C0 Segment to Arc Continuity test - FEASIBLE
-fig_num = 220101;
-figure(fig_num);
+figNum = 220101;
+figure(figNum);
 clf;
 
 
@@ -172,7 +172,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -183,8 +183,8 @@ assert(isequal(round(flag_is_feasible,4),1));
 assert(isequal(round(feasibility_distance,4),-0.1));
 
 %% C1 Arc to Arc Continuity test - NOT FEASIBLE
-fig_num = 221001;
-figure(fig_num);
+figNum = 221001;
+figure(figNum);
 clf;
 
 
@@ -238,7 +238,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -249,8 +249,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),1));
 
 %% C1 Arc to Arc Continuity test - FEASIBLE - CW
-fig_num = 221101;
-figure(fig_num);
+figNum = 221101;
+figure(figNum);
 clf;
 
 
@@ -304,7 +304,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -316,8 +316,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 
 
 %% C2 Arc to Arc Continuity test - NOT FEASIBLE
-fig_num = 222001;
-figure(fig_num);
+figNum = 222001;
+figure(figNum);
 clf;
 
 
@@ -371,7 +371,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -383,8 +383,8 @@ assert(isequal(round(feasibility_distance,4),0.0707));
 
 
 %% C2 Arc to Arc Continuity test - FEASIBLE
-fig_num = 222101;
-figure(fig_num);
+figNum = 222101;
+figure(figNum);
 clf;
 
 
@@ -438,7 +438,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -463,8 +463,8 @@ assert(isequal(round(feasibility_distance,4),-0.0707));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% C0 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 420001;
-figure(fig_num);
+figNum = 420001;
+figure(figNum);
 clf;
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -507,7 +507,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -518,8 +518,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C0 Segment to Arc Continuity test - FEASIBLE
-fig_num = 420101;
-figure(fig_num);
+figNum = 420101;
+figure(figNum);
 clf;
 
 
@@ -564,7 +564,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -576,8 +576,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 
 
 %% C1 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 421001;
-figure(fig_num);
+figNum = 421001;
+figure(figNum);
 clf;
 
 
@@ -622,7 +622,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -633,8 +633,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C1 Segment to Arc Continuity test - FEASIBLE
-fig_num = 421101;
-figure(fig_num);
+figNum = 421101;
+figure(figNum);
 clf;
 
 % Fill in segment parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -678,7 +678,7 @@ threshold = 0.2;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -690,8 +690,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 
 
 %% C2 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 422001;
-figure(fig_num);
+figNum = 422001;
+figure(figNum);
 clf;
 
 
@@ -737,7 +737,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -748,8 +748,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C1 Segment to Arc Continuity test - FEASIBLE
-fig_num = 422101;
-figure(fig_num);
+figNum = 422101;
+figure(figNum);
 clf;
 
 
@@ -794,7 +794,7 @@ threshold = 0.2;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -836,8 +836,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% C0 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 420001;
-figure(fig_num);
+figNum = 420001;
+figure(figNum);
 clf;
 
 
@@ -883,7 +883,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -894,8 +894,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C0 Segment to Arc Continuity test - FEASIBLE
-fig_num = 420101;
-figure(fig_num);
+figNum = 420101;
+figure(figNum);
 clf;
 
 
@@ -940,7 +940,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -952,8 +952,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 
 
 %% C1 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 421001;
-figure(fig_num);
+figNum = 421001;
+figure(figNum);
 clf;
 
 
@@ -999,7 +999,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -1010,8 +1010,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C1 Segment to Arc Continuity test - FEASIBLE
-fig_num = 421101;
-figure(fig_num);
+figNum = 421101;
+figure(figNum);
 clf;
 
 
@@ -1056,7 +1056,7 @@ threshold = 0.2;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -1068,8 +1068,8 @@ assert(isequal(round(feasibility_distance,4),-0.1));
 
 
 %% C2 Segment to Arc Continuity test - NOT FEASIBLE
-fig_num = 422001;
-figure(fig_num);
+figNum = 422001;
+figure(figNum);
 clf;
 
 
@@ -1115,7 +1115,7 @@ threshold = 0;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -1126,8 +1126,8 @@ assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.1));
 
 %% C1 Segment to Arc Continuity test - FEASIBLE
-fig_num = 422101;
-figure(fig_num);
+figNum = 422101;
+figure(figNum);
 clf;
 
 
@@ -1172,7 +1172,7 @@ threshold = 0.2;
 
 % Call function
 [flag_is_feasible, feasibility_distance] = ...
-    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (fig_num));
+    fcn_geometry_isFeasibleAlignGeomPair(input1_type, input1_parameters, input2_type, input2_parameters, continuity_level, (threshold), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));

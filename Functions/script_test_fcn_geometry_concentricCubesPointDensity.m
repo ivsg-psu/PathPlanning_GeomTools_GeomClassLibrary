@@ -35,10 +35,10 @@ interior_density=100; %points per unit
 
 noise=0;
 diagonal_flag=[];
-fig_num=1111;
+figNum=1111;
 
 %Function
-[points] = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+[points] = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,figNum);
 
 assert(isequal(size(points), [249 3]))
 
@@ -86,10 +86,10 @@ interior_density=100; %points per unit
 
 noise=0.5;
 diagonal_flag=[];
-fig_num=2222;
+figNum=2222;
 
 %Function
-points2 = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+points2 = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,figNum);
 
 assert(isequal(size(points2), [249 3]))
 
@@ -111,10 +111,10 @@ interior_density=100; %points per unit
 
 noise=1;
 diagonal_flag=1;
-fig_num=2222;
+figNum=2222;
 
 %Function
-points3 = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+points3 = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,figNum);
 
 assert(isequal(size(points3), [249 3]))
 
@@ -136,10 +136,10 @@ interior_density=100; %points per unit
 
 noise=1;
 diagonal_flag=1;
-fig_num=31;
+figNum=31;
 
 %Function
-[points4] = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,fig_num);
+[points4] = fcn_geometry_concentricCubesPointDensity(exterior_size,interior_size,exterior_density,interior_density,noise,diagonal_flag,figNum);
 
 assert(isequal(size(points4), [249 3]))
 

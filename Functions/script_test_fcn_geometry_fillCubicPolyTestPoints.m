@@ -2,14 +2,14 @@
 % Exercises the function: fcn_geometry_fillCubicPolyTestPoints
 % Revision history:
 % 2024_05_08 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 %% Test 1: a basic cubic polnomial (y = x^3)
 
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 a = 1; % Coefficient for x^3
@@ -20,7 +20,7 @@ x_range = [-5, 5]; % Range of x values
 M = 10; % Number of test points to generate
 sigma = 2; % Standard deviation for randomness
 
-[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, fig_num);
+[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, figNum);
 
 assert(length(test_points(:,1))==length(true_points(:,1)));
 
@@ -36,8 +36,8 @@ assert(length(test_points(:,1))==length(true_points(:,1)));
 
 %% Test 2: a basic quadratic polnomial (y = x^2)
 
-fig_num = 2;
-figure(fig_num);
+figNum = 2;
+figure(figNum);
 clf;
 
 a = 0; % Coefficient for x^3
@@ -48,14 +48,14 @@ x_range = [-5, 5]; % Range of x values
 M = 5; % Number of test points to generate
 sigma = 0.2; % Standard deviation for randomness
 
-[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, fig_num);
+[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, figNum);
 
 assert(length(test_points(:,1))==length(true_points(:,1)));
 
 %% Test 3: a basic linear polnomial (y = x)
 
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 a = 0; % Coefficient for x^3
@@ -66,14 +66,14 @@ x_range = [-5, 5]; % Range of x values
 M = 5; % Number of test points to generate
 sigma = 0.2; % Standard deviation for randomness
 
-[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, fig_num);
+[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, figNum);
 
 assert(length(test_points(:,1))==length(true_points(:,1)));
 
 %% Test 4: a basic constant (y = 5)
 
-fig_num = 4;
-figure(fig_num);
+figNum = 4;
+figure(figNum);
 clf;
 
 a = 0; % Coefficient for x^3
@@ -84,14 +84,14 @@ x_range = [-5, 5]; % Range of x values
 M = 5; % Number of test points to generate
 sigma = 0.000002; % Standard deviation for randomness
 
-[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, fig_num);
+[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, figNum);
 
 assert(length(test_points(:,1))==length(true_points(:,1)));
 
 %% Test 5: a cubic polynomial (y = 2x^3 - x^2 + 5x + 2)
 
-fig_num = 5;
-figure(fig_num);
+figNum = 5;
+figure(figNum);
 clf;
 
 a = 2; % Coefficient for x^3
@@ -102,7 +102,7 @@ x_range = [-5, 5]; % Range of x values
 M = 10; % Number of test points to generate
 sigma = 5; % Standard deviation for randomness
 
-[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, fig_num);
+[test_points, true_points] = fcn_geometry_fillCubicPolyTestPoints(a, b, c, d, x_range, M, sigma, figNum);
 
 assert(length(test_points(:,1))==length(true_points(:,1)));
 

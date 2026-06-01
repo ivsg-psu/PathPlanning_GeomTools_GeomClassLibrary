@@ -3,7 +3,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % Plots an individual geometry defined by a string name and parameter set.
 %
 % Format:
-%      XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, (segment_length), (format), (fig_num))
+%      XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, (segment_length), (format), (figNum))
 %
 % INPUTS:
 %
@@ -25,7 +25,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %      format string can also be a complex string - see the test script for
 %      examples.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed. If left empty, just plots to the current
 %      figure.
@@ -33,7 +33,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 % OUTPUTS:
 %
 %      XY_data: the data produced during plotting calculations. Note: this
-%      data is returned even if fig_num is empty or set to -1.
+%      data is returned even if figNum is empty or set to -1.
 %
 % DEPENDENCIES:
 %
@@ -49,28 +49,28 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 
 % Revision history:
 % 2024_04_14 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_04_15 - S. Brennan
-% -- added XY_data output
-% -- added segment_length input
+% - added XY_data output
+% - added segment_length input
 % 2024_04_20 - S. Brennan
-% -- added spiral type
+% - added spiral type
 % 2024_04_30 - S. Brennan
-% -- checks added to avoid plotting nan values for parameters
+% - checks added to avoid plotting nan values for parameters
 % 2024_05_03 - S. Brennan
-% -- added line and circle types
+% - added line and circle types
 % 2024_05_05 - S. Brennan
-% -- changed start/end plotting to use dots/circles
+% - changed start/end plotting to use dots/circles
 % 2024_05_06 - Aneesh Batchu
-% -- Added line segment as one of the names for the segment case
+% - Added line segment as one of the names for the segment case
 % 2024_05_09 - S. Brennan
-% -- added 'none' and empty as allowable geometry types
+% - added 'none' and empty as allowable geometry types
 % 2024_05_10 - S. Brennan
-% -- added format string input option
+% - added format string input option
 % 2024_05_16
-% -- Fixed bug that happens when XY data is empty
+% - Fixed bug that happens when XY data is empty
 % 2024_06_16 - Sean Brennan
-% -- changed spiral parameter format to new style:
+% - changed spiral parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -82,14 +82,14 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_19 - Sean Brennan
-% -- changed line parameter format to new standard:
+% - changed line parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -99,7 +99,7 @@ function XY_data = fcn_geometry_plotGeometry(plot_type_string, parameters, varar
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -124,9 +124,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -187,17 +187,17 @@ if 4 <= nargin
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 0==flag_max_speed
     flag_do_plots = 1;
     if 5<= nargin
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            figNum = temp;
         end
     else
-        fig_num = gcf;
+        figNum = gcf;
     end
 end
 
@@ -340,7 +340,7 @@ end % Ends check if string is empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

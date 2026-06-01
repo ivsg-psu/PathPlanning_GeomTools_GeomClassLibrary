@@ -16,7 +16,7 @@ function [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, pla
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -55,13 +55,13 @@ function [vector_root, unit_vector, standard_deviation_in_plane_orthogonals, pla
 
 % Revision history:
 % 2024_01_27 
-% -- wrote the code
-% -- modified from fcn_geometry_fitVectorToNPoints
+% - wrote the code
+% - modified from fcn_geometry_fitVectorToNPoints
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -115,14 +115,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (2 == nargin) 
     temp_axis = varargin{1};
     if ~isempty(temp_axis)
-        fig_num = temp_axis;
-        figure(fig_num);
+        figNum = temp_axis;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -141,16 +141,16 @@ x = points(:,1);
 y = points(:,2);
 z = points(:,3);
 
-fitting_fig_num = -1; % Force speed mode
+fitting_figNum = -1; % Force speed mode
 
 % Find the XYZ vector solution
-[~, standard_deviation_in_z_XYZ, ~, unit_vector_XYZ, base_point_XYZ, standard_deviation_in_plane_orthogonals_XYZ, plane_distances_XYZ] = fcn_geometry_fitPlaneLinearRegression([x y z],fitting_fig_num);
+[~, standard_deviation_in_z_XYZ, ~, unit_vector_XYZ, base_point_XYZ, standard_deviation_in_plane_orthogonals_XYZ, plane_distances_XYZ] = fcn_geometry_fitPlaneLinearRegression([x y z],fitting_figNum);
 
 % Find the XZY vector
-[~, standard_deviation_in_z_XZY, ~, unit_vector_XZY, base_point_XZY, standard_deviation_in_plane_orthogonals_XZY, plane_distances_XZY] = fcn_geometry_fitPlaneLinearRegression([x z y],fitting_fig_num);
+[~, standard_deviation_in_z_XZY, ~, unit_vector_XZY, base_point_XZY, standard_deviation_in_plane_orthogonals_XZY, plane_distances_XZY] = fcn_geometry_fitPlaneLinearRegression([x z y],fitting_figNum);
 
 % Find the YZX vector
-[~, standard_deviation_in_z_YZX, ~, unit_vector_YZX, base_point_YZX, standard_deviation_in_plane_orthogonals_YZX, plane_distances_YZX] = fcn_geometry_fitPlaneLinearRegression([y z x],fitting_fig_num);
+[~, standard_deviation_in_z_YZX, ~, unit_vector_YZX, base_point_YZX, standard_deviation_in_plane_orthogonals_YZX, plane_distances_YZX] = fcn_geometry_fitPlaneLinearRegression([y z x],fitting_figNum);
 
 % Perform reassembly
 unit_vector_XYZ_corrected = unit_vector_XYZ;
@@ -207,7 +207,7 @@ end
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

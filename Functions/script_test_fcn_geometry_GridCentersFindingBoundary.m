@@ -2,13 +2,13 @@
 % Exercises the function: fcn_geometry_GridCentersFindingBoundary.m
 % Revision history:
 % 2024_07_15 - Aneesh Batchu
-% -- Wrote the example 
+% - Wrote the example 
 % 2024_07_19 - Jiabao Zhao
-% -- Functionlize the code 
+% - Functionlize the code 
 %% INPUTS
 
 % % figure number
-% fig_num_LLA = 3001;
+% figNum_LLA = 3001;
 % 
 % % LiDAR data
 % LiDAR_outer_edge = vertcat(LiDAR_ENU_cell{1400:1410});
@@ -42,4 +42,4 @@
 % (point_density, total_N_points_in_each_grid, grids_greater_than_zero_points, gridCenters,-1);
 % 
 % [unique_X, unique_Y, unique_Z ] = fcn_geometry_GridCentersFindingBoundary...
-% (gridCenters_low_point_density, gridCenters_required_point_density,fig_num_LLA);
+% (gridCenters_low_point_density, gridCenters_required_point_density,figNum_LLA);

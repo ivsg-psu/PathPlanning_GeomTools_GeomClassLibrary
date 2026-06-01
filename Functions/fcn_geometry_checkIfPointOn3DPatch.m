@@ -7,7 +7,7 @@ function [flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch]
 %
 % FORMAT: 
 %
-% [flag_isInside3Dpatch, flag_isOn3DPatchPlane] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (fig_num))
+% [flag_isInside3Dpatch, flag_isOn3DPatchPlane] = fcn_geometry_checkIfPointOn3DPatch(patchPoints, testPoints, (tolerance), (figNum))
 %
 % INPUTS:
 %
@@ -25,7 +25,7 @@ function [flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch]
 %      tolerance: the tolerance to test if points are within the plane and
 %      near edges. Default is eps*1000;
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -59,12 +59,12 @@ function [flag_isInside3Dpatch, flag_isOn3DPatchPlane, flag_projectsInsidePatch]
 
 % Revision history:
 % 2025_06_12 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -127,14 +127,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (4 == nargin) 
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -237,7 +237,7 @@ if flag_do_plot
     flag_labelPoints = 0; % A flag, for debugging, to label the points
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

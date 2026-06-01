@@ -3,17 +3,17 @@
 
 % Revision history:
 % 2024_04_19 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_02 - S Brennan / A. Batchu
-% -- add more test cases
+% - add more test cases
 % 2024_06_26 - S Brennan 
-% -- working with test track data
+% - working with test track data
 % 2024_07_21 - S Brennan 
-% -- added a few more test cases
+% - added a few more test cases
 
 % TO-DO
 % 2024_07_21 - S. Brennan
-% -- Need to add systematic assertions and testing
+% - Need to add systematic assertions and testing
 
 %% segment joining an offset arc
 segment_start = [-20 -0.05];
@@ -41,11 +41,11 @@ fits_to_check_types = {'segment','arc'};
 fits_to_check_parameters = {segment_parameters, arc_parameters};
 fitting_tolerance = 0;
 continuity_level = 2;
-fig_num = 1;
+figNum = 1;
 flag_is_a_loop = 0;
 
 [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
-    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (fig_num));
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (figNum));
 
 % Check lengths
 assert(length(revised_fitSequence_types)==3);
@@ -55,7 +55,7 @@ assert(length(max_feasibility_distance)==1);
 %% REAL WORLD TEST CASE
 
 % Test with real-world data (test track)
-fig_num = 1;
+figNum = 1;
 
 
 % Check to see if the fits were calculated earlier
@@ -76,21 +76,21 @@ if ~exist('fitSequence_bestFitType_forward','var') || ~exist('fitSequence_parame
     % Perform the fit forwards
     fitting_tolerance = [0.1 10]; % Units are meters
     flag_fit_backwards = 0;
-    figure(fig_num);
+    figure(figNum);
     clf;
 
     [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+        fcn_geometry_fitSequentialArcs(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum);
 
     % [fitSequence_points_forward, fitSequence_shapes_forward, fitSequence_endIndicies_forward, fitSequence_parameters_forward, fitSequence_bestFitType_forward] = ...
-    %    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, fig_num);
+    %    fcn_geometry_fitSequentialArcsC2(small_XY_data, fitting_tolerance, flag_fit_backwards, figNum);
 
 end
 
 
 % Connect the fits so that the lines perfectly align with the arcs
-fig_num = 2;
-figure(fig_num);clf;
+figNum = 2;
+figure(figNum);clf;
 fitting_tolerance = [10 0.2];
 continuity_level = 2;
 flag_is_a_loop = 1;
@@ -107,7 +107,7 @@ for ith_fit = [4 5 6]
 end
 
 [revised_fitSequence_types, revised_fitSequence_parameters, max_feasibility_distance] =  ...
-    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (fig_num));
+    fcn_geometry_alignGeometriesInSequence(fits_to_check_types, fits_to_check_parameters, fitting_tolerance, (continuity_level), (flag_is_a_loop), (figNum));
 
 test_points_XY = [];
 for ith_fit = 1:length(fitSequence_points_forward)
@@ -117,8 +117,8 @@ for ith_fit = 1:length(fitSequence_points_forward)
 end
 
 % Check the fits
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 
 threshold           = max_feasibility_distance;
@@ -127,6 +127,6 @@ curve_test_segment_length = 0.5; % Check every 0.5 meters;
 [flag_is_similar, minimum_distance_to_each_point, mean_error, max_error, std_dev_error] = ...
     fcn_geometry_comparePointsToCurve(...
     revised_fitSequence_types, revised_fitSequence_parameters, test_points_XY, ...
-    (threshold), (curve_test_segment_length), (fig_num));
+    (threshold), (curve_test_segment_length), (figNum));
 
 

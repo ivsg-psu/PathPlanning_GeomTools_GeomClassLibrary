@@ -2,17 +2,17 @@
 % Exercises the function: fcn_geometry_fillArcSequenceTestPoints
 % Revision history:
 % 2024_03_31 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % Revision history:
 % 2024_04_14 - S. Brennan
-% -- added assertions
+% - added assertions
 
 close all;
 
 
 %% Test 1: a basic test with 4 points, producing 2 arcs that are similar
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 
 arc_pattern = [1/20, 30; -1/5 9; 0 20; 1/10 50; 0 40; -1/25 39; 0 13; -2/38 38/2*pi];
@@ -20,7 +20,7 @@ arc_pattern = [1/20, 30; -1/5 9; 0 20; 1/10 50; 0 40; -1/25 39; 0 13; -2/38 38/2
 M = 10;
 sigma = 0.02;
 
-[test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, fig_num);
+[test_points, circleCenters, trueStartPointsOfArcs, arcStartIndicies, namedCurveTypes, trueParameters] = fcn_geometry_fillArcSequenceTestPoints(arc_pattern, M, sigma, figNum);
 
 % Check sizes
 assert(length(test_points(:,1))>1);
@@ -75,6 +75,6 @@ assert(iscell(trueParameters));
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

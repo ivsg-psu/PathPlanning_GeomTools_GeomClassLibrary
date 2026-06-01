@@ -4,11 +4,11 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 %
 % FORMAT:
 %
-% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,(fig_num))
+% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points,(figNum))
 %
 %  OR
 %
-% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1, points2, points2,(fig_num))
+% [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1, points2, points2,(figNum))
 %
 % INPUTS:
 %
@@ -22,7 +22,7 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -63,20 +63,20 @@ function [centers,radii] = fcn_geometry_circleCenterFrom3Points(points1,varargin
 % 2020_05_22 - added more comments, particularly to explain inputs more
 % clearly
 % 2021_05_23 
-% -- merged previous function into geometry class
-% -- automated input argument checking
-% -- changed from x,y separate inputs into points inputs
+% - merged previous function into geometry class
+% - automated input argument checking
+% - changed from x,y separate inputs into points inputs
 % 2023_12_27
-% -- added external environment test
-% -- added speed-up wherein if fig_num set to -1, it skips plotting, input
+% - added external environment test
+% - added speed-up wherein if figNum set to -1, it skips plotting, input
 % checking, debug modes.
 % 2024_01_11
-% -- added conditioning test for the matrix inversion, to avoid errors for
+% - added conditioning test for the matrix inversion, to avoid errors for
 % colinear points
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -165,7 +165,7 @@ if 0==flag_max_speed
     if (2 == nargin || 4 == nargin)
         temp = varargin{end};
         if ~isempty(temp)
-            fig_num = temp;
+            figNum = temp;
             flag_do_plots = 1;
         end
     end
@@ -265,7 +265,7 @@ end
 if flag_do_plots
     
     %Prep the figure
-    figure(fig_num);
+    figure(figNum);
     hold on % allow multiple plot calls
     
     if flag_use_separated_point_inputs

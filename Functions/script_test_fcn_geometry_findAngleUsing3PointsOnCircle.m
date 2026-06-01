@@ -7,7 +7,7 @@
 close all
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
-fig_num = 1;
+figNum = 1;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1]; %#ok<*NBRAK>
@@ -25,13 +25,13 @@ outgoing_destination_points = [0 -2^0.5];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num); %#ok<*ASGLU,*NOPTS>
+    outgoing_destination_points,figNum); %#ok<*ASGLU,*NOPTS>
 
 assert(isequal(round(angles,4), 1.5708));
 assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
-fig_num = 2;
+figNum = 2;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -49,14 +49,14 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 4.7124));
 assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 % BUT the apex angle is in the wrong location (so BAD)
-fig_num = 3;
+figNum = 3;
 apex_points = [-1 0];
 centers = [0 0];
 radii = [1];
@@ -74,14 +74,14 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num); 
+    outgoing_destination_points,figNum); 
 
 assert(isnan(angles));
 assert(isequal(round(better_angles,4), 0));
 
 %% BASIC example for one circle, incoming and outgoing are 270 degrees
 % BUT the apex angle is in the wierd location
-fig_num = 4;
+figNum = 4;
 apex_points = [-1 1]/2^0.5;
 centers = [0 0];
 radii = [1];
@@ -99,13 +99,13 @@ outgoing_destination_points = [-2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 4.7124));
 assert(isequal(round(better_angles,4), 5.4978));
 
 %% BASIC example for one circle, incoming and outgoing are 90 degrees
-fig_num = 5;
+figNum = 5;
 apex_points = [1 1]/(2^0.5);
 centers = [0 0];
 radii = [1];
@@ -123,14 +123,14 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 1.5708));
 assert(isequal(round(better_angles,4), 3.9270));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
-fig_num = 6;
+figNum = 6;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -148,14 +148,14 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 3.1416));
 assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a good situation
-fig_num = 7;
+figNum = 7;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -173,14 +173,14 @@ outgoing_destination_points = [-1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 3.1416));
 assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 0 degrees,
 % and it's a BAD situation
-fig_num = 8;
+figNum = 8;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -198,7 +198,7 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isnan(angles));
 assert(isnan(better_angles));
@@ -206,7 +206,7 @@ assert(isnan(better_angles));
 
 %% BASIC example for one circle, incoming and outgoing are 0 degrees,
 % and it's a good situation (grazing contact)
-fig_num = 9;
+figNum = 9;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -223,14 +223,14 @@ outgoing_destination_points = [1 -1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isequal(round(angles,4), 0));
 assert(isequal(round(better_angles,4), 3.1416));
 
 %% BASIC example for one circle, incoming and outgoing are 180 degrees,
 % and it's a BAD situation (grazing contact)
-fig_num = 10;
+figNum = 10;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -247,13 +247,13 @@ outgoing_destination_points = [1 1];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isnan(angles));
 assert(isnan(better_angles));
 
 %% BASIC example for one circle that is NOT feasible
-fig_num = 11;
+figNum = 11;
 apex_points = [1 0];
 centers = [0 0];
 radii = [1];
@@ -271,7 +271,7 @@ outgoing_destination_points = [2^0.5 0];
     end_points_on_circle,...
     radii,...
     incoming_source_points,...
-    outgoing_destination_points,fig_num);
+    outgoing_destination_points,figNum);
 
 assert(isnan(angles));
 assert(isnan(better_angles));

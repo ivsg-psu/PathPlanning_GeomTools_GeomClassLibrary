@@ -20,7 +20,7 @@ function [vector_root, unit_vector] = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -52,20 +52,20 @@ function [vector_root, unit_vector] = ...
 
 % Revision history:
 % 2020_06_25 
-% -- wrote the code
-% -- modified from fcn_geometry_fitVectorToNPoints
+% - wrote the code
+% - modified from fcn_geometry_fitVectorToNPoints
 % 2024_01_13 - S. Brennan
-% -- improved comments a bit
-% -- added max speed options
-% -- fixed bug wherein it crashes if empty figure given
+% - improved comments a bit
+% - added max speed options
+% - fixed bug wherein it crashes if empty figure given
 % 2024_01_27 - S. Brennan
-% -- typo fixes in comments
+% - typo fixes in comments
 % 2024_04_15 - S. Brennan
-% -- fixed errors that come up when legend entries missing
+% - fixed errors that come up when legend entries missing
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -119,14 +119,14 @@ flag_do_plot = 0;
 if (0==flag_max_speed) && (2 == nargin) 
     temp = varargin{1};
     if ~isempty(temp)
-        fig_num = temp;
-        figure(fig_num);
+        figNum = temp;
+        figure(figNum);
         flag_do_plot = 1;
     end
 else
     if flag_do_debug
         fig = figure; 
-        fig_num = fig.Number;
+        figNum = fig.Number;
         flag_do_plot = 1;
     end
 end
@@ -200,7 +200,7 @@ unit_vector = [-sin(phi) cos(phi)]; % This is the perpendicular to the phi
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plot
-    figure(fig_num);
+    figure(figNum);
     hold on;
     grid on;
     axis equal;

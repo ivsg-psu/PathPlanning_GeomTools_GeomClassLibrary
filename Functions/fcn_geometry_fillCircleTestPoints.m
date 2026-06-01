@@ -19,7 +19,7 @@ function test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_r
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.     
 %
@@ -41,11 +41,11 @@ function test_points = fcn_geometry_fillCircleTestPoints(circle_center, circle_r
 
 % Revision history:
 % 2024_01_08 by S. Brennan
-% -- wrote the code using fcn_geometry_fillArcTestPoints as starter
+% - wrote the code using fcn_geometry_fillArcTestPoints as starter
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -68,11 +68,11 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
-    figure(debug_fig_num);
+    debug_figNum = 34838;
+    figure(debug_figNum);
     clf;
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -116,7 +116,7 @@ flag_do_plots = 0;
 if (5 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -165,14 +165,14 @@ test_points = perturbed_points;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    figure(fig_num);
+    figure(figNum);
     axis equal;
     hold on;
     grid on;
 
     % Plot the input circle
     plot(circle_center(1,1), circle_center(1,2), 'r+','MarkerSize',30);
-    fcn_geometry_plotCircle(circle_center,circle_radius,'b-', fig_num);
+    fcn_geometry_plotCircle(circle_center,circle_radius,'b-', figNum);
 
     % Plot the results
     plot(test_points(:,1), test_points(:,2), 'k.','MarkerSize',20);

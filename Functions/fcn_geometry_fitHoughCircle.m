@@ -7,7 +7,7 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 % 
 % domains  = ...
 % fcn_geometry_fitHoughCircle(points, transverse_tolerance, ...
-%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (fig_num))
+%         (station_tolerance), (points_required_for_agreement), (flag_force_circle_fit), (expected_radii_range), (flag_find_only_best_agreement), (flag_use_permutations), (figNum))
 % 
 % INPUTS:
 %      points: a Nx2 vector where N is the number of points, but at least 2 rows. 
@@ -68,7 +68,7 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 %          test. This essentially turns the Hough transform vote into
 %          RANSAC.
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -95,38 +95,38 @@ function domains = fcn_geometry_fitHoughCircle(points, transverse_tolerance, var
 
 % Revision history:
 % 2023_12_15 - A. Batchu
-% -- wrote the code
+% - wrote the code
 % 2023_12_18 - S. Brennan
-% -- fixed broken for-loop
-% -- moved circle fitting to external call to existing function
-% -- added transverse and station tolerances
-% -- added plotting figure for results as varargin
+% - fixed broken for-loop
+% - moved circle fitting to external call to existing function
+% - added transverse and station tolerances
+% - added plotting figure for results as varargin
 % 2023_12_27 - S. Brennan
-% -- changed inequality-based region testing with polygon region tests
+% - changed inequality-based region testing with polygon region tests
 % 2023_12_28 - S. Brennan
-% -- added fast mode by allowing fig_num set to -1
+% - added fast mode by allowing figNum set to -1
 % 2024_01_03 - S. Brennan
-% -- output only the best fits, keeping same format as fitHoughLine code
+% - output only the best fits, keeping same format as fitHoughLine code
 % 2024_01_05 - S. Brennan
-% -- allow user to specify circle radii to search over
-% -- allow user to specify search sequence
-% -- added station tolerance to enable arc-fits
+% - allow user to specify circle radii to search over
+% - allow user to specify search sequence
+% - added station tolerance to enable arc-fits
 % 2024_01_12 - S. Brennan
-% -- added flag to force circle fitting, so allow circle searching even if
+% - added flag to force circle fitting, so allow circle searching even if
 % station tolerance is given. Otherwise, both arcs and circles could be
 % returned.
 % 2024_01_15 - S. Brennan
-% -- changed outputs to domain types
-% -- added fcn_geometry_plotFitDomains for plotting
+% - changed outputs to domain types
+% - added fcn_geometry_plotFitDomains for plotting
 % 2024_01_25 - S. Brennan
-% -- added flag_find_only_best_agreement input
-% -- added break out of searching if all points are fit
+% - added flag_find_only_best_agreement input
+% - added break out of searching if all points are fit
 % 2024_04_14 - S. Brennan
-% -- added fcn_geometry_fillColorFromNumberOrName for plotting
+% - added fcn_geometry_fillColorFromNumberOrName for plotting
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -149,9 +149,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 234343;
+    debug_figNum = 234343;
 else
-    debug_fig_num = []; 
+    debug_figNum = []; 
 end
 
 
@@ -243,13 +243,13 @@ if (8<=nargin)
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (9<=nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -276,7 +276,7 @@ end
 
 % Do debugging plots?
 if flag_do_debug
-    figure(debug_fig_num);
+    figure(debug_figNum);
     clf;
     hold on;
     grid on;
@@ -385,7 +385,7 @@ for ith_combo = 1:N_permutations
 
     % Redo debugging plots to see how fit worked?
     if flag_do_debug
-        figure(debug_fig_num);
+        figure(debug_figNum);
         clf;
         hold on;
         grid on;
@@ -517,7 +517,7 @@ domains = fcn_INTERNAL_filldomains(points, best_fit_circleCenters, best_fit_circ
 if flag_do_plots
 
     % Plot the results in point space
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -539,7 +539,7 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',20);
 
     % Plot the domains
-    fcn_geometry_plotFitDomains(domains, fig_num);
+    fcn_geometry_plotFitDomains(domains, figNum);
 
 
     % Make axis slightly larger?
@@ -553,7 +553,7 @@ if flag_do_plots
     end
 
     %% Plot the Hough space results, from least to best
-    figure(fig_num+1);
+    figure(figNum+1);
     clf;
 
     subplot(3,1,1);

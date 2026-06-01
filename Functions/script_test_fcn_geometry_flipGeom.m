@@ -3,9 +3,9 @@
 
 % Revision history:
 % 2024_05_15 - Sean Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %               [
 %                x0,  % The initial x value
@@ -16,14 +16,14 @@
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_19 - Sean Brennan
-% -- changed parameter format for line to new standard:
+% - changed parameter format for line to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
 %              heading,
 %             ]
 % 2024_06_19 - Sean Brennan
-% -- changed segment parameter format to new standard:
+% - changed segment parameter format to new standard:
 %             [
 %              base_point_x, 
 %              base_point_y, 
@@ -37,8 +37,8 @@
 close all
 
 %% Basic Test: circle - no change
-fig_num = 1;
-figure(fig_num); clf;
+figNum = 1;
+figure(figNum); clf;
 
 % Fill in circle 1
 circle1_center_xy            = [-3 3];
@@ -52,14 +52,14 @@ circle1_parameters(1,3)   = circle1_radius;
 geomType = 'circle';
 geomParameters = circle1_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), geomParameters));
 
 %% Basic Test: arc - flips start and end angles, and clockwise or CCW flag
-fig_num = 2;
-figure(fig_num); clf;
+figNum = 2;
+figure(figNum); clf;
 
 % Fill in arc 2
 arc2_center_xy            = [3 0];
@@ -82,14 +82,14 @@ arc2_parameters(1,7)   = arc2_is_counter_clockwise;
 geomType = 'arc';
 geomParameters = arc2_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), round([arc2_center_xy arc2_radius fliplr(arc2_angles') arc2_is_circle ~arc2_is_counter_clockwise],4)));
 
 %% Basic Test: line - flips direction
-fig_num = 3;
-figure(fig_num); clf;
+figNum = 3;
+figure(figNum); clf;
 
 % Fill in line
 line_unit_tangent_vector = [0 1];
@@ -103,14 +103,14 @@ line_parameters(1,3)   = mod(atan2(line_unit_tangent_vector(2),line_unit_tangent
 geomType = 'line';
 geomParameters = line_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), round([line_base_point_xy line_parameters(1,3)+pi],4)));
 
 %% Basic Test: segment - flips start and end stations, flips direction, but otherwise the same
-fig_num = 4;
-figure(fig_num); clf;
+figNum = 4;
+figure(figNum); clf;
 
 % Fill in line
 segment_unit_tangent_vector = [0 1];
@@ -126,14 +126,14 @@ segment_parameters(1,4)   = segment_length;
 geomType = 'segment';
 geomParameters = segment_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), round([segment_base_point_xy+segment_unit_tangent_vector*segment_length segment_parameters(1,3)+pi segment_parameters(1,4)],4)));
 
 %% Basic Test: spiral - flips start and end stations, flips direction, but otherwise the same
-fig_num = 5;
-figure(fig_num); clf;
+figNum = 5;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear spiral_parameters
@@ -142,14 +142,14 @@ spiral_parameters = [2.2403   -1.1202  mod(-0.9002,2*pi)    0.5645    1.0000    
 geomType = 'spiral';
 geomParameters = spiral_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(isequal(round(geomParameters_flipped,4), round([2.6662   -1.4877    2.5236    0.5645         0   -1.0000],4)));
 
 %% Basic Test: 'none' - does nothing
-fig_num = 6;
-figure(fig_num); clf;
+figNum = 6;
+figure(figNum); clf;
 
 % Get the line fit details from parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
 clear none_parameters
@@ -158,7 +158,7 @@ none_parameters = [nan nan];
 geomType = 'none';
 geomParameters = none_parameters;
 
-geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, fig_num);
+geomParameters_flipped = fcn_geometry_flipGeom(geomType,  geomParameters, figNum);
 
 assert(isequal(size(geomParameters),size(geomParameters_flipped)));
 assert(all(isnan(none_parameters)));

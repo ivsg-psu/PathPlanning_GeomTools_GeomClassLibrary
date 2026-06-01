@@ -4,7 +4,7 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points
 % transverse_tolerance distance away from the circle. 
 %
 % Format:
-% agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (fig_num))
+% agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points, circleCenter, circleRadius, transverse_tolerance, (figNum))
 %
 % INPUTS:
 %
@@ -23,7 +23,7 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -48,11 +48,11 @@ function agreement_indicies = fcn_geometry_findAgreementsOfPointsToCircle(points
 
 % Revision history:
 % 2023_01_15/16 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -75,9 +75,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -117,12 +117,12 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 5<= nargin && 0==flag_max_speed
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -184,7 +184,7 @@ agreement_indicies = indicies_in_transverse_agreement;
 %                           |___/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -203,9 +203,9 @@ if flag_do_plots
     plot(points(:,1),points(:,2),'k.','MarkerSize',30)
 
     % Plot the boundaries of the circle fit
-    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',fig_num); 
-    fcn_geometry_plotCircle(circleCenter, circleRadius-transverse_tolerance, 'r-',fig_num); 
-    fcn_geometry_plotCircle(circleCenter, circleRadius+transverse_tolerance, 'r-',fig_num); 
+    fcn_geometry_plotCircle(circleCenter, circleRadius, 'b-',figNum); 
+    fcn_geometry_plotCircle(circleCenter, circleRadius-transverse_tolerance, 'r-',figNum); 
+    fcn_geometry_plotCircle(circleCenter, circleRadius+transverse_tolerance, 'r-',figNum); 
     plot(circleCenter(:,1),circleCenter(:,2),'b+','MarkerSize',15);
 
 

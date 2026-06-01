@@ -2,34 +2,34 @@
 % Exercises the function: fcn_geometry_calcUnitVector
 % Revision history:
 % 2023_12_14
-% -- wrote the code
+% - wrote the code
 
 close all;
 
 
 %% Test 1: a basic test
-fig_num = 1;
+figNum = 1;
 input_vectors = [3 3]; 
 
-unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num); 
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, figNum); 
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
 assert(all(abs(length_errors)<(eps*100)));
 
 %% Test 2: many vectors
-fig_num = 2;
+figNum = 2;
 input_vectors = randn(10,2); 
-unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, figNum);
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
 assert(all(abs(length_errors)<(eps*100)));
 
 %% Test 2: many 3D vectors
-fig_num = 3;
+figNum = 3;
 input_vectors = randn(10,3); 
-unit_vectors = fcn_geometry_calcUnitVector(input_vectors, fig_num);
+unit_vectors = fcn_geometry_calcUnitVector(input_vectors, figNum);
 
 % Check that they are all unit length
 length_errors = ones(length(unit_vectors(:,1)),1) - sum(unit_vectors.^2,2).^0.5;
@@ -40,24 +40,24 @@ assert(all(abs(length_errors)<(eps*100)));
 
 input_vectors = randn(10,3); 
 
-fig_num = [];
+figNum = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (fig_num));
+    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (figNum));
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 REPS = 1000; minTimeFast = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (fig_num));
+    unit_vectors = fcn_geometry_calcUnitVector(input_vectors, (figNum));
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -76,6 +76,6 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_calcUnitVector(points,fig_num);
+    [slope,intercept] = fcn_geometry_calcUnitVector(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

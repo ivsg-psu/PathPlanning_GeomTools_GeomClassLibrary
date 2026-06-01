@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_04_11 - S. Brennan
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -32,8 +32,8 @@ color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data);
 assert(isequal(size(color_vector),[Npoints 3]));
 
 % Make the plot
-fig_num = 1;
-figure(fig_num);
+figNum = 1;
+figure(figNum);
 clf;
 hold on;
 grid on;
@@ -58,8 +58,8 @@ color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data,[],'redt
 assert(isequal(size(color_vector),[Npoints 3]));
 
 % Make the plot
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 hold on;
 grid on;
@@ -92,8 +92,8 @@ color_vector = fcn_geometry_fillColorFromNumberOrName(fractional_y_data,[],'jet'
 assert(isequal(size(color_vector),[Npoints 3]));
 
 % Make the plot
-fig_num = 3;
-figure(fig_num);
+figNum = 3;
+figure(figNum);
 clf;
 hold on;
 grid on;
@@ -123,24 +123,24 @@ assert(isequal(color_vector,[0 0 1]));
 %% Test of fast mode
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 1000; minTimeSlow = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',fig_num);
+    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',figNum);
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
 end
 averageTimeSlow = toc/REPS;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf;
 tic;
 for i=1:REPS
     tstart = tic;
-    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',[],fig_num);
+    color_vector = fcn_geometry_fillColorFromNumberOrName(2,'vector regression segment fit',[],figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -159,7 +159,7 @@ fprintf(1,'Fastest ratio of fast mode to slow mode (unitless): %.3f\n',minTimeSl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,fig_num);
+    [slope,intercept] = fcn_geometry_fitSlopeInterceptNPoints(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end
 

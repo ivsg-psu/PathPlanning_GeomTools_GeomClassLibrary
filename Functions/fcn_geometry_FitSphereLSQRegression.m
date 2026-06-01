@@ -37,15 +37,15 @@ function [C_sphere,R_sphere,E_total, errors] = fcn_geometry_FitSphereLSQRegressi
 
 % Revision history:
 % 2023_10_22 by X. Cao
-% -- start writing function
+% - start writing function
 % 2024_01_23 by S. Brennan
-% -- fixed header area (debugging)
-% -- added varargin input for figures
-% -- added input checking
-% -- added plotting
-% -- added errors output
+% - fixed header area (debugging)
+% - added varargin input for figures
+% - added input checking
+% - added plotting
+% - added errors output
 % 2024_01_25 by S. Brennan
-% -- added color-coded errors
+% - added color-coded errors
 
 flag_max_speed = 0;
 if (nargin==2 && isequal(varargin{end},-1))
@@ -68,9 +68,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838;
+    debug_figNum = 34838;
 else
-    debug_fig_num = [];  
+    debug_figNum = [];  
 end
 %% check input arguments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,13 +96,13 @@ if 0==flag_max_speed
     end
 end
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (2<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -161,7 +161,7 @@ E_total = sum(errors.^2);
 if flag_do_plots
      % set up the figure and check if it has been used before. If not used
     % already, note that the axes will be re-scaled
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -212,7 +212,7 @@ if flag_do_plots
     plot3(C_sphere(1,1), C_sphere(1,2), C_sphere(1,3), 'r+','MarkerSize',30);
 
     % Plot the sphere
-    fcn_geometry_plotSphere(C_sphere, R_sphere, [0 0 1], fig_num);
+    fcn_geometry_plotSphere(C_sphere, R_sphere, [0 0 1], figNum);
 
     % Make axis slightly larger?
     if flag_rescale_axis

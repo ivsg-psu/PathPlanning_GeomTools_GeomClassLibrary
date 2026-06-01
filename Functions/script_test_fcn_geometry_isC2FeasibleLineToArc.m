@@ -3,7 +3,7 @@
 
 % Revision history:
 % 2024_06_24 - S Brennan
-% -- wrote the code
+% - wrote the code
 
 close all
 
@@ -30,8 +30,8 @@ close all
 
 %% 1.1 Basic test - feasible
 
-fig_num = 1101;
-figure(fig_num);
+figNum = 1101;
+figure(figNum);
 clf;
 
 % Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -55,7 +55,7 @@ threshold = 0;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -70,8 +70,8 @@ assert(isequal(round(closest_feasible_circle_parameters,4),[0    1    1]));
 
 %% 1.2 Basic test - NOT feasible
 
-fig_num = 1201;
-figure(fig_num);
+figNum = 1201;
+figure(figNum);
 clf;
 
 % Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -95,7 +95,7 @@ threshold = 0.2;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -118,8 +118,8 @@ assert(all(isnan(spiral_join_parameters)));
 
 %% 1.3 Basic test - marginally infeasible
 
-fig_num = 1301;
-figure(fig_num);
+figNum = 1301;
+figure(figNum);
 clf;
 
 % Fill in line parameters - for listing of meaning of parameters, see fcn_geometry_fillEmptyDomainStructure
@@ -143,7 +143,7 @@ threshold = 0.2;
 in_boundary_margin = [];
 
 % Call function
-[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (figNum));
 
 % Check sizes
 assert(isequal(size(flag_is_feasible),[1 1]));
@@ -187,7 +187,7 @@ assert(all(isnan(spiral_join_parameters)) || isequal(round(spiral_join_parameter
 
 % Set margin to push solution deeper into feasible area
 in_boundary_margin = 0.01; % Units are meters
-[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (fig_num));
+[flag_is_feasible, feasibility_distance, closest_feasible_circle_parameters] = fcn_geometry_isC2FeasibleLineToArc(line_parameters, circle_parameters, (threshold), (in_boundary_margin), (figNum));
 
 assert(isequal(round(flag_is_feasible,4),0));
 assert(isequal(round(feasibility_distance,4),0.2828));

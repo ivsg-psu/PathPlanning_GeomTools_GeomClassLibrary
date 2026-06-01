@@ -20,7 +20,7 @@ function [orientation, isconvex, Nencirclements] = ...
 %
 % [orientation, isconvex, Nencirclements] = ...
 %     fcn_geometry_findPolytopeOrientations(vertex_pts,...
-%     (fig_num))
+%     (figNum))
 %
 % INPUTS:
 %
@@ -29,7 +29,7 @@ function [orientation, isconvex, Nencirclements] = ...
 %
 %      (OPTIONAL INPUTS)
 % 
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -56,12 +56,12 @@ function [orientation, isconvex, Nencirclements] = ...
 
 % Revision History:
 % 2021-10-18
-% -- First write of the code
+% - First write of the code
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 MAX_NARGIN = 2; % The largest Number of argument inputs to the function
@@ -87,7 +87,7 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 999978;
+    debug_figNum = 999978;
 end
 
 
@@ -148,7 +148,7 @@ end
 
 % For debugging
 if flag_do_debug
-    figure(debug_fig_num); 
+    figure(debug_figNum); 
     clf;
     hold on;
     axis equal;

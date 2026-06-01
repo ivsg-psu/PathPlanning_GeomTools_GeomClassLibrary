@@ -9,7 +9,7 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 % spiral.
 %
 % Format:
-% spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, (flag_circle2_is_counterclockwise),  (fig_num))
+% spiral_join_parameters = fcn_geometry_spiralFromCircleToCircle(circle1_parameters, circle2_parameters, (flag_circle2_is_counterclockwise),  (figNum))
 %
 % INPUTS:
 %
@@ -31,7 +31,7 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 %      flag_circle2_is_counterclockwise = -1, if the circle 2 would cause
 %      a clockwise path.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -64,19 +64,19 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 
 % Revision history:
 % 2024_04_24 - S. Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_05_05 - S. Brennan
-% -- fixed bug where, with symmetric setup, will return negative value
+% - fixed bug where, with symmetric setup, will return negative value
 %     incorrectly instead of positive value.
 % 2024_05_11 - Sean Brennan
-% -- Modified to allow line definitions, e.g. with Kf = 0 
+% - Modified to allow line definitions, e.g. with Kf = 0 
 % 2024_05_28 - Sean Brennan
-% -- Modified to use circle or arc parameters, not raw entries of radius
+% - Modified to use circle or arc parameters, not raw entries of radius
 % and center
 % 2024_06_16 - Sean Brennan
-% -- fixed minor bug with flag_circle2_is_counterclockwise input, if user
+% - fixed minor bug with flag_circle2_is_counterclockwise input, if user
 %    enters something other than 1 (like zero)
-% -- changed parameter format to new style:
+% - changed parameter format to new style:
 %            'spiral' - 
 %
 %               [
@@ -88,14 +88,14 @@ function [spiral_join_parameters, space_between_circles] = fcn_geometry_spiralFr
 %                Kf   % The final curvature
 %              ] 
 % 2024_06_26 - S. Brennan
-% -- minor bug fix due to changing line definition, but not changing
+% - minor bug fix due to changing line definition, but not changing
 % plotting command.
 % 2024_07_28 - S. Brennan
-% -- minor bug fix in fcn_geometry_plotGeometry call
+% - minor bug fix in fcn_geometry_plotGeometry call
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -120,9 +120,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -171,12 +171,12 @@ if (3<=nargin)
     end
 end
 
-% Does user want to specify fig_num?
+% Does user want to specify figNum?
 flag_do_plots = 0;
 if 0==flag_max_speed && 4<=nargin
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -386,7 +386,7 @@ end % Ends if statement to check if spiral is possible
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if flag_do_plots
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

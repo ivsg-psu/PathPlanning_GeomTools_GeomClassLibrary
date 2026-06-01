@@ -7,7 +7,7 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 %
 % FORMAT:
 %
-% is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(point1, point2, point3,(fig_num))
+% is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(point1, point2, point3,(figNum))
 %
 % INPUTS:
 %
@@ -17,7 +17,7 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results.
+%      figNum: a figure number to plot results.
 %
 % OUTPUTS:
 %
@@ -44,24 +44,24 @@ function is_counterClockwise = fcn_geometry_arcDirectionFrom3Points(points1, poi
 
 % Revision history:
 % 2023_12_19 - sbrennan@psu.edu
-% -- original write of the code
+% - original write of the code
 % 2024_01_03 - S. Brennan
-% -- added fast mode option
-% -- added environmental variable options
+% - added fast mode option
+% - added environmental variable options
 % 2024_01_08 - S. Brennan
-% -- changed plotting to plot each case separately
-% -- fixed bug with cross function call to force it to cross column-wise
+% - changed plotting to plot each case separately
+% - fixed bug with cross function call to force it to cross column-wise
 % 2024_04_14 - S. Brennan
-% -- added fcn_geometry_fillColorFromNumberOrName to plotting
+% - added fcn_geometry_fillColorFromNumberOrName to plotting
 % 2024_05_15 - S. Brennan
-% -- fixed bug where gives wrong answer if test points are on start or end
+% - fixed bug where gives wrong answer if test points are on start or end
 % points, or VERY close to zero. Added check on numerical tolerance to fix
 % this, returning 0 as result if points are at end.
 
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -127,7 +127,7 @@ flag_do_plots = 0;
 if (4 == nargin) && (0==flag_max_speed)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -175,7 +175,7 @@ is_counterClockwise = sign(cross_product_direction);
 if flag_do_plots
     
     %Prep the figure
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;

@@ -6,7 +6,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 % Format:
 %  [flag_is_feasible, feasibility_distance, closest_feasible_arc2_parameters] = fcn_geometry_isC2FeasibleArcToArc(...
 %    arc1_parameters, arc2_parameters, ...
-%    (threshold), (in_boundary_margin), (fig_num))
+%    (threshold), (in_boundary_margin), (figNum))
 %
 % INPUTS:
 %
@@ -45,7 +45,7 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 %      (within the tolerance) may still yield solutions that are
 %      technically not feasible spiral connections. Default is 0.
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -79,19 +79,19 @@ function [flag_is_feasible, feasibility_distance, closest_feasible_arc2_paramete
 
 % Revision history:
 % 2024_05_26 - S Brennan
-% -- wrote the code
+% - wrote the code
 % 2024_06_08 - S Brennan
-% -- added in_boundary_margin input option
+% - added in_boundary_margin input option
 % 2024_06_22 - S Brennan
-% -- added in check for arcs along with circles, including directionality
+% - added in check for arcs along with circles, including directionality
 % test
 % 2024_06_22 - S Brennan
-% -- added signed distance testing
-% -- added d12, merge_distance output metrics
+% - added signed distance testing
+% - added d12, merge_distance output metrics
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -116,9 +116,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 
@@ -163,20 +163,20 @@ if (4<=nargin)
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if  (0==flag_max_speed) && (5<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
 
         % Does user want to specify animation_figure_handles?
         % flag_plot_subfigs = 0;
 
         if length(temp)>1
-            fig_num           = temp(1);
+            figNum           = temp(1);
             % h_plotPoints      = temp(2);
             % h_plotPercentage  = temp(3);
             % h_plotFitShape    = temp(4);
@@ -625,7 +625,7 @@ merge_distance = real(sum((query_point - [r1 0]).^2,2).^0.5);
 if flag_do_plots
 
     % Plot the results in the given figure number
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
@@ -644,16 +644,16 @@ if flag_do_plots
     segment_length = [];
     format1_string = sprintf(' ''-'',''Color'',[0.6 0 0],''LineWidth'',7 ');        
     if 1==flag_arc1_is_arc
-        fcn_geometry_plotGeometry('arc', arc1_parameters,segment_length, format1_string, (fig_num));
+        fcn_geometry_plotGeometry('arc', arc1_parameters,segment_length, format1_string, (figNum));
     else
-        fcn_geometry_plotGeometry('circle', arc1_parameters,segment_length, format1_string, (fig_num));
+        fcn_geometry_plotGeometry('circle', arc1_parameters,segment_length, format1_string, (figNum));
     end
 
     format2_string = sprintf(' ''-'',''Color'',[1 0 0],''LineWidth'',4 ');
     if 1==flag_arc2_is_arc
-        fcn_geometry_plotGeometry('arc', arc2_parameters,segment_length, format2_string, (fig_num));
+        fcn_geometry_plotGeometry('arc', arc2_parameters,segment_length, format2_string, (figNum));
     else
-        fcn_geometry_plotGeometry('circle', arc2_parameters,segment_length, format2_string, (fig_num));
+        fcn_geometry_plotGeometry('circle', arc2_parameters,segment_length, format2_string, (figNum));
     end
 
     % Plot the arc centers
@@ -664,9 +664,9 @@ if flag_do_plots
     if 0==flag_is_feasible
         format_string = sprintf(' ''-'',''Color'',[0 1 0],''LineWidth'',4 ');
         if flag_check_arcs
-            fcn_geometry_plotGeometry('arc', closest_feasible_arc2_parameters,segment_length, format_string, (fig_num));
+            fcn_geometry_plotGeometry('arc', closest_feasible_arc2_parameters,segment_length, format_string, (figNum));
         else
-            fcn_geometry_plotGeometry('circle', closest_feasible_arc2_parameters,segment_length, format_string, (fig_num));
+            fcn_geometry_plotGeometry('circle', closest_feasible_arc2_parameters,segment_length, format_string, (figNum));
         end
     
         plot(closest_feasible_arc2_parameters(1,1),closest_feasible_arc2_parameters(1,2),'+','Color',[0 1 0],'Linewidth',1);

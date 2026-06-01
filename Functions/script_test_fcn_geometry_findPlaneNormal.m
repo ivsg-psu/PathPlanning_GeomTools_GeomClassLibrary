@@ -2,7 +2,7 @@
 % Exercises the function: fcn_geometry_findPlaneNormal
 % Revision history:
 % 2025_05_30
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -22,8 +22,8 @@ close all;
 
 
 %% Demonstration case 1: many points in XY plane
-fig_num = 0001;
-figure(fig_num);
+figNum = 0001;
+figure(figNum);
 clf;
 
 points = [
@@ -39,7 +39,7 @@ points = [
     -2 3 0; 
     -1 -1 0]*2;
 
-[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(figNum));
 
 view(70, 20);
 
@@ -64,7 +64,7 @@ assert(~all(flags_in_directional_agreement==1));
 assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Basic testing examples in 3D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,13 +80,13 @@ assert(isequal(get(gcf,'Number'),fig_num));
 % See: http://patorjk.com/software/taag/#p=display&f=Big&t=Basic%20Testing%20%20Examples%20%20-%203D
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Basic test case 1: basic plane with 3 points in XY plane
-fig_num = 1001;
-figure(fig_num);
+figNum = 1001;
+figure(figNum);
 clf;
 
 points = [0 0 0; 1 0 0; 1 1 0]*3;
 
-[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(figNum));
 
 % Check variable types
 assert(isnumeric(unit_normal_vector));
@@ -109,16 +109,16 @@ assert(all(flags_in_directional_agreement==1));
 assert(all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Basic test case 2: basic plane with 4 points in XY plane
-fig_num = 1002;
-figure(fig_num);
+figNum = 1002;
+figure(figNum);
 clf;
 
 points = [0 0 0; 0 1 0; 1 0 0; 0 0 0];
 
-[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(figNum));
 
 % Check variable types
 assert(isnumeric(unit_normal_vector));
@@ -141,12 +141,12 @@ assert(all(flags_in_directional_agreement==1));
 assert(all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 
 %% Basic test case 3: basic plane with many points in XY plane
-fig_num = 1003;
-figure(fig_num);
+figNum = 1003;
+figure(figNum);
 clf;
 
 points = [
@@ -162,7 +162,7 @@ points = [
     -2 3 0; 
     -1 -1 0]*2;
 
-[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(figNum));
 
 view(70, 20);
 
@@ -187,11 +187,11 @@ assert(~all(flags_in_directional_agreement==1));
 assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Basic test case 4: basic Vertial plane with many points in XZ plane
-fig_num = 1004;
-figure(fig_num);
+figNum = 1004;
+figure(figNum);
 clf;
 
 old_points = [
@@ -208,7 +208,7 @@ old_points = [
     -1 -1 0]*2;
 points = [old_points(:,1) old_points(:,3) old_points(:,2)];
 
-[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(fig_num));
+[unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,(figNum));
 
 view(70, 20);
 
@@ -233,7 +233,7 @@ assert(~all(flags_in_directional_agreement==1));
 assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot opened up
-assert(isequal(get(gcf,'Number'),fig_num));
+assert(isequal(get(gcf,'Number'),figNum));
 
 %% Fast Mode Tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -250,9 +250,9 @@ assert(isequal(get(gcf,'Number'),fig_num));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Basic example - NO FIGURE
-fig_num = 9901;
-figure(fig_num);
-close(fig_num);
+figNum = 9901;
+figure(figNum);
+close(figNum);
 
 points = [
     0 0 0;
@@ -293,12 +293,12 @@ assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Basic example of vertex calculation - non-normal wall shrinking, NO FIGURE, FAST MODE
-fig_num = 9902;
-figure(fig_num);
-close(fig_num);
+figNum = 9902;
+figure(figNum);
+close(figNum);
 
 points = [
     0 0 0;
@@ -339,12 +339,12 @@ assert(~all(flags_in_magnitude_agreement==1));
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 %% Compare speeds of pre-calculation versus post-calculation versus a fast variant
-fig_num = 9903;
-figure(fig_num);
-close(fig_num);
+figNum = 9903;
+figure(figNum);
+close(figNum);
 rng(1823);
 
 points = [
@@ -362,12 +362,12 @@ points = [
 
 
 % Perform the calculation in slow mode
-fig_num = [];
+figNum = [];
 REPS = 100; minTimeSlow = Inf; 
 tic;
 for i=1:REPS
     tstart = tic;
-    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,fig_num);
+    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,figNum);
 
     telapsed = toc(tstart);
     minTimeSlow = min(telapsed,minTimeSlow);
@@ -375,12 +375,12 @@ end
 slow_method = toc;
 
 % Perform the operation in fast mode
-fig_num = -1;
+figNum = -1;
 minTimeFast = Inf; nsum = 10;
 tic;
 for i=1:REPS
     tstart = tic;
-    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,fig_num);
+    [unit_normal_vector, base_point, flags_in_directional_agreement, flags_in_magnitude_agreement] = fcn_geometry_findPlaneNormal(points,figNum);
     telapsed = toc(tstart);
     minTimeFast = min(telapsed,minTimeFast);
 end
@@ -407,13 +407,13 @@ ylabel('Execution time (Milliseconds)')
 
 % Make sure plot did NOT open up
 figHandles = get(groot, 'Children');
-assert(~any(figHandles==fig_num));
+assert(~any(figHandles==figNum));
 
 
 %% Fail conditions
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [root_point, unit_vector] = fcn_geometry_findPlaneNormal(points,fig_num);
+    [root_point, unit_vector] = fcn_geometry_findPlaneNormal(points,figNum);
     fprintf(1,'\n\nRoot point is: %.2f %.2f, Unit vector is: %.2f %.2f\n',root_point(1,1),root_point(1,2),unit_vector(1,1),unit_vector(1,2));
 end

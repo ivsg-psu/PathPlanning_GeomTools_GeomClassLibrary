@@ -2,7 +2,7 @@
 % Exercises the function: fcn_geometry_printFitSequences
 % Revision history:
 % 2024_04_12
-% -- wrote the code
+% - wrote the code
 
 close all;
 
@@ -170,6 +170,6 @@ fcn_geometry_printFitSequences(fitSequence_fitTypes, fitSequence_parameters, (fl
 if 1==0
     %% FAIL 1: points not long enough
     points = [2 3];
-    [slope,intercept] = fcn_geometry_printFitSequences(points,fig_num);
+    [slope,intercept] = fcn_geometry_printFitSequences(points,figNum);
     fprintf(1,'\n\nSlope is: %.2f, Intercept is: %.2f\n',slope,intercept);
 end

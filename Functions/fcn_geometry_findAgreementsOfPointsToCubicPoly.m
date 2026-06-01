@@ -13,7 +13,7 @@ function [agreement_indices,orothogonal_dist_btw_test_points_and_cubic_curve] = 
 %
 % FORMAT:
 %
-% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (fig_num))
+% agreement_indices = fcn_geometry_findAgreementsOfPointsToCubicPoly(points, fittedParameters, tolerance, (figNum))
 %
 % INPUTS:
 %
@@ -49,7 +49,7 @@ function [agreement_indices,orothogonal_dist_btw_test_points_and_cubic_curve] = 
 %
 %      (OPTIONAL INPUTS)
 %
-%      fig_num: a figure number to plot results. If set to -1, skips any
+%      figNum: a figure number to plot results. If set to -1, skips any
 %      input checking or debugging, no figures will be generated, and sets
 %      up code to maximize speed.
 %
@@ -73,58 +73,58 @@ function [agreement_indices,orothogonal_dist_btw_test_points_and_cubic_curve] = 
 
 % Revision history:
 % 2024_05_10 - Aneesh Batchu
-% -- wrote the code
+% - wrote the code
 % 2024_05_13 - Aneesh Batchu
-% -- "polygon_vertices" are included as the output to plot the polygon
+% - "polygon_vertices" are included as the output to plot the polygon
 % domain
 % 2024_05_17 - Aneesh Batchu
-% -- Added station_tolerance to the code. This code finds the agreement
+% - Added station_tolerance to the code. This code finds the agreement
 % indices that are not just in transverse agreement but also in station
 % agreement
 % 2024_05_29 - Aneesh Batchu
-% -- Added an internal function to interpolate the source points,
+% - Added an internal function to interpolate the source points,
 % generating more domain points and eventually obtaining a better domain
 % box around the area of interest.
-% -- Added polyfit to the upper and lower boundary points to get a better
+% - Added polyfit to the upper and lower boundary points to get a better
 % domain
 % 2024_05_30 - Aneesh Batchu 
-% -- If the slope at any point (source/interpolated) point is zero, the
+% - If the slope at any point (source/interpolated) point is zero, the
 % corresponding unit tangent vectors is multiplied with transverse
 % tolerance (instead of orthogonal vectors to find the domain boundaries)
-% -- Added a conditional statement 
+% - Added a conditional statement 
 % (&& length(indices_in_transverse_agreement)>=2) for finding the points
 % that are within the station_tolerance limit.
-% -- Removed base_point_index from the inputs
+% - Removed base_point_index from the inputs
 % 2024_06_03 - Aneesh Batchu
-% -- Functionalized unit orthogonal vectors and domain
+% - Functionalized unit orthogonal vectors and domain
 % vertices(fcn_INTERNAL_findUnitOrthogonalVectors and
 % fcn_INTERNAL_findDomainVertices) 
-% -- Added "total_points_including_source_points" as one of the inputs
+% - Added "total_points_including_source_points" as one of the inputs
 % 2024_06_05 - Aneesh Batchu
-% -- polygon_vertices are changed when station tolerance is given as the
+% - polygon_vertices are changed when station tolerance is given as the
 % input
-% -- Functionalized the slope finding method
+% - Functionalized the slope finding method
 % "fcn_INTERNAL_findSlopesAtEachPoint"
 % 2024_06_11 - Aneesh Batchu
 % Removed inpolygon method to calculate the inliers. Instead, projection
 % distance is used to fidn the points in transverse agreement. This
 % improves the speed of the code. 
 % 2024_06_12 - S. Brennan
-% -- removed weird if statements from
+% - removed weird if statements from
 % fcn_INTERNAL_findUnitOrthogonalVectors that were calculating differently
 % based on slope thresholds
-% -- changed plotting style to make agreement points more clear
-% -- changed parameter style to be consistent with line, segment, etc.
+% - changed plotting style to make agreement points more clear
+% - changed parameter style to be consistent with line, segment, etc.
 % definitions (NOTE: requires changes to other functions!)
-% -- changed tolerance style to be consistent with St coordinate definition
+% - changed tolerance style to be consistent with St coordinate definition
 % used in other functions
-% -- fixed bug in station calculations so that this works
+% - fixed bug in station calculations so that this works
 % 2024_06_18 - Aneesh Batchu
-% -- Deleted commented lines. Fixed some comments
+% - Deleted commented lines. Fixed some comments
 
 %% Debugging and Input checks
 
-% Check if flag_max_speed set. This occurs if the fig_num variable input
+% Check if flag_max_speed set. This occurs if the figNum variable input
 % argument (varargin) is given a number of -1, which is not a valid figure
 % number.
 flag_max_speed = 0;
@@ -149,9 +149,9 @@ end
 if flag_do_debug
     st = dbstack; %#ok<*UNRCH>
     fprintf(1,'STARTING function: %s, in file: %s\n',st(1).name,st(1).file);
-    debug_fig_num = 34838; %#ok<NASGU>
+    debug_figNum = 34838; %#ok<NASGU>
 else
-    debug_fig_num = []; %#ok<NASGU>
+    debug_figNum = []; %#ok<NASGU>
 end
 
 %% check input arguments
@@ -183,13 +183,13 @@ if 0==flag_max_speed
 end
 
 
-% Does user want to specify fig_num?
-fig_num = []; % Default is to have no figure
+% Does user want to specify figNum?
+figNum = []; % Default is to have no figure
 flag_do_plots = 0;
 if (0==flag_max_speed) && (4<= nargin)
     temp = varargin{end};
     if ~isempty(temp)
-        fig_num = temp;
+        figNum = temp;
         flag_do_plots = 1;
     end
 end
@@ -232,7 +232,7 @@ unit_orthogonal_vectors = fcn_INTERNAL_findUnitOrthogonalVectors(slopes_at_each_
 
 % % Check results?
 % if 1==flag_do_debug
-%     figure(debug_fig_num)
+%     figure(debug_figNum)
 %     clf;
 %     hold on;
 %     grid on;
@@ -263,7 +263,7 @@ indices_in_transverse_agreement = find(flags_in_transverse_agreement==1);
 
 % % Check results?
 % if 1==flag_do_debug
-%     figure(debug_fig_num)
+%     figure(debug_figNum)
 % 
 %     % plot the agreement points
 %     plot(points(indices_in_transverse_agreement,1), points(indices_in_transverse_agreement,2), 'go', 'MarkerSize',15, 'LineWidth',3)
@@ -294,13 +294,13 @@ agreement_indices = sort(agreement_indices);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if flag_do_plots
 
-    temp_h = figure(fig_num);
+    temp_h = figure(figNum);
     flag_rescale_axis = 0;
     if isempty(get(temp_h,'Children'))
         flag_rescale_axis = 1;
     end
     
-    figure(fig_num)
+    figure(figNum)
     hold on;
     grid on;
     axis equal

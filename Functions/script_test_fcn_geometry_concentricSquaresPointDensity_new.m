@@ -26,9 +26,9 @@ int_length=5;
 ext_point_concentration=3;
 int_point_concentration=20;
 
-fig_num = 1111;
+figNum = 1111;
 
-[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,[],[],fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,[],[],figNum);
 
 assert(length(points)==pointChecker(ext_length,int_length,ext_point_concentration,int_point_concentration));
 
@@ -41,9 +41,9 @@ ext_point_concentration=3;
 int_point_concentration=20;
 noise=1;
 
-fig_num = 2222;
+figNum = 2222;
 
-[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,[],fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,[],figNum);
 
 assert(length(points)==pointChecker(ext_length,int_length,ext_point_concentration,int_point_concentration));
 
@@ -57,9 +57,9 @@ ext_point_concentration=3;
 int_point_concentration=20;
 diagonal_flag=1;
 
-fig_num = 3333;
+figNum = 3333;
 
-[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,[],diagonal_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,[],diagonal_flag,figNum);
 
 assert(length(points)==pointChecker(ext_length,int_length,ext_point_concentration,int_point_concentration));
 
@@ -71,9 +71,9 @@ ext_point_concentration=3;
 int_point_concentration=20;
 noise=1;
 diagonal_flag=1;
-fig_num = 4444;
+figNum = 4444;
 
-[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,diagonal_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,diagonal_flag,figNum);
 
 assert(length(points)==pointChecker(ext_length,int_length,ext_point_concentration,int_point_concentration));
 
@@ -86,9 +86,9 @@ ext_point_concentration=3;
 int_point_concentration=20;
 noise=1;
 diagonal_flag=1;
-fig_num = 31;
+figNum = 31;
 
-[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,diagonal_flag,fig_num);
+[points] = fcn_geometry_concentricSquaresPointDensity_new(ext_length,int_length,ext_point_concentration,int_point_concentration,noise,diagonal_flag,figNum);
 
 assert(length(points)==pointChecker(ext_length,int_length,ext_point_concentration,int_point_concentration));
 
