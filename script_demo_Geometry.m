@@ -136,26 +136,27 @@
 % -See: script_test_fcn_geometry_checkIfPointOn3DPatch
 %
 % 2025_07_02 by Sean Brennan, sbrennan@psu.edu
-% -Updated Path library dependency
+% - Updated Path library dependency
 %
 % 2025_10_18 by Sean Brennan, sbrennan@psu.edu
-% -Added fcn_geometry_findPolytopeOrientations
-% -Updated DebugTools_v2025_09_26b
-% -Updated PathClass_v2025_08_03
-% -Tried to fix broken functions during testing. Too many. See to-do
-%    % items
+% - Added fcn_geometry_findPolytopeOrientations
+% - Updated DebugTools_v2025_09_26b
+% - Updated PathClass_v2025_08_03
+% - Tried to fix broken functions during testing. Too many. See to-do
+%   % items
+% (new release)
 %
 % 2025_11_05 - Aneesh Batchu
-%  -- Fixed "fcn_geometry_fitHoughCubicPolynomial"
-% -Added a conditional statement in Step 2 under
-% flag_find_only_best_agreement case. If the best agreement count is less
-% than 4 points, the cubic polynomial is not fitted.
+%  - Fixed "fcn_geometry_fitHoughCubicPolynomial"
+%  - Added a conditional statement in Step 2 under
+%    % flag_find_only_best_agreement case. If the best agreement count is less
+%    % than 4 points, the cubic polynomial is not fitted.
 %
 % 2026_01_07 - Aneesh Batchu
-% -Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
-%   % In test cases, Basic example 3: find arc data and Advanced example:
-%   % find line segments and circles and arcs in same data set
-% -Removed this script from "Fucntions" directory
+% - Fixed bugs in test script "script_test_fcn_geometry_HoughRegression"
+%   % * In test cases, Basic example 3: find arc data and Advanced example:
+%   % * find line segments and circles and arcs in same data set
+% - Removed this script from "Fucntions" directory
 %   %'script_test_fcn_geometry_boundaryAnalysis'. This function does not
 %   % belong in this repo. 
 %
@@ -179,6 +180,7 @@
 %   % * Updated installer to current version
 % - In script_test_fcn_geometry_findPolytopeOrientations
 %   % * Removed clc calls
+% (new release)
 
 
 %% TO-DO:
@@ -207,20 +209,20 @@
 % -Need to fix the following test scripts as they are failing
 %    (see script_test_all_functions)
 % badScriptNames = {
-%     'script_test_fcn_geometry_alignArcArc';              % 5   <--Sean
-%     'script_test_fcn_geometry_alignArcArcC2Optimized';   % 6   <--Sean
-%     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <--Sean
-%     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <--Sean
-%     'script_test_fcn_geometry_alignLineArc';             % 11  <--Sean
-%     'script_test_fcn_geometry_compareCurves';            % 23  <--Sean
-%     'script_test_fcn_geometry_fitSequentialArcs';        % 81  <--Sean
-%     'script_test_fcn_geometry_intersectGeom';            % 91  <--Sean
-%     'script_test_fcn_geometry_isC1FeasibleArcToArc';     % 93  <--Sean
-%     'script_test_fcn_geometry_isC2FeasibleArcToArc';     % 94  <--Sean
-%     'script_test_fcn_geometry_isFeasibleAlignGeomPair';  % 97  <--Sean
-%     'script_test_fcn_geometry_isFeasibleAlignGeomSeries';% 98  <--Sean
-%     'script_test_fcn_geometry_isFeasibleGeomSequence';   % 99  <--Sean
-%     'script_test_fcn_geometry_plotGeometry';             % 108 <--Sean
+%     'script_test_fcn_geometry_alignArcArc';              % 5   <-Sean
+%     'script_test_fcn_geometry_alignArcArcC2Optimized';   % 6   <-Sean
+%     'script_test_fcn_geometry_alignArcsInSequence';      % 9   <-Sean
+%     'script_test_fcn_geometry_alignGeometriesInSequence';% 10  <-Sean
+%     'script_test_fcn_geometry_alignLineArc';             % 11  <-Sean
+%     'script_test_fcn_geometry_compareCurves';            % 23  <-Sean
+%     'script_test_fcn_geometry_fitSequentialArcs';        % 81  <-Sean
+%     'script_test_fcn_geometry_intersectGeom';            % 91  <-Sean
+%     'script_test_fcn_geometry_isC1FeasibleArcToArc';     % 93  <-Sean
+%     'script_test_fcn_geometry_isC2FeasibleArcToArc';     % 94  <-Sean
+%     'script_test_fcn_geometry_isFeasibleAlignGeomPair';  % 97  <-Sean
+%     'script_test_fcn_geometry_isFeasibleAlignGeomSeries';% 98  <-Sean
+%     'script_test_fcn_geometry_isFeasibleGeomSequence';   % 99  <-Sean
+%     'script_test_fcn_geometry_plotGeometry';             % 108 <-Sean
 %     };
 %    * script_test_fcn_geometry_estimateSpiralLength (needs to be made faster)
 %
@@ -2057,7 +2059,7 @@ if ~exist(flag_varname,'var') || isempty(eval(flag_varname))
         % Files do not exist yet - try unzipping them.
         save_file_name = tempname(root_directory_name);
         zip_file_name = websave(save_file_name,dependency_url);
-        % CANT GET THIS TO WORK --> unzip(zip_file_url, debugTools_folder_name);
+        % CANT GET THIS TO WORK -> unzip(zip_file_url, debugTools_folder_name);
         
         % Is the file there?
         if ~exist(zip_file_name,'file')
