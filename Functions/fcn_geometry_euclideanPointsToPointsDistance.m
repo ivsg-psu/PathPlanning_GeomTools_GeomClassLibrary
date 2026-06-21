@@ -3,9 +3,11 @@ function [dist] = ...
     points1,...
     points2,...
     varargin)
-% fcn_geometry_euclideanPointsToPointsDistance calculates the 
-% distance(s) between a [Nxd] vector of points, POINTS1, and another [Nxd] vector of
-% points, POINTS2, where d is the dimension.
+%% fcn_geometry_euclideanPointsToPointsDistance 
+% 
+% This calculates the distance(s) between a [Nxd] vector of points,
+% POINTS1, and another [Nxd] vector of points, POINTS2, where d is the
+% dimension.
 %
 % FORMAT:
 %
@@ -46,25 +48,37 @@ function [dist] = ...
 % This function was written on 2018_11_17 by Seth Tau
 % Questions or comments? sat5340@psu.edu 
 
-% Revision History:
-% 2021-05-28 - S. Brennan
-% - revised function to prep for geometry class 
-% - rewrote function to use vector sum
-% - added plotting option
-% 2021-06-05
-% - fixed comments, added debugging option
-% 2024_01_17 - Aneesh Batchu
-% - added max speed options 
-
+% REVISION HISTORY:
+%
+% 2021_05_28 by Sean Brennan, sbrennan@psu.edu
+% - In fcn_geometry_euclideanPointsToPointsDistance
+%   % * revised function to prep for geometry class
+%   % * rewrote function to use vector sum
+%   % * added plotting option
+% 
+% 2021_05_28 by Sean Brennan, sbrennan@psu.edu
+% - In fcn_geometry_euclideanPointsToPointsDistance
+%   % * fixed comments, added debugging option
+% 
+% 2024_01_17 by Aneesh Batchu, abb6486@psu.edu
+%  - In fcn_geometry_euclideanPointsToPointsDistance
+%   % * added max speed options 
+% 
+% 2024_01_17 by Aneesh Batchu, abb6486@psu.edu
+%  - In fcn_geometry_euclideanPointsToPointsDistance
+%   % * Updated the function headers to "standard" form 
 
 %% Debugging and Input checks
 % flag_check_inputs = 1; % Set equal to 1 to check the input arguments
 % flag_do_plot = 0;      % Set equal to 1 for plotting
 % flag_do_debug = 0;     % Set equal to 1 for debugging
 
-
+% Check if flag_max_speed set. This occurs if the figNum variable input
+% argument (varargin) is given a number of -1, which is not a valid figure
+% number.
+MAX_NARGIN = 3; % The largest Number of argument inputs to the function
 flag_max_speed = 0;
-if (nargin==3 && isequal(varargin{end},-1))
+if (nargin==MAX_NARGIN && isequal(varargin{end},-1))
     flag_do_debug = 0; % Flag to plot the results for debugging
     flag_check_inputs = 0; % Flag to perform input checking
     flag_max_speed = 1;
@@ -101,7 +115,7 @@ end
 if 0==flag_max_speed
     if flag_check_inputs
         % Are there the right number of inputs?
-        narginchk(2,3);
+        narginchk(2,MAX_NARGIN);
 
         % Check the points1 input
         fcn_DebugTools_checkInputsToFunctions(...
@@ -118,34 +132,33 @@ end
     
 
 % % Does user want to show the plots?
-% if 3 == nargin
-%     figNum = varargin{end};
-%     figure(figNum);
-%     flag_do_plot = 1;
+% flag_do_plot = 0;
+% if (0==flag_max_speed) && (3 == nargin) 
+%     temp = varargin{1};
+%     if ~isempty(temp)
+%         figNum = temp;
+%         figure(figNum);
+%         flag_do_plot = 1;
+%     end
 % else
 %     if flag_do_debug
-%         fig = figure;
+%         fig = figure; 
 %         figNum = fig.Number;
 %         flag_do_plot = 1;
 %     end
 % end
 
 % Does user want to show the plots?
-flag_do_plot = 0;
-if (0==flag_max_speed) && (3 == nargin) 
-    temp = varargin{1};
-    if ~isempty(temp)
+flag_do_plots = 0; % Default is to show plots
+figNum = []; % Empty by default
+if (0==flag_max_speed) && (MAX_NARGIN == nargin)
+    temp = varargin{end};
+    if ~isempty(temp) % Did the user NOT give an empty figure number?
         figNum = temp;
-        figure(figNum);
-        flag_do_plot = 1;
-    end
-else
-    if flag_do_debug
-        fig = figure; 
-        figNum = fig.Number;
-        flag_do_plot = 1;
+        flag_do_plots = 1;
     end
 end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   __  __       _
@@ -171,7 +184,7 @@ dist = sum((points1-points2).^2,2).^0.5;
 %                           |___/ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if flag_do_plot
+if flag_do_plots
     % Set up the figure
     figure(figNum);
     clf

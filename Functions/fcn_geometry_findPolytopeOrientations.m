@@ -1,7 +1,7 @@
 function [orientation, isconvex, Nencirclements] = ...
     fcn_geometry_findPolytopeOrientations(vertex_pts,...
     varargin)
-% fcn_geometry_findPolytopeOrientations
+%% fcn_geometry_findPolytopeOrientations
 % Finds if a 2D polytope is clockwise or counterClockwise and if the
 % polytope is convex or non-convex. The number of encirclements is also
 % reported, with positive values being positive encirclements and negative
@@ -54,9 +54,11 @@ function [orientation, isconvex, Nencirclements] = ...
 % This function was written on 2025_10_18 by S. Brennan
 % Questions or comments? sbrennan@psu.edu 
 
-% Revision History:
-% 2021-10-18
-% - First write of the code
+% REVISION HISTORY:
+%
+% 2025_10_18 by Sean Brennan, sbrennan@psu.edu
+% - In fcn_geometry_findPolytopeOrientations
+%   % * Wrote the code originally
 
 
 %% Debugging and Input checks
